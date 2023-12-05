@@ -10,7 +10,8 @@ if (NODE_ENV !== 'production') {
   config.baseURL = baseURL;
 }
 if (NODE_ENV === 'production') {
-  config.baseURL = REACT_APP_API_PREFIX;
+  const loc = window.location;
+  config.baseURL = `${loc.protocol}//${loc.host}/${REACT_APP_API_PREFIX}`;
 }
 export const http = axios.create(config);
 
