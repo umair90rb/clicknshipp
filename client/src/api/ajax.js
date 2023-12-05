@@ -9,6 +9,9 @@ const config = {
 if (NODE_ENV !== 'production') {
   config.baseURL = baseURL;
 }
+if (NODE_ENV === 'production') {
+  config.baseURL = REACT_APP_API_PREFIX;
+}
 export const http = axios.create(config);
 
 http.interceptors.request.use((request) => {
