@@ -36,11 +36,11 @@ const OrderManagement = () => {
     }
     let formData = new FormData();
     formData.append('file', event.target.files[0], event.target.value.split(/(\\|\/)/g).pop());
-    console.log(formData);
     dispatch(fetchImportOrder({ body: formData })).then(() => {
       if (orderImportFetchStatus === fetchStatus.SUCCESS) {
         dispatch(fetchAllOrder());
       }
+      event.target.value = '';
     });
   };
 

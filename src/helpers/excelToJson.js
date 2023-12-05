@@ -1,9 +1,9 @@
 import ExcelJS from "exceljs";
 const workbook = new ExcelJS.Workbook();
 
-export default async (filePath, sheetName = 1) => {
+export default async (buffer, sheetName = 1) => {
   try {
-    await workbook.xlsx.readFile(filePath);
+    await workbook.xlsx.load(buffer);
     const worksheet = workbook.getWorksheet(sheetName);
     const json = [];
     const columns = worksheet.getRow(1);

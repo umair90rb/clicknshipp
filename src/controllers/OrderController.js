@@ -2,8 +2,7 @@ import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 import { extract } from "../utils/extract";
 import excelToJson from "../helpers/excelToJson";
-import { uploadDir } from "../helpers/multerConfig";
-const { Order, OrderItem, Customer, Address } = model;
+const { Order, OrderItem } = model;
 
 const order_data_keys = [
   "order_number",
@@ -196,9 +195,7 @@ export default {
 
   async import(req, res) {
     try {
-      const json = await excelToJson(
-        `${uploadDir}/${req.file.originalname.split(".")[0] + ".xlsx"}`
-      );
+      const json = await excelToJson(req.file.buffer);
       const orderWithoutIds = json.map(
         ({ id, updated_at, created_at, ...rest }) => rest
       );

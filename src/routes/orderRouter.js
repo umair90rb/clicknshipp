@@ -6,7 +6,9 @@ import { idSchema } from "../schemas/commonSchema";
 import schemaValidator from "../middleware/schemaValidator";
 import { createValidator } from "express-joi-validation";
 import OrderController from "../controllers/OrderController";
-import upload from "../helpers/multerConfig";
+import multer from "multer";
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 const router = express.Router();
 const validator = createValidator();
