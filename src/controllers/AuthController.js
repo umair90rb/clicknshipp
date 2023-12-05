@@ -6,57 +6,18 @@ import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 const { User } = models;
 
 export default {
-  async signUp(req, res) {
-    const { name, email, password, phone } = req.body;
-    try {
-      let user = await User.findOne({
-        where: { [Op.or]: [{ email }, { phone }] },
-      });
-      if (user) {
-        return sendErrorResponse(
-          res,
-          422,
-          "User with email or phone already exists."
-        );
-      }
-      user = await User.create({
-        email,
-        password: hash(password),
-        name,
-        phone,
-      });
-      return sendSuccessResponse(
-        res,
-        201,
-        {
-          user: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-          },
-        },
-        "Account created successfully"
-      );
-    } catch (error) {
-      return sendErrorResponse(
-        res,
-        500,
-        "Could not perform operation at this time, kindly try again later.",
-        error
-      );
-    }
-  },
   async login(req, res) {
     const { email, password, device_name } = req.body;
 
     try {
-      const user = await User.findOne({ where: { email } });
-
+      const user = await User.scope("withPassword").findOne({
+        where: { email },
+      });
       if (!user)
         return sendErrorResponse(
           res,
-          404,
-          "Incorrect login credentials. Kindly check and try again"
+          400,
+          "No user with this email. Kindly check credentials and try again"
         );
       const checkPassword = hash_compare(hash(password), user.password);
       if (!checkPassword) {
@@ -76,6 +37,7 @@ export default {
       }
 
       const token = await user.newToken();
+      const roles = await user.getRoles();
       return sendSuccessResponse(
         res,
         200,
@@ -85,6 +47,7 @@ export default {
             name: user.name,
             id: user.id,
             email: user.email,
+            roles: roles.map((r) => r.name),
           },
         },
         "Login successfully"

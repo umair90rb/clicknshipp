@@ -1,21 +1,24 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 // material-ui
 import {
   Box,
   Button,
-  Divider,
+  MenuItem,
+  Select,
   FormControl,
   FormHelperText,
   Grid,
-  Link,
+  ListItemText,
   IconButton,
   InputAdornment,
   InputLabel,
   OutlinedInput,
   Stack,
-  Typography
+  Typography,
+  Checkbox,
+  Chip
 } from '@mui/material';
 
 // third party
@@ -23,18 +26,28 @@ import * as Yup from 'yup';
 import { Formik } from 'formik';
 
 // project import
-import FirebaseSocial from './FirebaseSocial';
+// import FirebaseSocial from './FirebaseSocial';
 import AnimateButton from 'components/@extended/AnimateButton';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
 
 // assets
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import { roleService } from 'api/roleService/index';
+import { userService } from 'api/index';
+import { addUser, updateUser } from 'store/slices/user/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { userUpdateUserData } from 'store/slices/user/userSelector';
 
 // ============================|| FIREBASE - REGISTER ||============================ //
 
 const AuthRegister = () => {
+  const dispatch = useDispatch();
+  const formRef = useRef();
+  const userUpdateData = useSelector(userUpdateUserData);
   const [level, setLevel] = useState();
   const [showPassword, setShowPassword] = useState(false);
+  const [roles, setRoles] = useState([]);
+  const [loadingRoles, setLoadingRoles] = useState(true);
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -48,102 +61,155 @@ const AuthRegister = () => {
     setLevel(strengthColor(temp));
   };
 
+  const fetchRoles = async () => {
+    setLoadingRoles(true);
+    const res = await roleService.fetchAllRole();
+    setRoles(res.data.roles);
+    setLoadingRoles(false);
+  };
+
+  const handleSubmit = async (values, { setErrors, setStatus, setSubmitting }) => {
+    const roleIds = [];
+    values.roles.forEach((role) => {
+      const index = roles.findIndex((r) => r.name === role);
+      if (index > -1) {
+        console.log(roles[index]);
+        roleIds.push(roles[index].id);
+        return;
+      }
+    });
+    const body = { ...values, roles: roleIds };
+    let response;
+    try {
+      if (userUpdateData.data === null) {
+        response = await userService.fetchAddUser(body);
+        dispatch(addUser(response.data.user));
+      } else {
+        response = await userService.fetchUpdateUser(userUpdateData.data.id, body);
+        dispatch(updateUser({ data: response.data.user, index: userUpdateData.index }));
+      }
+      setStatus({ success: false });
+      setSubmitting(false);
+    } catch (err) {
+      console.error(err, err.response.data.error);
+      setStatus({ success: false });
+      setErrors({ submit: err.response.data.error });
+      setSubmitting(false);
+    }
+  };
+
   useEffect(() => {
     changePassword('');
+    fetchRoles();
+
+    if (userUpdateData.data !== null) {
+      const { email, name, phone, roles } = userUpdateData.data;
+      formRef.current.initialValues.email = email;
+      formRef.current.initialValues.name = name;
+      formRef.current.initialValues.phone = phone;
+      formRef.current.initialValues.roles = roles.map((r) => r.name);
+    }
   }, []);
 
   return (
     <>
       <Formik
+        innerRef={formRef}
         initialValues={{
-          firstname: '',
-          lastname: '',
+          name: '',
           email: '',
-          company: '',
+          phone: '',
           password: '',
-          submit: null
+          roles: []
         }}
         validationSchema={Yup.object().shape({
-          firstname: Yup.string().max(255).required('First Name is required'),
-          lastname: Yup.string().max(255).required('Last Name is required'),
+          name: Yup.string().max(255).required('First Name is required'),
+          phone: Yup.number().min(11).required('Phone is required'),
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-          password: Yup.string().max(255).required('Password is required')
+          password: Yup.string().max(255).required('Password is required'),
+          roles: Yup.array().of(Yup.string()).min(1).required('Minimum 1 role is required')
         })}
-        onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-          try {
-            setStatus({ success: false });
-            setSubmitting(false);
-          } catch (err) {
-            console.error(err);
-            setStatus({ success: false });
-            setErrors({ submit: err.message });
-            setSubmitting(false);
-          }
-        }}
+        onSubmit={handleSubmit}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit}>
             <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="firstname-signup">First Name*</InputLabel>
-                  <OutlinedInput
-                    id="firstname-login"
-                    type="firstname"
-                    value={values.firstname}
-                    name="firstname"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="John"
-                    fullWidth
-                    error={Boolean(touched.firstname && errors.firstname)}
-                  />
-                  {touched.firstname && errors.firstname && (
-                    <FormHelperText error id="helper-text-firstname-signup">
-                      {errors.firstname}
-                    </FormHelperText>
-                  )}
-                </Stack>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="lastname-signup">Last Name*</InputLabel>
-                  <OutlinedInput
-                    fullWidth
-                    error={Boolean(touched.lastname && errors.lastname)}
-                    id="lastname-signup"
-                    type="lastname"
-                    value={values.lastname}
-                    name="lastname"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="Doe"
-                    inputProps={{}}
-                  />
-                  {touched.lastname && errors.lastname && (
-                    <FormHelperText error id="helper-text-lastname-signup">
-                      {errors.lastname}
-                    </FormHelperText>
-                  )}
-                </Stack>
-              </Grid>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="company-signup">Company</InputLabel>
+                  <InputLabel htmlFor="name-signup">Name*</InputLabel>
+                  <OutlinedInput
+                    id="name-login"
+                    type="name"
+                    value={values.name}
+                    name="name"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="Ali"
+                    fullWidth
+                    error={Boolean(touched.name && errors.name)}
+                  />
+                  {touched.name && errors.name && (
+                    <FormHelperText error id="helper-text-name-signup">
+                      {errors.name}
+                    </FormHelperText>
+                  )}
+                </Stack>
+              </Grid>
+              {!loadingRoles && (
+                <Grid item xs={12}>
+                  <Stack spacing={1}>
+                    <InputLabel htmlFor="roles-signup">Roles*</InputLabel>
+                    <Select
+                      fullWidth
+                      multiple
+                      error={Boolean(touched.roles && errors.roles)}
+                      id="roles-signup"
+                      value={values.roles}
+                      name="roles"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      inputProps={{}}
+                      labelId="roles-signup"
+                      renderValue={(selected) => (
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                          {selected.map((value) => (
+                            <Chip key={value} label={value} />
+                          ))}
+                        </Box>
+                      )}
+                    >
+                      {roles.map(({ name }, index) => (
+                        <MenuItem key={index} value={name}>
+                          <Checkbox checked={values.roles.indexOf(name) > -1} />
+                          <ListItemText primary={name} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {touched.roles && errors.roles && (
+                      <FormHelperText error id="helper-text-roles-signup">
+                        {errors.roles}
+                      </FormHelperText>
+                    )}
+                  </Stack>
+                </Grid>
+              )}
+              <Grid item xs={12}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="phone-signup">Phone*</InputLabel>
                   <OutlinedInput
                     fullWidth
-                    error={Boolean(touched.company && errors.company)}
-                    id="company-signup"
-                    value={values.company}
-                    name="company"
+                    error={Boolean(touched.phone && errors.phone)}
+                    id="phone-signup"
+                    value={values.phone}
+                    name="phone"
                     onBlur={handleBlur}
                     onChange={handleChange}
                     placeholder="Demo Inc."
                     inputProps={{}}
                   />
-                  {touched.company && errors.company && (
-                    <FormHelperText error id="helper-text-company-signup">
-                      {errors.company}
+                  {touched.phone && errors.phone && (
+                    <FormHelperText error id="helper-text-phone-signup">
+                      {errors.phone}
                     </FormHelperText>
                   )}
                 </Stack>
@@ -160,7 +226,7 @@ const AuthRegister = () => {
                     name="email"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="demo@company.com"
+                    placeholder="demo@sukoon.com"
                     inputProps={{}}
                   />
                   {touched.email && errors.email && (
@@ -220,7 +286,7 @@ const AuthRegister = () => {
                   </Grid>
                 </FormControl>
               </Grid>
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <Typography variant="body2">
                   By Signing up, you agree to our &nbsp;
                   <Link variant="subtitle2" component={RouterLink} to="#">
@@ -231,7 +297,7 @@ const AuthRegister = () => {
                     Privacy Policy
                   </Link>
                 </Typography>
-              </Grid>
+              </Grid> */}
               {errors.submit && (
                 <Grid item xs={12}>
                   <FormHelperText error>{errors.submit}</FormHelperText>
@@ -240,18 +306,18 @@ const AuthRegister = () => {
               <Grid item xs={12}>
                 <AnimateButton>
                   <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
-                    Create Account
+                    {userUpdateData.data === null ? 'Create Account' : 'Update Account'}
                   </Button>
                 </AnimateButton>
               </Grid>
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <Divider>
                   <Typography variant="caption">Sign up with</Typography>
                 </Divider>
               </Grid>
               <Grid item xs={12}>
                 <FirebaseSocial />
-              </Grid>
+              </Grid> */}
             </Grid>
           </form>
         )}

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import React, { useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 // material-ui
 import {
@@ -28,13 +28,44 @@ import AnimateButton from 'components/@extended/AnimateButton';
 
 // assets
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchLogin } from 'store/index';
+import { authErrorSelector, authFetchStatusSelector, authTokenSelector } from 'store/slices/auth/authSelector';
+import fetchStatus from 'constants/fetchStatuses';
+import useAuth from 'hooks/useAuth';
+import { toSentense } from 'utils/string-utils';
+import location from 'utils/location';
+import Ajax from 'api/ajax';
+import { utilPathSelector } from 'store/slices/util/utilSelector';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
 const AuthLogin = () => {
-  const [checked, setChecked] = React.useState(false);
+  // const [checked, setChecked] = React.useState(false);
 
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = React.useState(false);
+  const formRef = useRef();
+  const { setAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const authFetchStatus = useSelector(authFetchStatusSelector);
+  const authError = useSelector(authErrorSelector);
+  const token = useSelector(authTokenSelector);
+  const path = useSelector(utilPathSelector);
+
+  useEffect(() => {
+    if (token) {
+      navigate(location.dashboardUrl());
+    }
+    if (authFetchStatus === fetchStatus.SUCCESS) {
+      setAuthenticated && setAuthenticated(token);
+      navigate(path);
+    }
+    if (authError) {
+      formRef.current.setFieldError('submit', toSentense(authError));
+    }
+  }, [authFetchStatus, authError]);
+
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -43,28 +74,23 @@ const AuthLogin = () => {
     event.preventDefault();
   };
 
+  const handleSubmit = async (values) => {
+    dispatch(fetchLogin({ body: values }));
+  };
+
   return (
     <>
       <Formik
+        innerRef={formRef}
         initialValues={{
-          email: 'info@codedthemes.com',
-          password: '123456',
-          submit: null
+          email: '',
+          password: ''
         }}
         validationSchema={Yup.object().shape({
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
           password: Yup.string().max(255).required('Password is required')
         })}
-        onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-          try {
-            setStatus({ success: false });
-            setSubmitting(false);
-          } catch (err) {
-            setStatus({ success: false });
-            setErrors({ submit: err.message });
-            setSubmitting(false);
-          }
-        }}
+        onSubmit={handleSubmit}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit}>

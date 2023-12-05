@@ -6,35 +6,65 @@ const PROTECTED_ATTRIBUTES = ["password"];
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
-    toJSON() {
-      const attributes = [...this.get()];
-      for (let p of PROTECTED_ATTRIBUTES) {
-        delete attributes[p];
-      }
-      return attributes;
-    }
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
-    }
+    static associate(models) {}
   }
   User.init(
     {
       name: DataTypes.STRING,
-      email: DataTypes.STRING,
-      phone: DataTypes.STRING,
+      email: {
+        type: DataTypes.STRING,
+        allowNull: {
+          args: false,
+          msg: "Please enter your email address",
+        },
+        unique: {
+          args: true,
+          msg: "Email already exists",
+        },
+        validate: {
+          isEmail: {
+            args: true,
+            msg: "Please enter a valid email address",
+          },
+        },
+      },
+      phone: {
+        type: DataTypes.STRING,
+        allowNull: {
+          args: false,
+          msg: "Please enter your phone number",
+        },
+        unique: {
+          args: true,
+          msg: "Phone number already exists",
+        },
+      },
       password: DataTypes.STRING,
-      status: DataTypes.STRING,
-      last_login_at: DataTypes.DATE,
-      last_ip_address: DataTypes.STRING,
+      status: {
+        type: DataTypes.ENUM("inactive", "active", "suspended"),
+        defaultValue: "active",
+      },
+      settings: DataTypes.JSON,
     },
     {
       sequelize,
       modelName: "User",
+      onDelete: "CASCADE",
+      defaultScope: {
+        attributes: {
+          exclude: ["password"],
+        },
+      },
+      scopes: {
+        clean: {
+          attributes: {
+            exclude: ["password", "settings", "updatedAt", "createdAt"],
+          },
+        },
+        withPassword: {
+          attributes: { include: ["password"] },
+        },
+      },
     }
   );
 
@@ -50,6 +80,47 @@ module.exports = (sequelize, DataTypes) => {
       accessToken: token,
       plainTextToken: `${token.id}|${plainTextToken}`,
     };
+  };
+
+  User.prototype.hasRole = async function hasRole(role) {
+    if (!role || role === "undefined") {
+      return false;
+    }
+    const roles = await this.getRoles();
+    return !!roles.map(({ name }) => name).includes(role);
+  };
+
+  User.prototype.hasPermission = async function hasPermission(permission) {
+    if (!permission || permission === "undefined") {
+      return false;
+    }
+    const permissions = await this.getPermissions();
+    return !!permissions.map(({ name }) => name).includes(permission.name);
+  };
+
+  User.prototype.hasPermissionThroughRole =
+    async function hasPermissionThroughRole(permission) {
+      if (!permission || permission === "undefined") {
+        return false;
+      }
+      const roles = await this.getRoles();
+      // eslint-disable-next-line no-restricted-syntax
+      for await (const item of permission.roles) {
+        if (roles.filter((role) => role.name === item.name).length > 0) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+  User.prototype.hasPermissionTo = async function hasPermissionTo(permission) {
+    if (!permission || permission === "undefined") {
+      return false;
+    }
+    return (
+      (await this.hasPermissionThroughRole(permission)) ||
+      this.hasPermission(permission)
+    );
   };
 
   return User;

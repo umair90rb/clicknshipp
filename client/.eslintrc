@@ -62,7 +62,7 @@
     "import/no-extraneous-dependencies": "off",
     "jsx-a11y/no-autofocus": "off",
     "no-restricted-imports": [
-      "error",
+      "warn",
       {
         "patterns": ["@mui/*/*/*", "!@mui/material/test-utils/*"]
       }

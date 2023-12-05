@@ -1,5 +1,6 @@
 "use strict";
 import { Model } from "sequelize";
+import { hash, hash_compare } from "../utils/hashing";
 const PROTECTED_ATTRIBUTES = ["token"];
 module.exports = (sequelize, DataTypes) => {
   class PersonalAccessToken extends Model {
@@ -29,6 +30,37 @@ module.exports = (sequelize, DataTypes) => {
         as: "tokens",
         onDelete: "CASCADE",
       });
+    }
+
+    static async findToken(authorizationToken) {
+      if (authorizationToken) {
+        let accessToken;
+        if (!authorizationToken.includes("|")) {
+          accessToken = await this.findOne({
+            where: { token: hash(authorizationToken) },
+            include: "owner",
+          });
+        } else {
+          const [id, kToken] = authorizationToken.split("|", 2);
+          const instance = await this.findByPk(id, { include: "owner" });
+          if (instance) {
+            accessToken = hash_compare(instance.token, hash(kToken))
+              ? instance
+              : null;
+          }
+        }
+
+        if (!accessToken) return { user: null, currentAccessToken: null };
+
+        accessToken.last_used_at = `${new Date(Date.now())}`;
+        await accessToken.save();
+        return {
+          user: accessToken.owner,
+          currentAccessToken: accessToken.token,
+        };
+      }
+
+      return { user: null, currentAccessToken: null };
     }
   }
   PersonalAccessToken.init(

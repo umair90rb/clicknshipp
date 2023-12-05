@@ -28,6 +28,10 @@ import SettingTab from './SettingTab';
 // assets
 import avatar1 from 'assets/images/users/avatar-1.png';
 import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
+import { authUserSelector } from 'store/slices/auth/authSelector';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearAuthState } from 'store/slices/auth/authSlice';
+import useAuth from 'hooks/useAuth';
 
 // tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
@@ -54,10 +58,15 @@ function a11yProps(index) {
 // ==============================|| HEADER CONTENT - PROFILE ||============================== //
 
 const Profile = () => {
+  const dispatch = useDispatch();
   const theme = useTheme();
 
+  const { logout } = useAuth();
+  const user = useSelector(authUserSelector);
+
   const handleLogout = async () => {
-    // logout
+    logout();
+    dispatch(clearAuthState());
   };
 
   const anchorRef = useRef(null);
@@ -97,8 +106,10 @@ const Profile = () => {
         onClick={handleToggle}
       >
         <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
-          <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
-          <Typography variant="subtitle1">John Doe</Typography>
+          <Avatar alt="profile user" sx={{ width: 32, height: 32 }}>
+            {user?.name[0].toUpperCase()}
+          </Avatar>
+          <Typography variant="subtitle1">{user?.name}</Typography>
         </Stack>
       </ButtonBase>
       <Popper
@@ -139,11 +150,13 @@ const Profile = () => {
                       <Grid container justifyContent="space-between" alignItems="center">
                         <Grid item>
                           <Stack direction="row" spacing={1.25} alignItems="center">
-                            <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
+                            <Avatar alt="profile user" sx={{ width: 32, height: 32 }}>
+                              {user?.name[0].toUpperCase()}
+                            </Avatar>
                             <Stack>
-                              <Typography variant="h6">John Doe</Typography>
+                              <Typography variant="h6">{user?.name}</Typography>
                               <Typography variant="body2" color="textSecondary">
-                                UI/UX Designer
+                                {user?.email}
                               </Typography>
                             </Stack>
                           </Stack>
@@ -155,7 +168,7 @@ const Profile = () => {
                         </Grid>
                       </Grid>
                     </CardContent>
-                    {open && (
+                    {/* {open && (
                       <>
                         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                           <Tabs variant="fullWidth" value={value} onChange={handleChange} aria-label="profile tabs">
@@ -192,7 +205,7 @@ const Profile = () => {
                           <SettingTab />
                         </TabPanel>
                       </>
-                    )}
+                    )} */}
                   </MainCard>
                 </ClickAwayListener>
               </Paper>

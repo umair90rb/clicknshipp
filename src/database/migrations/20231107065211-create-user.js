@@ -7,14 +7,15 @@ export async function up(queryInterface, Sequelize) {
       autoIncrement: true,
       primaryKey: true,
       type: Sequelize.INTEGER,
+      onDelete: "CASCADE",
     },
     name: {
       type: Sequelize.STRING,
     },
     email: {
-      type: Sequelize.STRING,
       allowNull: false,
       unique: true,
+      type: Sequelize.STRING,
     },
     phone: {
       type: Sequelize.STRING,
@@ -24,14 +25,11 @@ export async function up(queryInterface, Sequelize) {
       type: Sequelize.STRING,
     },
     status: {
-      type: Sequelize.STRING,
+      type: Sequelize.ENUM,
+      values: ["inactive", "active", "suspended"],
+      defaultValue: "inactive",
     },
-    last_login_at: {
-      type: Sequelize.DATE,
-    },
-    last_ip_address: {
-      type: Sequelize.STRING,
-    },
+    settings: Sequelize.JSON,
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE,

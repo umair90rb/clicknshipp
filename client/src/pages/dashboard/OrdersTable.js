@@ -15,7 +15,7 @@ function createData(trackingNo, name, fat, carbs, protein) {
   return { trackingNo, name, fat, carbs, protein };
 }
 
-const rows = [
+export const rows = [
   createData(84564564, 'Camera Lens', 40, 2, 40570),
   createData(98764564, 'Laptop', 300, 0, 180139),
   createData(98756325, 'Mobile', 355, 1, 90989),
@@ -56,7 +56,7 @@ function stableSort(array, comparator) {
 
 // ==============================|| ORDER TABLE - HEADER CELL ||============================== //
 
-const headCells = [
+export const headCells = [
   {
     id: 'trackingNo',
     align: 'left',

@@ -8,6 +8,6 @@ export const sendErrorResponse = (res, code, errorMessage, e = null) =>
 export const sendSuccessResponse = (res, code, data, message = "Successful") =>
   res.status(code).send({
     status: "success",
-    data,
+    ...data,
     message,
   });

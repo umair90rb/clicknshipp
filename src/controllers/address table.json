@@ -1,0 +1,42 @@
+address table
+"address1":"P 927 Street 10 F Block Gulistan Colony 1",
+"city":"Faisalabad",
+"zip":"38000",
+"province":null,
+"country":"Pakistan",
+"address2":null,
+"company":null,
+"latitude":null,
+"longitude":null,
+"country_code":"PK",
+"province_code":null
+npx sequelize-cli model:generate --name Address --attributes address:string,address2:string,city:string,zip:integer,province:string,country:string,company:string,longitude:float,latitude:float,country_code:string,province_code:string
+customer table
+"email":null,
+"first_name":"Muhammad Umair",
+"last_name":"Irshad",
+"note":null,
+"phone":"+923001234567",
+npx sequelize-cli model:generate --name Customer --attributes email:string,first_name:string,last_name:string,note:string,phone:string
+========================
+order_item
+"name":"The Multi-managed Snowboard",
+"price":"629.95",
+"grams":0,
+"quantity":1,
+"product_id":7330694824073,
+"sku":"sku-managed-1",
+"total_discount":"0.00",
+npx sequelize-cli model:generate --name OrderItem --attributes name:string,price:integer,grams:integer,quantity:integer,sku:string,product_id:integer,total_discount:integer
+
+==========================
+order table
+order_number
+total_price
+total_tax
+subtotal_price
+total_price
+total_discounts
+created_at
+npx sequelize-cli model:generate --name Order --attributes order_number:integer,total_price:integer,total_tax:integer,subtotal_price:integer,total_price:integer,total_discounts:integer
+   

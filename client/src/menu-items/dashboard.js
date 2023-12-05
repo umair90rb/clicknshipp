@@ -1,5 +1,5 @@
 // assets
-import { DashboardOutlined, UsergroupAddOutlined } from '@ant-design/icons';
+import { DashboardOutlined } from '@ant-design/icons';
 
 const dashboard = {
   id: 'group-dashboard',
@@ -12,14 +12,6 @@ const dashboard = {
       type: 'item',
       url: '/dashboard',
       icon: DashboardOutlined,
-      breadcrumbs: false
-    },
-    {
-      id: 'users',
-      title: 'Users',
-      type: 'item',
-      url: '/users',
-      icon: UsergroupAddOutlined,
       breadcrumbs: false
     }
   ]
