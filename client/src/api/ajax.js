@@ -1,12 +1,15 @@
 import axios from '../../node_modules/axios/index';
 import { getEnvs } from './getEnv';
-const { REACT_APP_API, REACT_APP_API_PREFIX } = getEnvs();
+const { NODE_ENV, REACT_APP_API, REACT_APP_API_PREFIX } = getEnvs();
 
 const baseURL = `${REACT_APP_API}/${REACT_APP_API_PREFIX}`;
-export const http = axios.create({
-  baseURL,
+const config = {
   timeout: 3000
-});
+};
+if (NODE_ENV !== 'production') {
+  config.baseURL = baseURL;
+}
+export const http = axios.create(config);
 
 http.interceptors.request.use((request) => {
   console.log('url:', request.url, 'headers:', request.headers, 'params:', request.params, 'data:', request.data);
