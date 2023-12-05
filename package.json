@@ -18,7 +18,7 @@
     "build": "npm run clean:server && npm run clean:client && npm run build:client && npm run build:server",
     "db:migrate": "sequelize db:migrate",
     "db:seed": "sequelize db:seed:all",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm run build && npm run db:migrate",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm run build",
     "babel-version": "babel --version",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
