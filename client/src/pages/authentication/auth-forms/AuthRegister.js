@@ -204,7 +204,7 @@ const AuthRegister = () => {
                     name="phone"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="Demo Inc."
+                    placeholder="03001234567"
                     inputProps={{}}
                   />
                   {touched.phone && errors.phone && (

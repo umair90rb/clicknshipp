@@ -1,33 +1,36 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { userIsLoadingSelector, userUsersSelector } from 'store/slices/user/userSelector';
+import { fetchAllCustomer } from 'store/slices/customer/fetchCustomer';
+import ChipsArray from 'components/ChipArray';
 import PropTypes from 'prop-types';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { orderListIsLoadingSelector, orderListSelector } from 'store/slices/order/orderSelector';
-import { fetchAllOrder } from 'store/slices/order/fetchOrder';
-const orderTableHeadCell = [
+import { Box, Table, TableBody, TableCell, IconButton, TableContainer, TableHead, TableRow } from '@mui/material';
+import { EyeFilled } from '@ant-design/icons';
+import { authUserSelector } from 'store/slices/auth/authSelector';
+import { setMessage } from 'store/slices/util/utilSlice';
+import { setUserForUpdate, deleteUser } from 'store/slices/user/userSlice';
+import { userService } from 'api/index';
+import { customerCustomersSelector, customerIsLoadingSelector } from 'store/slices/customer/customerSelector';
+const customerTableCell = [
   {
     id: 'id',
     label: 'ID.'
   },
   {
-    id: 'order_number',
-    label: 'Order#'
+    id: 'name',
+    label: 'Name'
   },
   {
-    id: 'total_price',
-    label: 'Total Amount'
+    id: 'email',
+    label: 'Email'
   },
   {
-    id: 'total_tax',
-    label: 'Tax Amount'
+    id: 'phone',
+    label: 'Phone'
   },
   {
-    id: 'total_discounts',
-    label: 'Discount'
-  },
-  {
-    id: 'createdAt',
-    label: 'Received At'
+    id: 'note',
+    label: 'Note'
   }
 ];
 
@@ -57,17 +60,20 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function OrderTable({ order = 'id', orderBy = 'desc' }) {
+export default function CustomerTable({ order = 'id', orderBy = 'desc', openViewForm }) {
   const dispatch = useDispatch();
-  const listIsLoading = useSelector(orderListIsLoadingSelector);
-  // const orderImportIsLoading = useSelector(orderImportIsLoadingSelector);
-  const orders = useSelector(orderListSelector);
+  const customerIsLoading = useSelector(customerIsLoadingSelector);
+  const customers = useSelector(customerCustomersSelector);
 
   useEffect(() => {
-    dispatch(fetchAllOrder());
+    dispatch(fetchAllCustomer());
   }, []);
 
-  if (listIsLoading) {
+  const handleView = (id) => {
+    openViewForm(id);
+  };
+
+  if (customerIsLoading) {
     return null;
   }
 
@@ -96,49 +102,32 @@ export default function OrderTable({ order = 'id', orderBy = 'desc' }) {
         >
           <TableHead>
             <TableRow>
-              {orderTableHeadCell.map((headCell) => (
+              {customerTableCell.map((headCell) => (
                 <TableCell key={headCell.id} align={'center'} padding={'normal'} sortDirection={orderBy === headCell.id ? order : false}>
                   {headCell.label}
                 </TableCell>
               ))}
-              {/* <TableCell key={'actions'} align={'center'} padding={'normal'} sortDirection={orderBy === 'actions' ? order : false}>
+              <TableCell key={'actions'} align={'center'} padding={'normal'} sortDirection={orderBy === 'actions' ? order : false}>
                 Actions
-              </TableCell> */}
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {stableSort(orders, getComparator(order, orderBy)).map((row, index) => {
+            {stableSort(customers, getComparator(order, orderBy)).map((row, index) => {
               const labelId = `enhanced-table-checkbox-${index}`;
 
               return (
                 <TableRow hover role="checkbox" sx={{ '&:last-child td, &:last-child th': { border: 0 } }} tabIndex={-1} key={row[orderBy]}>
-                  {orderTableHeadCell.map(({ id: cellId }) => (
+                  {customerTableCell.map(({ id: cellId, component: Component, dataKey }) => (
                     <TableCell key={Math.random()} id={labelId} component="th" align="center">
-                      {row[cellId]}
+                      {Component ? <Component data={row[cellId]} dataKey={dataKey} /> : row[cellId]}
                     </TableCell>
                   ))}
-                  {/* <TableCell key={Math.random()} id={labelId} component="th" align="center">
-                    <>
-                      <IconButton
-                        aria-label="delete"
-                        onClick={() => handleDelete(row.id)}
-                        disabled={row['id'] === user.id}
-                        size="large"
-                        color="error"
-                      >
-                        <DeleteOutlined />
-                      </IconButton>
-                      <IconButton
-                        aria-label="update"
-                        onClick={() => handleUpdate(row, index)}
-                        disabled={row['id'] === user.id}
-                        size="large"
-                        color="primary"
-                      >
-                        <EditOutlined />
-                      </IconButton>
-                    </>
-                  </TableCell> */}
+                  <TableCell key={Math.random()} id={labelId} component="th" align="center">
+                    <IconButton aria-label="update" onClick={() => handleView(row.id)} size="large" color="primary">
+                      <EyeFilled />
+                    </IconButton>
+                  </TableCell>
                 </TableRow>
               );
             })}
@@ -149,7 +138,15 @@ export default function OrderTable({ order = 'id', orderBy = 'desc' }) {
   );
 }
 
-OrderTable.propTypes = {
+CustomerTable.propTypes = {
   order: PropTypes.oneOf(['asc', 'desc']).isRequired,
-  orderBy: PropTypes.string.isRequired
+  orderBy: PropTypes.string.isRequired,
+  headCells: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string,
+      label: PropTypes.string,
+      dataKey: PropTypes.string,
+      component: PropTypes.string
+    })
+  ).isRequired
 };

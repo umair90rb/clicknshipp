@@ -1,9 +1,8 @@
-// assets
-import { DashboardOutlined } from '@ant-design/icons';
+import { DashboardOutlined, FileSearchOutlined } from '@ant-design/icons';
 
 const dashboard = {
   id: 'group-dashboard',
-  title: 'Main',
+  title: 'Reproting',
   type: 'group',
   children: [
     {
@@ -12,6 +11,14 @@ const dashboard = {
       type: 'item',
       url: '/dashboard',
       icon: DashboardOutlined,
+      breadcrumbs: false
+    },
+    {
+      id: 'reporting',
+      title: 'Reporting',
+      type: 'item',
+      url: '/dashboard',
+      icon: FileSearchOutlined,
       breadcrumbs: false
     }
   ]

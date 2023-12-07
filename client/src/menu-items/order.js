@@ -1,5 +1,5 @@
 // assets
-import { PlusCircleOutlined, CodeSandboxOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, CodeSandboxOutlined, CustomerServiceOutlined } from '@ant-design/icons';
 const order = {
   id: 'order-dashboard',
   title: 'Order Mangement',
@@ -19,6 +19,14 @@ const order = {
       type: 'item',
       url: '/order/new',
       icon: PlusCircleOutlined,
+      breadcrumbs: false
+    },
+    {
+      id: 'customer/all',
+      title: 'Customers',
+      type: 'item',
+      url: '/customer/all',
+      icon: CustomerServiceOutlined,
       breadcrumbs: false
     }
   ]

@@ -1,4 +1,3 @@
-// project import
 import dashboard from './dashboard';
 import order from './order';
 import user from './user';

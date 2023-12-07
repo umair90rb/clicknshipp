@@ -1,6 +1,7 @@
 import authRouter from "./authRouter";
 import adminRouter from "./adminRouter";
 import userRouter from "./userRoute";
+import customerRouter from "./customerRouter";
 import roleRouter from "./roleRouter";
 import orderRouter from "./orderRouter";
 import permissionRouter from "./permissionRouter";
@@ -13,6 +14,7 @@ export default (app) => {
 
   app.use("/api/v1/auth", authRouter);
   app.use("/api/v1/user", userRouter);
+  app.use("/api/v1/customer", customerRouter);
   app.use("/api/v1/role", roleRouter);
   app.use("/api/v1/permission", permissionRouter);
   app.use("/api/v1/order", orderRouter);

@@ -6,10 +6,11 @@ import { composeWithDevTools } from '@redux-devtools/extension';
 import menu from './slices/menu';
 import auth from './slices/auth/authSlice';
 import user from './slices/user/userSlice';
+import customer from './slices/customer/customerSlice';
 import order from './slices/order/orderSlice';
 import util from './slices/util/utilSlice';
 // ==============================|| COMBINE REDUCERS ||============================== //
 
-const reducers = combineReducers({ menu, auth, user, util, order }, composeWithDevTools());
+const reducers = combineReducers({ menu, auth, user, util, order, customer }, composeWithDevTools());
 
 export default reducers;

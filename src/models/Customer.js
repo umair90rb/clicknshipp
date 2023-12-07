@@ -26,6 +26,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      name: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return `${this.first_name} ${this.last_name}`;
+        },
+        set(value) {
+          throw new Error("Do not try to set the `name` value!");
+        },
+      },
       note: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -43,6 +52,11 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "Customer",
       tableName: "Customers",
+      defaultScope: {
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },
+      },
     }
   );
 
