@@ -4,16 +4,17 @@ import MainCard from 'components/MainCard';
 import { useSelector } from 'react-redux';
 import CustomerTable from './CustomerTable';
 import { customerCustomersSelector } from 'store/slices/customer/customerSelector';
+import CustomerDetail from './CustomerDetail';
 
 const style = {
   position: 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
+  width: 800,
   bgcolor: 'background.paper',
   boxShadow: 24,
-  p: 4
+  p: 3
 };
 
 const CustomerManagement = () => {
@@ -26,6 +27,8 @@ const CustomerManagement = () => {
   useEffect(() => {
     if (viewCustomerId) setViewCustomerId(null);
   }, [customers]);
+
+  // return <CustomerDetail />;
 
   return (
     <>
@@ -46,7 +49,7 @@ const CustomerManagement = () => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Typography>Here is the customer details</Typography>
+          <CustomerDetail id={viewCustomerId} />
         </Box>
       </Modal>
     </>

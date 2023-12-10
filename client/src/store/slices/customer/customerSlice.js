@@ -1,18 +1,28 @@
 import { createSlice } from '@reduxjs/toolkit';
 import fetchStatus from 'constants/fetchStatuses';
-import { fetchAllCustomer } from './fetchCustomer';
+import { fetchAllCustomer, fetchCustomer } from './fetchCustomer';
 
 const initialState = {
   customers: [],
   fetchStatus: fetchStatus.IDLE,
-  error: null
+  error: null,
+  view: {
+    fetchStatus: fetchStatus.IDLE,
+    error: null,
+    data: null
+  }
 };
 
 const customerSlice = createSlice({
   name: 'customer',
   initialState,
   reducers: {
-    clear: () => initialState
+    clear: () => initialState,
+    clearView: (state, action) => {
+      state.view.fetchStatus = fetchStatus.IDLE;
+      state.view.data = null;
+      state.view.error = null;
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(fetchAllCustomer.pending, (state, _action) => {
@@ -29,7 +39,23 @@ const customerSlice = createSlice({
       state.fetchStatus = fetchStatus.FAILURE;
       state.error = action.payload.error;
     });
+
+    builder.addCase(fetchCustomer.pending, (state, _action) => {
+      state.view.fetchStatus = fetchStatus.REQUEST;
+    });
+    builder.addCase(fetchCustomer.fulfilled, (state, action) => {
+      const { data } = action.payload;
+      state.view.fetchStatus = fetchStatus.SUCCESS;
+      state.view.data = data.customer;
+      state.view.data.orders = data.orders;
+      state.view.error = null;
+    });
+    builder.addCase(fetchCustomer.rejected, (state, action) => {
+      state.view.data = null;
+      state.fetchStatus = fetchStatus.FAILURE;
+      state.view.error = action.payload;
+    });
   }
 });
-export const { clear } = customerSlice.actions;
+export const { clear, clearView } = customerSlice.actions;
 export default customerSlice.reducer;
