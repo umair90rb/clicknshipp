@@ -29,7 +29,7 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function CustomView({ headCells, data, order, orderBy }) {
+export default function CustomView({ headCells, data, order = 'asc', orderBy = 'id' }) {
   return (
     <Box>
       <TableContainer

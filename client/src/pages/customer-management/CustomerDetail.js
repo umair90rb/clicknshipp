@@ -131,7 +131,7 @@ const CustomerDetail = ({ id }) => {
       </Stack>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <CustomView data={orders} headCells={customerOrderHeadCells} />
+          <CustomView order="desc" orderBy="id" data={orders} headCells={customerOrderHeadCells} />
         </Grid>
       </Grid>
     </>
