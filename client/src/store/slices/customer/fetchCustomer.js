@@ -2,12 +2,13 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { customerService } from 'api/index';
 
 const fetchAllCustomer = createAsyncThunk('customers/fetch', (_, { rejectWithValue }) =>
-  customerService.fetchAllCustomer().catch((error) => rejectWithValue(error.response.data))
+  customerService.fetchAllCustomer().catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
 const fetchCustomer = createAsyncThunk(
   'customer/fetch',
-  async ({ id }, { rejectWithValue }) => await customerService.fetchCustomer(id).catch((error) => rejectWithValue(error.response.data))
+  async ({ id }, { rejectWithValue }) =>
+    await customerService.fetchCustomer(id).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
 // const fetchCreateUser = createAsyncThunk(

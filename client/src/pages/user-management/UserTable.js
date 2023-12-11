@@ -126,7 +126,7 @@ export default function UserTable({ order = 'id', orderBy = 'desc', openUpateFor
             </TableRow>
           </TableHead>
           <TableBody>
-            {stableSort(users, getComparator(order, orderBy)).map((row, index) => {
+            {stableSort(users || [], getComparator(order, orderBy)).map((row, index) => {
               const labelId = `enhanced-table-checkbox-${index}`;
 
               return (

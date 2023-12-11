@@ -63,7 +63,7 @@ function stableSort(array, comparator) {
 export default function CustomerTable({ order = 'id', orderBy = 'desc', openViewForm }) {
   const dispatch = useDispatch();
   const customerIsLoading = useSelector(customerIsLoadingSelector);
-  const customers = useSelector(customerCustomersSelector);
+  const customers = useSelector(customerCustomersSelector) || [];
 
   useEffect(() => {
     dispatch(fetchAllCustomer());
@@ -113,7 +113,7 @@ export default function CustomerTable({ order = 'id', orderBy = 'desc', openView
             </TableRow>
           </TableHead>
           <TableBody>
-            {stableSort(customers, getComparator(order, orderBy)).map((row, index) => {
+            {stableSort(customers || [], getComparator(order, orderBy)).map((row, index) => {
               const labelId = `enhanced-table-checkbox-${index}`;
 
               return (

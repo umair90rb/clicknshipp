@@ -107,7 +107,7 @@ export default function OrderTable({ order = 'id', orderBy = 'desc' }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {stableSort(orders, getComparator(order, orderBy)).map((row, index) => {
+            {stableSort(orders || [], getComparator(order, orderBy)).map((row, index) => {
               const labelId = `enhanced-table-checkbox-${index}`;
 
               return (

@@ -111,7 +111,7 @@ const CustomerDetail = ({ id }) => {
           <Typography variant="body1">Email: {email || 'None'}</Typography>
         </Grid>
         <Grid item xs={4}>
-          <Typography variant="body1">Phone: {phone}</Typography>
+          <Typography variant="body1">Phone: {phone || 'None'}</Typography>
         </Grid>
       </Grid>
       <Divider />
@@ -131,7 +131,7 @@ const CustomerDetail = ({ id }) => {
       </Stack>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <CustomView order="desc" orderBy="id" data={orders} headCells={customerOrderHeadCells} />
+          <CustomView order="desc" orderBy="id" data={orders || []} headCells={customerOrderHeadCells} />
         </Grid>
       </Grid>
     </>
