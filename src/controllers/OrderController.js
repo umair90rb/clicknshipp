@@ -49,6 +49,8 @@ export default {
   async orders(req, res) {
     try {
       const orders = await Order.findAll({
+        limit: 30,
+        order: [["createdAt", "DESC"]],
         attributes: {
           exclude: ["data", "CustomerId", "updatedAt"],
         },

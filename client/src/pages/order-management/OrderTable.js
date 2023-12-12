@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { orderListIsLoadingSelector, orderListSelector } from 'store/slices/order/orderSelector';
 import { fetchAllOrder } from 'store/slices/order/fetchOrder';
+import location from 'utils/location';
 const orderTableHeadCell = [
   {
     id: 'id',
@@ -59,6 +61,7 @@ function stableSort(array, comparator) {
 
 export default function OrderTable({ order = 'id', orderBy = 'desc' }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const listIsLoading = useSelector(orderListIsLoadingSelector);
   // const orderImportIsLoading = useSelector(orderImportIsLoadingSelector);
   const orders = useSelector(orderListSelector);
@@ -111,7 +114,14 @@ export default function OrderTable({ order = 'id', orderBy = 'desc' }) {
               const labelId = `enhanced-table-checkbox-${index}`;
 
               return (
-                <TableRow hover role="checkbox" sx={{ '&:last-child td, &:last-child th': { border: 0 } }} tabIndex={-1} key={row[orderBy]}>
+                <TableRow
+                  onClick={() => navigate(location.viewOrder(row['id']))}
+                  hover
+                  role="checkbox"
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  tabIndex={-1}
+                  key={row[orderBy]}
+                >
                   {orderTableHeadCell.map(({ id: cellId }) => (
                     <TableCell key={Math.random()} id={labelId} component="th" align="center">
                       {row[cellId]}

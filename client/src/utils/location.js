@@ -20,6 +20,8 @@ class Location {
 
   allOrders = () => `${this.pathname}order/all`;
   createOrder = () => `${this.pathname}order/new`;
+  viewOrder = (id) => `${this.pathname}order/${id}`;
+
   users = () => `${this.pathname}users`;
 }
 
