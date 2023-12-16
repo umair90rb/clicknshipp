@@ -1,6 +1,11 @@
 import authRouter from "./authRouter";
 import adminRouter from "./adminRouter";
 import userRouter from "./userRoute";
+import itemRouter from "./itemRouter";
+import stockRouter from "./stockRouter";
+import supplierRouter from "./supplierRouter";
+import categoryRouter from "./categoryRouter";
+import brandRouter from "./brandRouter";
 import customerRouter from "./customerRouter";
 import roleRouter from "./roleRouter";
 import orderRouter from "./orderRouter";
@@ -14,6 +19,11 @@ export default (app) => {
 
   app.use("/api/v1/auth", authRouter);
   app.use("/api/v1/user", userRouter);
+  app.use("/api/v1/item", itemRouter);
+  app.use("/api/v1/stock", stockRouter);
+  app.use("/api/v1/supplier", supplierRouter);
+  app.use("/api/v1/category", categoryRouter);
+  app.use("/api/v1/brand", brandRouter);
   app.use("/api/v1/customer", customerRouter);
   app.use("/api/v1/role", roleRouter);
   app.use("/api/v1/permission", permissionRouter);
