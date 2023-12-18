@@ -1,13 +1,27 @@
-import { Op } from "sequelize";
+import { Op, Sequelize } from "sequelize";
 import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 
-const { Brand } = model;
+const { Brand, Item } = model;
 
 export default {
   async brands(req, res) {
     try {
-      const brands = await Brand.scope("clean").findAll();
+      const brands = await Brand.scope("clean").findAll({
+        attributes: {
+          include: [
+            [Sequelize.fn("COUNT", Sequelize.col("items.id")), "itemCount"],
+          ],
+        },
+        include: [
+          {
+            model: Item,
+            as: "items",
+            attributes: [],
+          },
+        ],
+        group: ["Brand.id"],
+      });
       return sendSuccessResponse(res, 200, { brands }, "All brands");
     } catch (e) {
       console.error(e);

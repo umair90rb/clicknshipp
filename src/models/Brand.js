@@ -3,7 +3,10 @@ import { Model } from "sequelize";
 module.exports = (sequelize, DataTypes) => {
   class Brand extends Model {
     static associate(models) {
-      Brand.hasMany(models.Item);
+      Brand.hasMany(models.Item, {
+        as: "items",
+        foreignKey: "brand_id",
+      });
     }
   }
   Brand.init(

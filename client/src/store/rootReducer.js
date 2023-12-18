@@ -9,8 +9,16 @@ import user from './slices/user/userSlice';
 import customer from './slices/customer/customerSlice';
 import order from './slices/order/orderSlice';
 import util from './slices/util/utilSlice';
+import brand from './slices/brand/brandSlice';
+import category from './slices/category/categorySlice';
+import item from './slices/item/itemSlice';
+import supplier from './slices/supplier/supplierSlice';
+import stock from './slices/stock/stockSlice';
 // ==============================|| COMBINE REDUCERS ||============================== //
 
-const reducers = combineReducers({ menu, auth, user, util, order, customer }, composeWithDevTools());
+const reducers = combineReducers(
+  { menu, auth, user, util, order, customer, supplier, item, stock, brand, category },
+  composeWithDevTools()
+);
 
 export default reducers;

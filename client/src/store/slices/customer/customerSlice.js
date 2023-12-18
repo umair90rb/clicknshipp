@@ -37,7 +37,7 @@ const customerSlice = createSlice({
     builder.addCase(fetchAllCustomer.rejected, (state, action) => {
       state.customers = [];
       state.fetchStatus = fetchStatus.FAILURE;
-      state.error = action.payload.error;
+      state.error = action.payload;
     });
 
     builder.addCase(fetchCustomer.pending, (state, _action) => {

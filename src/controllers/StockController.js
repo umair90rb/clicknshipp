@@ -14,19 +14,7 @@ export default {
           {
             model: Item,
             as: "item",
-            attributes: ["name"],
-            include: [
-              {
-                model: Brand,
-                as: "brand",
-                attributes: ["name"],
-              },
-              {
-                model: Category,
-                as: "category",
-                attributes: ["name"],
-              },
-            ],
+            attributes: ["name", "id"],
           },
         ],
       });
@@ -55,19 +43,7 @@ export default {
           {
             model: Item,
             as: "item",
-            attributes: ["name"],
-            include: [
-              {
-                model: Brand,
-                as: "brand",
-                attributes: ["name"],
-              },
-              {
-                model: Category,
-                as: "category",
-                attributes: ["name"],
-              },
-            ],
+            attributes: ["name", ["id", "item_id"]],
           },
         ],
       });

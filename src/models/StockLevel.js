@@ -2,7 +2,12 @@
 import { Model } from "sequelize";
 module.exports = (sequelize, DataTypes) => {
   class StockLevel extends Model {
-    static associate(models) {}
+    static associate(models) {
+      StockLevel.belongsTo(models.Item, {
+        as: "item",
+        foreignKey: "item_id",
+      });
+    }
   }
   StockLevel.init(
     {
