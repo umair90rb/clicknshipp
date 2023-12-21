@@ -7,7 +7,7 @@ const createItemSchema = Joi.object({
   cost_price: Joi.number(),
   category: Joi.number().required(),
   brand: Joi.number().required(),
-  supplier: Joi.number(),
+  supplier: Joi.number().required(),
 });
 
 const updateItemSchema = Joi.object({

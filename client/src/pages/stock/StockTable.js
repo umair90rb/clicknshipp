@@ -2,13 +2,15 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton } from '@mui/material';
+import { ClockCircleOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import location from 'utils/location';
 import { stockIsLoadingSelector, stockStocksSelector } from 'store/slices/stock/stockSelector';
 import { fetchAllStock } from 'store/slices/stock/fetchStock';
+import CenterCircularLoader from 'components/CenterCircularLoader';
 const stockTableCell = [
   {
-    id: ['item', 'id'],
+    id: ['item', 'item_id'],
     label: 'ID'
   },
   {
@@ -47,7 +49,7 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function StockTable({ order = 'id', orderBy = 'desc' }) {
+export default function StockTable({ order = 'desc', orderBy = 'id', receiveStock, showHistory }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const stockIsLoading = useSelector(stockIsLoadingSelector);
@@ -58,7 +60,7 @@ export default function StockTable({ order = 'id', orderBy = 'desc' }) {
   }, []);
 
   if (stockIsLoading) {
-    return null;
+    <CenterCircularLoader />;
   }
 
   return (
@@ -91,9 +93,9 @@ export default function StockTable({ order = 'id', orderBy = 'desc' }) {
                   {headCell.label}
                 </TableCell>
               ))}
-              {/* <TableCell key={'actions'} align={'center'} padding={'normal'} sortDirection={orderBy === 'actions' ? order : false}>
+              <TableCell key={'actions'} align={'center'} padding={'normal'} sortDirection={orderBy === 'actions' ? order : false}>
                 Actions
-              </TableCell> */}
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -101,41 +103,22 @@ export default function StockTable({ order = 'id', orderBy = 'desc' }) {
               const labelId = `enhanced-table-checkbox-${index}`;
 
               return (
-                <TableRow
-                  onClick={() => navigate(location.viewOrder(row['id']))}
-                  hover
-                  role="checkbox"
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  tabIndex={-1}
-                  key={row[orderBy]}
-                >
+                <TableRow hover role="checkbox" sx={{ '&:last-child td, &:last-child th': { border: 0 } }} tabIndex={-1} key={row[orderBy]}>
                   {stockTableCell.map(({ id: cellId }) => (
                     <TableCell key={Math.random()} id={labelId} component="th" align="center">
                       {Array.isArray(cellId) ? row[cellId[0]][cellId[1]] : row[cellId]}
                     </TableCell>
                   ))}
-                  {/* <TableCell key={Math.random()} id={labelId} component="th" align="center">
+                  <TableCell key={Math.random()} id={labelId} component="th" align="center">
                     <>
-                      <IconButton
-                        aria-label="delete"
-                        onClick={() => handleDelete(row.id)}
-                        disabled={row['id'] === user.id}
-                        size="large"
-                        color="error"
-                      >
-                        <DeleteOutlined />
+                      <IconButton aria-label="history" onClick={() => showHistory(row.id)} size="large" color="success">
+                        <ClockCircleOutlined />
                       </IconButton>
-                      <IconButton
-                        aria-label="update"
-                        onClick={() => handleUpdate(row, index)}
-                        disabled={row['id'] === user.id}
-                        size="large"
-                        color="primary"
-                      >
-                        <EditOutlined />
+                      <IconButton aria-label="receive stock" onClick={() => receiveStock(row.item.item_id)} size="large" color="primary">
+                        <ArrowLeftOutlined />
                       </IconButton>
                     </>
-                  </TableCell> */}
+                  </TableCell>
                 </TableRow>
               );
             })}
@@ -148,5 +131,7 @@ export default function StockTable({ order = 'id', orderBy = 'desc' }) {
 
 StockTable.propTypes = {
   order: PropTypes.oneOf(['asc', 'desc']).isRequired,
-  orderBy: PropTypes.string.isRequired
+  orderBy: PropTypes.string.isRequired,
+  showHistory: PropTypes.func.isRequired,
+  receiveStock: PropTypes.func.isRequired
 };

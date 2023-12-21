@@ -12,7 +12,17 @@ const supplierSlice = createSlice({
   name: 'supplier',
   initialState,
   reducers: {
-    clear: () => initialState
+    clear: () => initialState,
+    createSupplier: (state, action) => {
+      state.suppliers = [...state.suppliers, action.payload];
+    },
+    updateSupplier: (state, action) => {
+      const index = state.suppliers.indexOf((supplier) => supplier.id === action.payload.id);
+      state.suppliers = state.suppliers.splice(index, 1, action.payload);
+    },
+    deleteSupplier: (state, action) => {
+      state.suppliers = state.suppliers.filter((supplier) => supplier.id !== action.payload.id);
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(fetchAllSupplier.pending, (state, _action) => {
@@ -31,5 +41,5 @@ const supplierSlice = createSlice({
     });
   }
 });
-export const { clear } = supplierSlice.actions;
+export const { clear, createSupplier } = supplierSlice.actions;
 export default supplierSlice.reducer;

@@ -12,6 +12,16 @@ const stockSlice = createSlice({
   name: 'stock',
   initialState,
   reducers: {
+    createStock: (state, action) => {
+      state.stocks = [...state.stocks, action.payload];
+    },
+    updateStock: (state, action) => {
+      const index = state.stocks.indexOf((stock) => stock.id === action.payload.id);
+      state.stocks.splice(index, 1, action.payload);
+    },
+    deleteStock: (state, action) => {
+      state.stocks = state.stocks.filter((stock) => stock.id !== action.payload.id);
+    },
     clear: () => initialState
   },
   extraReducers: (builder) => {
@@ -31,5 +41,5 @@ const stockSlice = createSlice({
     });
   }
 });
-export const { clear } = stockSlice.actions;
+export const { createStock, updateStock, deleteStock, clear } = stockSlice.actions;
 export default stockSlice.reducer;

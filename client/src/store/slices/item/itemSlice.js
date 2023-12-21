@@ -12,6 +12,16 @@ const itemSlice = createSlice({
   name: 'item',
   initialState,
   reducers: {
+    createItem: (state, action) => {
+      state.items.push(action.payload);
+    },
+    updateItem: (state, action) => {
+      const index = state.items.indexOf((items) => items.id === action.payload.id);
+      state.items = state.items.splice(index, 1, action.payload);
+    },
+    deleteItem: (state, action) => {
+      state.items = state.items.filter((items) => items.id !== action.payload.id);
+    },
     clear: () => initialState
   },
   extraReducers: (builder) => {
@@ -31,5 +41,5 @@ const itemSlice = createSlice({
     });
   }
 });
-export const { clear } = itemSlice.actions;
+export const { createItem, updateItem, deleteItem, clear } = itemSlice.actions;
 export default itemSlice.reducer;

@@ -14,7 +14,7 @@ const fetchSupplier = createAsyncThunk(
 const fetchCreateSupplier = createAsyncThunk(
   'supplier/create/fetch',
   async ({ body }, { rejectWithValue }) =>
-    await supplierService.fetchCreateSupplier(body).catch((error) => rejectWithValue(error.response.data || error.message))
+    await supplierService.fetchAddSupplier(body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
 const fetchUpdateSupplier = createAsyncThunk(

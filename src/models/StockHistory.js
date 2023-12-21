@@ -5,6 +5,13 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       StockHistory.belongsTo(models.Item, {
         foreignKey: "item_id",
+        as: "item",
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+      });
+      StockHistory.belongsTo(models.StockLevel, {
+        foreignKey: "stock_id",
+        as: "stock",
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       });

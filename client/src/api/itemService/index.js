@@ -7,7 +7,7 @@ class ItemService extends Ajax {
 
   fetchItem = (id) => this.getJson(`${this.pathname}/${id}`);
 
-  fetchAddItem = (data) => this.post(`${this.pathname}`, data);
+  fetchCreateItem = (data) => this.post(`${this.pathname}`, data);
 
   fetchUpdateItem = (id, data) => this.put(`${this.pathname}/${id}`, data);
 

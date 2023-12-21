@@ -70,7 +70,13 @@ export default function CustomView({ headCells, data, order = 'asc', orderBy = '
                 <TableRow hover role="checkbox" sx={{ '&:last-child td, &:last-child th': { border: 0 } }} tabIndex={-1} key={row[orderBy]}>
                   {headCells.map(({ id: cellId, component: Component, dataKey }) => (
                     <TableCell key={Math.random()} id={labelId} component="th" align="center">
-                      {Component ? <Component data={row[cellId]} dataKey={dataKey} /> : row[cellId]}
+                      {Component ? (
+                        <Component data={row[cellId]} dataKey={dataKey} />
+                      ) : Array.isArray(cellId) ? (
+                        row[cellId[0]][cellId[1]]
+                      ) : (
+                        row[cellId]
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>

@@ -59,7 +59,7 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function OrderTable({ order = 'id', orderBy = 'desc' }) {
+export default function OrderTable({ order = 'desc', orderBy = 'id' }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const listIsLoading = useSelector(orderListIsLoadingSelector);

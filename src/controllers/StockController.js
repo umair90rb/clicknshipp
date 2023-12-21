@@ -9,12 +9,12 @@ export default {
   async stocks(req, res) {
     try {
       const stocks = await StockLevel.findAll({
-        attributes: ["level"],
+        attributes: ["id", "level"],
         include: [
           {
             model: Item,
             as: "item",
-            attributes: ["name", "id"],
+            attributes: ["name", ["id", "item_id"]],
           },
         ],
       });
@@ -34,24 +34,25 @@ export default {
       );
     }
   },
+
   async stock(req, res) {
     try {
       const { id } = req.params;
-      const item = await Item.findByPk(id, {
-        attributes: ["level"],
+      const stock = await StockLevel.findByPk(id, {
+        attributes: ["id", "level"],
         include: [
           {
-            model: Item,
-            as: "item",
-            attributes: ["name", ["id", "item_id"]],
+            model: StockHistory,
+            as: "history",
+            attributes: ["expiry", "amount", "comment", "type", "createdAt"],
           },
         ],
       });
-      if (item) {
+      if (stock) {
         return sendSuccessResponse(
           res,
           200,
-          { item },
+          { stock },
           "Stock level of item with id"
         );
       }
@@ -85,6 +86,16 @@ export default {
         comment,
         expiry,
         type: "Stock added",
+      });
+      await stock.reload({
+        attributes: ["level"],
+        include: [
+          {
+            model: Item,
+            as: "item",
+            attributes: ["name", "id"],
+          },
+        ],
       });
       return sendSuccessResponse(
         res,

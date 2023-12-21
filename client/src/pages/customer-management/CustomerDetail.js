@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useLayoutEffect } from 'react';
 import { fetchCustomer } from 'store/slices/customer/fetchCustomer';
 import { customerViewDataSelector, customerViewErrorSelector, customerViewIsLoadingSelector } from 'store/slices/customer/customerSelector';
+import CenterCircularLoader from 'components/CenterCircularLoader';
 
 const customerOrderHeadCells = [
   {
@@ -49,13 +50,7 @@ const CustomerDetail = ({ id }) => {
   }, []);
 
   if (customerViewIsLoading) {
-    return (
-      <Grid container spacing={2} minHeight={500}>
-        <Grid xs display="flex" justifyContent="center" alignItems="center">
-          <CircularProgress />
-        </Grid>
-      </Grid>
-    );
+    return <CenterCircularLoader />;
   }
 
   const renderAddresses = (addresses) =>

@@ -61,7 +61,7 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function UserTable({ order = 'id', orderBy = 'desc', openUpateForm }) {
+export default function UserTable({ order = 'desc', orderBy = 'id', openUpateForm }) {
   const dispatch = useDispatch();
   const userIsLoading = useSelector(userIsLoadingSelector);
   const users = useSelector(userUsersSelector);

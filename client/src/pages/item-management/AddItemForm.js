@@ -1,0 +1,295 @@
+import { useEffect, useRef, useState } from 'react';
+import {
+  Box,
+  Button,
+  MenuItem,
+  Select,
+  FormControl,
+  FormHelperText,
+  Grid,
+  ListItemText,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  OutlinedInput,
+  Stack,
+  Typography,
+  Checkbox,
+  Chip
+} from '@mui/material';
+import * as Yup from 'yup';
+import { Formik } from 'formik';
+import AnimateButton from 'components/@extended/AnimateButton';
+import { batch, useDispatch, useSelector } from 'react-redux';
+import { fetchAllSupplier, fetchCreateSupplier } from 'store/slices/supplier/fetchSupplier';
+import { supplierIsLoadingSelector, supplierSuppliersSelector } from 'store/slices/supplier/supplierSelector';
+import { categoryCategoriesSelector, categoryIsLoadingSelector } from 'store/slices/category/categorySelector';
+import { brandBrandsSelector, brandIsLoadingSelector } from 'store/slices/brand/brandSelector';
+import { fetchAllCategory } from 'store/slices/category/fetchCategory';
+import { fetchAllBrand } from 'store/slices/brand/fetchBrand';
+import { fetchCreateItem } from 'store/slices/item/fetchItem';
+import { createItem } from 'store/slices/item/itemSlice';
+import CenterCircularLoader from 'components/CenterCircularLoader';
+
+// ============================|| FIREBASE - REGISTER ||============================ //
+
+const AddItemForm = () => {
+  const dispatch = useDispatch();
+  const formRef = useRef();
+
+  const suppliersIsLoading = useSelector(supplierIsLoadingSelector);
+  const suppliers = useSelector(supplierSuppliersSelector);
+
+  const categoriesIsLoading = useSelector(categoryIsLoadingSelector);
+  const categories = useSelector(categoryCategoriesSelector);
+
+  const brandsIsLoading = useSelector(brandIsLoadingSelector);
+  const brands = useSelector(brandBrandsSelector);
+
+  useEffect(function () {
+    batch(() => {
+      dispatch(fetchAllSupplier());
+      dispatch(fetchAllCategory());
+      dispatch(fetchAllBrand());
+    });
+  }, []);
+
+  const handleSubmit = async (values, { setErrors, setStatus, setSubmitting }) => {
+    console.log(values);
+    dispatch(fetchCreateItem({ body: values })).then((action) => {
+      console.log(action, fetchCreateSupplier.fulfilled);
+      if (action.type === 'item/create/fetch/fulfilled') {
+        dispatch(createItem(action.payload.data.item));
+      } else {
+        setErrors({ submit: action.payload.error || 'Something goes wrong, please try again' });
+      }
+    });
+  };
+
+  if (categoriesIsLoading || brandsIsLoading || suppliersIsLoading) {
+    return <CenterCircularLoader />;
+  }
+
+  return (
+    <>
+      <Formik
+        innerRef={formRef}
+        initialValues={{
+          name: '',
+          code: '',
+          unit_price: '',
+          cost_price: '',
+          supplier: '',
+          category: '',
+          brand: ''
+        }}
+        validationSchema={Yup.object().shape({
+          name: Yup.string().max(255).required('Item name is required'),
+          code: Yup.string().max(255).required('Code is required'),
+          unit_price: Yup.number().required('Unit price is required'),
+          cost_price: Yup.number().required(),
+          supplier: Yup.number().required(),
+          category: Yup.number().required(),
+          brand: Yup.number().required()
+        })}
+        onSubmit={handleSubmit}
+      >
+        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
+          <form noValidate onSubmit={handleSubmit}>
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="name-signup">Item Name</InputLabel>
+                  <OutlinedInput
+                    id="name-login"
+                    type="text"
+                    value={values.name}
+                    name="name"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="Join On Plus"
+                    fullWidth
+                    error={Boolean(touched.name && errors.name)}
+                  />
+                  {touched.name && errors.name && (
+                    <FormHelperText error id="helper-text-name-signup">
+                      {errors.name}
+                    </FormHelperText>
+                  )}
+                </Stack>
+              </Grid>
+              <Grid item xs={12}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="code-signup">code</InputLabel>
+                  <OutlinedInput
+                    fullWidth
+                    error={Boolean(touched.code && errors.code)}
+                    id="code-signup"
+                    type="text"
+                    value={values.code}
+                    name="code"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="008555678"
+                    inputProps={{}}
+                  />
+                  {touched.code && errors.code && (
+                    <FormHelperText error id="helper-text-code-signup">
+                      {errors.code}
+                    </FormHelperText>
+                  )}
+                </Stack>
+              </Grid>
+              <Grid item xs={12}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="unit_price-signup">Unit Price</InputLabel>
+                  <OutlinedInput
+                    fullWidth
+                    error={Boolean(touched.unit_price && errors.unit_price)}
+                    id="unit_price-login"
+                    type="number"
+                    value={values.unit_price}
+                    name="unit_price"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="120"
+                    inputProps={{}}
+                  />
+                  {touched.unit_price && errors.unit_price && (
+                    <FormHelperText error id="helper-text-unit_price-signup">
+                      {errors.unit_price}
+                    </FormHelperText>
+                  )}
+                </Stack>
+              </Grid>
+              <Grid item xs={12}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="cost_price-signup">Cost Price</InputLabel>
+                  <OutlinedInput
+                    fullWidth
+                    error={Boolean(touched.cost_price && errors.cost_price)}
+                    id="cost_price-signup"
+                    type="number"
+                    value={values.cost_price}
+                    name="cost_price"
+                    onBlur={handleBlur}
+                    onChange={(e) => {
+                      handleChange(e);
+                    }}
+                    placeholder="ABC Inc"
+                  />
+                  {touched.cost_price && errors.cost_price && (
+                    <FormHelperText error id="helper-text-cost_price-signup">
+                      {errors.cost_price}
+                    </FormHelperText>
+                  )}
+                </Stack>
+              </Grid>
+              {!categoriesIsLoading && (
+                <Grid item xs={12}>
+                  <Stack spacing={1}>
+                    <InputLabel htmlFor="category-signup">Category</InputLabel>
+                    <Select
+                      fullWidth
+                      error={Boolean(touched.category && errors.category)}
+                      id="category-signup"
+                      value={values.category}
+                      name="category"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      inputProps={{}}
+                      labelId="category-signup"
+                    >
+                      {categories.map(({ id, name }, index) => (
+                        <MenuItem key={index} value={id}>
+                          <ListItemText primary={name} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {touched.category && errors.category && (
+                      <FormHelperText error id="helper-text-category-signup">
+                        {errors.category}
+                      </FormHelperText>
+                    )}
+                  </Stack>
+                </Grid>
+              )}
+              {!brandsIsLoading && (
+                <Grid item xs={12}>
+                  <Stack spacing={1}>
+                    <InputLabel htmlFor="brand-signup">Brand</InputLabel>
+                    <Select
+                      fullWidth
+                      error={Boolean(touched.brand && errors.brand)}
+                      id="brand-signup"
+                      value={values.brand}
+                      name="brand"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      inputProps={{}}
+                      labelId="brand-signup"
+                    >
+                      {brands.map(({ id, name }, index) => (
+                        <MenuItem key={index} value={id}>
+                          <ListItemText primary={name} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {touched.brand && errors.brand && (
+                      <FormHelperText error id="helper-text-brand-signup">
+                        {errors.brand}
+                      </FormHelperText>
+                    )}
+                  </Stack>
+                </Grid>
+              )}
+              {!suppliersIsLoading && (
+                <Grid item xs={12}>
+                  <Stack spacing={1}>
+                    <InputLabel htmlFor="supplier-signup">Suppliers</InputLabel>
+                    <Select
+                      fullWidth
+                      error={Boolean(touched.supplier && errors.supplier)}
+                      id="supplier-signup"
+                      value={values.supplier}
+                      name="supplier"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      inputProps={{}}
+                      labelId="supplier-signup"
+                    >
+                      {suppliers.map(({ id, name }, index) => (
+                        <MenuItem key={index} value={id}>
+                          <ListItemText primary={name} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {touched.supplier && errors.supplier && (
+                      <FormHelperText error id="helper-text-supplier-signup">
+                        {errors.supplier}
+                      </FormHelperText>
+                    )}
+                  </Stack>
+                </Grid>
+              )}
+              {errors.submit && (
+                <Grid item xs={12}>
+                  <FormHelperText error>{errors.submit}</FormHelperText>
+                </Grid>
+              )}
+              <Grid item xs={12}>
+                <AnimateButton>
+                  <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
+                    {'Create Supplier Account'}
+                  </Button>
+                </AnimateButton>
+              </Grid>
+            </Grid>
+          </form>
+        )}
+      </Formik>
+    </>
+  );
+};
+
+export default AddItemForm;

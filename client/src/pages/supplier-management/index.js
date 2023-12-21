@@ -3,6 +3,9 @@ import { Button, Grid, Typography, Modal, Box } from '@mui/material';
 import MainCard from 'components/MainCard';
 import { PlusOutlined } from '@ant-design/icons';
 import SupplierTable from './SupplierTable';
+import AddSupplierForm from './AddSupplierForm';
+import { useSelector } from 'react-redux';
+import { supplierSuppliersSelector } from 'store/slices/supplier/supplierSelector';
 
 const style = {
   position: 'absolute',
@@ -16,6 +19,14 @@ const style = {
 };
 
 const SupplierManagement = () => {
+  const [openModal, setOpenModal] = useState(false);
+  const suppliers = useSelector(supplierSuppliersSelector);
+
+  useEffect(() => {
+    if (openModal) {
+      setOpenModal(false);
+    }
+  }, [suppliers]);
   return (
     <>
       <Grid item xs={12} md={7} lg={8}>
@@ -24,7 +35,7 @@ const SupplierManagement = () => {
             <Typography variant="h5">Suppliers</Typography>
           </Grid>
           <Grid item>
-            <Button variant="contained" startIcon={<PlusOutlined />} onClick={() => {}}>
+            <Button variant="contained" startIcon={<PlusOutlined />} onClick={() => setOpenModal(true)}>
               Add Supplier
             </Button>
           </Grid>
@@ -33,8 +44,15 @@ const SupplierManagement = () => {
           <SupplierTable />
         </MainCard>
       </Grid>
-      <Modal open={false} onClose={() => {}} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
-        <Box sx={style}></Box>
+      <Modal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <AddSupplierForm />
+        </Box>
       </Modal>
     </>
   );

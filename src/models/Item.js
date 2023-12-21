@@ -27,6 +27,12 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       });
+      Item.hasMany(models.StockHistory, {
+        as: "stock_history",
+        foreignKey: "item_id",
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+      });
     }
   }
   Item.init(

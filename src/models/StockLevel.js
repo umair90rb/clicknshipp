@@ -7,6 +7,10 @@ module.exports = (sequelize, DataTypes) => {
         as: "item",
         foreignKey: "item_id",
       });
+      StockLevel.hasMany(models.StockHistory, {
+        as: "history",
+        foreignKey: "stock_id",
+      });
     }
   }
   StockLevel.init(

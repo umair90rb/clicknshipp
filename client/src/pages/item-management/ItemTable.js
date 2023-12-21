@@ -63,7 +63,7 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function ItemTable({ order = 'id', orderBy = 'desc' }) {
+export default function ItemTable({ order = 'desc', orderBy = 'id' }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const itemIsLoading = useSelector(itemIsLoadingSelector);
@@ -117,14 +117,7 @@ export default function ItemTable({ order = 'id', orderBy = 'desc' }) {
               const labelId = `enhanced-table-checkbox-${index}`;
 
               return (
-                <TableRow
-                  onClick={() => navigate(location.viewOrder(row['id']))}
-                  hover
-                  role="checkbox"
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  tabIndex={-1}
-                  key={row[orderBy]}
-                >
+                <TableRow hover role="checkbox" sx={{ '&:last-child td, &:last-child th': { border: 0 } }} tabIndex={-1} key={row[orderBy]}>
                   {itemTableCell.map(({ id: cellId }) => (
                     <TableCell key={Math.random()} id={labelId} component="th" align="center">
                       {Array.isArray(cellId) ? (row[cellId[0]] === null ? 'None' : row[cellId[0]][cellId[1]]) : row[cellId]}

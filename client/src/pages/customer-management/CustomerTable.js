@@ -60,7 +60,7 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function CustomerTable({ order = 'id', orderBy = 'desc', openViewForm }) {
+export default function CustomerTable({ order = 'desc', orderBy = 'id', openViewForm }) {
   const dispatch = useDispatch();
   const customerIsLoading = useSelector(customerIsLoadingSelector);
   const customers = useSelector(customerCustomersSelector) || [];
