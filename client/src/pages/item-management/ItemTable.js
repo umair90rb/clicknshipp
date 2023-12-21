@@ -3,9 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import location from 'utils/location';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { itemIsLoadingSelector, itemItemsSelector } from 'store/slices/item/itemSelector';
 import { fetchAllItem } from 'store/slices/item/fetchItem';
+import { IconButton } from '../../../node_modules/@mui/material/index';
 const itemTableCell = [
   {
     id: 'id',
@@ -20,7 +21,7 @@ const itemTableCell = [
     label: 'Code'
   },
   {
-    id: 'price',
+    id: 'unit_price',
     label: 'Price'
   },
   {
@@ -63,7 +64,7 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function ItemTable({ order = 'desc', orderBy = 'id' }) {
+export default function ItemTable({ order = 'desc', orderBy = 'id', updateItemHandler }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const itemIsLoading = useSelector(itemIsLoadingSelector);
@@ -107,9 +108,9 @@ export default function ItemTable({ order = 'desc', orderBy = 'id' }) {
                   {headCell.label}
                 </TableCell>
               ))}
-              {/* <TableCell key={'actions'} align={'center'} padding={'normal'} sortDirection={orderBy === 'actions' ? order : false}>
+              <TableCell key={'actions'} align={'center'} padding={'normal'} sortDirection={orderBy === 'actions' ? order : false}>
                 Actions
-              </TableCell> */}
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -123,28 +124,16 @@ export default function ItemTable({ order = 'desc', orderBy = 'id' }) {
                       {Array.isArray(cellId) ? (row[cellId[0]] === null ? 'None' : row[cellId[0]][cellId[1]]) : row[cellId]}
                     </TableCell>
                   ))}
-                  {/* <TableCell key={Math.random()} id={labelId} component="th" align="center">
+                  <TableCell key={Math.random()} id={labelId} component="th" align="center">
                     <>
-                      <IconButton
-                        aria-label="delete"
-                        onClick={() => handleDelete(row.id)}
-                        disabled={row['id'] === user.id}
-                        size="large"
-                        color="error"
-                      >
+                      <IconButton aria-label="delete" onClick={() => {}} size="large" color="error">
                         <DeleteOutlined />
                       </IconButton>
-                      <IconButton
-                        aria-label="update"
-                        onClick={() => handleUpdate(row, index)}
-                        disabled={row['id'] === user.id}
-                        size="large"
-                        color="primary"
-                      >
+                      <IconButton aria-label="update" onClick={() => updateItemHandler(row)} size="large" color="primary">
                         <EditOutlined />
                       </IconButton>
                     </>
-                  </TableCell> */}
+                  </TableCell>
                 </TableRow>
               );
             })}

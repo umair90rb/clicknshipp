@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
-import { hash } from "../utils/hashing";
+import excelToJson from "../helpers/excelToJson";
 
 const { Item, Category, Brand, Supplier } = model;
 
@@ -9,22 +9,22 @@ export default {
   async items(req, res) {
     try {
       const items = await Item.findAll({
-        attributes: ["id", "name", "code", ["unit_price", "price"]],
+        attributes: ["id", "name", "code", "unit_price", "cost_price"],
         include: [
           {
             model: Category,
             as: "category",
-            attributes: ["name"],
+            attributes: ["id", "name"],
           },
           {
             model: Brand,
             as: "brand",
-            attributes: ["name"],
+            attributes: ["id", "name"],
           },
           {
             model: Supplier,
             as: "supplier",
-            attributes: ["name"],
+            attributes: ["id", "name"],
           },
         ],
       });
@@ -48,17 +48,17 @@ export default {
           {
             model: Category,
             as: "category",
-            attributes: ["name"],
+            attributes: ["id", "name"],
           },
           {
             model: Brand,
             as: "brand",
-            attributes: ["name"],
+            attributes: ["id", "name"],
           },
           {
             model: Supplier,
             as: "supplier",
-            attributes: ["name"],
+            attributes: ["id", "name"],
           },
         ],
       });
@@ -107,17 +107,17 @@ export default {
           {
             model: Category,
             as: "category",
-            attributes: ["name"],
+            attributes: ["id", "name"],
           },
           {
             model: Brand,
             as: "brand",
-            attributes: ["name"],
+            attributes: ["id", "name"],
           },
           {
             model: Supplier,
             as: "supplier",
-            attributes: ["name"],
+            attributes: ["id", "name"],
           },
         ],
       });
@@ -138,6 +138,22 @@ export default {
         "Item created successfully"
       );
     } catch (error) {
+      return sendErrorResponse(
+        res,
+        500,
+        "Could not perform operation at this time, kindly try again later.",
+        error
+      );
+    }
+  },
+
+  async import(req, res) {
+    try {
+      const json = await excelToJson(req.file.buffer);
+      await Item.bulkCreate(json);
+      return sendSuccessResponse(res, 200, {}, "Items imported successfully!");
+    } catch (error) {
+      console.error(error);
       return sendErrorResponse(
         res,
         500,
@@ -176,17 +192,17 @@ export default {
             {
               model: Category,
               as: "category",
-              attributes: ["name"],
+              attributes: ["id", "name"],
             },
             {
               model: Brand,
               as: "brand",
-              attributes: ["name"],
+              attributes: ["id", "name"],
             },
             {
               model: Supplier,
               as: "supplier",
-              attributes: ["name"],
+              attributes: ["id", "name"],
             },
           ],
         });
@@ -198,7 +214,8 @@ export default {
               id: item.id,
               name: item.name,
               code: item.code,
-              price: item.unit_price,
+              unit_price: item.unit_price,
+              cost_price: item.cost_price,
               category: item.category,
               brand: item.brand,
               supplier: item.supplier,

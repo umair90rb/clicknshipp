@@ -27,13 +27,14 @@ import { categoryCategoriesSelector, categoryIsLoadingSelector } from 'store/sli
 import { brandBrandsSelector, brandIsLoadingSelector } from 'store/slices/brand/brandSelector';
 import { fetchAllCategory } from 'store/slices/category/fetchCategory';
 import { fetchAllBrand } from 'store/slices/brand/fetchBrand';
-import { fetchCreateItem } from 'store/slices/item/fetchItem';
-import { createItem } from 'store/slices/item/itemSlice';
+import { fetchCreateItem, fetchUpdateItem } from 'store/slices/item/fetchItem';
+import { createItem, updateItem } from 'store/slices/item/itemSlice';
 import CenterCircularLoader from 'components/CenterCircularLoader';
+import { setMessage } from 'store/slices/util/utilSlice';
 
 // ============================|| FIREBASE - REGISTER ||============================ //
 
-const AddItemForm = () => {
+const AddItemForm = ({ item }) => {
   const dispatch = useDispatch();
   const formRef = useRef();
 
@@ -55,11 +56,20 @@ const AddItemForm = () => {
   }, []);
 
   const handleSubmit = async (values, { setErrors, setStatus, setSubmitting }) => {
-    console.log(values);
-    dispatch(fetchCreateItem({ body: values })).then((action) => {
-      console.log(action, fetchCreateSupplier.fulfilled);
+    if (item) {
+      return dispatch(fetchUpdateItem({ id: item.id, body: values })).then((action) => {
+        if (action.type === 'item/update/fetch/fulfilled') {
+          dispatch(updateItem(action.payload.data.item));
+          dispatch(setMessage({ message: 'Item updated successfully.', type: 'success' }));
+        } else {
+          setErrors({ submit: action.payload.error || 'Something goes wrong, please try again' });
+        }
+      });
+    }
+    return dispatch(fetchCreateItem({ body: values })).then((action) => {
       if (action.type === 'item/create/fetch/fulfilled') {
         dispatch(createItem(action.payload.data.item));
+        dispatch(setMessage({ message: 'Item created successfully.', type: 'success' }));
       } else {
         setErrors({ submit: action.payload.error || 'Something goes wrong, please try again' });
       }
@@ -75,13 +85,13 @@ const AddItemForm = () => {
       <Formik
         innerRef={formRef}
         initialValues={{
-          name: '',
-          code: '',
-          unit_price: '',
-          cost_price: '',
-          supplier: '',
-          category: '',
-          brand: ''
+          name: item?.name || '',
+          code: item?.code || '',
+          unit_price: item?.unit_price || '',
+          cost_price: item?.cost_price || '',
+          supplier: item?.supplier?.id || '',
+          category: item?.category?.id || '',
+          brand: item?.brand?.id || ''
         }}
         validationSchema={Yup.object().shape({
           name: Yup.string().max(255).required('Item name is required'),

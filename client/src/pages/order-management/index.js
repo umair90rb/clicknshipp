@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Button, Grid, Typography } from '@mui/material';
 import MainCard from 'components/MainCard';
-import { CloudUploadOutlined, PlusOutlined, LoadingOutlined } from '@ant-design/icons';
+import { FileExcelOutlined, PlusOutlined, LoadingOutlined } from '@ant-design/icons';
 import OrderTable from './OrderTable';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
@@ -58,7 +58,7 @@ const OrderManagement = () => {
                   component="label"
                   variant="contained"
                   disabled={orderImportIsLoading ? true : undefined}
-                  startIcon={orderImportIsLoading ? <LoadingOutlined /> : <CloudUploadOutlined />}
+                  startIcon={orderImportIsLoading ? <LoadingOutlined /> : <FileExcelOutlined />}
                 >
                   Add Bulk Order
                   <VisuallyHiddenInput type="file" onChange={uploadFile} />

@@ -16,8 +16,11 @@ const itemSlice = createSlice({
       state.items.push(action.payload);
     },
     updateItem: (state, action) => {
-      const index = state.items.indexOf((items) => items.id === action.payload.id);
-      state.items = state.items.splice(index, 1, action.payload);
+      const index = state.items.findIndex((item) => item.id === action.payload.id);
+      console.log(index, 'updating index');
+      if (index > -1) {
+        state.items[index] = action.payload;
+      }
     },
     deleteItem: (state, action) => {
       state.items = state.items.filter((items) => items.id !== action.payload.id);
