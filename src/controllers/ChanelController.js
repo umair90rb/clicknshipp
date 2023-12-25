@@ -2,27 +2,13 @@ import { Op, Sequelize } from "sequelize";
 import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 
-const { Category, Item } = model;
+const { Chanel } = model;
 
 export default {
-  async categories(req, res) {
+  async chanels(req, res) {
     try {
-      const categories = await Category.scope("clean").findAll({
-        attributes: {
-          include: [
-            [Sequelize.fn("COUNT", Sequelize.col("items.id")), "itemCount"],
-          ],
-        },
-        include: [
-          {
-            model: Item,
-            as: "items",
-            attributes: [],
-          },
-        ],
-        group: ["Category.id"],
-      });
-      return sendSuccessResponse(res, 200, { categories }, "All categories");
+      const chanels = await Chanel.scope("clean").findAll();
+      return sendSuccessResponse(res, 200, { chanels }, "All sales chanels");
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
@@ -33,12 +19,12 @@ export default {
       );
     }
   },
-  async category(req, res) {
+  async chanel(req, res) {
     try {
       const { id } = req.params;
-      const category = await Category.scope("clean").findByPk(id);
-      if (category) {
-        return sendSuccessResponse(res, 200, { category }, "Category with id");
+      const chanel = await Chanel.scope("clean").findByPk(id);
+      if (chanel) {
+        return sendSuccessResponse(res, 200, { chanel }, "Chanel with id");
       }
       return sendErrorResponse(res, 404, "No data found with this id");
     } catch (e) {
@@ -53,32 +39,29 @@ export default {
   },
 
   async create(req, res) {
-    const { name } = req.body;
+    const { name, source } = req.body;
     try {
-      let category = await Category.findOne({
+      let chanel = await Chanel.findOne({
         where: { name },
       });
-      if (category) {
-        return sendErrorResponse(
-          res,
-          422,
-          "Category with name already exists."
-        );
+      if (chanel) {
+        return sendErrorResponse(res, 422, "Chanel with name already exists.");
       }
-      category = await Category.create({
+      chanel = await Chanel.create({
         name,
+        source,
       });
       return sendSuccessResponse(
         res,
         201,
         {
-          category: {
-            id: category.id,
-            name: category.name,
-            itemCount: 0,
+          chanel: {
+            id: chanel.id,
+            name: chanel.name,
+            source: chanel.source,
           },
         },
-        "Category created successfully"
+        "Chanel created successfully"
       );
     } catch (error) {
       return sendErrorResponse(
@@ -93,21 +76,23 @@ export default {
   async update(req, res) {
     try {
       const id = req.params.id;
-      const { name } = req.body;
-      const category = await Category.findByPk(id);
-      if (category) {
-        category.set({
+      const { name, source } = req.body;
+      const chanel = await Chanel.findByPk(id);
+      if (chanel) {
+        chanel.set({
           name,
+          source,
           updatedAt: new Date().toISOString(),
         });
-        await category.save();
+        await chanel.save();
         return sendSuccessResponse(
           res,
           200,
           {
-            category: {
-              id: category.id,
-              name: category.name,
+            chanel: {
+              id: chanel.id,
+              name: chanel.name,
+              source: chanel.source,
             },
           },
           "Operation successful"
@@ -128,9 +113,9 @@ export default {
   async destroy(req, res) {
     try {
       const id = req.params.id;
-      const category = await Category.findByPk(id);
-      if (category) {
-        await category.destroy();
+      const chanel = await Chanel.findByPk(id);
+      if (chanel) {
+        await chanel.destroy();
         return sendSuccessResponse(res, 200, {}, "Operation successful");
       }
       return sendErrorResponse(res, 404, "No data found with this id");

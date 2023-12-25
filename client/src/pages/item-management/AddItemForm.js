@@ -22,15 +22,16 @@ import { Formik } from 'formik';
 import AnimateButton from 'components/@extended/AnimateButton';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { fetchAllSupplier, fetchCreateSupplier } from 'store/slices/supplier/fetchSupplier';
-import { supplierIsLoadingSelector, supplierSuppliersSelector } from 'store/slices/supplier/supplierSelector';
-import { categoryCategoriesSelector, categoryIsLoadingSelector } from 'store/slices/category/categorySelector';
-import { brandBrandsSelector, brandIsLoadingSelector } from 'store/slices/brand/brandSelector';
+import { supplierFetchStatusSelector, supplierIsLoadingSelector, supplierSuppliersSelector } from 'store/slices/supplier/supplierSelector';
+import { categoryCategoriesSelector, categoryFetchStatusSelector, categoryIsLoadingSelector } from 'store/slices/category/categorySelector';
+import { brandBrandsSelector, brandFetchStatusSelector, brandIsLoadingSelector } from 'store/slices/brand/brandSelector';
 import { fetchAllCategory } from 'store/slices/category/fetchCategory';
 import { fetchAllBrand } from 'store/slices/brand/fetchBrand';
 import { fetchCreateItem, fetchUpdateItem } from 'store/slices/item/fetchItem';
 import { createItem, updateItem } from 'store/slices/item/itemSlice';
 import CenterCircularLoader from 'components/CenterCircularLoader';
 import { setMessage } from 'store/slices/util/utilSlice';
+import fetchStatus from 'constants/fetchStatuses';
 
 // ============================|| FIREBASE - REGISTER ||============================ //
 
@@ -39,20 +40,27 @@ const AddItemForm = ({ item }) => {
   const formRef = useRef();
 
   const suppliersIsLoading = useSelector(supplierIsLoadingSelector);
+  const suppliersFetchStatus = useSelector(supplierFetchStatusSelector);
   const suppliers = useSelector(supplierSuppliersSelector);
 
   const categoriesIsLoading = useSelector(categoryIsLoadingSelector);
+  const categoriesFetchStatus = useSelector(categoryFetchStatusSelector);
   const categories = useSelector(categoryCategoriesSelector);
 
   const brandsIsLoading = useSelector(brandIsLoadingSelector);
+  const brandsFetchStatus = useSelector(brandFetchStatusSelector);
   const brands = useSelector(brandBrandsSelector);
 
   useEffect(function () {
-    batch(() => {
+    if (suppliersFetchStatus !== fetchStatus.SUCCESS) {
       dispatch(fetchAllSupplier());
+    }
+    if (categoriesFetchStatus !== fetchStatus.SUCCESS) {
       dispatch(fetchAllCategory());
+    }
+    if (brandsFetchStatus !== fetchStatus.SUCCESS) {
       dispatch(fetchAllBrand());
-    });
+    }
   }, []);
 
   const handleSubmit = async (values, { setErrors, setStatus, setSubmitting }) => {
@@ -290,7 +298,7 @@ const AddItemForm = ({ item }) => {
               <Grid item xs={12}>
                 <AnimateButton>
                   <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
-                    {'Create Supplier Account'}
+                    {item ? 'Update Item' : 'Create Item'}
                   </Button>
                 </AnimateButton>
               </Grid>

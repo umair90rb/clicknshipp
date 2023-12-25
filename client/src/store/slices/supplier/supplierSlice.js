@@ -17,8 +17,11 @@ const supplierSlice = createSlice({
       state.suppliers = [...state.suppliers, action.payload];
     },
     updateSupplier: (state, action) => {
-      const index = state.suppliers.indexOf((supplier) => supplier.id === action.payload.id);
-      state.suppliers = state.suppliers.splice(index, 1, action.payload);
+      const index = state.suppliers.findIndex((supplier) => supplier.id === action.payload.id);
+      console.log(index, 'update supplier index', action.payload);
+      if (index > -1) {
+        state.suppliers[index] = action.payload;
+      }
     },
     deleteSupplier: (state, action) => {
       state.suppliers = state.suppliers.filter((supplier) => supplier.id !== action.payload.id);
@@ -41,5 +44,5 @@ const supplierSlice = createSlice({
     });
   }
 });
-export const { clear, createSupplier } = supplierSlice.actions;
+export const { clear, createSupplier, updateSupplier, deleteSupplier } = supplierSlice.actions;
 export default supplierSlice.reducer;

@@ -16,12 +16,12 @@ if (NODE_ENV === 'production') {
 export const http = axios.create(config);
 
 http.interceptors.request.use((request) => {
-  console.log('url:', request.url, 'headers:', request.headers, 'params:', request.params, 'data:', request.data);
+  console.log('request', 'url:', request.url, 'headers:', request.headers, 'params:', request.params, 'data:', request.data);
   return request;
 });
 
 http.interceptors.response.use((response) => {
-  console.log('url:', response.url, 'headers:', response.headers, 'data:', response.data);
+  console.log('response', 'url:', response.url, 'headers:', response.headers, 'data:', response.data);
   return response;
 });
 

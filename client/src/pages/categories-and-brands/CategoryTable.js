@@ -2,10 +2,11 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import location from 'utils/location';
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton } from '@mui/material';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { categoryCategoriesSelector, categoryIsLoadingSelector } from 'store/slices/category/categorySelector';
-import { fetchAllCategory } from 'store/slices/category/fetchCategory';
+import { fetchAllCategory, fetchDeleteCategory } from 'store/slices/category/fetchCategory';
+import { deleteCategory } from 'store/slices/category/categorySlice';
 const categoryTableCell = [
   {
     id: 'id',
@@ -47,7 +48,7 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function CategoryTable({ order = 'desc', orderBy = 'id' }) {
+export default function CategoryTable({ order = 'desc', orderBy = 'id', handleUpdate }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const categoryIsLoading = useSelector(categoryIsLoadingSelector);
@@ -56,6 +57,14 @@ export default function CategoryTable({ order = 'desc', orderBy = 'id' }) {
   useEffect(() => {
     dispatch(fetchAllCategory());
   }, []);
+
+  const handleDelete = (id) => {
+    dispatch(fetchDeleteCategory({ id })).then((action) => {
+      if (action.type === 'category/delete/fetch/fulfilled') {
+        dispatch(deleteCategory({ id }));
+      }
+    });
+  };
 
   if (categoryIsLoading) {
     return null;
@@ -91,9 +100,9 @@ export default function CategoryTable({ order = 'desc', orderBy = 'id' }) {
                   {headCell.label}
                 </TableCell>
               ))}
-              {/* <TableCell key={'actions'} align={'center'} padding={'normal'} sortDirection={orderBy === 'actions' ? order : false}>
+              <TableCell key={'actions'} align={'center'} padding={'normal'} sortDirection={orderBy === 'actions' ? order : false}>
                 Actions
-              </TableCell> */}
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -107,28 +116,16 @@ export default function CategoryTable({ order = 'desc', orderBy = 'id' }) {
                       {row[cellId]}
                     </TableCell>
                   ))}
-                  {/* <TableCell key={Math.random()} id={labelId} component="th" align="center">
+                  <TableCell key={Math.random()} id={labelId} component="th" align="center">
                     <>
-                      <IconButton
-                        aria-label="delete"
-                        onClick={() => handleDelete(row.id)}
-                        disabled={row['id'] === user.id}
-                        size="large"
-                        color="error"
-                      >
+                      <IconButton aria-label="delete" onClick={() => handleDelete(row.id)} size="large" color="error">
                         <DeleteOutlined />
                       </IconButton>
-                      <IconButton
-                        aria-label="update"
-                        onClick={() => handleUpdate(row, index)}
-                        disabled={row['id'] === user.id}
-                        size="large"
-                        color="primary"
-                      >
+                      <IconButton aria-label="update" onClick={() => handleUpdate('Category', row)} size="large" color="primary">
                         <EditOutlined />
                       </IconButton>
                     </>
-                  </TableCell> */}
+                  </TableCell>
                 </TableRow>
               );
             })}

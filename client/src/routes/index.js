@@ -6,9 +6,10 @@ import MainRoutes from './MainRoutes';
 import OrderRoutes from './OrderRoutes';
 import CustomerRoutes from './CustomerRoutes';
 import StockRoutes from './StockRoutes';
+import SettingRoutes from './SettingRoutes';
 
 // ==============================|| ROUTING RENDER ||============================== //
 
 export default function ThemeRoutes() {
-  return useRoutes([MainRoutes, LoginRoutes, OrderRoutes, CustomerRoutes, StockRoutes]);
+  return useRoutes([MainRoutes, LoginRoutes, OrderRoutes, CustomerRoutes, StockRoutes, SettingRoutes]);
 }

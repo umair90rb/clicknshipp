@@ -1,70 +1,78 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // material-ui
 import {
-  Box,
   Button,
-  MenuItem,
-  Select,
-  FormControl,
   FormHelperText,
   Grid,
-  ListItemText,
-  IconButton,
-  InputAdornment,
   InputLabel,
   OutlinedInput,
   Stack,
-  Typography,
-  Checkbox,
-  Chip,
   Divider,
   TableRow,
   TableCell,
   TableBody,
   TableContainer,
   Table,
-  TableHead
+  TableHead,
+  Autocomplete,
+  TextField
 } from '@mui/material';
 
-// third party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-
-// project import
-// import FirebaseSocial from './FirebaseSocial';
 import AnimateButton from 'components/@extended/AnimateButton';
-import { strengthColor, strengthIndicator } from 'utils/password-strength';
-
-// assets
-import { EyeOutlined, EyeInvisibleOutlined, PlusOutlined } from '@ant-design/icons';
-import { roleService } from 'api/roleService/index';
-import { userService } from 'api/index';
-import { addUser, updateUser } from 'store/slices/user/userSlice';
+import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { userUpdateUserData } from 'store/slices/user/userSelector';
 import { fetchCreateOrder } from 'store/slices/order/fetchOrder';
 import { orderCreateIsLoadingSelector } from 'store/slices/order/orderSelector';
-
-// ============================|| FIREBASE - REGISTER ||============================ //
+import { chanelChanelsSelector, chanelFetchStatusSelector } from 'store/slices/chanel/chanelSelector';
+import { itemFetchStatusSelector, itemItemsSelector } from 'store/slices/item/itemSelector';
+import fetchStatus from 'constants/fetchStatuses';
+import { fetchAllChanel } from 'store/slices/chanel/fetchChanel';
+import { fetchAllItem } from 'store/slices/item/fetchItem';
+import location from 'utils/location';
 
 const CreateOrderForm = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const orderForm = useRef();
   const [items, setItems] = useState([]);
   const orderCreateIsLoading = useSelector(orderCreateIsLoadingSelector);
+  const chanels = useSelector(chanelChanelsSelector);
+  const chanelsFetchStatus = useSelector(chanelFetchStatusSelector);
+  const inventoryItems = useSelector(itemItemsSelector);
+  const inventoryItemsFetchStatus = useSelector(itemFetchStatusSelector);
 
-  const handleSubmit = async (values, actions) => {
+  const handleSubmit = async (values, { setErrors, ...rest }) => {
+    if (!items.length) {
+      setErrors({ submit: 'Please add item to order first' });
+      return;
+    }
     delete values.item;
     delete values.quantity;
+    delete values.price;
     values.items = items;
-    dispatch(fetchCreateOrder({ body: values }));
+    dispatch(fetchCreateOrder({ body: values })).then((action) => {
+      if (action.type === 'order/create/fetch/fulfilled') {
+        navigate(location.allOrders());
+      }
+    });
   };
 
   const addItem = (id, name, quantity, price) => {
     setItems((items) => [...items, { id, name, quantity, price }]);
   };
+
+  useEffect(() => {
+    if (chanelsFetchStatus !== fetchStatus.SUCCESS) {
+      dispatch(fetchAllChanel());
+    }
+    if (inventoryItemsFetchStatus !== fetchStatus.SUCCESS) {
+      dispatch(fetchAllItem());
+    }
+  }, []);
 
   return (
     <>
@@ -76,18 +84,24 @@ const CreateOrderForm = () => {
           email: '',
           phone: '',
           note: '',
+          chanel: '',
           address1: '',
           address2: '',
           city: '',
           zip: '',
           province: '',
+          itemId: '',
           item: '',
-          quantity: ''
+          quantity: '',
+          price: '',
+          sku: '',
+          grams: ''
         }}
         validationSchema={Yup.object().shape({
           first_name: Yup.string().max(255).required('First Name is required'),
           last_name: Yup.string().max(255),
           note: Yup.string(),
+          chanel: Yup.string().required('Please select sale channel.'),
           phone: Yup.number().min(11).required('Phone is required'),
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
           address1: Yup.string().required('Address is required'),
@@ -95,8 +109,12 @@ const CreateOrderForm = () => {
           city: Yup.string().required('City is required'),
           zip: Yup.number(),
           province: Yup.string(),
+          itemId: Yup.number(),
           item: Yup.string(),
-          quantity: Yup.number()
+          quantity: Yup.number(),
+          price: Yup.number(),
+          sku: Yup.string(),
+          grams: Yup.number()
         })}
         onSubmit={handleSubmit}
       >
@@ -174,7 +192,7 @@ const CreateOrderForm = () => {
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={4}>
                 <Stack spacing={1}>
                   <InputLabel htmlFor="phone">Phone</InputLabel>
                   <OutlinedInput
@@ -195,7 +213,7 @@ const CreateOrderForm = () => {
                   )}
                 </Stack>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={4}>
                 <Stack spacing={1}>
                   <InputLabel htmlFor="email">Email Address</InputLabel>
                   <OutlinedInput
@@ -217,11 +235,50 @@ const CreateOrderForm = () => {
                   )}
                 </Stack>
               </Grid>
-              {errors.submit && (
-                <Grid item xs={12}>
-                  <FormHelperText error>{errors.submit}</FormHelperText>
-                </Grid>
-              )}
+              <Grid item xs={4}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="chanel">Select Sales Chanel</InputLabel>
+                  <Autocomplete
+                    options={chanels.map((chanel) => ({ id: chanel.id, label: chanel.name }))}
+                    id="chanel"
+                    name="chanel"
+                    value={values.chanel !== '' ? values.chanel : ''}
+                    onBlur={handleBlur}
+                    onChange={(event, newValue) => {
+                      if (newValue === '' || newValue === null) {
+                        setFieldValue('chanel', '');
+                        return;
+                      }
+                      setFieldValue('chanel', newValue.label);
+                    }}
+                    openOnFocus
+                    disableClearable
+                    clearOnEscape
+                    autoHighlight
+                    freeSolo
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        InputProps={{
+                          ...params.InputProps,
+                          type: 'search',
+                          placeholder: 'Manual',
+                          style: {
+                            padding: 8
+                          }
+                        }}
+                        size="small"
+                        variant="outlined"
+                      />
+                    )}
+                  />
+                  {touched.chanel && errors.chanel && (
+                    <FormHelperText error id="helper-text-chanel-signup">
+                      {errors.chanel}
+                    </FormHelperText>
+                  )}
+                </Stack>
+              </Grid>
               {/* Customer end */}
               {/* Address start */}
               <Grid item xs={12}>
@@ -337,11 +394,6 @@ const CreateOrderForm = () => {
                   )}
                 </Stack>
               </Grid>
-              {errors.submit && (
-                <Grid item xs={12}>
-                  <FormHelperText error>{errors.submit}</FormHelperText>
-                </Grid>
-              )}
               {/* Address end */}
               {/* Items start */}
               <Grid item xs={12}>
@@ -349,20 +401,57 @@ const CreateOrderForm = () => {
               </Grid>
               <Grid item xs={12}>
                 <Grid container spacing={2} alignItems="flex-end">
-                  <Grid item xs={5}>
+                  <Grid item xs={3}>
                     <Stack spacing={1}>
                       <InputLabel htmlFor="item">Item Name</InputLabel>
-                      <OutlinedInput
-                        fullWidth
-                        error={Boolean(touched.item && errors.item)}
+                      <Autocomplete
+                        options={inventoryItems.map((item) => ({
+                          id: item.id,
+                          label: item.name,
+                          price: item.unit_price,
+                          sku: item.sku,
+                          grams: item.grams
+                        }))}
                         id="item"
-                        type="text"
-                        value={values.item}
                         name="item"
+                        value={values.item !== '' ? values.item : ''}
                         onBlur={handleBlur}
-                        onChange={handleChange}
-                        placeholder="Joint On"
-                        inputProps={{}}
+                        onChange={(event, newValue) => {
+                          console.log(newValue, event);
+                          if (newValue === '' || newValue === null) {
+                            setFieldValue('itemId', '');
+                            setFieldValue('item', '');
+                            setFieldValue('price', '');
+                            setFieldValue('sku', '');
+                            setFieldValue('grams', '');
+                            return;
+                          }
+                          setFieldValue('itemId', newValue.id);
+                          setFieldValue('item', newValue.label);
+                          setFieldValue('price', newValue.price);
+                          setFieldValue('sku', newValue.sku);
+                          setFieldValue('grams', newValue.grams);
+                        }}
+                        openOnFocus
+                        disableClearable
+                        clearOnEscape
+                        autoHighlight
+                        freeSolo
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            InputProps={{
+                              ...params.InputProps,
+                              type: 'search',
+                              placeholder: 'Join On 30ml',
+                              style: {
+                                padding: 8
+                              }
+                            }}
+                            size="small"
+                            variant="outlined"
+                          />
+                        )}
                       />
                       {touched.item && errors.item && (
                         <FormHelperText error id="helper-text-item">
@@ -371,7 +460,7 @@ const CreateOrderForm = () => {
                       )}
                     </Stack>
                   </Grid>
-                  <Grid item xs={5}>
+                  <Grid item xs={3}>
                     <Stack spacing={1}>
                       <InputLabel htmlFor="quantity">Quantity</InputLabel>
                       <OutlinedInput
@@ -393,7 +482,29 @@ const CreateOrderForm = () => {
                       )}
                     </Stack>
                   </Grid>
-                  <Grid item xs={2}>
+                  <Grid item xs={3}>
+                    <Stack spacing={1}>
+                      <InputLabel htmlFor="price">Price</InputLabel>
+                      <OutlinedInput
+                        fullWidth
+                        error={Boolean(touched.price && errors.price)}
+                        id="price"
+                        type="text"
+                        value={values.price}
+                        name="price"
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        placeholder="1"
+                        inputProps={{}}
+                      />
+                      {touched.price && errors.price && (
+                        <FormHelperText error id="helper-text-price">
+                          {errors.price}
+                        </FormHelperText>
+                      )}
+                    </Stack>
+                  </Grid>
+                  <Grid item xs={3}>
                     <Stack spacing={1} justifyContent="flex-end">
                       <Button
                         style={{ height: 41 }}
@@ -406,9 +517,13 @@ const CreateOrderForm = () => {
                             setFieldError('quantity', 'Please add item quantity');
                             setTouched({ ...touched, quantity: true });
                           } else {
-                            addItem(items.length + 1, values.item, values.quantity, 100);
+                            addItem(values.itemId, values.item, values.quantity, values.price, values.sku, values.grams);
+                            setFieldValue('itemId', '');
                             setFieldValue('item', '');
                             setFieldValue('quantity', '');
+                            setFieldValue('price', '');
+                            setFieldValue('sku', '');
+                            setFieldValue('grams', '');
                             setTouched({ ...touched, quantity: false, item: false });
                           }
                         }}
@@ -456,6 +571,11 @@ const CreateOrderForm = () => {
                   </Table>
                 </TableContainer>
               </Grid>
+              {errors.submit && (
+                <Grid item xs={12}>
+                  <FormHelperText error>{errors.submit}</FormHelperText>
+                </Grid>
+              )}
               {/* Items end */}
               <Grid item xs={12}>
                 <AnimateButton>

@@ -1,24 +1,24 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton } from '@mui/material';
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { brandBrandsSelector, brandIsLoadingSelector } from 'store/slices/brand/brandSelector';
-import { fetchAllBrand, fetchDeleteBrand } from 'store/slices/brand/fetchBrand';
-import { deleteBrand } from 'store/slices/brand/brandSlice';
-const brandTableCell = [
+import { IconButton } from '../../../node_modules/@mui/material/index';
+import { chanelChanelsSelector, chanelIsLoadingSelector } from 'store/slices/chanel/chanelSelector';
+import { fetchAllChanel, fetchDeleteChanel } from 'store/slices/chanel/fetchChanel';
+import { deleteChanel } from 'store/slices/chanel/chanelSlice';
+const chanelTableCell = [
   {
     id: 'id',
     label: 'ID.'
   },
   {
     id: 'name',
-    label: 'Brand'
+    label: 'Name'
   },
   {
-    id: 'itemCount',
-    label: 'Items'
+    id: 'source',
+    label: 'Source'
   }
 ];
 
@@ -48,25 +48,24 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function BrandTable({ order = 'desc', orderBy = 'id', handleUpdate }) {
+export default function ChanelTable({ order = 'desc', orderBy = 'id', updateChanelHandler }) {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const brandIsLoading = useSelector(brandIsLoadingSelector);
-  const brands = useSelector(brandBrandsSelector);
+  const chanelsIsLoading = useSelector(chanelIsLoadingSelector);
+  const chanels = useSelector(chanelChanelsSelector);
 
   useEffect(() => {
-    dispatch(fetchAllBrand());
+    dispatch(fetchAllChanel());
   }, []);
 
   const handleDelete = (id) => {
-    dispatch(fetchDeleteBrand({ id })).then((action) => {
-      if (action.type === 'brand/delete/fetch/fulfilled') {
-        dispatch(deleteBrand({ id }));
+    dispatch(fetchDeleteChanel({ id })).then((action) => {
+      if (action.type === 'chanel/delete/fetch/fulfilled') {
+        dispatch(deleteChanel({ id }));
       }
     });
   };
 
-  if (brandIsLoading) {
+  if (chanelsIsLoading) {
     return null;
   }
 
@@ -95,7 +94,7 @@ export default function BrandTable({ order = 'desc', orderBy = 'id', handleUpdat
         >
           <TableHead>
             <TableRow>
-              {brandTableCell.map((headCell) => (
+              {chanelTableCell.map((headCell) => (
                 <TableCell key={headCell.id} align={'center'} padding={'normal'} sortDirection={orderBy === headCell.id ? order : false}>
                   {headCell.label}
                 </TableCell>
@@ -106,12 +105,12 @@ export default function BrandTable({ order = 'desc', orderBy = 'id', handleUpdat
             </TableRow>
           </TableHead>
           <TableBody>
-            {stableSort(brands || [], getComparator(order, orderBy)).map((row, index) => {
+            {stableSort(chanels || [], getComparator(order, orderBy)).map((row, index) => {
               const labelId = `enhanced-table-checkbox-${index}`;
 
               return (
                 <TableRow hover role="checkbox" sx={{ '&:last-child td, &:last-child th': { border: 0 } }} tabIndex={-1} key={row[orderBy]}>
-                  {brandTableCell.map(({ id: cellId }) => (
+                  {chanelTableCell.map(({ id: cellId }) => (
                     <TableCell key={Math.random()} id={labelId} component="th" align="center">
                       {row[cellId]}
                     </TableCell>
@@ -121,7 +120,7 @@ export default function BrandTable({ order = 'desc', orderBy = 'id', handleUpdat
                       <IconButton aria-label="delete" onClick={() => handleDelete(row.id)} size="large" color="error">
                         <DeleteOutlined />
                       </IconButton>
-                      <IconButton aria-label="update" onClick={() => handleUpdate('Brand', row)} size="large" color="primary">
+                      <IconButton aria-label="update" onClick={() => updateChanelHandler(row)} size="large" color="primary">
                         <EditOutlined />
                       </IconButton>
                     </>
@@ -136,7 +135,7 @@ export default function BrandTable({ order = 'desc', orderBy = 'id', handleUpdat
   );
 }
 
-BrandTable.propTypes = {
+ChanelTable.propTypes = {
   order: PropTypes.oneOf(['asc', 'desc']).isRequired,
   orderBy: PropTypes.string.isRequired
 };

@@ -4,6 +4,7 @@ export { customerService } from './customerService';
 export { roleService } from './roleService';
 export { categoryService } from './categoryService';
 export { brandService } from './brandService';
+export { chanelService } from './chanelService';
 export { supplierService } from './supplierService';
 export { itemService } from './itemService';
 export { stockService } from './stockService';

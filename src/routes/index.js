@@ -6,6 +6,7 @@ import stockRouter from "./stockRouter";
 import supplierRouter from "./supplierRouter";
 import categoryRouter from "./categoryRouter";
 import brandRouter from "./brandRouter";
+import chanelRouter from "./chanelRouter";
 import customerRouter from "./customerRouter";
 import roleRouter from "./roleRouter";
 import orderRouter from "./orderRouter";
@@ -24,6 +25,7 @@ export default (app) => {
   app.use("/api/v1/supplier", supplierRouter);
   app.use("/api/v1/category", categoryRouter);
   app.use("/api/v1/brand", brandRouter);
+  app.use("/api/v1/chanel", chanelRouter);
   app.use("/api/v1/customer", customerRouter);
   app.use("/api/v1/role", roleRouter);
   app.use("/api/v1/permission", permissionRouter);

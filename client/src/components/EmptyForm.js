@@ -1,28 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import {
-  Box,
-  Button,
-  MenuItem,
-  Select,
-  FormControl,
-  FormHelperText,
-  Grid,
-  ListItemText,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  OutlinedInput,
-  Stack,
-  Typography,
-  Checkbox,
-  Chip
-} from '@mui/material';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { Box, Button, FormControl, FormHelperText, Grid, InputLabel, OutlinedInput, Stack, Typography } from '@mui/material';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import AnimateButton from 'components/@extended/AnimateButton';
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
-import { useDispatch, useSelector } from 'react-redux';
 
 // ============================|| FIREBASE - REGISTER ||============================ //
 

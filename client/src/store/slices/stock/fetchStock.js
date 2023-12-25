@@ -5,19 +5,19 @@ const fetchAllStock = createAsyncThunk('stocks/fetch', (_, { rejectWithValue }) 
   stockService.fetchAllStock().catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
-const fetchStock = createAsyncThunk('stock/fetch', async ({ id }, { rejectWithValue }) =>
+const fetchStock = createAsyncThunk('stock/fetch', ({ id }, { rejectWithValue }) =>
   stockService.fetchStock(id).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
-const fetchCreateStock = createAsyncThunk('stock/create/fetch', async ({ body }, { rejectWithValue }) =>
+const fetchCreateStock = createAsyncThunk('stock/create/fetch', ({ body }, { rejectWithValue }) =>
   stockService.fetchCreateStock(body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
-const fetchUpdateStock = createAsyncThunk('stock/update/fetch', async ({ body }, { rejectWithValue }) =>
+const fetchUpdateStock = createAsyncThunk('stock/update/fetch', ({ body }, { rejectWithValue }) =>
   stockService.fetchUpdateStock(body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
-const fetchDeleteStock = createAsyncThunk('stock/delete/fetch', async ({ id }, { rejectWithValue }) =>
+const fetchDeleteStock = createAsyncThunk('stock/delete/fetch', ({ id }, { rejectWithValue }) =>
   stockService.fetchDeleteStock(id).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 

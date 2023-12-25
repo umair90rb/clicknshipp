@@ -71,6 +71,7 @@ export default {
           brand: {
             id: brand.id,
             name: brand.name,
+            itemCount: 0,
           },
         },
         "Brand created successfully"

@@ -48,6 +48,7 @@ const ItemsManagement = () => {
     }
     let formData = new FormData();
     formData.append('file', event.target.files[0], event.target.value.split(/(\\|\/)/g).pop());
+
     dispatch(fetchImportItems({ body: formData })).then((action) => {
       console.log(action);
       if (action.type === 'items/import/fetch/fulfilled') {
@@ -63,6 +64,11 @@ const ItemsManagement = () => {
 
   const updateItemHandler = (item) => {
     setItemToUpdate(item);
+    setOpenModal(true);
+  };
+
+  const addItemHandler = () => {
+    setItemToUpdate(undefined);
     setOpenModal(true);
   };
 
@@ -93,7 +99,7 @@ const ItemsManagement = () => {
                 </Button>
               </Grid>
               <Grid item>
-                <Button variant="contained" startIcon={<PlusOutlined />} onClick={() => setOpenModal(true)}>
+                <Button variant="contained" startIcon={<PlusOutlined />} onClick={addItemHandler}>
                   Add Item
                 </Button>
               </Grid>

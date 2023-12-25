@@ -7,7 +7,7 @@ class BrandService extends Ajax {
 
   fetchBrand = (id) => this.getJson(`${this.pathname}/${id}`);
 
-  fetchAddBrand = (data) => this.post(`${this.pathname}`, data);
+  fetchCreateBrand = (data) => this.post(`${this.pathname}`, data);
 
   fetchUpdateBrand = (id, data) => this.put(`${this.pathname}/${id}`, data);
 

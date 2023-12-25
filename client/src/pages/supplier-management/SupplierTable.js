@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import location from 'utils/location';
-import { fetchAllSupplier } from 'store/slices/supplier/fetchSupplier';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { fetchAllSupplier, fetchDeleteSupplier } from 'store/slices/supplier/fetchSupplier';
 import { supplierIsLoadingSelector, supplierSuppliersSelector } from 'store/slices/supplier/supplierSelector';
+import { IconButton } from '../../../node_modules/@mui/material/index';
+import { deleteSupplier } from 'store/slices/supplier/supplierSlice';
 const supplierTableCell = [
   {
     id: 'id',
@@ -55,15 +56,22 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function SupplierTable({ order = 'desc', orderBy = 'id' }) {
+export default function SupplierTable({ order = 'desc', orderBy = 'id', updateSupplierHandler }) {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const supplierIsLoading = useSelector(supplierIsLoadingSelector);
   const suppliers = useSelector(supplierSuppliersSelector);
 
   useEffect(() => {
     dispatch(fetchAllSupplier());
   }, []);
+
+  const handleDelete = (id) => {
+    dispatch(fetchDeleteSupplier({ id })).then((action) => {
+      if (action.type === 'supplier/delete/fetch/fulfilled') {
+        dispatch(deleteSupplier({ id }));
+      }
+    });
+  };
 
   if (supplierIsLoading) {
     return null;
@@ -99,9 +107,9 @@ export default function SupplierTable({ order = 'desc', orderBy = 'id' }) {
                   {headCell.label}
                 </TableCell>
               ))}
-              {/* <TableCell key={'actions'} align={'center'} padding={'normal'} sortDirection={orderBy === 'actions' ? order : false}>
+              <TableCell key={'actions'} align={'center'} padding={'normal'} sortDirection={orderBy === 'actions' ? order : false}>
                 Actions
-              </TableCell> */}
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -115,28 +123,16 @@ export default function SupplierTable({ order = 'desc', orderBy = 'id' }) {
                       {row[cellId]}
                     </TableCell>
                   ))}
-                  {/* <TableCell key={Math.random()} id={labelId} component="th" align="center">
+                  <TableCell key={Math.random()} id={labelId} component="th" align="center">
                     <>
-                      <IconButton
-                        aria-label="delete"
-                        onClick={() => handleDelete(row.id)}
-                        disabled={row['id'] === user.id}
-                        size="large"
-                        color="error"
-                      >
+                      <IconButton aria-label="delete" onClick={() => handleDelete(row.id)} size="large" color="error">
                         <DeleteOutlined />
                       </IconButton>
-                      <IconButton
-                        aria-label="update"
-                        onClick={() => handleUpdate(row, index)}
-                        disabled={row['id'] === user.id}
-                        size="large"
-                        color="primary"
-                      >
+                      <IconButton aria-label="update" onClick={() => updateSupplierHandler(row)} size="large" color="primary">
                         <EditOutlined />
                       </IconButton>
                     </>
-                  </TableCell> */}
+                  </TableCell>
                 </TableRow>
               );
             })}

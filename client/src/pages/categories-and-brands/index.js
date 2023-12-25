@@ -6,6 +6,8 @@ import { useSelector } from 'react-redux';
 import { categoryCategoriesSelector } from 'store/slices/category/categorySelector';
 import CategoryTable from './CategoryTable';
 import BrandTable from './BrandTable';
+import AddUpdateForm from './AddUpdateForm';
+import { brandBrandsSelector } from 'store/slices/brand/brandSelector';
 
 const style = {
   position: 'absolute',
@@ -19,6 +21,36 @@ const style = {
 };
 
 const CategoriesAndBrands = () => {
+  const [openModal, setOpenModal] = useState(false);
+  const [type, setType] = useState('');
+  const [updateData, setUpdateData] = useState();
+
+  const categories = useSelector(categoryCategoriesSelector);
+  const brands = useSelector(brandBrandsSelector);
+
+  const openModalHandler = (t) => {
+    setType(t);
+    setOpenModal(true);
+  };
+
+  const closeModalHandler = () => {
+    setType('');
+    setUpdateData(undefined);
+    setOpenModal(false);
+  };
+
+  const handleUpdate = (type, data) => {
+    setType(type);
+    setUpdateData(data);
+    setOpenModal(true);
+  };
+
+  useEffect(() => {
+    if (openModal) {
+      setOpenModal(false);
+      setType('');
+    }
+  }, [categories, brands]);
   return (
     <>
       <Grid item xs={12} md={7} lg={8}>
@@ -29,12 +61,12 @@ const CategoriesAndBrands = () => {
           <Grid item>
             <Grid container spacing={2}>
               <Grid item>
-                <Button variant="contained" startIcon={<PlusOutlined />} onClick={() => {}}>
+                <Button variant="contained" startIcon={<PlusOutlined />} onClick={() => openModalHandler('Category')}>
                   Add Category
                 </Button>
               </Grid>
               <Grid item>
-                <Button variant="contained" startIcon={<PlusOutlined />} onClick={() => {}}>
+                <Button variant="contained" startIcon={<PlusOutlined />} onClick={() => openModalHandler('Brand')}>
                   Add Brand
                 </Button>
               </Grid>
@@ -42,7 +74,7 @@ const CategoriesAndBrands = () => {
           </Grid>
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>
-          <CategoryTable />
+          <CategoryTable handleUpdate={handleUpdate} />
         </MainCard>
         <Grid item xs={12} md={7} lg={8} sx={{ mt: 3 }}>
           <Grid container alignItems="center" justifyContent="space-between">
@@ -52,11 +84,13 @@ const CategoriesAndBrands = () => {
           </Grid>
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>
-          <BrandTable />
+          <BrandTable handleUpdate={handleUpdate} />
         </MainCard>
       </Grid>
-      <Modal open={false} onClose={() => {}} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
-        <Box sx={style}></Box>
+      <Modal open={openModal} onClose={closeModalHandler} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+        <Box sx={style}>
+          <AddUpdateForm type={type} data={updateData} />
+        </Box>
       </Modal>
     </>
   );

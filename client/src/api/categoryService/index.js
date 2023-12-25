@@ -7,7 +7,7 @@ class CategoryService extends Ajax {
 
   fetchCategory = (id) => this.getJson(`${this.pathname}/${id}`);
 
-  fetchAddCategory = (data) => this.post(`${this.pathname}`, data);
+  fetchCreateCategory = (data) => this.post(`${this.pathname}`, data);
 
   fetchUpdateCategory = (id, data) => this.put(`${this.pathname}/${id}`, data);
 

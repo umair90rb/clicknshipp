@@ -62,7 +62,7 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: true,
       underscored: true,
       scopes: {
-        clear: {
+        clean: {
           attributes: {
             include: ["id", "name", "code", ["unit_price", "price"]],
           },

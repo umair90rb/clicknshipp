@@ -1,28 +1,9 @@
-import React, { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import { Grid, Typography } from '@mui/material';
 import MainCard from 'components/MainCard';
 import CreateOrderForm from './OrderForm';
-import { useSelector } from 'react-redux';
-import { orderCreateFetchStatusSelector } from 'store/slices/order/orderSelector';
-import fetchStatus from 'constants/fetchStatuses';
-import location from 'utils/location';
 
 const CreateOrder = () => {
-  const orderCreateFetchStatus = useSelector(orderCreateFetchStatusSelector);
-  const navigate = useNavigate();
-  const firstUpdate = useRef(true);
-
-  useEffect(() => {
-    if (firstUpdate.current) {
-      firstUpdate.current = false;
-      return;
-    }
-    if (orderCreateFetchStatus === fetchStatus.SUCCESS) {
-      navigate(location.allOrders());
-    }
-  }, [orderCreateFetchStatus]);
-
   return (
     <>
       <Grid item xs={12} md={7} lg={8}>

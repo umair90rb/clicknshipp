@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Button, Grid, Typography, Modal, Box } from '@mui/material';
 import MainCard from 'components/MainCard';
 import { PlusOutlined } from '@ant-design/icons';
-import SupplierTable from './SupplierTable';
-import AddSupplierForm from './AddSupplierForm';
 import { useSelector } from 'react-redux';
-import { supplierSuppliersSelector } from 'store/slices/supplier/supplierSelector';
+import { chanelChanelsSelector } from 'store/slices/chanel/chanelSelector';
+import ChanelTable from './ChanelTable';
+import AddUpdateForm from './AddUpdateForm';
 
 const style = {
   position: 'absolute',
@@ -18,18 +18,18 @@ const style = {
   p: 4
 };
 
-const SupplierManagement = () => {
+const ChanelManagement = () => {
   const [openModal, setOpenModal] = useState(false);
-  const suppliers = useSelector(supplierSuppliersSelector);
-  const [supplierToUpdate, setSupplierToUpdate] = useState();
+  const chanels = useSelector(chanelChanelsSelector);
+  const [chanelToUpdate, setChanelToUpdate] = useState();
 
   const addSupplierHandler = () => {
-    setSupplierToUpdate(undefined);
+    setChanelToUpdate(undefined);
     setOpenModal(true);
   };
 
-  const updateSupplierHandler = (item) => {
-    setSupplierToUpdate(item);
+  const updateChanelHandler = (chanel) => {
+    setChanelToUpdate(chanel);
     setOpenModal(true);
   };
 
@@ -37,22 +37,22 @@ const SupplierManagement = () => {
     if (openModal) {
       setOpenModal(false);
     }
-  }, [suppliers]);
+  }, [chanels]);
   return (
     <>
       <Grid item xs={12} md={7} lg={8}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
-            <Typography variant="h5">Suppliers</Typography>
+            <Typography variant="h5">Chanels</Typography>
           </Grid>
           <Grid item>
             <Button variant="contained" startIcon={<PlusOutlined />} onClick={addSupplierHandler}>
-              Add Supplier
+              Add New Sales Chanel
             </Button>
           </Grid>
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>
-          <SupplierTable updateSupplierHandler={updateSupplierHandler} />
+          <ChanelTable updateChanelHandler={updateChanelHandler} />
         </MainCard>
       </Grid>
       <Modal
@@ -62,11 +62,11 @@ const SupplierManagement = () => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <AddSupplierForm supplier={supplierToUpdate} />
+          <AddUpdateForm chanelToUpdate={chanelToUpdate} />
         </Box>
       </Modal>
     </>
   );
 };
 
-export default SupplierManagement;
+export default ChanelManagement;

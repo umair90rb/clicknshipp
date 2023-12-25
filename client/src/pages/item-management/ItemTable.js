@@ -5,8 +5,9 @@ import PropTypes from 'prop-types';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { itemIsLoadingSelector, itemItemsSelector } from 'store/slices/item/itemSelector';
-import { fetchAllItem } from 'store/slices/item/fetchItem';
+import { fetchAllItem, fetchDeleteItem } from 'store/slices/item/fetchItem';
 import { IconButton } from '../../../node_modules/@mui/material/index';
+import { deleteItem } from 'store/slices/item/itemSlice';
 const itemTableCell = [
   {
     id: 'id',
@@ -74,6 +75,14 @@ export default function ItemTable({ order = 'desc', orderBy = 'id', updateItemHa
     dispatch(fetchAllItem());
   }, []);
 
+  const deleteItemHandler = (id) => {
+    dispatch(fetchDeleteItem({ id })).then((action) => {
+      if (action.type === 'item/delete/fetch/fulfilled') {
+        dispatch(deleteItem({ id }));
+      }
+    });
+  };
+
   if (itemIsLoading) {
     return null;
   }
@@ -126,7 +135,7 @@ export default function ItemTable({ order = 'desc', orderBy = 'id', updateItemHa
                   ))}
                   <TableCell key={Math.random()} id={labelId} component="th" align="center">
                     <>
-                      <IconButton aria-label="delete" onClick={() => {}} size="large" color="error">
+                      <IconButton aria-label="delete" onClick={() => deleteItemHandler(row.id)} size="large" color="error">
                         <DeleteOutlined />
                       </IconButton>
                       <IconButton aria-label="update" onClick={() => updateItemHandler(row)} size="large" color="primary">

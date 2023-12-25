@@ -1,39 +1,27 @@
-import { useEffect, useRef, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import {
-  Box,
-  Button,
-  MenuItem,
-  Select,
-  FormControl,
-  FormHelperText,
-  Grid,
-  ListItemText,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  OutlinedInput,
-  Stack,
-  Typography,
-  Checkbox,
-  Chip
-} from '@mui/material';
+import { useRef } from 'react';
+import { Button, FormHelperText, Grid, InputLabel, OutlinedInput, Stack } from '@mui/material';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import AnimateButton from 'components/@extended/AnimateButton';
-import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchCreateSupplier } from 'store/slices/supplier/fetchSupplier';
-import { createSupplier } from 'store/slices/supplier/supplierSlice';
+import { useDispatch } from 'react-redux';
+import { fetchCreateSupplier, fetchUpdateSupplier } from 'store/slices/supplier/fetchSupplier';
+import { createSupplier, updateSupplier } from 'store/slices/supplier/supplierSlice';
 
-// ============================|| FIREBASE - REGISTER ||============================ //
-
-const AddSupplierForm = () => {
+const AddSupplierForm = ({ supplier }) => {
   const dispatch = useDispatch();
   const formRef = useRef();
   const handleSubmit = async (values, { setErrors, setStatus, setSubmitting }) => {
-    console.log(values);
-    dispatch(fetchCreateSupplier({ body: values })).then((action) => {
+    if (supplier) {
+      return dispatch(fetchUpdateSupplier({ id: supplier.id, body: values })).then((action) => {
+        if (action.type === 'supplier/update/fetch/fulfilled') {
+          dispatch(updateSupplier(action.payload.data.supplier));
+          dispatch(setMessage({ message: 'Supplier updated successfully.', type: 'success' }));
+        } else {
+          setErrors({ submit: action.payload.error || 'Something goes wrong, please try again' });
+        }
+      });
+    }
+    return dispatch(fetchCreateSupplier({ body: values })).then((action) => {
       console.log(action, fetchCreateSupplier.fulfilled);
       if (action.type === 'supplier/create/fetch/fulfilled') {
         dispatch(createSupplier(action.payload.data.supplier));
@@ -48,13 +36,13 @@ const AddSupplierForm = () => {
       <Formik
         innerRef={formRef}
         initialValues={{
-          name: '',
-          phone: '',
-          company: '',
-          account_number: ''
+          name: supplier?.name || '',
+          phone: supplier?.phone || '',
+          company: supplier?.company || '',
+          account_number: supplier?.account_number || ''
         }}
         validationSchema={Yup.object().shape({
-          name: Yup.string().max(255).required('First Name is required'),
+          name: Yup.string().max(255).required('Name is required'),
           phone: Yup.string().max(255).required('Phone is required'),
           company: Yup.string().max(255).nullable(),
           account_number: Yup.string().max(255)
@@ -159,7 +147,7 @@ const AddSupplierForm = () => {
               <Grid item xs={12}>
                 <AnimateButton>
                   <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
-                    {'Create Supplier Account'}
+                    {supplier ? 'Update Supplier Account' : 'Create Supplier Account'}
                   </Button>
                 </AnimateButton>
               </Grid>

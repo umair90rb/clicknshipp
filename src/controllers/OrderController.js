@@ -2,7 +2,7 @@ import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 import { extract } from "../utils/extract";
 import excelToJson from "../helpers/excelToJson";
-const { Order, OrderItem } = model;
+const { Order, OrderItem, Customer, Address } = model;
 
 const order_data_keys = [
   "order_number",
@@ -69,15 +69,45 @@ export default {
   async order(req, res) {
     try {
       const { id } = req.params;
-      const role = await Order.findByPk(id);
-      if (role) {
-        const permissions = await role.getPermissions();
-        const data = {
-          id: role.id,
-          name: role.name,
-          permissions: permissions.map((p) => p.name),
-        };
-        return sendSuccessResponse(res, 200, { role: data });
+      const order = await Order.findByPk(id, {
+        attributes: {
+          exclude: ["data", "CustomerId", "updatedAt"],
+        },
+        include: [
+          {
+            model: Customer,
+            as: "Customer",
+            include: {
+              model: Address,
+              as: "Addresses",
+              attributes: {
+                exclude: [
+                  "CustomerId",
+                  "company",
+                  "longitude",
+                  "latitude",
+                  "country_code",
+                  "province_code",
+                ],
+              },
+            },
+          },
+          {
+            model: OrderItem,
+            as: "OrderItems",
+            attributes: {
+              exclude: ["OrderId", "createdAt", "updatedAt"],
+            },
+          },
+        ],
+      });
+      if (order) {
+        // const data = {
+        //   id: role.id,
+        //   name: role.name,
+        //   permissions: permissions.map((p) => p.name),
+        // };
+        return sendSuccessResponse(res, 200, { order });
       }
       return sendErrorResponse(res, 404, "No data found with this id.");
     } catch (e) {
@@ -145,8 +175,8 @@ export default {
       const orderItems = [];
       let subtotal_price = 0;
       for (const item of itemsArray) {
-        const { id, name, price, quantity } = item || {};
-        orderItems.push({ name, price, quantity });
+        const { id, name, price, quantity, sku, grams } = item || {};
+        orderItems.push({ product_id: id, name, price, quantity, sku, grams });
         subtotal_price += price * quantity;
       }
       const total_tax = 0,

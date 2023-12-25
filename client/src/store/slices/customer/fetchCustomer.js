@@ -5,10 +5,8 @@ const fetchAllCustomer = createAsyncThunk('customers/fetch', (_, { rejectWithVal
   customerService.fetchAllCustomer().catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
-const fetchCustomer = createAsyncThunk(
-  'customer/fetch',
-  async ({ id }, { rejectWithValue }) =>
-    await customerService.fetchCustomer(id).catch((error) => rejectWithValue(error.response.data || error.message))
+const fetchCustomer = createAsyncThunk('customer/fetch', ({ id }, { rejectWithValue }) =>
+  customerService.fetchCustomer(id).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
 // const fetchCreateUser = createAsyncThunk(
