@@ -1,4 +1,4 @@
-import axios from '../../node_modules/axios/index';
+import axios from 'axios';
 import { getEnvs } from './getEnv';
 const { NODE_ENV, REACT_APP_API, REACT_APP_API_PREFIX } = getEnvs();
 

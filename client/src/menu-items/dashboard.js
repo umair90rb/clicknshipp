@@ -1,4 +1,5 @@
 import { DashboardOutlined, FileSearchOutlined } from '@ant-design/icons';
+import { permissions } from 'constants/roleAndPermissions';
 
 const dashboard = {
   id: 'group-dashboard',
@@ -10,6 +11,7 @@ const dashboard = {
       title: 'Dashboard',
       type: 'item',
       url: '/dashboard',
+      permission: permissions.viewAdminDashboard,
       icon: DashboardOutlined,
       breadcrumbs: false
     },
@@ -18,6 +20,7 @@ const dashboard = {
       title: 'Reporting',
       type: 'item',
       url: '/dashboard',
+      permission: permissions.viewReporting,
       icon: FileSearchOutlined,
       breadcrumbs: false
     }

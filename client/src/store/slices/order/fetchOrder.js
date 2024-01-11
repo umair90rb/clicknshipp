@@ -1,12 +1,20 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { orderService } from 'api/index';
 
-const fetchAllOrder = createAsyncThunk('orders/fetch', (_, { rejectWithValue }) =>
-  orderService.fetchAllOrder().catch((error) => rejectWithValue(error.response.data || error.message))
+const fetchAllOrder = createAsyncThunk('orders/fetch', ({ body }, { rejectWithValue }) =>
+  orderService.fetchAllOrder(body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
 const fetchOrder = createAsyncThunk('order/fetch', ({ id }, { rejectWithValue }) =>
   orderService.fetchOrder(id).catch((error) => rejectWithValue(error.response.data || error.message))
+);
+
+const fetchConfirmOrder = createAsyncThunk('order/confirm/fetch', ({ id }, { rejectWithValue }) =>
+  orderService.fetchConfirmOrder(id).catch((error) => rejectWithValue(error.response.data || error.message))
+);
+
+const fetchBookOrder = createAsyncThunk('order/book/fetch', ({ body }, { rejectWithValue }) =>
+  orderService.fetchBookOrder(body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
 const fetchCreateOrder = createAsyncThunk('order/create/fetch', ({ body }, { rejectWithValue }) =>
@@ -17,12 +25,21 @@ const fetchImportOrder = createAsyncThunk('order/import/fetch', ({ body }, { rej
   orderService.fetchImportOrder(body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
-const fetchUpdateOrder = createAsyncThunk('order/update/fetch', ({ body }, { rejectWithValue }) =>
-  orderService.fetchUpdateOrder(body).catch((error) => rejectWithValue(error.response.data || error.message))
+const fetchUpdateOrder = createAsyncThunk('order/update/fetch', ({ id, body }, { rejectWithValue }) =>
+  orderService.fetchUpdateOrder(id, body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
 const fetchDeleteOrder = createAsyncThunk('order/delete/fetch', ({ id }, { rejectWithValue }) =>
   orderService.fetchDeleteOrder(id).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
-export { fetchAllOrder, fetchOrder, fetchCreateOrder, fetchImportOrder, fetchUpdateOrder, fetchDeleteOrder };
+export {
+  fetchAllOrder,
+  fetchOrder,
+  fetchConfirmOrder,
+  fetchBookOrder,
+  fetchCreateOrder,
+  fetchImportOrder,
+  fetchUpdateOrder,
+  fetchDeleteOrder
+};

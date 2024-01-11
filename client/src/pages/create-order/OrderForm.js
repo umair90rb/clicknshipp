@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 // material-ui
 import {
@@ -17,15 +17,17 @@ import {
   Table,
   TableHead,
   Autocomplete,
-  TextField
+  TextField,
+  IconButton,
+  InputAdornment
 } from '@mui/material';
 
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import AnimateButton from 'components/@extended/AnimateButton';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, CloseOutlined, MinusOutlined, SearchOutlined, LoadingOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCreateOrder } from 'store/slices/order/fetchOrder';
+import { fetchCreateOrder, fetchUpdateOrder } from 'store/slices/order/fetchOrder';
 import { orderCreateIsLoadingSelector } from 'store/slices/order/orderSelector';
 import { chanelChanelsSelector, chanelFetchStatusSelector } from 'store/slices/chanel/chanelSelector';
 import { itemFetchStatusSelector, itemItemsSelector } from 'store/slices/item/itemSelector';
@@ -33,17 +35,33 @@ import fetchStatus from 'constants/fetchStatuses';
 import { fetchAllChanel } from 'store/slices/chanel/fetchChanel';
 import { fetchAllItem } from 'store/slices/item/fetchItem';
 import location from 'utils/location';
+import { useLocation } from '../../../node_modules/react-router-dom/dist/index';
+import { setMessage } from 'store/slices/util/utilSlice';
+import { fetchSearchCustomer } from 'store/slices/customer/fetchCustomer';
+import { cityCitiesSelector, cityFetchStatusSelector } from 'store/slices/city/citySelector';
+import { fetchAllCities } from 'store/slices/city/fetchCity';
 
 const CreateOrderForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const orderForm = useRef();
-  const [items, setItems] = useState([]);
+  const { state } = useLocation();
+  const { order } = state || {};
+  const { items: orderItems, customer, address, id, chanel } = order || {};
+  const { first_name, last_name, email, phone, note, id: customerId } = customer || {};
+  const { address1, address2, city, zip, province, id: addressId } = address || {};
+  const [items, setItems] = useState(orderItems || []);
+  const [customerLoading, setCustomerLoading] = useState(false);
+
   const orderCreateIsLoading = useSelector(orderCreateIsLoadingSelector);
   const chanels = useSelector(chanelChanelsSelector);
   const chanelsFetchStatus = useSelector(chanelFetchStatusSelector);
   const inventoryItems = useSelector(itemItemsSelector);
   const inventoryItemsFetchStatus = useSelector(itemFetchStatusSelector);
+  const cities = useSelector(cityCitiesSelector);
+  const citiesFetchStatus = useSelector(cityFetchStatusSelector);
+
+  console.log(order);
 
   const handleSubmit = async (values, { setErrors, ...rest }) => {
     if (!items.length) {
@@ -51,18 +69,63 @@ const CreateOrderForm = () => {
       return;
     }
     delete values.item;
+    delete values.itemId;
     delete values.quantity;
     delete values.price;
+    delete values.sku;
+    delete values.grams;
     values.items = items;
-    dispatch(fetchCreateOrder({ body: values })).then((action) => {
-      if (action.type === 'order/create/fetch/fulfilled') {
-        navigate(location.allOrders());
-      }
-    });
+    if (order) {
+      return dispatch(fetchUpdateOrder({ id, body: { ...values, addressId, customerId } })).then((action) => {
+        if (action.type === 'order/update/fetch/fulfilled') {
+          dispatch(setMessage({ message: 'Order updated successfully!' }));
+          navigate(-1);
+        }
+      });
+    } else {
+      return dispatch(fetchCreateOrder({ body: values })).then((action) => {
+        if (action.type === 'order/create/fetch/fulfilled') {
+          navigate(location.allOrders());
+        }
+      });
+    }
   };
 
-  const addItem = (id, name, quantity, price) => {
-    setItems((items) => [...items, { id, name, quantity, price }]);
+  const addItem = (id, name, quantity, unit, price, discount, sku, grams) => {
+    setItems((items) => [...items, { id, name, quantity, unit, price, discount, sku, grams }]);
+  };
+
+  const searchCustomer = (phone) => {
+    if (phone === '') return;
+    console.log(phone);
+    setCustomerLoading(true);
+    return dispatch(fetchSearchCustomer({ body: { phone } })).then(({ type, payload }) => {
+      if (type === 'customer/search/fetch/fulfilled') {
+        const { data } = payload;
+        if ('email' in data) {
+          const { first_name, last_name, email, note, id, address } = data;
+          const { id: addressId, address1, address2, city, zip, province } = address || {};
+          orderForm.current.setFieldValue('first_name', first_name || '');
+          orderForm.current.setFieldValue('last_name', last_name || '');
+          orderForm.current.setFieldValue('email', email || '');
+          orderForm.current.setFieldValue('note', note || '');
+          orderForm.current.setFieldValue('customerId', id || '');
+          if (address) {
+            orderForm.current.setFieldValue('addressId', addressId || '');
+            orderForm.current.setFieldValue('address1', address1 || '');
+            orderForm.current.setFieldValue('address2', address2 || '');
+            orderForm.current.setFieldValue('city', city || '');
+            orderForm.current.setFieldValue('zip', zip || '');
+            orderForm.current.setFieldValue('province', province || '');
+          }
+        } else {
+          dispatch(setMessage({ message: 'Customer not found!', type: 'error' }));
+        }
+      } else {
+        dispatch(setMessage({ message: 'Customer not found!', type: 'error' }));
+      }
+      setCustomerLoading(false);
+    });
   };
 
   useEffect(() => {
@@ -72,6 +135,9 @@ const CreateOrderForm = () => {
     if (inventoryItemsFetchStatus !== fetchStatus.SUCCESS) {
       dispatch(fetchAllItem());
     }
+    if (citiesFetchStatus !== fetchStatus.SUCCESS) {
+      dispatch(fetchAllCities());
+    }
   }, []);
 
   return (
@@ -79,21 +145,24 @@ const CreateOrderForm = () => {
       <Formik
         innerRef={orderForm}
         initialValues={{
-          first_name: '',
-          last_name: '',
-          email: '',
-          phone: '',
-          note: '',
-          chanel: '',
-          address1: '',
-          address2: '',
-          city: '',
-          zip: '',
-          province: '',
+          customerId: '',
+          first_name: first_name || '',
+          last_name: last_name || '',
+          email: email || '',
+          phone: phone || '',
+          note: note || '',
+          chanel: chanel || '',
+          addressId: '',
+          address1: address1 || '',
+          address2: address2 || '',
+          city: city || '',
+          zip: zip || '',
+          province: province || '',
           itemId: '',
           item: '',
           quantity: '',
           price: '',
+          discount: '',
           sku: '',
           grams: ''
         }}
@@ -124,6 +193,108 @@ const CreateOrderForm = () => {
               {/* Customer start */}
               <Grid item xs={12}>
                 <Divider color="error">Customer Details</Divider>
+              </Grid>
+              <Grid item xs={12}>
+                <Grid container spacing={1}>
+                  <Grid item xs={4}>
+                    <Stack spacing={1}>
+                      <InputLabel htmlFor="phone">Phone</InputLabel>
+                      <OutlinedInput
+                        fullWidth
+                        error={Boolean(touched.phone && errors.phone)}
+                        id="phone"
+                        value={values.phone}
+                        name="phone"
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        placeholder="03001234567"
+                        inputProps={{}}
+                        endAdornment={
+                          <InputAdornment>
+                            <IconButton
+                              aria-label="search customer"
+                              onClick={() => searchCustomer(values.phone)}
+                              onMouseDown={() => searchCustomer(values.phone)}
+                            >
+                              {customerLoading ? <LoadingOutlined /> : <SearchOutlined />}
+                            </IconButton>
+                          </InputAdornment>
+                        }
+                      />
+                      {touched.phone && errors.phone && (
+                        <FormHelperText error id="helper-text-phone">
+                          {errors.phone}
+                        </FormHelperText>
+                      )}
+                    </Stack>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Stack spacing={1}>
+                      <InputLabel htmlFor="email">Email Address</InputLabel>
+                      <OutlinedInput
+                        fullWidth
+                        error={Boolean(touched.email && errors.email)}
+                        id="email"
+                        type="email"
+                        value={values.email}
+                        name="email"
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        placeholder="demo@sukoon.com"
+                        inputProps={{}}
+                      />
+                      {touched.email && errors.email && (
+                        <FormHelperText error id="helper-text-email">
+                          {errors.email}
+                        </FormHelperText>
+                      )}
+                    </Stack>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Stack spacing={1}>
+                      <InputLabel htmlFor="chanel">Select Sales Chanel</InputLabel>
+                      <Autocomplete
+                        options={chanels.map((chanel) => ({ id: chanel.id, label: chanel.name }))}
+                        id="chanel"
+                        name="chanel"
+                        value={values.chanel !== '' ? values.chanel : ''}
+                        onBlur={handleBlur}
+                        onChange={(event, newValue) => {
+                          if (newValue === '' || newValue === null) {
+                            setFieldValue('chanel', '');
+                            return;
+                          }
+                          setFieldValue('chanel', newValue.label);
+                        }}
+                        openOnFocus
+                        disableClearable
+                        clearOnEscape
+                        autoHighlight
+                        freeSolo
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            InputProps={{
+                              ...params.InputProps,
+                              type: 'search',
+                              placeholder: 'Manual',
+                              style: {
+                                padding: 8
+                              }
+                            }}
+                            size="small"
+                            variant="outlined"
+                          />
+                        )}
+                      />
+                      {touched.chanel && errors.chanel && (
+                        <FormHelperText error id="helper-text-chanel-signup">
+                          {errors.chanel}
+                        </FormHelperText>
+                      )}
+                    </Stack>
+                  </Grid>
+                </Grid>
               </Grid>
               <Grid item xs={12}>
                 <Grid container spacing={1}>
@@ -192,93 +363,6 @@ const CreateOrderForm = () => {
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid item xs={4}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="phone">Phone</InputLabel>
-                  <OutlinedInput
-                    fullWidth
-                    error={Boolean(touched.phone && errors.phone)}
-                    id="phone"
-                    value={values.phone}
-                    name="phone"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="03001234567"
-                    inputProps={{}}
-                  />
-                  {touched.phone && errors.phone && (
-                    <FormHelperText error id="helper-text-phone">
-                      {errors.phone}
-                    </FormHelperText>
-                  )}
-                </Stack>
-              </Grid>
-              <Grid item xs={4}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="email">Email Address</InputLabel>
-                  <OutlinedInput
-                    fullWidth
-                    error={Boolean(touched.email && errors.email)}
-                    id="email"
-                    type="email"
-                    value={values.email}
-                    name="email"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="demo@sukoon.com"
-                    inputProps={{}}
-                  />
-                  {touched.email && errors.email && (
-                    <FormHelperText error id="helper-text-email">
-                      {errors.email}
-                    </FormHelperText>
-                  )}
-                </Stack>
-              </Grid>
-              <Grid item xs={4}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="chanel">Select Sales Chanel</InputLabel>
-                  <Autocomplete
-                    options={chanels.map((chanel) => ({ id: chanel.id, label: chanel.name }))}
-                    id="chanel"
-                    name="chanel"
-                    value={values.chanel !== '' ? values.chanel : ''}
-                    onBlur={handleBlur}
-                    onChange={(event, newValue) => {
-                      if (newValue === '' || newValue === null) {
-                        setFieldValue('chanel', '');
-                        return;
-                      }
-                      setFieldValue('chanel', newValue.label);
-                    }}
-                    openOnFocus
-                    disableClearable
-                    clearOnEscape
-                    autoHighlight
-                    freeSolo
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        InputProps={{
-                          ...params.InputProps,
-                          type: 'search',
-                          placeholder: 'Manual',
-                          style: {
-                            padding: 8
-                          }
-                        }}
-                        size="small"
-                        variant="outlined"
-                      />
-                    )}
-                  />
-                  {touched.chanel && errors.chanel && (
-                    <FormHelperText error id="helper-text-chanel-signup">
-                      {errors.chanel}
-                    </FormHelperText>
-                  )}
-                </Stack>
-              </Grid>
               {/* Customer end */}
               {/* Address start */}
               <Grid item xs={12}>
@@ -330,6 +414,50 @@ const CreateOrderForm = () => {
                   </Grid>
                   <Grid item xs={4}>
                     <Stack spacing={1}>
+                      <InputLabel htmlFor="city">Select City</InputLabel>
+                      <Autocomplete
+                        options={cities}
+                        id="city"
+                        name="city"
+                        value={values.city !== '' ? values.city : ''}
+                        onBlur={handleBlur}
+                        onChange={(event, newValue) => {
+                          if (newValue === '' || newValue === null) {
+                            setFieldValue('city', '');
+                            return;
+                          }
+                          setFieldValue('city', newValue);
+                        }}
+                        openOnFocus
+                        disableClearable
+                        clearOnEscape
+                        autoHighlight
+                        freeSolo
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            InputProps={{
+                              ...params.InputProps,
+                              type: 'search',
+                              placeholder: 'Lahore',
+                              style: {
+                                padding: 8
+                              }
+                            }}
+                            size="small"
+                            variant="outlined"
+                          />
+                        )}
+                      />
+                      {touched.city && errors.city && (
+                        <FormHelperText error id="helper-text-city-signup">
+                          {errors.city}
+                        </FormHelperText>
+                      )}
+                    </Stack>
+                  </Grid>
+                  {/* <Grid item xs={4}>
+                    <Stack spacing={1}>
                       <InputLabel htmlFor="city">City</InputLabel>
                       <OutlinedInput
                         id="city"
@@ -348,7 +476,7 @@ const CreateOrderForm = () => {
                         </FormHelperText>
                       )}
                     </Stack>
-                  </Grid>
+                  </Grid> */}
                 </Grid>
               </Grid>
               <Grid item xs={6}>
@@ -424,6 +552,7 @@ const CreateOrderForm = () => {
                             setFieldValue('price', '');
                             setFieldValue('sku', '');
                             setFieldValue('grams', '');
+                            setFieldValue('discount', '');
                             return;
                           }
                           setFieldValue('itemId', newValue.id);
@@ -431,6 +560,7 @@ const CreateOrderForm = () => {
                           setFieldValue('price', newValue.price);
                           setFieldValue('sku', newValue.sku);
                           setFieldValue('grams', newValue.grams);
+                          setFieldValue('discount', 0);
                         }}
                         openOnFocus
                         disableClearable
@@ -460,7 +590,7 @@ const CreateOrderForm = () => {
                       )}
                     </Stack>
                   </Grid>
-                  <Grid item xs={3}>
+                  <Grid item xs={2}>
                     <Stack spacing={1}>
                       <InputLabel htmlFor="quantity">Quantity</InputLabel>
                       <OutlinedInput
@@ -482,7 +612,7 @@ const CreateOrderForm = () => {
                       )}
                     </Stack>
                   </Grid>
-                  <Grid item xs={3}>
+                  <Grid item xs={2}>
                     <Stack spacing={1}>
                       <InputLabel htmlFor="price">Price</InputLabel>
                       <OutlinedInput
@@ -504,6 +634,29 @@ const CreateOrderForm = () => {
                       )}
                     </Stack>
                   </Grid>
+                  <Grid item xs={2}>
+                    <Stack spacing={1}>
+                      <InputLabel htmlFor="discount">Discount</InputLabel>
+                      <OutlinedInput
+                        endAdornment={<InputAdornment>%</InputAdornment>}
+                        fullWidth
+                        error={Boolean(touched.discount && errors.discount)}
+                        id="discount"
+                        type="text"
+                        value={values.discount}
+                        name="discount"
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        placeholder="10"
+                        inputProps={{}}
+                      />
+                      {touched.discount && errors.discount && (
+                        <FormHelperText error id="helper-text-discount">
+                          {errors.discount}
+                        </FormHelperText>
+                      )}
+                    </Stack>
+                  </Grid>
                   <Grid item xs={3}>
                     <Stack spacing={1} justifyContent="flex-end">
                       <Button
@@ -517,14 +670,29 @@ const CreateOrderForm = () => {
                             setFieldError('quantity', 'Please add item quantity');
                             setTouched({ ...touched, quantity: true });
                           } else {
-                            addItem(values.itemId, values.item, values.quantity, values.price, values.sku, values.grams);
+                            let price = values.price;
+                            if (values?.discount > 0) {
+                              const discount = (values.discount / 100) * values.price;
+                              price -= discount;
+                            }
+                            addItem(
+                              values.itemId,
+                              values.item,
+                              values.quantity,
+                              values.price,
+                              price,
+                              values.discount,
+                              values.sku,
+                              values.grams
+                            );
                             setFieldValue('itemId', '');
                             setFieldValue('item', '');
                             setFieldValue('quantity', '');
                             setFieldValue('price', '');
                             setFieldValue('sku', '');
                             setFieldValue('grams', '');
-                            setTouched({ ...touched, quantity: false, item: false });
+                            setFieldValue('discount', '');
+                            setTouched({ ...touched, quantity: false, item: false, discount: false });
                           }
                         }}
                         startIcon={<PlusOutlined />}
@@ -548,24 +716,78 @@ const CreateOrderForm = () => {
                       <TableRow>
                         <TableCell>Name</TableCell>
                         <TableCell align="right">Qty.</TableCell>
-                        <TableCell align="right">Unit</TableCell>
-                        <TableCell align="right">Sum</TableCell>
+                        <TableCell align="right">Unit Price</TableCell>
+                        <TableCell align="right">Disc</TableCell>
+                        <TableCell align="right">Net</TableCell>
+                        <TableCell align="right">Action</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {items.map((row) => (
+                      {items.map((row, index) => (
                         <TableRow key={row.id}>
                           <TableCell>{row.name}</TableCell>
-                          <TableCell align="right">{row.quantity}</TableCell>
-                          <TableCell align="right">{row.price}</TableCell>
-                          <TableCell align="right">{row.price * row.quantity}</TableCell>
+                          <TableCell align="right">
+                            <IconButton
+                              onClick={() => {
+                                const i = items[index];
+                                i.quantity > 1 ? i.quantity-- : null;
+                                const updateItems = items.toSpliced(index, 1, i);
+                                setItems(updateItems);
+                              }}
+                              color="error"
+                              aria-label="delete"
+                            >
+                              <MinusOutlined />
+                            </IconButton>{' '}
+                            {row.quantity}{' '}
+                            <IconButton
+                              onClick={() => {
+                                const i = items[index];
+                                i.quantity++;
+                                const updateItems = items.toSpliced(index, 1, i);
+                                setItems(updateItems);
+                              }}
+                              color="success"
+                              aria-label="delete"
+                            >
+                              <PlusOutlined />
+                            </IconButton>
+                          </TableCell>
+                          <TableCell align="right">{row.unit}</TableCell>
+                          <TableCell align="right">{row.discount}%</TableCell>
+                          <TableCell align="right">{(row.price * row.quantity).toFixed(2)}</TableCell>
+                          <TableCell align="right">
+                            <IconButton onClick={() => setItems((items) => items.filter((item) => item.id !== row.id))} aria-label="delete">
+                              <CloseOutlined />
+                            </IconButton>
+                          </TableCell>
                         </TableRow>
                       ))}
                       <TableRow>
+                        <TableCell></TableCell>
                         <TableCell colSpan={3} align="right">
                           Total
                         </TableCell>
-                        <TableCell align="right">{items.reduce((pre, item) => item.price * item.quantity + pre, 0)}</TableCell>
+                        <TableCell align="right">{items.reduce((pre, item) => parseFloat(item.unit) + pre, 0)}</TableCell>
+                        <TableCell></TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell></TableCell>
+                        <TableCell colSpan={3} align="right">
+                          Discount
+                        </TableCell>
+                        <TableCell align="right">
+                          {items.reduce((pre, item) => (item.discount / 100) * item.unit + pre, 0).toFixed(2)}
+                        </TableCell>
+                        <TableCell></TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell></TableCell>
+                        <TableCell colSpan={3} align="right">
+                          Net Total
+                        </TableCell>
+                        <TableCell align="right">{items.reduce((pre, item) => item.price * item.quantity + pre, 0).toFixed(2)}</TableCell>
+                        <TableCell></TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
@@ -588,7 +810,7 @@ const CreateOrderForm = () => {
                     variant="contained"
                     color="primary"
                   >
-                    Create new Order
+                    {order ? 'Update Order' : 'Create new order'}
                   </Button>
                 </AnimateButton>
               </Grid>

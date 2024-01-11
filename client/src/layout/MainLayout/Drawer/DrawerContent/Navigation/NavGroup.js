@@ -6,22 +6,21 @@ import { Box, List, Typography } from '@mui/material';
 
 // project import
 import NavItem from './NavItem';
+import useAccess from 'hooks/useAccess';
 
 // ==============================|| NAVIGATION - LIST GROUP ||============================== //
 
 const NavGroup = ({ item }) => {
   const menu = useSelector((state) => state.menu);
+  const { hasPermission } = useAccess();
   const { drawerOpen } = menu;
 
   const navCollapse = item.children?.map((menuItem) => {
     switch (menuItem.type) {
-      case 'collapse':
-        return (
-          <Typography key={menuItem.id} variant="caption" color="error" sx={{ p: 2.5 }}>
-            collapse - only available in paid version
-          </Typography>
-        );
       case 'item':
+        if (menuItem.permission !== undefined && !hasPermission(menuItem.permission)) {
+          return null;
+        }
         return <NavItem key={menuItem.id} item={menuItem} level={1} />;
       default:
         return (

@@ -9,6 +9,7 @@ import MainLayout from 'layout/MainLayout/index';
 const OrderManagement = Loadable(lazy(() => import('pages/order-management')));
 const CreateOrder = Loadable(lazy(() => import('pages/create-order')));
 const OrdierView = Loadable(lazy(() => import('pages/order-view')));
+const BookingManagement = Loadable(lazy(() => import('pages/booking-management')));
 
 // ==============================|| AUTH ROUTING ||============================== //
 
@@ -29,6 +30,14 @@ const OrderRoutes = {
       element: (
         <PrivateRoute>
           <CreateOrder />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'booking',
+      element: (
+        <PrivateRoute>
+          <BookingManagement />
         </PrivateRoute>
       )
     },

@@ -15,10 +15,11 @@ import item from './slices/item/itemSlice';
 import supplier from './slices/supplier/supplierSlice';
 import stock from './slices/stock/stockSlice';
 import chanel from './slices/chanel/chanelSlice';
+import city from './slices/city/citySlice';
 // ==============================|| COMBINE REDUCERS ||============================== //
 
 const reducers = combineReducers(
-  { menu, auth, user, util, order, customer, supplier, item, stock, brand, category, chanel },
+  { menu, auth, user, util, order, customer, supplier, item, stock, brand, category, chanel, city },
   composeWithDevTools()
 );
 

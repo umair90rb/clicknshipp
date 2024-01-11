@@ -16,16 +16,16 @@ const orderTableHeadCell = [
     label: 'Order#'
   },
   {
-    id: 'status',
-    label: 'Order Status'
-  },
-  {
     id: 'total_price',
     label: 'Total Amount'
   },
   {
     id: 'total_tax',
     label: 'Tax Amount'
+  },
+  {
+    id: 'status',
+    label: 'Order Status'
   },
   {
     id: 'total_discounts',
@@ -63,7 +63,7 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function OrderTable({ order = 'desc', orderBy = 'id' }) {
+export default function ConfirmedOrderTable({ order = 'desc', orderBy = 'id' }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const listIsLoading = useSelector(orderListIsLoadingSelector);
@@ -71,7 +71,7 @@ export default function OrderTable({ order = 'desc', orderBy = 'id' }) {
   const orders = useSelector(orderListSelector);
 
   useEffect(() => {
-    dispatch(fetchAllOrder({ body: {} }));
+    dispatch(fetchAllOrder({ body: { status: 'Confirmed' } }));
   }, []);
 
   if (listIsLoading) {
@@ -127,7 +127,7 @@ export default function OrderTable({ order = 'desc', orderBy = 'id' }) {
                   key={row[orderBy]}
                 >
                   {orderTableHeadCell.map(({ id: cellId }) => (
-                    <TableCell key={Math.random()} id={labelId} component="th" align="center">
+                    <TableCell key={row['id']} id={labelId} component="th" align="center">
                       {row[cellId]}
                     </TableCell>
                   ))}
@@ -163,7 +163,7 @@ export default function OrderTable({ order = 'desc', orderBy = 'id' }) {
   );
 }
 
-OrderTable.propTypes = {
+ConfirmedOrderTable.propTypes = {
   order: PropTypes.oneOf(['asc', 'desc']).isRequired,
   orderBy: PropTypes.string.isRequired
 };

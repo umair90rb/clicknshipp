@@ -11,3 +11,5 @@ export default (date = new Date().toISOString()) => {
 
   return `${MONTHS[month]} ${day} ${year} at ${hours < 12 ? hours : hours - 12}:${min} ${ampm}`;
 };
+
+export const getDate = (date) => date.split('T')[0];

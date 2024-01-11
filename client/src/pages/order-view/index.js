@@ -1,33 +1,47 @@
 import formatDate from 'utils/format-date';
-import { Grid, Stack, Typography, Card, CardContent } from '../../../node_modules/@mui/material/index';
-import { useParams } from '../../../node_modules/react-router-dom/dist/index';
+import { Grid, Stack, Typography, Card, CardContent, Button, Chip, Modal, Box } from '@mui/material';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import CenterCircularLoader from 'components/CenterCircularLoader';
 import { useDispatch } from 'react-redux';
-import { fetchOrder } from 'store/slices/order/fetchOrder';
+import { fetchConfirmOrder, fetchOrder } from 'store/slices/order/fetchOrder';
 import { setMessage } from 'store/slices/util/utilSlice';
-
-const Item = ({ item: { grams, id, name, price, product_id, quantity, sku, total_discount } }) => (
-  <>
-    <Typography variant="body1" gutterBottom>
-      {`${name}(Sku: ${sku || 'None'}) Rs.${price} x ${quantity} Total: Rs.${price * quantity} Discount: ${total_discount || 'None'}`}
-    </Typography>
-  </>
-);
+import OrderItemTable from './OrderItemTable';
+import OrderSummaryCard from './OrderSummaryCard';
+import location from 'utils/location';
+import CourierDropdown from './CourierDropdown';
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4
+};
 
 const OrderView = () => {
   const { orderId } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [showBookModal, setShowBookModal] = useState(false);
+  const showBookingModal = () => setShowBookModal(true);
+  const hideBookingModal = () => setShowBookModal(false);
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState();
   const [error, setError] = useState(null);
-  const { id, order_number, subtotal_price, total_discounts, total_price, total_tax, OrderItems, Customer, createdAt } = order || {};
-  const { Addresses, email, first_name, last_name, id: customerId, name, note, phone } = Customer || {};
+  const { id, order_number, subtotal_price, status, total_discounts, total_price, total_tax, address, items, customer, createdAt } =
+    order || {};
+  const [orderStatus, setOrderStatus] = useState('');
+  const { email, first_name, last_name, id: customerId, name, note, phone } = customer || {};
+  const { city, zip, country, address1 } = address || {};
   useEffect(() => {
     dispatch(fetchOrder({ id: orderId })).then((action) => {
       if (action.type === 'order/fetch/fulfilled') {
         setOrder(action.payload?.data?.order);
         setLoading(false);
+        setOrderStatus(action.payload?.data?.order?.status);
       } else {
         setError(action.payload?.error || 'Something goes wrong!');
         dispatch(setMessage({ message: action.payload?.error || 'Something goes wrong!' }));
@@ -36,31 +50,76 @@ const OrderView = () => {
     });
   }, []);
 
+  const confirmOrder = () => {
+    return dispatch(fetchConfirmOrder({ id })).then((action) => {
+      if (action.type === 'order/confirm/fetch/fulfilled') {
+        dispatch(setMessage({ message: 'Order confirmed' }));
+        setOrderStatus('Confirmed');
+      } else {
+        dispatch(setMessage({ message: action.payload.error || 'Something goes wrong! Please try again.', type: 'error' }));
+      }
+    });
+  };
+
   if (loading) {
-    <CenterCircularLoader />;
+    return <CenterCircularLoader />;
   }
 
   if (error) {
     return null;
   }
 
-  console.log(order);
-
   return (
     <Stack>
-      <Typography variant="h4">#{order_number}</Typography>
-      <Typography color="grey" variant="subtitle2">
-        {`${formatDate(createdAt)} from ${name}`}
-      </Typography>
+      <Grid container>
+        <Grid item xs={6}>
+          <Typography variant="h4">
+            #{order_number}{' '}
+            <Chip color={orderStatus === 'Confirmed' ? 'success' : 'primary'} size="small" variant="elevated" label={orderStatus} />
+          </Typography>
+          <Typography color="grey" variant="subtitle2">
+            {`${formatDate(createdAt)} from ${name}`}
+          </Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Grid container spacing={2} direction="row" justifyContent="flex-end" alignItems="center">
+            {orderStatus === 'Confirmed' && (
+              <Grid item>
+                <Button variant="outlined" disabled={orderStatus !== 'Confirmed'} onClick={showBookingModal} color="primary">
+                  Book Order
+                </Button>
+              </Grid>
+            )}
+            <Grid item>
+              <Button variant="outlined" disabled={orderStatus === 'Confirmed'} onClick={confirmOrder} color="success">
+                Confirm
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button
+                variant="contained"
+                disabled={orderStatus === 'Confirmed'}
+                onClick={() => navigate(location.createOrder(), { state: { order } })}
+                color="primary"
+              >
+                Update
+              </Button>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
+
       <Grid container spacing={2}>
         <Grid item xs={8}>
-          <Card sx={{ minWidth: 275 }}>
-            <CardContent>{OrderItems && OrderItems.map((item) => <Item key={item.id} item={item} />)}</CardContent>
+          <Card sx={{ minWidth: 275, padding: 2 }}>
+            <CardContent sx={{ padding: 0 }}>
+              <Typography variant="h6" gutterBottom>
+                Order Items
+              </Typography>
+              <OrderItemTable orderItems={items} onDelete={() => {}} />
+            </CardContent>
           </Card>
-
-          <Card sx={{ minWidth: 275, mt: 1 }}>
-            <CardContent></CardContent>
-          </Card>
+          <OrderSummaryCard subtotal={subtotal_price} tax={total_tax} total={total_price} />
         </Grid>
         <Grid item xs={4}>
           <Card sx={{ minWidth: 275 }}>
@@ -80,22 +139,24 @@ const OrderView = () => {
               <Typography variant="h5" gutterBottom>
                 Contact information
               </Typography>
-              <Typography>{`Email: ${email}`}</Typography>
-              <Typography>{`Phone: ${phone}`}</Typography>
+              <Typography>{`Email: ${email || 'None'}`}</Typography>
+              <Typography>{`Phone: ${phone || 'None'}`}</Typography>
 
               <Typography variant="h5" gutterBottom>
                 Shipping Address
               </Typography>
-              {Addresses &&
-                Addresses.map(({ address1, city, zip, country }) => (
-                  <Typography key={address1}>
-                    {address1} <br /> {city} {zip} <br /> {country}
-                  </Typography>
-                ))}
+              <Typography key={address1}>
+                {address1} <br /> {city} {zip} <br /> {country}
+              </Typography>
             </CardContent>
           </Card>
         </Grid>
       </Grid>
+      <Modal open={showBookModal} onClose={hideBookingModal} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+        <Box sx={style}>
+          <CourierDropdown orderId={id} />
+        </Box>
+      </Modal>
     </Stack>
   );
 };

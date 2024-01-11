@@ -2,19 +2,14 @@
 import Routes from 'routes';
 import ThemeCustomization from 'themes';
 import ScrollTop from 'components/ScrollTop';
-import { useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
-import { setPath, setMessage } from 'store/slices/util/utilSlice';
-import { Snackbar, Alert, IconButton } from '@mui/material';
-import { CloseOutlined } from '@ant-design/icons';
+import { setMessage } from 'store/slices/util/utilSlice';
+import { Snackbar, Alert } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { utilMessageSelector } from 'store/slices/util/utilSelector';
 
 const App = () => {
   const dispatch = useDispatch();
-  // const { pathname } = useLocation();
   const { message, type } = useSelector(utilMessageSelector);
-  // useEffect(() => dispatch(setPath(pathname)), []);
 
   const handleExited = () => dispatch(setMessage({ message: '', type: '' }));
 

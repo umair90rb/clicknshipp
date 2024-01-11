@@ -10,3 +10,4 @@ export { itemService } from './itemService';
 export { stockService } from './stockService';
 export { orderService } from './orderService';
 export { permissionService } from './permissionService';
+export { cityService } from './cityService';

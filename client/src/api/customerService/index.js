@@ -7,6 +7,8 @@ class CustomerService extends Ajax {
 
   fetchCustomer = (id) => this.getJson(`${this.pathname}/${id}`);
 
+  fetchSearchCustomer = (query) => this.post(`${this.pathname}/search`, query);
+
   //   fetchAddUser = (data) => this.post(`${this.pathname}`, data);
 
   //   fetchUpdateUser = (id, data) => this.put(`${this.pathname}/${id}`, data);
