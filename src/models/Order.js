@@ -8,8 +8,19 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Order.belongsTo(models.Customer);
-      Order.hasMany(models.OrderItem);
+      Order.belongsTo(models.Customer, {
+        as: "customer",
+        foreignKey: "customer_id",
+      });
+      Order.hasOne(models.Address, { as: "address", foreignKey: "order_id" });
+      Order.hasOne(models.Delivery, { as: "delivery", foreignKey: "order_id" });
+      Order.hasMany(models.OrderItem, { as: "items", foreignKey: "order_id" });
+      Order.belongsTo(models.User, {
+        foreignKey: "user_id",
+        as: "user",
+        onDelete: "NO ACTION",
+        onUpdate: "NO ACTION",
+      });
     }
   }
   Order.init(
@@ -40,6 +51,21 @@ module.exports = (sequelize, DataTypes) => {
       },
       data: {
         type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      status: {
+        type: DataTypes.STRING,
+        defaultValue: "Received",
+      },
+      cancel_reason: {
+        type: DataTypes.STRING,
+      },
+      remarks: {
+        type: DataTypes.STRING,
+      },
+      chanel: {
+        type: DataTypes.STRING,
+        defaultValue: "Received",
         allowNull: true,
       },
       createdAt: { type: DataTypes.DATE, field: "created_at" },

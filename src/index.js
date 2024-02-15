@@ -1,11 +1,12 @@
 import express from "express";
 import cors from "cors";
 import path from "path";
+import dotenv from "dotenv";
 import route from "./routes";
 import logErrors from "./middleware/logError";
 import clientErrorHandler from "./middleware/clientErrorHandler";
 import errorHandler from "./middleware/errorHandler";
-import dotenv from "dotenv";
+import "./jobs/assignOrders";
 
 dotenv.config();
 const app = express();

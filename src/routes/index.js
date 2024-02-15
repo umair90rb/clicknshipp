@@ -9,6 +9,7 @@ import brandRouter from "./brandRouter";
 import chanelRouter from "./chanelRouter";
 import customerRouter from "./customerRouter";
 import roleRouter from "./roleRouter";
+import cityRouter from "./cityRouter";
 import orderRouter from "./orderRouter";
 import permissionRouter from "./permissionRouter";
 import express from "express";
@@ -28,6 +29,7 @@ export default (app) => {
   app.use("/api/v1/chanel", chanelRouter);
   app.use("/api/v1/customer", customerRouter);
   app.use("/api/v1/role", roleRouter);
+  app.use("/api/v1/city", cityRouter);
   app.use("/api/v1/permission", permissionRouter);
   app.use("/api/v1/order", orderRouter);
   app.use("/api/v1/", adminRouter);

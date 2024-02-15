@@ -19,7 +19,9 @@ import {
   Autocomplete,
   TextField,
   IconButton,
-  InputAdornment
+  InputAdornment,
+  Modal,
+  Box
 } from '@mui/material';
 
 import * as Yup from 'yup';
@@ -40,6 +42,18 @@ import { setMessage } from 'store/slices/util/utilSlice';
 import { fetchSearchCustomer } from 'store/slices/customer/fetchCustomer';
 import { cityCitiesSelector, cityFetchStatusSelector } from 'store/slices/city/citySelector';
 import { fetchAllCities } from 'store/slices/city/fetchCity';
+import TransactionModal from './TransactionModal';
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4
+};
 
 const CreateOrderForm = () => {
   const dispatch = useDispatch();
@@ -47,10 +61,16 @@ const CreateOrderForm = () => {
   const orderForm = useRef();
   const { state } = useLocation();
   const { order } = state || {};
-  const { items: orderItems, customer, address, id, chanel } = order || {};
+  const { items: orderItems, customer, address, id, chanel, remarks } = order || {};
   const { first_name, last_name, email, phone, note, id: customerId } = customer || {};
   const { address1, address2, city, zip, province, id: addressId } = address || {};
   const [items, setItems] = useState(orderItems || []);
+  const [payments, setPayments] = useState([]);
+
+  const [showTransactionModal, setShowTransactionModal] = useState(false);
+  const showAddTranscationModal = () => setShowTransactionModal(true);
+  const hideAddTranscationModal = () => setShowTransactionModal(false);
+
   const [customerLoading, setCustomerLoading] = useState(false);
 
   const orderCreateIsLoading = useSelector(orderCreateIsLoadingSelector);
@@ -63,9 +83,9 @@ const CreateOrderForm = () => {
 
   console.log(order);
 
-  const handleSubmit = async (values, { setErrors, ...rest }) => {
+  const handleSubmit = async (values, { setErrors }) => {
     if (!items.length) {
-      setErrors({ submit: 'Please add item to order first' });
+      setErrors({ submit: 'Please add atleast one item' });
       return;
     }
     delete values.item;
@@ -151,6 +171,7 @@ const CreateOrderForm = () => {
           email: email || '',
           phone: phone || '',
           note: note || '',
+          remarks: remarks || '',
           chanel: chanel || '',
           addressId: '',
           address1: address1 || '',
@@ -170,9 +191,10 @@ const CreateOrderForm = () => {
           first_name: Yup.string().max(255).required('First Name is required'),
           last_name: Yup.string().max(255),
           note: Yup.string(),
+          remarks: Yup.string(),
           chanel: Yup.string().required('Please select sale channel.'),
           phone: Yup.number().min(11).required('Phone is required'),
-          email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
+          email: Yup.string().email('Must be a valid email').max(255),
           address1: Yup.string().required('Address is required'),
           address2: Yup.string(),
           city: Yup.string().required('City is required'),
@@ -187,7 +209,7 @@ const CreateOrderForm = () => {
         })}
         onSubmit={handleSubmit}
       >
-        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values, setFieldValue, setFieldError, setTouched }) => (
+        {({ errors, handleBlur, handleChange, handleSubmit, touched, values, setFieldValue, setFieldError, setTouched }) => (
           <form noValidate onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               {/* Customer start */}
@@ -456,27 +478,6 @@ const CreateOrderForm = () => {
                       )}
                     </Stack>
                   </Grid>
-                  {/* <Grid item xs={4}>
-                    <Stack spacing={1}>
-                      <InputLabel htmlFor="city">City</InputLabel>
-                      <OutlinedInput
-                        id="city"
-                        type="city"
-                        value={values.city}
-                        name="city"
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        placeholder="City"
-                        fullWidth
-                        error={Boolean(touched.city && errors.city)}
-                      />
-                      {touched.city && errors.city && (
-                        <FormHelperText error id="helper-text-city">
-                          {errors.city}
-                        </FormHelperText>
-                      )}
-                    </Stack>
-                  </Grid> */}
                 </Grid>
               </Grid>
               <Grid item xs={6}>
@@ -523,6 +524,93 @@ const CreateOrderForm = () => {
                 </Stack>
               </Grid>
               {/* Address end */}
+              {/* Other detail start */}
+              <Grid item xs={12}>
+                <Divider color="error">Other Details</Divider>
+              </Grid>
+              <Grid item xs={12}>
+                <Grid container spacing={1}>
+                  <Grid item xs={12}>
+                    <Stack spacing={1}>
+                      <InputLabel htmlFor="remarks">Remarks</InputLabel>
+                      <OutlinedInput
+                        multiline
+                        rows={2}
+                        id="remarks"
+                        type="remarks"
+                        value={values.remarks}
+                        name="remarks"
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        placeholder="Any remarks"
+                        fullWidth
+                        error={Boolean(touched.remarks && errors.remarks)}
+                      />
+                      {touched.remarks && errors.remarks && (
+                        <FormHelperText error id="helper-text-remarks">
+                          {errors.remarks}
+                        </FormHelperText>
+                      )}
+                    </Stack>
+                  </Grid>
+                </Grid>
+              </Grid>
+              {/* Other details end */}
+              {/* Payment start */}
+              <Grid item xs={12}>
+                <Divider color="error">
+                  <Button
+                    style={{ height: 41 }}
+                    onClick={showAddTranscationModal}
+                    startIcon={<PlusOutlined />}
+                    variant="outlined"
+                    aria-label="add"
+                    color="primary"
+                  >
+                    Add Advanced Payments
+                  </Button>
+                </Divider>
+              </Grid>
+              {payments.length > 0 && (
+                <Grid item xs={12}>
+                  <Grid container spacing={1}>
+                    <Grid item xs={12}>
+                      <TableContainer>
+                        <Table sx={{ minWidth: 400 }} aria-label="spanning table">
+                          <TableHead>
+                            <TableRow>
+                              <TableCell align="right">For</TableCell>
+                              <TableCell align="right">Bank</TableCell>
+                              <TableCell align="right">Transcation Id</TableCell>
+                              <TableCell align="right">Amount</TableCell>
+                              <TableCell align="right">Action</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {payments.map((row) => (
+                              <TableRow key={row.id}>
+                                <TableCell align="right">{row.for}</TableCell>
+                                <TableCell align="right">{row.bank}</TableCell>
+                                <TableCell align="right">{row.transcationId}%</TableCell>
+                                <TableCell align="right">{row.amount}</TableCell>
+                                <TableCell align="right">
+                                  <IconButton
+                                    onClick={() => setPayments((payments) => payments.filter((payment) => payment.id !== row.id))}
+                                    aria-label="delete"
+                                  >
+                                    <CloseOutlined />
+                                  </IconButton>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              )}
+              {/* Payment end */}
               {/* Items start */}
               <Grid item xs={12}>
                 <Divider color="error">Add Items</Divider>
@@ -545,7 +633,6 @@ const CreateOrderForm = () => {
                         value={values.item !== '' ? values.item : ''}
                         onBlur={handleBlur}
                         onChange={(event, newValue) => {
-                          console.log(newValue, event);
                           if (newValue === '' || newValue === null) {
                             setFieldValue('itemId', '');
                             setFieldValue('item', '');
@@ -561,6 +648,7 @@ const CreateOrderForm = () => {
                           setFieldValue('sku', newValue.sku);
                           setFieldValue('grams', newValue.grams);
                           setFieldValue('discount', 0);
+                          setFieldValue('quantity', 1);
                         }}
                         openOnFocus
                         disableClearable
@@ -663,12 +751,14 @@ const CreateOrderForm = () => {
                         style={{ height: 41 }}
                         onClick={() => {
                           console.log(errors);
+                          console.log(touched.quantity, errors.quantity);
+                          console.log(touched.item, errors.item);
                           if (!values.item) {
                             setFieldError('item', 'Please add item name');
-                            setTouched({ ...touched, item: true });
+                            return;
                           } else if (!values.quantity) {
                             setFieldError('quantity', 'Please add item quantity');
-                            setTouched({ ...touched, quantity: true });
+                            return;
                           } else {
                             let price = values.price;
                             if (values?.discount > 0) {
@@ -692,7 +782,7 @@ const CreateOrderForm = () => {
                             setFieldValue('sku', '');
                             setFieldValue('grams', '');
                             setFieldValue('discount', '');
-                            setTouched({ ...touched, quantity: false, item: false, discount: false });
+                            // setTouched({ ...touched, quantity: false, item: false, discount: false });
                           }
                         }}
                         startIcon={<PlusOutlined />}
@@ -706,7 +796,7 @@ const CreateOrderForm = () => {
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid item xs={12}>
+              <Grid item mt={5} xs={12}>
                 <Divider color="error">Items</Divider>
               </Grid>
               <Grid item xs={12}>
@@ -724,7 +814,7 @@ const CreateOrderForm = () => {
                     </TableHead>
                     <TableBody>
                       {items.map((row, index) => (
-                        <TableRow key={row.id}>
+                        <TableRow key={index}>
                           <TableCell>{row.name}</TableCell>
                           <TableCell align="right">
                             <IconButton
@@ -818,6 +908,16 @@ const CreateOrderForm = () => {
           </form>
         )}
       </Formik>
+      <Modal
+        open={showTransactionModal}
+        onClose={hideAddTranscationModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <TransactionModal setPayments={setPayments} hideModal={hideAddTranscationModal} />
+        </Box>
+      </Modal>
     </>
   );
 };

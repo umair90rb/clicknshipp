@@ -61,51 +61,37 @@ export default {
     }
   },
 
-  //   async create(req, res) {
-  //     const { name, email, password, phone, roles } = req.body;
-  //     try {
-  //       let user = await User.findOne({
-  //         where: { [Op.or]: [{ email }, { phone }] },
-  //       });
-  //       if (user) {
-  //         return sendErrorResponse(
-  //           res,
-  //           422,
-  //           "User with email or phone already exists."
-  //         );
-  //       }
-  //       user = await User.create({
-  //         email,
-  //         password: hash(password),
-  //         name,
-  //         phone,
-  //       });
-  //       await user.addRoles(roles);
-  //       const assignedRoles = await user.getRoles();
-  //       return sendSuccessResponse(
-  //         res,
-  //         201,
-  //         {
-  //           user: {
-  //             email: user.email,
-  //             id: user.id,
-  //             name: user.name,
-  //             phone: user.phone,
-  //             status: user.status,
-  //             roles: assignedRoles.map((r) => ({ name: r.name, id: r.id })),
-  //           },
-  //         },
-  //         "Account created successfully"
-  //       );
-  //     } catch (error) {
-  //       return sendErrorResponse(
-  //         res,
-  //         500,
-  //         "Could not perform operation at this time, kindly try again later.",
-  //         error
-  //       );
-  //     }
-  //   },
+  async search(req, res) {
+    const query = req.body;
+    try {
+      let customer = await Customer.findOne({
+        where: { ...query },
+      });
+      if (!customer) {
+        return sendErrorResponse(res, 404, "Customer not found!");
+      }
+      const address = await Address.findOne({
+        attributes: ["id", "address1", "address2", "city", "zip", "province"],
+        where: { customer_id: customer.id },
+      });
+      return sendSuccessResponse(
+        res,
+        200,
+        {
+          ...customer.dataValues,
+          address,
+        },
+        "Customer found."
+      );
+    } catch (error) {
+      return sendErrorResponse(
+        res,
+        500,
+        "Could not perform operation at this time, kindly try again later.",
+        error
+      );
+    }
+  },
 
   //   async update(req, res) {
   //     try {

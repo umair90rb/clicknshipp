@@ -1,22 +1,42 @@
 import { Op } from "sequelize";
 import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
-import { hash } from "../utils/hashing";
+const bcrypt = require("bcrypt");
 
-const { User, Role, Permission } = model;
+const {
+  User,
+  Role,
+  Permission,
+  UserRole,
+  UserPermission,
+  PersonalAccessToken,
+} = model;
 
 export default {
   async users(req, res) {
     try {
-      const users = await User.scope("clean").findAll({
-        include: {
-          model: Role,
-          as: "roles",
-          through: {
-            attributes: [],
+      const usersWithRolesAndPermissions = await User.scope("clean").findAll({
+        include: [
+          {
+            model: Role,
+            as: "roles",
+            through: {
+              attributes: [],
+            },
           },
-        },
+          {
+            model: Permission,
+            as: "permissions",
+            through: {
+              attributes: [],
+            },
+          },
+        ],
       });
+      const users = usersWithRolesAndPermissions.map((user) => ({
+        ...user.dataValues,
+        roles: user.roles.map((role) => role.name),
+      }));
       return sendSuccessResponse(res, 200, { users }, "All registered users");
     } catch (e) {
       console.error(e);
@@ -36,12 +56,34 @@ export default {
           {
             model: Role,
             as: "roles",
-            through: { attributes: [] },
+            through: {
+              attributes: [],
+            },
+          },
+          {
+            model: Permission,
+            as: "permissions",
+            through: {
+              attributes: [],
+            },
           },
         ],
       });
       if (user) {
-        return sendSuccessResponse(res, 200, { user }, "User with id");
+        return sendSuccessResponse(
+          res,
+          200,
+          {
+            user: {
+              ...user.dataValues,
+              roles: user.roles.map((role) => role.name),
+              permissions: user.permissions.map(
+                (permission) => permission.name
+              ),
+            },
+          },
+          "User with id"
+        );
       }
       return sendErrorResponse(res, 404, "No data found with this id.");
     } catch (e) {
@@ -68,14 +110,27 @@ export default {
           "User with email or phone already exists."
         );
       }
+      const hashedPassword = await bcrypt.hash(password, 10);
       user = await User.create({
         email,
-        password: hash(password),
+        password: hashedPassword,
         name,
         phone,
       });
       await user.addRoles(roles);
+
       const assignedRoles = await user.getRoles();
+
+      const rolesWithPermissions = await Promise.all(
+        assignedRoles.map((role) => role.getPermissions())
+      );
+      const permissions = [];
+      rolesWithPermissions.forEach((rolePermissions) => {
+        rolePermissions.forEach((permission) =>
+          permissions.push({ id: permission.id, name: permission.name })
+        );
+      });
+      await user.addPermissions(permissions.map((permission) => permission.id));
       return sendSuccessResponse(
         res,
         201,
@@ -86,7 +141,8 @@ export default {
             name: user.name,
             phone: user.phone,
             status: user.status,
-            roles: assignedRoles.map((r) => ({ name: r.name, id: r.id })),
+            roles: assignedRoles.map((role) => role.name),
+            permissions: permissions.map((permission) => permission.name),
           },
         },
         "Account created successfully"
@@ -104,7 +160,21 @@ export default {
   async update(req, res) {
     try {
       const id = req.params.id;
-      const { name, email, phone, password, roles } = req.body;
+      const userUpdatedData = req.body;
+      const { name, email, phone, password, roles, status } =
+        userUpdatedData || {};
+      if (email && phone) {
+        const userWithEmailOrPhone = await User.findOne({
+          where: { [Op.or]: [{ email }, { phone }] },
+        });
+        if (userWithEmailOrPhone && userWithEmailOrPhone.id !== id) {
+          return sendErrorResponse(
+            res,
+            409,
+            "Email or phone number already registered!"
+          );
+        }
+      }
       const user = await User.findByPk(id, {
         include: [
           {
@@ -112,22 +182,48 @@ export default {
             as: "roles",
             through: { attributes: [] },
           },
+          {
+            model: Permission,
+            as: "permissions",
+            through: { attributes: [] },
+          },
         ],
       });
       if (user) {
+        const hashedPassword = await bcrypt.hash(password, 10);
         user.set({
-          email,
-          name,
-          phone,
-          password: hash(password),
+          email: email || user.email,
+          name: name || user.name,
+          phone: phone || user.phone,
+          status: status || user.status,
+          password: password ? hashedPassword : user.password,
           updatedAt: new Date().toISOString(),
         });
+        let assignedRoles, permissions;
         if (roles && roles.length) {
-          const currentRoles = await user.getRoles();
+          // const currentRoles = await user.getRoles();
+          const currentRoles = user.roles;
+          const currentPermissions = user.permissions;
           await user.removeRoles(currentRoles.map((r) => r.id));
           await user.addRoles(roles);
+          assignedRoles = await user.getRoles();
+
+          const rolesWithPermissions = await Promise.all(
+            assignedRoles.map((role) => role.getPermissions())
+          );
+          permissions = [];
+          rolesWithPermissions.forEach((rolePermissions) => {
+            rolePermissions.forEach((permission) =>
+              permissions.push({ id: permission.id, name: permission.name })
+            );
+          });
+          await user.removePermissions(
+            currentPermissions.map((permission) => permission.id)
+          );
+          await user.addPermissions(
+            permissions.map((permission) => permission.id)
+          );
         }
-        const newRoles = await user.getRoles();
         await user.save();
         return sendSuccessResponse(
           res,
@@ -139,7 +235,12 @@ export default {
               name: user.name,
               phone: user.phone,
               status: user.status,
-              roles: newRoles,
+              roles: assignedRoles?.length
+                ? assignedRoles.map((r) => r.name)
+                : [],
+              permissions: permissions?.length
+                ? permissions.map((p) => p.name)
+                : [],
             },
           },
           "Operation successful."
@@ -160,9 +261,24 @@ export default {
   async destroy(req, res) {
     try {
       const id = req.params.id;
+      if (id === req.user.id) {
+        return sendErrorResponse(
+          res,
+          400,
+          "Logged in user could not delete himself!"
+        );
+      }
       const user = await User.findByPk(id);
       if (user) {
-        //user deleted but not linked data e.g roles, permission onDelete 'cascade' not working yet
+        await PersonalAccessToken.destroy({
+          where: { user_id: user.id },
+        });
+        await UserRole.destroy({
+          where: { user_id: user.id },
+        });
+        await UserPermission.destroy({
+          where: { user_id: user.id },
+        });
         await user.destroy();
         return sendSuccessResponse(res, 200, {}, "Operation successful.");
       }

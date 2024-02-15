@@ -14,7 +14,7 @@ const SERVICES = [
   ['TCS', 'tcs']
 ];
 
-export default function CourierDropdown({ orderId }) {
+export default function CourierDropdown({ orderId, updateOrderStatus }) {
   const dispatch = useDispatch();
   const [service, setService] = useState('');
   const [loading, setLoading] = useState(false);
@@ -28,10 +28,11 @@ export default function CourierDropdown({ orderId }) {
     return dispatch(fetchBookOrder({ body: { orderId, service } })).then(({ type, payload }) => {
       if (type === 'order/book/fetch/fulfilled') {
         setLoading(false);
+        updateOrderStatus('Booked');
         return dispatch(setMessage({ message: `Order booked with ${service} successfully`, type: 'success' }));
       }
       setLoading(false);
-      return dispatch(setMessage({ message: `Error! Order can't booked with ${service}.`, type: 'error' }));
+      return dispatch(setMessage({ message: payload.error || `Error! Order can't booked with ${service}.`, type: 'error' }));
     });
   };
 

@@ -1,72 +1,116 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { DataGrid, GridToolbar, GridActionsCellItem, GridLogicOperator } from '@mui/x-data-grid';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { orderListIsLoadingSelector, orderListSelector } from 'store/slices/order/orderSelector';
 import { fetchAllOrder } from 'store/slices/order/fetchOrder';
 import location from 'utils/location';
-const orderTableHeadCell = [
+import { formatDateTime } from 'utils/format-date';
+const columns = (viewAction) => [
   {
-    id: 'id',
-    label: 'ID.'
+    field: 'id',
+    headerName: 'ID.',
+    width: 100
   },
   {
-    id: 'order_number',
-    label: 'Order#'
+    field: 'order_number',
+    headerName: 'Order#',
+    width: 100
   },
   {
-    id: 'status',
-    label: 'Order Status'
+    field: 'status',
+    headerName: 'Status',
+    width: 100
   },
   {
-    id: 'total_price',
-    label: 'Total Amount'
+    field: 'agent',
+    headerName: 'Agent',
+    width: 100,
+    valueGetter: (param) => param.row.user?.name || ''
   },
   {
-    id: 'total_tax',
-    label: 'Tax Amount'
+    field: 'address',
+    headerName: 'Address',
+    width: 300,
+    valueGetter: (param) => param.row.address?.address1 || ''
   },
   {
-    id: 'total_discounts',
-    label: 'Discount'
+    field: 'city',
+    headerName: 'City',
+    width: 100,
+    valueGetter: (param) => param.row.address?.city || ''
+  },
+
+  {
+    field: 'total_price',
+    headerName: 'Total Amount',
+    width: 100
   },
   {
-    id: 'createdAt',
-    label: 'Received At'
+    field: 'total_tax',
+    headerName: 'Tax Amount',
+    width: 100
+  },
+  {
+    field: 'total_discounts',
+    headerName: 'Discount',
+    width: 100
+  },
+  {
+    field: 'createdAt',
+    headerName: 'Received At',
+    width: 250,
+    valueGetter: (params) => formatDateTime(params.row.createdAt)
+  },
+  {
+    field: 'chanel',
+    headerName: 'Channel',
+    width: 100
+  },
+  {
+    field: 'actions',
+    headerName: 'Actions',
+    width: 100,
+    type: 'actions',
+    cellClassName: 'actions',
+    getActions: ({ id }) => [
+      <GridActionsCellItem
+        key={id}
+        icon={<VisibilityIcon />}
+        label="View"
+        className="textPrimary"
+        onClick={viewAction(id)}
+        color="inherit"
+      />
+    ]
   }
 ];
 
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === 'desc' ? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
-
-export default function OrderTable({ order = 'desc', orderBy = 'id' }) {
+export default function OrderTable() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const listIsLoading = useSelector(orderListIsLoadingSelector);
+
+  // const [filterModel, setFilterModel] = React.useState({
+  //   linkOperator: 'Or',
+  //   items: [
+  //     {
+  //       field: 'order_number',
+  //       id: 31996,
+  //       operator: 'contains',
+  //       value: '75'
+  //     },
+  //     {
+  //       field: 'status',
+  //       id: 31926,
+  //       operator: 'contains',
+  //       value: 'Booked'
+  //     }
+  //   ]
+  // });
+
   // const orderImportIsLoading = useSelector(orderImportIsLoadingSelector);
   const orders = useSelector(orderListSelector);
 
@@ -74,96 +118,36 @@ export default function OrderTable({ order = 'desc', orderBy = 'id' }) {
     dispatch(fetchAllOrder({ body: {} }));
   }, []);
 
+  const handleViewOrder = (id) => () => navigate(location.viewOrder(id));
+
+  // const onFilterChange = useCallback((newFilterModel) => {
+  //   console.log(newFilterModel);
+  //   setFilterModel(newFilterModel);
+  // }, []);
+
+  // console.log(tableRef);
+
   if (listIsLoading) {
     return null;
   }
-
   return (
-    <Box>
-      <TableContainer
-        sx={{
-          width: '100%',
-          overflowX: 'auto',
-          position: 'relative',
-          display: 'block',
-          maxWidth: '100%',
-          '& td, & th': { whiteSpace: 'nowrap' }
+    <div style={{ height: '80vh', width: '100%' }}>
+      <DataGrid
+        checkboxSelection
+        slots={{ toolbar: GridToolbar }}
+        slotProps={{
+          toolbar: {
+            showQuickFilter: true
+          }
         }}
-      >
-        <Table
-          aria-labelledby="tableTitle"
-          sx={{
-            '& .MuiTableCell-root:first-of-type': {
-              pl: 2
-            },
-            '& .MuiTableCell-root:last-of-type': {
-              pr: 3
-            }
-          }}
-        >
-          <TableHead>
-            <TableRow>
-              {orderTableHeadCell.map((headCell) => (
-                <TableCell key={headCell.id} align={'center'} padding={'normal'} sortDirection={orderBy === headCell.id ? order : false}>
-                  {headCell.label}
-                </TableCell>
-              ))}
-              {/* <TableCell key={'actions'} align={'center'} padding={'normal'} sortDirection={orderBy === 'actions' ? order : false}>
-                Actions
-              </TableCell> */}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {stableSort(orders || [], getComparator(order, orderBy)).map((row, index) => {
-              const labelId = `enhanced-table-checkbox-${index}`;
-
-              return (
-                <TableRow
-                  onClick={() => navigate(location.viewOrder(row['id']))}
-                  hover
-                  role="checkbox"
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  tabIndex={-1}
-                  key={row[orderBy]}
-                >
-                  {orderTableHeadCell.map(({ id: cellId }) => (
-                    <TableCell key={Math.random()} id={labelId} component="th" align="center">
-                      {row[cellId]}
-                    </TableCell>
-                  ))}
-                  {/* <TableCell key={Math.random()} id={labelId} component="th" align="center">
-                    <>
-                      <IconButton
-                        aria-label="delete"
-                        onClick={() => handleDelete(row.id)}
-                        disabled={row['id'] === user.id}
-                        size="large"
-                        color="error"
-                      >
-                        <DeleteOutlined />
-                      </IconButton>
-                      <IconButton
-                        aria-label="update"
-                        onClick={() => handleUpdate(row, index)}
-                        disabled={row['id'] === user.id}
-                        size="large"
-                        color="primary"
-                      >
-                        <EditOutlined />
-                      </IconButton>
-                    </>
-                  </TableCell> */}
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
+        pageSizeOptions={[25, 50, 75, 100]}
+        onRowSelectionModelChange={(newRowSelectionModel) => setRowSelectionModel(newRowSelectionModel)}
+        rowSelectionModel={rowSelectionModel}
+        // filterModel={filterModel}
+        // onFilterModelChange={onFilterChange}
+        rows={orders}
+        columns={columns(handleViewOrder)}
+      />
+    </div>
   );
 }
-
-OrderTable.propTypes = {
-  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
-  orderBy: PropTypes.string.isRequired
-};

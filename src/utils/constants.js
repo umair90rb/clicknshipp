@@ -16,7 +16,14 @@ export default {
   PERMISSION_DELETE_ROLE: "delete-role",
 
   PERMISSION_VIEW_ALL_ORDERS: "view-all-orders",
+  PERMISSION_VIEW_ORDERS: "view-orders",
   PERMISSION_CREATE_ORDER: "create-order",
   PERMISSION_UPDATE_ORDER: "update-order",
   PERMISSION_DELETE_ORDER: "delete-order",
+};
+
+export const returnAddress = {
+  city: "Faisalabad",
+  address: "K-86",
+  phone: "03001234567",
 };

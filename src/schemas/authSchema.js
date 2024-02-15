@@ -10,7 +10,7 @@ const signUpSchema = Joi.object({
 const loginSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required(),
-  device_name: Joi.string(),
+  device_name: Joi.string().allow(""),
 });
 
 export { signUpSchema, loginSchema };

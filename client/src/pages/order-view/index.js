@@ -10,6 +10,8 @@ import OrderItemTable from './OrderItemTable';
 import OrderSummaryCard from './OrderSummaryCard';
 import location from 'utils/location';
 import CourierDropdown from './CourierDropdown';
+import TrackingModal from './TrackingModal';
+import StatusModal from './StatusModal';
 const style = {
   position: 'absolute',
   top: '50%',
@@ -25,9 +27,19 @@ const OrderView = () => {
   const { orderId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const [showBookModal, setShowBookModal] = useState(false);
   const showBookingModal = () => setShowBookModal(true);
   const hideBookingModal = () => setShowBookModal(false);
+
+  const [showTrackModal, setShowTrackModal] = useState(false);
+  const showTrackingModal = () => setShowTrackModal(true);
+  const hideTrackingModal = () => setShowTrackModal(false);
+
+  const [showOrderStatusUpdateModal, setShowOrderStatusUpdateModal] = useState(false);
+  const showOrderStatusModal = () => setShowOrderStatusUpdateModal(true);
+  const hideOrderStatusModal = () => setShowOrderStatusUpdateModal(false);
+
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState();
   const [error, setError] = useState(null);
@@ -49,17 +61,6 @@ const OrderView = () => {
       }
     });
   }, []);
-
-  const confirmOrder = () => {
-    return dispatch(fetchConfirmOrder({ id })).then((action) => {
-      if (action.type === 'order/confirm/fetch/fulfilled') {
-        dispatch(setMessage({ message: 'Order confirmed' }));
-        setOrderStatus('Confirmed');
-      } else {
-        dispatch(setMessage({ message: action.payload.error || 'Something goes wrong! Please try again.', type: 'error' }));
-      }
-    });
-  };
 
   if (loading) {
     return <CenterCircularLoader />;
@@ -83,7 +84,14 @@ const OrderView = () => {
         </Grid>
         <Grid item xs={6}>
           <Grid container spacing={2} direction="row" justifyContent="flex-end" alignItems="center">
-            {orderStatus === 'Confirmed' && (
+            {orderStatus === 'Booked' && (
+              <Grid item>
+                <Button variant="outlined" disabled={orderStatus !== 'Booked'} onClick={showTrackingModal} color="primary">
+                  Track Order
+                </Button>
+              </Grid>
+            )}
+            {(orderStatus === 'Confirmed' || orderStatus === 'Booked') && (
               <Grid item>
                 <Button variant="outlined" disabled={orderStatus !== 'Confirmed'} onClick={showBookingModal} color="primary">
                   Book Order
@@ -91,14 +99,19 @@ const OrderView = () => {
               </Grid>
             )}
             <Grid item>
-              <Button variant="outlined" disabled={orderStatus === 'Confirmed'} onClick={confirmOrder} color="success">
-                Confirm
+              <Button
+                variant="outlined"
+                disabled={orderStatus === 'Confirmed' || orderStatus === 'Booked'}
+                onClick={showOrderStatusModal}
+                color="success"
+              >
+                Update Order Status
               </Button>
             </Grid>
             <Grid item>
               <Button
                 variant="contained"
-                disabled={orderStatus === 'Confirmed'}
+                disabled={orderStatus === 'Confirmed' || orderStatus === 'Booked'}
                 onClick={() => navigate(location.createOrder(), { state: { order } })}
                 color="primary"
               >
@@ -154,7 +167,27 @@ const OrderView = () => {
       </Grid>
       <Modal open={showBookModal} onClose={hideBookingModal} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
         <Box sx={style}>
-          <CourierDropdown orderId={id} />
+          <CourierDropdown updateOrderStatus={setOrderStatus} orderId={id} />
+        </Box>
+      </Modal>
+      <Modal
+        open={showTrackModal}
+        onClose={hideTrackingModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <TrackingModal orderId={id} />
+        </Box>
+      </Modal>
+      <Modal
+        open={showOrderStatusUpdateModal}
+        onClose={hideOrderStatusModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <StatusModal hideOrderStatusModal={hideOrderStatusModal} orderId={id} />
         </Box>
       </Modal>
     </Stack>

@@ -13,3 +13,18 @@ export default (date = new Date().toISOString()) => {
 };
 
 export const getDate = (date) => date.split('T')[0];
+
+export function formatDateTime(dateTimeString) {
+  const date = new Date(dateTimeString);
+
+  const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric'
+  };
+
+  return date.toLocaleString('en-US', options);
+}

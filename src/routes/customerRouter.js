@@ -6,6 +6,7 @@ import { idSchema } from "../schemas/commonSchema";
 import schemaValidator from "../middleware/schemaValidator";
 import { createValidator } from "express-joi-validation";
 import CustomerController from "../controllers/CustomerController";
+import { searchCustomerSchema } from "../schemas/customerSchema";
 
 const router = express.Router();
 const validator = createValidator();
@@ -25,13 +26,13 @@ router.get(
   CustomerController.customer
 );
 
-// router.post(
-//   "/",
-//   Auth,
-//   can(constants.PERMISSION_CREATE_ORDER),
-//   //   schemaValidator(createRoleSchema),
-//   OrderController.create
-// );
+router.post(
+  "/search",
+  Auth,
+  can(constants.PERMISSION_CREATE_ORDER),
+  schemaValidator(searchCustomerSchema),
+  CustomerController.search
+);
 
 // router.post("/shopify", OrderController.createShopifyOrder);
 // router.post("/import", upload.single("file"), OrderController.import);

@@ -1,17 +1,30 @@
-import { Op } from "sequelize";
 import models from "../models";
 import { hash, hash_compare } from "../utils/hashing";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
-const { User } = models;
+const { User, Role, Permission } = models;
 
 export default {
   async login(req, res) {
-    const { email, password, device_name } = req.body;
+    const { email, password } = req.body;
 
     try {
       const user = await User.scope("withPassword").findOne({
         where: { email },
+        include: [
+          {
+            model: Role,
+            as: "roles",
+            include: [
+              {
+                model: Permission,
+                as: "permissions",
+              },
+            ],
+          },
+        ],
       });
       if (!user)
         return sendErrorResponse(
@@ -19,8 +32,8 @@ export default {
           400,
           "No user with this email. Kindly check credentials and try again"
         );
-      const checkPassword = hash_compare(hash(password), user.password);
-      if (!checkPassword) {
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      if (!passwordMatch) {
         return sendErrorResponse(
           res,
           400,
@@ -36,18 +49,28 @@ export default {
         );
       }
 
-      const token = await user.newToken();
-      const roles = await user.getRoles();
+      const token = jwt.sign({ userId: user.id }, "your-secret-key", {
+        expiresIn: "8h",
+      });
+      const userRoles = [];
+      const userPermissions = [];
+      user.roles.forEach((role) => {
+        userRoles.push(role.name);
+        userPermissions.push(
+          ...role.permissions.map((permission) => permission.name)
+        );
+      });
       return sendSuccessResponse(
         res,
         200,
         {
-          token: token.plainTextToken,
+          token,
           user: {
-            name: user.name,
             id: user.id,
+            name: user.name,
             email: user.email,
-            roles: roles.map((r) => r.name),
+            roles: userRoles,
+            permissions: userPermissions,
           },
         },
         "Login successfully"

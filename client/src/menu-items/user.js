@@ -8,7 +8,7 @@ const user = {
   children: [
     {
       id: 'users',
-      title: 'Manage Users',
+      title: 'Users',
       type: 'item',
       url: '/users',
       icon: UsergroupAddOutlined,

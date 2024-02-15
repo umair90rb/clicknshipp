@@ -62,7 +62,10 @@ const AuthLogin = () => {
       navigate(path);
     }
     if (authError) {
-      formRef.current.setFieldError('submit', toSentense(authError));
+      formRef.current.setFieldError('submit', toSentense(authError.error || ''));
+    }
+    if (authFetchStatus === fetchStatus.FAILURE) {
+      formRef.current.setFieldError('submit', toSentense("Can't login! Please try again."));
     }
   }, [authFetchStatus, authError]);
 

@@ -13,6 +13,7 @@ const updateUserSchema = Joi.object({
   phone: Joi.string(),
   email: Joi.string().email(),
   password: Joi.string().min(8),
+  status: Joi.string(),
   roles: Joi.array().items(Joi.number().integer()),
 });
 

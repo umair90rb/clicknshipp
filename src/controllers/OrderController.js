@@ -1,8 +1,13 @@
+import { Op } from "sequelize";
 import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 import { extract } from "../utils/extract";
 import excelToJson from "../helpers/excelToJson";
-const { Order, OrderItem, Customer, Address } = model;
+import formatPhoneNumber from "../helpers/formatPhone";
+import BookingService from "../services/BookingService";
+import constants from "../utils/constants";
+
+const { Order, OrderItem, Customer, Address, User, Chanel } = model;
 
 const order_data_keys = [
   "order_number",
@@ -48,13 +53,42 @@ const item_data_keys = [
 export default {
   async orders(req, res) {
     try {
-      const orders = await Order.findAll({
-        limit: 30,
+      const filter = req.body;
+      const permissions = req.user.permissions;
+      const query = {
+        where: { user_id: req.user.id },
         order: [["createdAt", "DESC"]],
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "name"],
+          },
+          {
+            model: Address,
+            as: "address",
+            attributes: ["city", "address1"],
+          },
+        ],
         attributes: {
-          exclude: ["data", "CustomerId", "updatedAt"],
+          exclude: [
+            "data",
+            "customer_id",
+            "user_id",
+            "UserId",
+            "CustomerId",
+            "updatedAt",
+          ],
         },
-      });
+      };
+      if (permissions.includes(constants.PERMISSION_VIEW_ALL_ORDERS)) {
+        delete query.where.user_id;
+      }
+      if (filter && Object.keys(filter).length) {
+        query.where = { ...query.where, ...filter };
+      }
+      console.log(query);
+      const orders = await Order.findAll(query);
       return sendSuccessResponse(res, 200, { orders });
     } catch (e) {
       console.error(e);
@@ -71,30 +105,52 @@ export default {
       const { id } = req.params;
       const order = await Order.findByPk(id, {
         attributes: {
-          exclude: ["data", "CustomerId", "updatedAt"],
+          exclude: [
+            "data",
+            "CustomerId",
+            "updatedAt",
+            "customer_id",
+            "user_id",
+          ],
         },
         include: [
           {
+            model: User,
+            as: "user",
+            attributes: {
+              exclude: [
+                "password",
+                "status",
+                "settings",
+                "createdAt",
+                "updatedAt",
+              ],
+            },
+          },
+          {
             model: Customer,
-            as: "Customer",
-            include: {
-              model: Address,
-              as: "Addresses",
-              attributes: {
-                exclude: [
-                  "CustomerId",
-                  "company",
-                  "longitude",
-                  "latitude",
-                  "country_code",
-                  "province_code",
-                ],
-              },
+            as: "customer",
+          },
+          {
+            model: Address,
+            as: "address",
+            attributes: {
+              exclude: [
+                "order_id",
+                "customer_id",
+                "CustomerId",
+                "OrderId",
+                "company",
+                "longitude",
+                "latitude",
+                "country_code",
+                "province_code",
+              ],
             },
           },
           {
             model: OrderItem,
-            as: "OrderItems",
+            as: "items",
             attributes: {
               exclude: ["OrderId", "createdAt", "updatedAt"],
             },
@@ -102,11 +158,6 @@ export default {
         ],
       });
       if (order) {
-        // const data = {
-        //   id: role.id,
-        //   name: role.name,
-        //   permissions: permissions.map((p) => p.name),
-        // };
         return sendSuccessResponse(res, 200, { order });
       }
       return sendErrorResponse(res, 404, "No data found with this id.");
@@ -124,29 +175,43 @@ export default {
   async createShopifyOrder(req, res) {
     try {
       const body = req.body;
+      const storeDomain = req.get("x-shopify-shop-domain");
+      const sha256 = req.get("x-shopify-hmac-sha256");
+      console.log(storeDomain, "store domain");
+      let chanel = await Chanel.findOne({
+        where: {
+          source: {
+            [Op.iLike]: storeDomain,
+          },
+        },
+      });
+      console.log(chanel.name);
       const order_data = extract(body, order_data_keys);
       const address_data = extract(body["billing_address"], address_data_keys);
       const customer_data = extract(body["customer"], customer_data_keys);
+      customer_data.phone = formatPhoneNumber(customer_data.phone);
       const order_items_data = body["line_items"].map((item) =>
         extract(item, item_data_keys)
       );
 
       const order = await Order.create({
         ...order_data,
+        chanel: chanel?.name || storeDomain,
         data: JSON.stringify(body),
       });
-      const customer = await order.createCustomer(customer_data);
-      await customer.createAddress(address_data);
+      let customer = await Customer.findOne({
+        where: { phone: customer_data.phone },
+      });
+      if (!customer) {
+        customer = await order.createCustomer(customer_data);
+      }
+      await order.setCustomer(customer);
+      const address = await order.createAddress(address_data);
+      await address.setCustomer(customer.id);
       const items = await OrderItem.bulkCreate(order_items_data);
-      await order.addOrderItems(items);
-      let orderWithoutData = order.dataValues;
-      delete orderWithoutData.data;
-      return sendSuccessResponse(
-        res,
-        201,
-        { order: orderWithoutData },
-        "Order created successfully"
-      );
+      await order.addItems(items);
+
+      return sendSuccessResponse(res, 201, {}, "Order created successfully");
     } catch (error) {
       return sendErrorResponse(
         res,
@@ -160,6 +225,8 @@ export default {
   async create(req, res) {
     try {
       const {
+        addressId,
+        customerId,
         first_name,
         last_name,
         email,
@@ -168,35 +235,43 @@ export default {
         address1,
         address2,
         city,
+        chanel,
         zip,
         province,
         items: itemsArray,
       } = req.body || {};
       const orderItems = [];
-      let subtotal_price = 0;
+      let subtotal_price = 0,
+        total_discount = 0,
+        withoutDiscount = 0;
       for (const item of itemsArray) {
-        const { id, name, price, quantity, sku, grams } = item || {};
-        orderItems.push({ product_id: id, name, price, quantity, sku, grams });
+        const { id, name, unit, price, quantity, discount, sku, grams } =
+          item || {};
+        orderItems.push({
+          product_id: id,
+          name,
+          price: unit,
+          total_discount: discount,
+          quantity,
+          sku,
+          grams,
+        });
+        total_discount += (discount / 100) * unit;
         subtotal_price += price * quantity;
+        withoutDiscount += unit * quantity;
       }
-      const total_tax = 0,
-        total_discounts = 0;
+      const total_tax = 0;
       const total_price = subtotal_price + total_tax;
       const order = await Order.create({
-        subtotal_price,
-        total_price,
+        chanel,
+        user_id: req.user.id,
+        subtotal_price: withoutDiscount.toFixed(2),
+        total_price: total_price.toFixed(2),
         total_tax,
-        total_discounts,
-        order_number: Math.random().toString().split(".")[1],
+        total_discounts: total_discount.toFixed(2),
+        order_number: Math.random().toString().split(".")[1].slice(0, 4),
       });
-      const customer = await order.createCustomer({
-        first_name,
-        last_name,
-        note,
-        email,
-        phone,
-      });
-      await customer.createAddress({
+      const address = await order.createAddress({
         address1,
         address2,
         city,
@@ -205,8 +280,22 @@ export default {
         country: "Pakistan",
         country_code: "PK",
       });
+      let customer;
+      if (customerId) {
+        customer = await order.setCustomer(customerId);
+        await address.setCustomer(customerId);
+      } else {
+        customer = await order.createCustomer({
+          first_name,
+          last_name,
+          note,
+          email,
+          phone: formatPhoneNumber(phone),
+        });
+        await address.setCustomer(customer.id);
+      }
       const items = await OrderItem.bulkCreate(orderItems);
-      await order.addOrderItems(items);
+      await order.addItems(items);
       let orderWithoutData = order.dataValues;
       delete orderWithoutData.data;
       return sendSuccessResponse(
@@ -244,28 +333,291 @@ export default {
     }
   },
 
+  async updateStatus(req, res) {
+    try {
+      const { orderId, status, reason, remarks } = req.body;
+      if (status === "Cancel" && !reason) {
+        return sendErrorResponse(
+          res,
+          402,
+          "To cancel order you need to add reson for cancelation!"
+        );
+      }
+      const order = await Order.findByPk(orderId);
+      if (!order) {
+        return sendErrorResponse(res, 404, "No data found with this id.");
+      }
+      if (order.status === "Confirmed") {
+        return sendErrorResponse(
+          res,
+          409,
+          `This order is already confirmed, you can't set its status to ${status}`
+        );
+      }
+
+      await order.update({
+        status,
+        remarks: remarks || order.remarks,
+        cancel_reason: reason || order.cancel_reason,
+      });
+      return sendSuccessResponse(res, 200, {}, "Operation successful");
+    } catch (error) {
+      console.error(error);
+      return sendErrorResponse(
+        res,
+        500,
+        "Could not perform operation at this time, kindly try again later.",
+        error
+      );
+    }
+  },
+
+  async book(req, res) {
+    try {
+      const { orderId, service } = req.body;
+      const order = await Order.findByPk(orderId, {
+        attributes: {
+          exclude: [
+            "data",
+            "CustomerId",
+            "updatedAt",
+            "customer_id",
+            "user_id",
+          ],
+        },
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: {
+              exclude: [
+                "password",
+                "status",
+                "settings",
+                "createdAt",
+                "updatedAt",
+              ],
+            },
+          },
+          {
+            model: Customer,
+            as: "customer",
+          },
+          {
+            model: Address,
+            as: "address",
+            attributes: {
+              exclude: [
+                "order_id",
+                "customer_id",
+                "CustomerId",
+                "OrderId",
+                "company",
+                "longitude",
+                "latitude",
+                "country_code",
+                "province_code",
+              ],
+            },
+          },
+          {
+            model: OrderItem,
+            as: "items",
+            attributes: {
+              exclude: ["OrderId", "createdAt", "updatedAt"],
+            },
+          },
+        ],
+      });
+      if (!order) {
+        return sendErrorResponse(res, 404, "No data found with this id.");
+      }
+      if (order.status === "Booked") {
+        return sendErrorResponse(res, 400, "Order already booked!");
+      }
+      const bookingService = new BookingService();
+      const bookingResponse = bookingService.bookParcelWithCourier(
+        service,
+        order
+      );
+      const { cn, slip, isSuccess, error, response } = bookingResponse || {};
+      console.log(response, "response from courier service");
+      if (isSuccess) {
+        await order.createDelivery({
+          courier: service,
+          cn,
+          slip_link: slip,
+          status: "Booked",
+        });
+        await order.update({ status: "Booked" });
+      }
+      return sendSuccessResponse(res, 200, {}, "Operation successful");
+    } catch (error) {
+      console.error(error);
+      return sendErrorResponse(
+        res,
+        500,
+        "Could not perform operation at this time, kindly try again later.",
+        error
+      );
+    }
+  },
+
+  async deliveryStatus(req, res) {
+    try {
+      const id = req.params.id;
+      const order = await Order.findByPk(id);
+      const delivery = await order.getDelivery();
+      console.log(delivery);
+      const bookingService = new BookingService();
+      const courierService = bookingService.getCourierService(delivery.courier);
+      const trackResponse = courierService.checkParcelStatus(delivery.cn);
+      console.log(trackResponse);
+      return sendSuccessResponse(
+        res,
+        200,
+        { deliveryStatus: trackResponse },
+        "Operation successful"
+      );
+    } catch (error) {
+      console.error(error);
+      return sendErrorResponse(
+        res,
+        500,
+        "Could not perform operation at this time, kindly try again later.",
+        error
+      );
+    }
+  },
+
   async update(req, res) {
     try {
       const id = req.params.id;
-      const { permissions } = req.body;
-      const role = await Order.findByPk(id);
-      if (!role) {
+      const {
+        addressId,
+        customerId,
+        first_name,
+        last_name,
+        email,
+        phone,
+        note,
+        address1,
+        address2,
+        city,
+        zip,
+        province,
+        chanel,
+        items: itemsArray,
+      } = req.body || {};
+      const orderItems = [];
+      let subtotal_price = 0;
+      for (const item of itemsArray) {
+        const { id, name, price, quantity, sku, grams } = item || {};
+        orderItems.push({ id, name, price, quantity, sku, grams });
+        subtotal_price += price * quantity;
+      }
+      const total_tax = 0,
+        total_discounts = 0;
+      const total_price = subtotal_price + total_tax;
+      const order = await Order.findByPk(id);
+      if (!order) {
         return sendErrorResponse(res, 404, "No data found with this id.");
       }
-      if (permissions && permissions.length) {
-        const exitingPermission = await role.getPermissions();
-        await role.removePermissions(exitingPermission.map((p) => p.id));
-        await role.addPermissions(permissions);
-      }
-      const newPermissions = await role.getPermissions();
+      await order.update(
+        {
+          chanel,
+          user_id: req.user.id,
+          subtotal_price,
+          total_price,
+          total_tax,
+          total_discounts,
+        },
+        { where: { id } }
+      );
+      await Customer.update(
+        {
+          first_name,
+          last_name,
+          email,
+          phone,
+          note,
+        },
+        { where: { id: customerId } }
+      );
+      await Address.update(
+        {
+          address1,
+          address2,
+          city,
+          zip,
+          province,
+        },
+        { where: { id: addressId } }
+      );
+      await Promise.all(
+        itemsArray.map((i) =>
+          OrderItem.update({ ...i }, { where: { id: i.id } })
+        )
+      );
+      await order.reload({
+        attributes: {
+          exclude: [
+            "data",
+            "CustomerId",
+            "updatedAt",
+            "customer_id",
+            "user_id",
+          ],
+        },
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: {
+              exclude: [
+                "password",
+                "status",
+                "settings",
+                "createdAt",
+                "updatedAt",
+              ],
+            },
+          },
+          {
+            model: Customer,
+            as: "customer",
+          },
+          {
+            model: Address,
+            as: "address",
+            attributes: {
+              exclude: [
+                "order_id",
+                "customer_id",
+                "CustomerId",
+                "OrderId",
+                "company",
+                "longitude",
+                "latitude",
+                "country_code",
+                "province_code",
+              ],
+            },
+          },
+          {
+            model: OrderItem,
+            as: "items",
+            attributes: {
+              exclude: ["OrderId", "createdAt", "updatedAt"],
+            },
+          },
+        ],
+      });
       return sendSuccessResponse(
         res,
         200,
         {
-          role: {
-            ...role.dataValues,
-            permissions: newPermissions.map((p) => p.name),
-          },
+          order,
         },
         "Operation successful."
       );
@@ -283,9 +635,9 @@ export default {
   async destroy(req, res) {
     try {
       const id = req.params.id;
-      const role = await Order.findByPk(id);
-      if (role) {
-        await role.destroy();
+      const order = await Order.findByPk(id);
+      if (order) {
+        await order.destroy();
         return sendSuccessResponse(res, 200, {}, "Operation successful.");
       }
       return sendErrorResponse(res, 404, "No data found with this id.");

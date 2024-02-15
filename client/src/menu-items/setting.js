@@ -7,7 +7,7 @@ const setting = {
   children: [
     {
       id: 'chanel',
-      title: 'Manage Sales Chanel',
+      title: 'Sales Chanel',
       type: 'item',
       url: '/chanel',
       icon: ForkOutlined,

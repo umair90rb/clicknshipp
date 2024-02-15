@@ -6,7 +6,7 @@ const store = {
   children: [
     {
       id: 'items',
-      title: 'Manage Items',
+      title: 'Items',
       type: 'item',
       url: '/items',
       icon: AppstoreOutlined,
@@ -22,7 +22,7 @@ const store = {
     },
     {
       id: 'category',
-      title: 'Categories and Brands',
+      title: 'Categories & Brands',
       type: 'item',
       url: '/categories-and-brands',
       icon: ApartmentOutlined,
@@ -30,7 +30,7 @@ const store = {
     },
     {
       id: 'suppliers',
-      title: 'Manage Suppliers',
+      title: 'Suppliers',
       type: 'item',
       url: '/suppliers',
       icon: UserSwitchOutlined,

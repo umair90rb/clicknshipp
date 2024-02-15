@@ -2,20 +2,7 @@
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class UserPermission extends Model {
-    static associate(models) {
-      models.Permission.belongsToMany(models.User, {
-        through: UserPermission,
-        as: "users",
-        foreignKey: "permission_id",
-        onDelete: "SET NULL",
-      });
-      models.User.belongsToMany(models.Permission, {
-        through: UserPermission,
-        as: "permissions",
-        foreignKey: "user_id",
-        onDelete: "SET NULL",
-      });
-    }
+    static associate(models) {}
   }
   UserPermission.init(
     {

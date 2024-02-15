@@ -8,7 +8,7 @@ const order = {
   children: [
     {
       id: 'order/all',
-      title: 'All Orders',
+      title: 'Orders',
       type: 'item',
       url: '/order/all',
       icon: CodeSandboxOutlined,
@@ -16,18 +16,10 @@ const order = {
     },
     {
       id: 'create-order',
-      title: 'Create New Order',
+      title: 'Create order',
       type: 'item',
       url: '/order/new',
       icon: PlusCircleOutlined,
-      breadcrumbs: false
-    },
-    {
-      id: 'booking-management',
-      title: 'Booking Management',
-      type: 'item',
-      url: '/order/booking',
-      icon: BorderOutlined,
       breadcrumbs: false
     },
     {

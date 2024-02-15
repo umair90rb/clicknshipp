@@ -12,4 +12,9 @@ npx sequelize-cli model:generate --name StockHistory --attributes type:string,am
 npx sequelize-cli model:generate --name StockLevel --attributes level:integer
 npx sequelize-cli model:generate --name Chanel --attributes name:string,source:string
 
-npx sequelize-cli migration:generate --name item-table-assocation
+sequelize migration:generate --name item-table-assocation
+
+sequelize model:generate --name Delivery --attributes courier:string,cn:string,slip_link:string,status:string,order_id:integer
+sequelize model:generate --name CityNameMaping --attributes city:string,maped:string,courier:string,active:string
+
+sequelize migration:generate --name update-order-table

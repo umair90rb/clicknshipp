@@ -6,7 +6,16 @@ const PROTECTED_ATTRIBUTES = ["password"];
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
-    static associate(models) {}
+    static associate(models) {
+      User.hasMany(models.Order, {
+        foreignKey: "user_id",
+      });
+      User.belongsToMany(models.Permission, {
+        through: "UserPermissions",
+        as: "permissions",
+        foreignKey: "user_id",
+      });
+    }
   }
   User.init(
     {

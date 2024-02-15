@@ -3,6 +3,10 @@ import constants from "../utils/constants";
 import can from "../middleware/canAccess";
 import Auth from "../middleware/auth";
 import { idSchema } from "../schemas/commonSchema";
+import {
+  orderBookSchema,
+  orderStatusUpdateSchema,
+} from "../schemas/orderSchema";
 import schemaValidator from "../middleware/schemaValidator";
 import { createValidator } from "express-joi-validation";
 import OrderController from "../controllers/OrderController";
@@ -13,10 +17,10 @@ const upload = multer({ storage: multer.memoryStorage() });
 const router = express.Router();
 const validator = createValidator();
 
-router.get(
+router.post(
   "/all",
   Auth,
-  can(constants.PERMISSION_VIEW_ALL_ORDERS),
+  can([constants.PERMISSION_VIEW_ORDERS, constants.PERMISSION_VIEW_ALL_ORDERS]),
   OrderController.orders
 );
 
@@ -29,6 +33,22 @@ router.get(
 );
 
 router.post(
+  "/book",
+  Auth,
+  can(constants.PERMISSION_VIEW_ALL_ORDERS),
+  schemaValidator(orderBookSchema),
+  OrderController.book
+);
+
+router.get(
+  "/delivery-status/:id",
+  Auth,
+  can(constants.PERMISSION_VIEW_ALL_ORDERS),
+  validator.params(idSchema),
+  OrderController.deliveryStatus
+);
+
+router.post(
   "/",
   Auth,
   can(constants.PERMISSION_CREATE_ORDER),
@@ -38,6 +58,14 @@ router.post(
 
 router.post("/shopify", OrderController.createShopifyOrder);
 router.post("/import", upload.single("file"), OrderController.import);
+
+router.post(
+  "/status",
+  Auth,
+  can(constants.PERMISSION_UPDATE_ORDER),
+  schemaValidator(orderStatusUpdateSchema),
+  OrderController.updateStatus
+);
 
 router.put(
   "/:id",

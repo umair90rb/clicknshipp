@@ -7,20 +7,7 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
-      models.Role.belongsToMany(models.Permission, {
-        through: RolePermission,
-        as: "permissions",
-        foreignKey: "role_id",
-        onDelete: "cascade",
-      });
-      models.Permission.belongsToMany(models.Role, {
-        through: RolePermission,
-        as: "roles",
-        foreignKey: "permission_id",
-        onDelete: "cascade",
-      });
-    }
+    static associate(models) {}
   }
   RolePermission.init(
     {

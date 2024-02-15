@@ -1,7 +1,5 @@
 import { sendErrorResponse } from "../utils/sendResponse";
-import model from "../models";
-
-const { PersonalAccessToken } = model;
+import jwt from "jsonwebtoken";
 
 export default async (req, res, next) => {
   try {
@@ -9,28 +7,13 @@ export default async (req, res, next) => {
       return sendErrorResponse(res, 401, "Authentication required");
     }
 
-    const bearerToken =
-      req.headers.authorization.split(" ")[1] || req.headers.authorization;
-
-    const { user, currentAccessToken } = await PersonalAccessToken.findToken(
-      bearerToken
-    );
-
-    if (!user) {
-      return sendErrorResponse(res, 401, "Authentication Failed");
-    }
-    if (user.status !== "active")
-      return sendErrorResponse(
-        res,
-        403,
-        "Your account is either suspended or inactive. Contact admin to re-activate your account."
-      );
-
-    req.currentAccessToken = currentAccessToken;
-    req.user = user;
+    const token = req.headers.authorization;
+    const decoded = jwt.verify(token, "your-secret-key");
+    const userId = decoded.userId;
+    req.user = { id: userId };
     next();
   } catch (e) {
-    console.error(e);
+    console.error(e, "in authjs");
     return sendErrorResponse(res, 401, "Authentication Failed", e);
   }
 };
