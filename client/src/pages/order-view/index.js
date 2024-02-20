@@ -43,8 +43,20 @@ const OrderView = () => {
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState();
   const [error, setError] = useState(null);
-  const { id, order_number, subtotal_price, status, total_discounts, total_price, total_tax, address, items, customer, createdAt } =
-    order || {};
+  const {
+    id,
+    order_number,
+    subtotal_price,
+    remarks,
+    status,
+    total_discounts,
+    total_price,
+    total_tax,
+    address,
+    items,
+    customer,
+    createdAt
+  } = order || {};
   const [orderStatus, setOrderStatus] = useState('');
   const { email, first_name, last_name, id: customerId, name, note, phone } = customer || {};
   const { city, zip, country, address1 } = address || {};
@@ -101,7 +113,7 @@ const OrderView = () => {
             <Grid item>
               <Button
                 variant="outlined"
-                disabled={orderStatus === 'Confirmed' || orderStatus === 'Booked'}
+                disabled={orderStatus === 'Confirmed' || orderStatus === 'Deleted' || orderStatus === 'Booked'}
                 onClick={showOrderStatusModal}
                 color="success"
               >
@@ -141,6 +153,10 @@ const OrderView = () => {
                 Note
               </Typography>
               <Typography paragraph>{note || 'None'}</Typography>
+              <Typography sx={{ fontSize: 14 }} gutterBottom>
+                Remarks
+              </Typography>
+              <Typography paragraph>{remarks || 'None'}</Typography>
             </CardContent>
           </Card>
           <Card sx={{ minWidth: 275, mt: 1 }}>

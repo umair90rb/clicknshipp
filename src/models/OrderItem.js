@@ -44,6 +44,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.FLOAT,
         allowNull: true,
       },
+      reason: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       createdAt: { type: DataTypes.DATE, field: "created_at" },
       updatedAt: { type: DataTypes.DATE, field: "updated_at" },
     },

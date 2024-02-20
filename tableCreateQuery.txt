@@ -18,3 +18,7 @@ sequelize model:generate --name Delivery --attributes courier:string,cn:string,s
 sequelize model:generate --name CityNameMaping --attributes city:string,maped:string,courier:string,active:string
 
 sequelize migration:generate --name update-order-table
+
+sequelize model:generate --name Payments --attributes type:string,bank:string,tid:string,amount:number,note:string
+
+sequelize migration:generate --name update-order-and-order-item-table

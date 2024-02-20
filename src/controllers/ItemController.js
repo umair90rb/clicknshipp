@@ -150,7 +150,21 @@ export default {
   async import(req, res) {
     try {
       const json = await excelToJson(req.file.buffer);
-      await Item.bulkCreate(json);
+      const nameWithSKUAndVolume = json.map((item) => {
+        const itemCopy = { ...item };
+        const { sku, volume } = itemCopy;
+        if (volume && volume !== "") {
+          itemCopy.name += ` (${volume})`;
+        }
+        if (sku && sku !== "") {
+          itemCopy.name += ` ${sku}`;
+        }
+        itemCopy.code = sku || "";
+        delete itemCopy.volume;
+        delete itemCopy.sku;
+        return itemCopy;
+      });
+      await Item.bulkCreate(nameWithSKUAndVolume);
       return sendSuccessResponse(res, 200, {}, "Items imported successfully!");
     } catch (error) {
       console.error(error);

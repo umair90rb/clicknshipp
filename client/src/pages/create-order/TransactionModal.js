@@ -31,22 +31,21 @@ import { toSentense } from 'utils/string-utils';
 
 const PAYMENT_TYPES = ['Receive Advanced Payment', 'Received Advanced Delivery Charges', 'Other'];
 
-export default function TransactionModal({ setPayments, hideModal }) {
-  const addPayment = () => {};
+export default function TransactionModal({ addPayment }) {
   return (
     <>
       <Formik
         initialValues={{
           type: '',
           bank: '',
-          tId: '',
+          tid: '',
           amount: '',
           note: ''
         }}
         validationSchema={Yup.object().shape({
           type: Yup.string().required('Type is required'),
           bank: Yup.string().required('Bank is required'),
-          tId: Yup.string().required('Transaction id is required'),
+          tid: Yup.string().required('Transaction id is required'),
           amount: Yup.number().required('amount is required'),
           note: Yup.string().when('type', {
             is: (val) => val === 'Other',
@@ -56,12 +55,12 @@ export default function TransactionModal({ setPayments, hideModal }) {
         })}
         onSubmit={addPayment}
       >
-        {({ errors, handleBlur, handleChange, handleSubmit, setFieldTouched, setFieldValue, isSubmitting, touched, values }) => (
+        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="type-signup">Status</InputLabel>
+                  <InputLabel htmlFor="type-signup">Type</InputLabel>
                   <Select
                     fullWidth
                     error={Boolean(touched.type && errors.type)}
@@ -70,13 +69,7 @@ export default function TransactionModal({ setPayments, hideModal }) {
                     type="text"
                     name="type"
                     onBlur={handleBlur}
-                    onChange={(e) => {
-                      if (e.target.value !== 'Cancel') {
-                        setFieldValue('reason', '');
-                      }
-                      setFieldTouched('type', true);
-                      handleChange(e);
-                    }}
+                    onChange={handleChange}
                     inputProps={{}}
                     labelId="type-signup"
                   >
@@ -117,22 +110,22 @@ export default function TransactionModal({ setPayments, hideModal }) {
               </Grid>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="tId-signup">Transaction Id</InputLabel>
+                  <InputLabel htmlFor="tid-signup">Transaction Id</InputLabel>
                   <OutlinedInput
                     fullWidth
-                    error={Boolean(touched.tId && errors.tId)}
-                    id="tId-login"
+                    error={Boolean(touched.tid && errors.tid)}
+                    id="tid-login"
                     type="text"
-                    value={values.tId}
-                    name="tId"
+                    value={values.tid}
+                    name="tid"
                     onBlur={handleBlur}
                     onChange={handleChange}
                     placeholder="00876732"
                     inputProps={{}}
                   />
-                  {touched.tId && errors.tId && (
-                    <FormHelperText error id="helper-text-tId-signup">
-                      {errors.tId}
+                  {touched.tid && errors.tid && (
+                    <FormHelperText error id="helper-text-tid-signup">
+                      {errors.tid}
                     </FormHelperText>
                   )}
                 </Stack>

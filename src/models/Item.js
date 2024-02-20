@@ -33,6 +33,12 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       });
+      Item.hasOne(models.OrderItem, {
+        as: "OrderItems",
+        foreignKey: "product_id",
+        onUpdate: "NO ACTION",
+        onDelete: "NO ACTION",
+      });
     }
   }
   Item.init(

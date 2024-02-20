@@ -7,7 +7,7 @@ import formatPhoneNumber from "../helpers/formatPhone";
 import BookingService from "../services/BookingService";
 import constants from "../utils/constants";
 
-const { Order, OrderItem, Customer, Address, User, Chanel } = model;
+const { Order, OrderItem, Customer, Address, User, Chanel, Payments } = model;
 
 const order_data_keys = [
   "order_number",
@@ -239,22 +239,54 @@ export default {
         zip,
         province,
         items: itemsArray,
+        payments: paymentsArray,
       } = req.body || {};
       const orderItems = [];
       let subtotal_price = 0,
         total_discount = 0,
         withoutDiscount = 0;
+      let customerWithDuplicateOrders = null;
+      if (customerId) {
+        const itemsId = itemsArray.map((item) => item.id);
+        customerWithDuplicateOrders = await Customer.findByPk(customerId, {
+          include: {
+            model: Order,
+            include: {
+              model: OrderItem,
+              as: "items",
+              where: {
+                product_id: itemsId,
+              },
+            },
+          },
+        });
+        console.log(
+          "previous order found!",
+          customerWithDuplicateOrders.Orders.length
+        );
+      }
+
       for (const item of itemsArray) {
-        const { id, name, unit, price, quantity, discount, sku, grams } =
-          item || {};
+        const {
+          id,
+          name,
+          unit,
+          price,
+          quantity,
+          discount,
+          sku,
+          grams,
+          reason,
+        } = item || {};
         orderItems.push({
           product_id: id,
           name,
-          price: unit,
+          price,
           total_discount: discount,
           quantity,
           sku,
           grams,
+          reason,
         });
         total_discount += (discount / 100) * unit;
         subtotal_price += price * quantity;
@@ -265,12 +297,17 @@ export default {
       const order = await Order.create({
         chanel,
         user_id: req.user.id,
+        status: "Assigned",
         subtotal_price: withoutDiscount.toFixed(2),
         total_price: total_price.toFixed(2),
         total_tax,
         total_discounts: total_discount.toFixed(2),
         order_number: Math.random().toString().split(".")[1].slice(0, 4),
       });
+      if (paymentsArray && paymentsArray.length) {
+        const payments = await Payments.bulkCreate(paymentsArray);
+        await order.addPayments(payments);
+      }
       const address = await order.createAddress({
         address1,
         address2,
@@ -296,6 +333,36 @@ export default {
       }
       const items = await OrderItem.bulkCreate(orderItems);
       await order.addItems(items);
+      await order.reload();
+      // remove agent assignment, update status to delete, add proper remarks.
+      if (customerWithDuplicateOrders) {
+        const duplicateOrders = [];
+        customerWithDuplicateOrders.Orders.forEach((order) => {
+          if (order.status !== "Confirmed" && order.status !== "Cancel") {
+            duplicateOrders.push(order.id);
+          }
+        });
+        if (duplicateOrders.length) {
+          await Order.update(
+            {
+              user_id: null,
+              status: "Deleted",
+              remarks: `This order was deleted by system due to duplication. New order id that replace this order is ${
+                order.id
+              } and created by user(id) ${
+                req.user.id
+              } at ${new Date().toLocaleString()}`,
+            },
+            {
+              where: {
+                id: {
+                  [Op.in]: duplicateOrders,
+                },
+              },
+            }
+          );
+        }
+      }
       let orderWithoutData = order.dataValues;
       delete orderWithoutData.data;
       return sendSuccessResponse(

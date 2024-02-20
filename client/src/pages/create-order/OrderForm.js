@@ -23,7 +23,7 @@ import {
   Modal,
   Box
 } from '@mui/material';
-
+import PriceChangeIcon from '@mui/icons-material/PriceChange';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import AnimateButton from 'components/@extended/AnimateButton';
@@ -43,6 +43,7 @@ import { fetchSearchCustomer } from 'store/slices/customer/fetchCustomer';
 import { cityCitiesSelector, cityFetchStatusSelector } from 'store/slices/city/citySelector';
 import { fetchAllCities } from 'store/slices/city/fetchCity';
 import TransactionModal from './TransactionModal';
+import UpdateItemPriceModal from './UpdateItemPriceModal';
 
 const style = {
   position: 'absolute',
@@ -66,10 +67,18 @@ const CreateOrderForm = () => {
   const { address1, address2, city, zip, province, id: addressId } = address || {};
   const [items, setItems] = useState(orderItems || []);
   const [payments, setPayments] = useState([]);
+  const [itemForUpdate, setItemForUpdate] = useState({ index: null, item: null });
 
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const showAddTranscationModal = () => setShowTransactionModal(true);
   const hideAddTranscationModal = () => setShowTransactionModal(false);
+
+  const [updatePriceModal, setUpdatePriceModal] = useState(false);
+  const showUpdatePriceModal = (index, item) => {
+    setItemForUpdate({ index, item });
+    setUpdatePriceModal(true);
+  };
+  const hideUpdatePriceModal = () => setUpdatePriceModal(false);
 
   const [customerLoading, setCustomerLoading] = useState(false);
 
@@ -80,6 +89,18 @@ const CreateOrderForm = () => {
   const inventoryItemsFetchStatus = useSelector(itemFetchStatusSelector);
   const cities = useSelector(cityCitiesSelector);
   const citiesFetchStatus = useSelector(cityFetchStatusSelector);
+
+  const handleAddPayment = (payment) => {
+    setPayments((payments) => [...payments, { ...payment }]);
+    hideAddTranscationModal();
+  };
+
+  const updateItemPrice = (index, item) => {
+    console.log(index, item, 'index, item');
+    const itemsCopy = [...items];
+    itemsCopy[index] = item;
+    setItems(itemsCopy);
+  };
 
   console.log(order);
 
@@ -96,14 +117,14 @@ const CreateOrderForm = () => {
     delete values.grams;
     values.items = items;
     if (order) {
-      return dispatch(fetchUpdateOrder({ id, body: { ...values, addressId, customerId } })).then((action) => {
+      return dispatch(fetchUpdateOrder({ id, body: { ...values, addressId, customerId, payments } })).then((action) => {
         if (action.type === 'order/update/fetch/fulfilled') {
           dispatch(setMessage({ message: 'Order updated successfully!' }));
           navigate(-1);
         }
       });
     } else {
-      return dispatch(fetchCreateOrder({ body: values })).then((action) => {
+      return dispatch(fetchCreateOrder({ body: { ...values, payments } })).then((action) => {
         if (action.type === 'order/create/fetch/fulfilled') {
           navigate(location.allOrders());
         }
@@ -579,20 +600,22 @@ const CreateOrderForm = () => {
                         <Table sx={{ minWidth: 400 }} aria-label="spanning table">
                           <TableHead>
                             <TableRow>
-                              <TableCell align="right">For</TableCell>
+                              <TableCell align="right">Type</TableCell>
                               <TableCell align="right">Bank</TableCell>
                               <TableCell align="right">Transcation Id</TableCell>
                               <TableCell align="right">Amount</TableCell>
+                              <TableCell align="right">Note</TableCell>
                               <TableCell align="right">Action</TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>
                             {payments.map((row) => (
                               <TableRow key={row.id}>
-                                <TableCell align="right">{row.for}</TableCell>
+                                <TableCell align="right">{row.type}</TableCell>
                                 <TableCell align="right">{row.bank}</TableCell>
-                                <TableCell align="right">{row.transcationId}%</TableCell>
+                                <TableCell align="right">{row.tid}</TableCell>
                                 <TableCell align="right">{row.amount}</TableCell>
+                                <TableCell align="right">{row.note}</TableCell>
                                 <TableCell align="right">
                                   <IconButton
                                     onClick={() => setPayments((payments) => payments.filter((payment) => payment.id !== row.id))}
@@ -705,6 +728,7 @@ const CreateOrderForm = () => {
                       <InputLabel htmlFor="price">Price</InputLabel>
                       <OutlinedInput
                         fullWidth
+                        disabled
                         error={Boolean(touched.price && errors.price)}
                         id="price"
                         type="text"
@@ -847,6 +871,9 @@ const CreateOrderForm = () => {
                           <TableCell align="right">{row.discount}%</TableCell>
                           <TableCell align="right">{(row.price * row.quantity).toFixed(2)}</TableCell>
                           <TableCell align="right">
+                            <IconButton onClick={() => showUpdatePriceModal(index, row)} aria-label="update price">
+                              <PriceChangeIcon />
+                            </IconButton>
                             <IconButton onClick={() => setItems((items) => items.filter((item) => item.id !== row.id))} aria-label="delete">
                               <CloseOutlined />
                             </IconButton>
@@ -915,7 +942,17 @@ const CreateOrderForm = () => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <TransactionModal setPayments={setPayments} hideModal={hideAddTranscationModal} />
+          <TransactionModal addPayment={handleAddPayment} />
+        </Box>
+      </Modal>
+      <Modal
+        open={updatePriceModal}
+        onClose={hideUpdatePriceModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <UpdateItemPriceModal itemForUpdate={itemForUpdate} updateItem={updateItemPrice} hideModal={hideUpdatePriceModal} />
         </Box>
       </Modal>
     </>

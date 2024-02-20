@@ -15,6 +15,10 @@ module.exports = (sequelize, DataTypes) => {
       Order.hasOne(models.Address, { as: "address", foreignKey: "order_id" });
       Order.hasOne(models.Delivery, { as: "delivery", foreignKey: "order_id" });
       Order.hasMany(models.OrderItem, { as: "items", foreignKey: "order_id" });
+      Order.hasMany(models.Payments, {
+        as: "payments",
+        foreignKey: "order_id",
+      });
       Order.belongsTo(models.User, {
         foreignKey: "user_id",
         as: "user",
