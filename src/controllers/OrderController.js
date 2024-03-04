@@ -177,15 +177,16 @@ export default {
       const body = req.body;
       const storeDomain = req.get("x-shopify-shop-domain");
       const sha256 = req.get("x-shopify-hmac-sha256");
-      console.log(storeDomain, "store domain");
-      let chanel = await Chanel.findOne({
-        where: {
-          source: {
-            [Op.iLike]: storeDomain,
+      let chanel;
+      if (storeDomain) {
+        chanel = await Chanel.findOne({
+          where: {
+            source: {
+              [Op.iLike]: storeDomain,
+            },
           },
-        },
-      });
-      console.log(chanel.name);
+        });
+      }
       const order_data = extract(body, order_data_keys);
       const address_data = extract(body["billing_address"], address_data_keys);
       const customer_data = extract(body["customer"], customer_data_keys);

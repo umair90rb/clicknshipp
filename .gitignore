@@ -2,6 +2,7 @@
 /build
 /uploads
 api.txt
+shopifyWebhookData.json
 compose.yml
 .env
 package-lock.json
