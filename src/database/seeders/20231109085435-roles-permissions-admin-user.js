@@ -88,10 +88,10 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await Role.destroy({ truncate: true });
-    await Permission.destroy({ truncate: true });
-    await User.destroy({ truncate: true });
-    await UserRole.destroy({ truncate: true });
-    await RolePermission.destroy({ truncate: true });
+    // await Role.destroy({ truncate: true });
+    // await Permission.destroy({ truncate: true });
+    // await User.destroy({ truncate: true });
+    // await UserRole.destroy({ truncate: true });
+    // await RolePermission.destroy({ truncate: true });
   },
 };
