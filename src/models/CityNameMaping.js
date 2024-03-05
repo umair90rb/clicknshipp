@@ -29,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "CityNameMaping",
+      timestamps: false,
     }
   );
   return CityNameMaping;
