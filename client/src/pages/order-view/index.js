@@ -91,7 +91,7 @@ const OrderView = () => {
             <Chip color={orderStatus === 'Confirmed' ? 'success' : 'primary'} size="small" variant="elevated" label={orderStatus} />
           </Typography>
           <Typography color="grey" variant="subtitle2">
-            {`${formatDate(createdAt)} from ${name}`}
+            {`${formatDate(createdAt)} from ${first_name || 'None'} ${last_name || ''}`}
           </Typography>
         </Grid>
         <Grid item xs={6}>
@@ -164,7 +164,10 @@ const OrderView = () => {
               <Typography variant="h5" gutterBottom>
                 Customer
               </Typography>
-              <Typography gutterBottom>Name: {name}</Typography>
+              <Typography gutterBottom>
+                Name: {first_name || 'None'} {last_name || ''}
+              </Typography>
+              <Typography gutterBottom>Customer Id: {customerId || 'None'}</Typography>
               <Typography variant="h5" gutterBottom>
                 Contact information
               </Typography>

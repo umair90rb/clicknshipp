@@ -190,7 +190,9 @@ export default {
       const order_data = extract(body, order_data_keys);
       const address_data = extract(body["billing_address"], address_data_keys);
       const customer_data = extract(body["customer"], customer_data_keys);
-      customer_data.phone = formatPhoneNumber(customer_data.phone);
+      if (customer_data && "phone" in customer_data) {
+        customer_data.phone = formatPhoneNumber(customer_data.phone);
+      }
       const order_items_data = body["line_items"].map((item) =>
         extract(item, item_data_keys)
       );
@@ -200,9 +202,12 @@ export default {
         chanel: chanel?.name || storeDomain,
         data: JSON.stringify(body),
       });
-      let customer = await Customer.findOne({
-        where: { phone: customer_data.phone },
-      });
+      let customer;
+      if (customer_data && "phone" in customer_data) {
+        customer = await Customer.findOne({
+          where: { phone: customer_data?.phone },
+        });
+      }
       if (!customer) {
         customer = await order.createCustomer(customer_data);
       }
@@ -214,6 +219,7 @@ export default {
 
       return sendSuccessResponse(res, 201, {}, "Order created successfully");
     } catch (error) {
+      console.log(error);
       return sendErrorResponse(
         res,
         500,
