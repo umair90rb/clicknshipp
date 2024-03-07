@@ -130,6 +130,5 @@ module.exports = {
     if (superAdminRole) {
       await superAdminRole.destroy();
     }
-    // await superUser.destroy();
   },
 };
