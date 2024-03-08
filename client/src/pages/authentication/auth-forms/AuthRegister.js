@@ -37,6 +37,7 @@ import { userService } from 'api/index';
 import { addUser, updateUser } from 'store/slices/user/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { userUpdateUserData } from 'store/slices/user/userSelector';
+import { fetchAllRoles } from 'store/slices/role/fetchRole';
 
 // ============================|| FIREBASE - REGISTER ||============================ //
 
@@ -63,8 +64,10 @@ const AuthRegister = () => {
 
   const fetchRoles = async () => {
     setLoadingRoles(true);
-    const res = await roleService.fetchAllRole();
-    setRoles(res.data.roles);
+    const { type, payload } = await dispatch(fetchAllRoles());
+    if (type === 'role/all/fetch/fulfilled') {
+      setRoles(payload.data.roles);
+    }
     setLoadingRoles(false);
   };
 
@@ -86,7 +89,7 @@ const AuthRegister = () => {
         dispatch(addUser(response.data.user));
       } else {
         response = await userService.fetchUpdateUser(userUpdateData.data.id, body);
-        dispatch(updateUser({ data: response.data.user, index: userUpdateData.index }));
+        dispatch(updateUser({ data: response.data.user }));
       }
       setStatus({ success: false });
       setSubmitting(false);
@@ -103,11 +106,12 @@ const AuthRegister = () => {
     fetchRoles();
 
     if (userUpdateData.data !== null) {
+      console.log(userUpdateData.data, 'userUpdateData.data');
       const { email, name, phone, roles } = userUpdateData.data;
       formRef.current.initialValues.email = email;
       formRef.current.initialValues.name = name;
       formRef.current.initialValues.phone = phone;
-      formRef.current.initialValues.roles = roles.map((r) => r.name);
+      formRef.current.initialValues.roles = roles;
     }
   }, []);
 
@@ -178,6 +182,7 @@ const AuthRegister = () => {
                         </Box>
                       )}
                     >
+                      11``
                       {roles.map(({ name }, index) => (
                         <MenuItem key={index} value={name}>
                           <Checkbox checked={values.roles.indexOf(name) > -1} />

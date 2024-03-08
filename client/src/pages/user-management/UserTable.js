@@ -47,13 +47,13 @@ const columns = (handleEditAction, handleDeleteAction) => [
     width: 150,
     type: 'actions',
     cellClassName: 'actions',
-    getActions: ({ id }) => [
+    getActions: ({ id, row }) => [
       <GridActionsCellItem
         key={id}
         icon={<EditIcon />}
         label="View"
         className="textPrimary"
-        onClick={handleEditAction(id)}
+        onClick={handleEditAction(row)}
         color="inherit"
       />,
       <GridActionsCellItem

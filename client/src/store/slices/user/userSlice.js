@@ -25,8 +25,9 @@ const userSlice = createSlice({
       state.update.index = index;
     },
     updateUser: (state, action) => {
-      const { data, index } = action.payload;
-      state.users.splice(index, 1, data);
+      const { data } = action.payload;
+      const index = state.users.findIndex((user) => user.id === data.id);
+      state.users[index] = data;
       state.update.data = null;
       state.update.index = null;
     },

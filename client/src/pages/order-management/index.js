@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Button, Grid, Typography } from '@mui/material';
 import MainCard from 'components/MainCard';
 import { FileExcelOutlined, PlusOutlined, LoadingOutlined } from '@ant-design/icons';
+import SyncIcon from '@mui/icons-material/Sync';
 import OrderTable from './OrderTable';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
@@ -53,6 +54,11 @@ const OrderManagement = () => {
           </Grid>
           <Grid item>
             <Grid container spacing={1}>
+              <Grid item>
+                <Button variant="contained" startIcon={<SyncIcon />} onClick={() => dispatch(fetchAllOrder({ body: {} }))}>
+                  Refresh
+                </Button>
+              </Grid>
               <Grid item>
                 <Button
                   component="label"

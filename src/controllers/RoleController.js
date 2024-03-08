@@ -1,7 +1,7 @@
 import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 
-const { Role } = model;
+const { Role, Permissions } = model;
 
 export default {
   async roles(req, res) {
@@ -21,15 +21,17 @@ export default {
   async role(req, res) {
     try {
       const { id } = req.params;
-      const role = await Role.findByPk(id);
+      const role = await Role.findByPk(id, {
+        include: [
+          {
+            association: "permissions",
+            model: Permissions,
+            through: { attributes: [] },
+          },
+        ],
+      });
       if (role) {
-        const permissions = await role.getPermissions();
-        const data = {
-          id: role.id,
-          name: role.name,
-          permissions: permissions.map((p) => p.name),
-        };
-        return sendSuccessResponse(res, 200, { role: data });
+        return sendSuccessResponse(res, 200, { role });
       }
       return sendErrorResponse(res, 404, "No data found with this id.");
     } catch (e) {

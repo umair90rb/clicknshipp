@@ -8,6 +8,10 @@ export default async (req, res, next) => {
     }
 
     const token = req.headers.authorization;
+    console.log(token);
+    if (!token || token === "") {
+      return sendErrorResponse(res, 401, "Authentication Failed");
+    }
     const decoded = jwt.verify(token, "your-secret-key");
     const userId = decoded.userId;
     req.user = { id: userId };

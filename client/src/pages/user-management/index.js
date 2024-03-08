@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Button, Grid, Typography, Modal, Box } from '@mui/material';
 import MainCard from 'components/MainCard';
 import { UserAddOutlined } from '@ant-design/icons';
+import AddModeratorIcon from '@mui/icons-material/AddModerator';
 import AuthRegister from 'pages/authentication/auth-forms/AuthRegister';
 import { useSelector } from 'react-redux';
 import { userUsersSelector } from 'store/slices/user/userSelector';
 import UserTable from './UserTable';
+import AddUpdateRoleModal from './AddUpdateRoleModal';
 
 const style = {
   position: 'absolute',
@@ -21,12 +23,16 @@ const style = {
 const UserManagment = () => {
   const users = useSelector(userUsersSelector);
 
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [openAddUserModal, setOpenAddUserModal] = useState(false);
+  const handleOpenAddUserModal = () => setOpenAddUserModal(true);
+  const handleCloseAddUserModal = () => setOpenAddUserModal(false);
+
+  const [openAddRoleModal, setOpenAddRoleModal] = useState(false);
+  const handleOpenAddRoleModal = () => setOpenAddRoleModal(true);
+  const handleCloseAddRoleModal = () => setOpenAddRoleModal(false);
 
   useEffect(() => {
-    if (open) setOpen(false);
+    if (openAddUserModal) setOpenAddUserModal(false);
   }, [users]);
 
   return (
@@ -37,18 +43,42 @@ const UserManagment = () => {
             <Typography variant="h5">Users</Typography>
           </Grid>
           <Grid item>
-            <Button variant="contained" startIcon={<UserAddOutlined />} onClick={handleOpen}>
-              Add User
-            </Button>
+            <Grid container spacing={2}>
+              <Grid item>
+                <Button variant="contained" startIcon={<AddModeratorIcon />} onClick={handleOpenAddRoleModal}>
+                  Add/Update Role
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button variant="contained" startIcon={<UserAddOutlined />} onClick={handleOpenAddUserModal}>
+                  Add User
+                </Button>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>
-          <UserTable orderBy="id" order="asc" openUpateForm={setOpen} />
+          <UserTable orderBy="id" order="asc" openUpateForm={setOpenAddUserModal} />
         </MainCard>
       </Grid>
-      <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+      <Modal
+        open={openAddUserModal}
+        onClose={handleCloseAddUserModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
         <Box sx={style}>
           <AuthRegister />
+        </Box>
+      </Modal>
+      <Modal
+        open={openAddRoleModal}
+        onClose={handleCloseAddRoleModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <AddUpdateRoleModal handleCloseAddRoleModal={handleCloseAddRoleModal} />
         </Box>
       </Modal>
     </>

@@ -7,6 +7,7 @@ import { orderListIsLoadingSelector, orderListSelector } from 'store/slices/orde
 import { fetchAllOrder } from 'store/slices/order/fetchOrder';
 import location from 'utils/location';
 import { formatDateTime } from 'utils/format-date';
+import CircularLoader from 'components/CircularLoader';
 const columns = (viewAction) => [
   {
     field: 'id',
@@ -128,7 +129,7 @@ export default function OrderTable() {
   // console.log(tableRef);
 
   if (listIsLoading) {
-    return null;
+    return <CircularLoader />;
   }
   return (
     <div style={{ height: '80vh', width: '100%' }}>
