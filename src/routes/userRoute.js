@@ -3,7 +3,11 @@ import UserController from "../controllers/UserController";
 import constants from "../utils/constants";
 import can from "../middleware/canAccess";
 import Auth from "../middleware/auth";
-import { createUserSchema, updateUserSchema } from "../schemas/userSchema";
+import {
+  createUserSchema,
+  fetchUserWithPermissionsSchema,
+  updateUserSchema,
+} from "../schemas/userSchema";
 import { idSchema } from "../schemas/commonSchema";
 import schemaValidator from "../middleware/schemaValidator";
 import { createValidator } from "express-joi-validation";
@@ -24,6 +28,14 @@ router.get(
   can(constants.PERMISSION_VIEW_ALL_USERS),
   validator.params(idSchema),
   UserController.user
+);
+
+router.post(
+  "/with-permissions",
+  Auth,
+  can(constants.PERMISSION_VIEW_ALL_USERS),
+  schemaValidator(fetchUserWithPermissionsSchema),
+  UserController.userWithPermission
 );
 
 router.post(

@@ -7,6 +7,8 @@ class UserService extends Ajax {
 
   fetchUser = (id) => this.getJson(`${this.pathname}/${id}`);
 
+  fetchUsersWithPermissions = (data) => this.post(`${this.pathname}/with-permissions`, data);
+
   fetchAddUser = (data) => this.post(`${this.pathname}`, data);
 
   fetchUpdateUser = (id, data) => this.put(`${this.pathname}/${id}`, data);

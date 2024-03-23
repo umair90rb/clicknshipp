@@ -87,7 +87,6 @@ export default {
       if (filter && Object.keys(filter).length) {
         query.where = { ...query.where, ...filter };
       }
-      console.log(query);
       const orders = await Order.findAll(query);
       return sendSuccessResponse(res, 200, { orders });
     } catch (e) {

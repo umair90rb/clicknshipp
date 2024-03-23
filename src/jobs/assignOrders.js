@@ -1,7 +1,7 @@
 import { schedule } from "node-cron";
 const { Op } = require("sequelize");
 import model from "../models";
-const { Order, User, Role } = model;
+const { Order, User, Role, Permission } = model;
 
 function getFormattedTimestampFromYesterday() {
   const yesterday = new Date();
@@ -25,10 +25,16 @@ schedule(everyMorningAt8Am, async () => {
         {
           model: Role,
           as: "roles",
-          where: { name: "Agent" },
+          include: [
+            {
+              model: Permission,
+              where: { name: "assign-orders" },
+            },
+          ],
         },
       ],
     });
+    console.log(agents, "agents to assign order");
     const unassignedOrders = await Order.findAll({
       where: {
         status: "Received",
@@ -41,6 +47,7 @@ schedule(everyMorningAt8Am, async () => {
         exclude: ["data"],
       },
     });
+    console.log(`${unassignedOrders.length}`);
     if (!unassignedOrders.length) {
       console.warn("in order assign job no order meet critera");
       return;

@@ -15,7 +15,7 @@ const {
 export default {
   async users(req, res) {
     try {
-      const usersWithRolesAndPermissions = await User.scope("clean").findAll({
+      const users = await User.scope("clean").findAll({
         include: [
           {
             model: Role,
@@ -23,21 +23,33 @@ export default {
             through: {
               attributes: [],
             },
-          },
-          {
-            model: Permission,
-            as: "permissions",
-            through: {
-              attributes: [],
-            },
+            include: [
+              {
+                model: Permission,
+                as: "permissions",
+                through: {
+                  attributes: [],
+                },
+              },
+            ],
           },
         ],
       });
-      const users = usersWithRolesAndPermissions.map((user) => ({
-        ...user.dataValues,
-        roles: user.roles.map((role) => role.name),
-      }));
-      return sendSuccessResponse(res, 200, { users }, "All registered users");
+      return sendSuccessResponse(
+        res,
+        200,
+        {
+          users: users.map((user) => ({
+            ...user.get(),
+            roles: user.roles.map((r) => r.name),
+            permissions: user.roles.reduce(
+              (t, c) => [...t, ...c.permissions],
+              []
+            ),
+          })),
+        },
+        "All registered users"
+      );
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
@@ -59,13 +71,15 @@ export default {
             through: {
               attributes: [],
             },
-          },
-          {
-            model: Permission,
-            as: "permissions",
-            through: {
-              attributes: [],
-            },
+            include: [
+              {
+                model: Permission,
+                as: "permissions",
+                through: {
+                  attributes: [],
+                },
+              },
+            ],
           },
         ],
       });
@@ -77,12 +91,65 @@ export default {
             user: {
               ...user.dataValues,
               roles: user.roles.map((role) => role.name),
-              permissions: user.permissions.map(
-                (permission) => permission.name
+              permissions: user.roles.reduce(
+                (t, c) => [...t, ...c.permissions],
+                []
               ),
             },
           },
           "User with id"
+        );
+      }
+      return sendErrorResponse(res, 404, "No data found with this id.");
+    } catch (e) {
+      console.error(e);
+      return sendErrorResponse(
+        res,
+        500,
+        "Could not perform operation at this time, kindly try again later.",
+        e
+      );
+    }
+  },
+
+  async userWithPermission(req, res) {
+    try {
+      const { permissions } = req.body;
+      const users = await User.scope("clean").findAll({
+        include: [
+          {
+            model: Role,
+            as: "roles",
+            through: {
+              attributes: [],
+            },
+            required: true,
+            include: [
+              {
+                as: "permissions",
+                model: Permission,
+                where: { name: { [Op.in]: permissions } },
+                required: true,
+                through: {
+                  attributes: [],
+                },
+              },
+            ],
+          },
+        ],
+      });
+      console.log((users || []).map((u) => JSON.stringify(u.get())));
+      if (users && users.length) {
+        return sendSuccessResponse(
+          res,
+          200,
+          {
+            users: users.map((user) => ({
+              ...user.dataValues,
+              roles: user.roles.map((role) => role.name),
+            })),
+          },
+          "Users with permissinos"
         );
       }
       return sendErrorResponse(res, 404, "No data found with this id.");

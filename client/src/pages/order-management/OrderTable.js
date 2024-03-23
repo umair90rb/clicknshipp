@@ -1,13 +1,27 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { DataGrid, GridToolbar, GridActionsCellItem, GridLogicOperator } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridToolbar,
+  GridActionsCellItem,
+  GridToolbarContainer,
+  GridToolbarColumnsButton,
+  GridToolbarFilterButton,
+  GridToolbarQuickFilter,
+  GridToolbarDensitySelector,
+  GridToolbarExport,
+  GridLogicOperator
+} from '@mui/x-data-grid';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import { orderListIsLoadingSelector, orderListSelector } from 'store/slices/order/orderSelector';
 import { fetchAllOrder } from 'store/slices/order/fetchOrder';
 import location from 'utils/location';
 import { formatDateTime } from 'utils/format-date';
 import CircularLoader from 'components/CircularLoader';
+import { Button, Box, Modal } from '../../../node_modules/@mui/material/index';
+import AssignOrderModal from './AssingOrderModal';
 const columns = (viewAction) => [
   {
     field: 'id',
@@ -88,11 +102,26 @@ const columns = (viewAction) => [
   }
 ];
 
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4
+};
+
 export default function OrderTable() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const listIsLoading = useSelector(orderListIsLoadingSelector);
+
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const displayShowAssignModal = () => setShowAssignModal(true);
+  const hideAssignModal = () => setShowAssignModal(false);
 
   // const [filterModel, setFilterModel] = React.useState({
   //   linkOperator: 'Or',
@@ -128,18 +157,37 @@ export default function OrderTable() {
 
   // console.log(tableRef);
 
-  if (listIsLoading) {
-    return <CircularLoader />;
+  console.log(rowSelectionModel, 'rowSelectionModel');
+
+  // if (listIsLoading) {
+  //   return <CircularLoader />;
+  // }
+
+  function renderToolbar() {
+    return (
+      <GridToolbarContainer>
+        <GridToolbarColumnsButton />
+        <GridToolbarFilterButton />
+        <GridToolbarExport />
+        <GridToolbarDensitySelector />
+        {rowSelectionModel.length > 0 && (
+          <Button onClick={displayShowAssignModal} size="small" startIcon={<AssignmentIndIcon />}>
+            Assign
+          </Button>
+        )}
+        <Box sx={{ flexGrow: 1 }} />
+        <GridToolbarQuickFilter />
+      </GridToolbarContainer>
+    );
   }
+
   return (
     <div style={{ height: '80vh', width: '100%' }}>
       <DataGrid
+        loading={listIsLoading}
         checkboxSelection
-        slots={{ toolbar: GridToolbar }}
-        slotProps={{
-          toolbar: {
-            showQuickFilter: true
-          }
+        slots={{
+          toolbar: renderToolbar
         }}
         pageSizeOptions={[25, 50, 75, 100]}
         onRowSelectionModelChange={(newRowSelectionModel) => setRowSelectionModel(newRowSelectionModel)}
@@ -149,6 +197,16 @@ export default function OrderTable() {
         rows={orders || []}
         columns={columns(handleViewOrder)}
       />
+      <Modal
+        open={showAssignModal}
+        onClose={hideAssignModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <AssignOrderModal hideModal={hideAssignModal} selectedRows={rowSelectionModel} />
+        </Box>
+      </Modal>
     </div>
   );
 }

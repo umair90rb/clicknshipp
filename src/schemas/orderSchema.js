@@ -5,6 +5,11 @@ export const orderBookSchema = Joi.object({
   orderId: Joi.number().required(),
 });
 
+export const orderAssignSchema = Joi.object({
+  agentIds: Joi.array().items(Joi.number()).min(1),
+  orderIds: Joi.array().items(Joi.number()).min(1),
+});
+
 export const orderStatusUpdateSchema = Joi.object({
   orderId: Joi.number().required(),
   status: Joi.string().required(),

@@ -20,6 +20,7 @@ export default {
   PERMISSION_CREATE_ORDER: "create-order",
   PERMISSION_UPDATE_ORDER: "update-order",
   PERMISSION_DELETE_ORDER: "delete-order",
+  PERMISSION_ASSIGN_ORDERS: "assign-orders",
 };
 
 export const returnAddress = {

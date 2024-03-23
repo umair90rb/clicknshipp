@@ -1,7 +1,5 @@
 import { createContext, useEffect, useState } from 'react';
-import { useSelector } from '../../node_modules/react-redux/es/exports';
-import { authFetchStatusSelector } from 'store/slices/auth/authSelector';
-import fetchStatus from 'constants/fetchStatuses';
+import { http } from 'api/ajax';
 
 export const AuthContext = createContext(null);
 
@@ -11,6 +9,7 @@ const AuthProvider = ({ children }) => {
 
   const login = (token) => {
     localStorage.setItem('token', token);
+    http.defaults.headers.common['Authorization'] = token;
     setAuthenticated(token);
   };
 

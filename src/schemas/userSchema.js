@@ -1,5 +1,9 @@
 import Joi from "joi";
 
+const fetchUserWithPermissionsSchema = Joi.object({
+  permissions: Joi.array().items(Joi.string()).min(1),
+});
+
 const createUserSchema = Joi.object({
   name: Joi.string().required(),
   phone: Joi.string().required(),
@@ -17,4 +21,4 @@ const updateUserSchema = Joi.object({
   roles: Joi.array().items(Joi.number().integer()),
 });
 
-export { createUserSchema, updateUserSchema };
+export { fetchUserWithPermissionsSchema, createUserSchema, updateUserSchema };

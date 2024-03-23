@@ -4,12 +4,14 @@ import can from "../middleware/canAccess";
 import Auth from "../middleware/auth";
 import { idSchema } from "../schemas/commonSchema";
 import {
+  orderAssignSchema,
   orderBookSchema,
   orderStatusUpdateSchema,
 } from "../schemas/orderSchema";
 import schemaValidator from "../middleware/schemaValidator";
 import { createValidator } from "express-joi-validation";
 import OrderController from "../controllers/OrderController";
+import OrderManagmentController from "../controllers/OrderManagmentController";
 import multer from "multer";
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -58,12 +60,19 @@ router.post(
 
 router.post("/shopify", OrderController.createShopifyOrder);
 router.post("/import", upload.single("file"), OrderController.import);
+router.post(
+  "/assign",
+  Auth,
+  can(constants.PERMISSION_UPDATE_ORDER),
+  schemaValidator(orderAssignSchema),
+  OrderManagmentController.assignOrders
+);
 
 router.post(
   "/status",
   Auth,
-  can(constants.PERMISSION_UPDATE_ORDER),
-  schemaValidator(orderStatusUpdateSchema),
+  // can(constants.PERMISSION_UPDATE_ORDER),
+  schemaValidator(orderAssignSchema),
   OrderController.updateStatus
 );
 
