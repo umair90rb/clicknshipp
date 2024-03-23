@@ -14,7 +14,7 @@ import orderRouter from "./orderRouter";
 import reportRouter from "./reportRouter";
 import permissionRouter from "./permissionRouter";
 import express from "express";
-import { sendErrorResponse } from "../utils/sendResponse";
+// import { sendErrorResponse } from "../utils/sendResponse";
 
 export default (app) => {
   app.use(express.urlencoded({ extended: true }));
@@ -40,7 +40,9 @@ export default (app) => {
     res.status(200).send("ok");
   });
 
-  app.all("*", (req, res) =>
-    sendErrorResponse(res, 404, "Route does not exist")
+  app.all(
+    "*",
+    (req, res) => res.redirect("/")
+    // sendErrorResponse(res, 404, "Route does not exist")
   );
 };

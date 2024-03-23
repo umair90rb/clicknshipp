@@ -146,7 +146,7 @@ export default function OrderTable() {
         rowSelectionModel={rowSelectionModel}
         // filterModel={filterModel}
         // onFilterModelChange={onFilterChange}
-        rows={orders}
+        rows={orders || []}
         columns={columns(handleViewOrder)}
       />
     </div>

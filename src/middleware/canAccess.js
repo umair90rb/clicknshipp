@@ -30,10 +30,8 @@ export default (requiredPermission) => async (req, res, next) => {
     );
   });
   let hasPermission = false;
-  console.log(Array.isArray(requiredPermission));
   if (Array.isArray(requiredPermission)) {
     requiredPermission.forEach((rp, index) => {
-      console.log(rp, index, userPermissions.includes(rp));
       if (userPermissions.includes(rp)) {
         hasPermission = true;
         return;
@@ -45,7 +43,7 @@ export default (requiredPermission) => async (req, res, next) => {
   console.log(
     "user permissions:",
     userPermissions,
-    "has permission to ",
+    "has permission to",
     requiredPermission,
     hasPermission
   );

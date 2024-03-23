@@ -13,10 +13,10 @@ const useAccess = () => {
   };
 
   const hasPermission = (permission) => {
-    if (!permissions && !permissions?.length) {
+    if (!permission || (!permissions && !permissions?.length)) {
       return false;
     }
-    return permissions.includes(permission);
+    return permissions?.includes(permission);
   };
 
   return { hasRole, hasPermission };

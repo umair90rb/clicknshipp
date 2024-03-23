@@ -84,4 +84,56 @@ export default {
       );
     }
   },
+
+  async profile(req, res) {
+    try {
+      const { user } = req;
+      const userData = await User.scope("withPassword").findByPk(user.id, {
+        include: [
+          {
+            model: Role,
+            as: "roles",
+            include: [
+              {
+                model: Permission,
+                as: "permissions",
+              },
+            ],
+          },
+        ],
+      });
+      if (userData) {
+        const userRoles = [];
+        const userPermissions = [];
+        userData.roles.forEach((role) => {
+          userRoles.push(role.name);
+          userPermissions.push(
+            ...role.permissions.map((permission) => permission.name)
+          );
+        });
+        return sendSuccessResponse(
+          res,
+          200,
+          {
+            user: {
+              id: userData.id,
+              name: userData.name,
+              email: userData.email,
+              roles: userRoles,
+              permissions: userPermissions,
+            },
+          },
+          "User profile!"
+        );
+      }
+      return sendErrorResponse(res, 400, "No user found!");
+    } catch (e) {
+      return sendErrorResponse(
+        res,
+        500,
+        "Server error, contact admin to resolve issue",
+        e
+      );
+    }
+  },
 };

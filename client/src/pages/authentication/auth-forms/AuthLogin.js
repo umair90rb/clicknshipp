@@ -35,31 +35,21 @@ import fetchStatus from 'constants/fetchStatuses';
 import useAuth from 'hooks/useAuth';
 import { toSentense } from 'utils/string-utils';
 import location from 'utils/location';
-import Ajax from 'api/ajax';
-import { utilPathSelector } from 'store/slices/util/utilSelector';
-
-// ============================|| FIREBASE - LOGIN ||============================ //
 
 const AuthLogin = () => {
-  // const [checked, setChecked] = React.useState(false);
-
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = React.useState(false);
   const formRef = useRef();
-  const { setAuthenticated } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
   const authFetchStatus = useSelector(authFetchStatusSelector);
   const authError = useSelector(authErrorSelector);
   const token = useSelector(authTokenSelector);
-  const path = useSelector(utilPathSelector);
 
   useEffect(() => {
     if (token) {
+      login(token);
       navigate(location.dashboardUrl());
-    }
-    if (authFetchStatus === fetchStatus.SUCCESS) {
-      setAuthenticated && setAuthenticated(token);
-      navigate(path);
     }
     if (authError) {
       formRef.current.setFieldError('submit', toSentense(authError.error || ''));

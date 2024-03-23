@@ -3,7 +3,7 @@ import { permissions } from 'constants/roleAndPermissions';
 
 const dashboard = {
   id: 'group-dashboard',
-  title: 'Reproting',
+  title: 'Reporting',
   type: 'group',
   children: [
     {

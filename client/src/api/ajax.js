@@ -28,7 +28,8 @@ http.interceptors.response.use((response) => {
 class Ajax {
   instance = undefined;
   defaultHeaders = {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    Authorization: localStorage.getItem('token')
   };
 
   getJson = (url, params, headers) => http.get(url, { headers: { ...this.defaultHeaders, ...headers }, params });
