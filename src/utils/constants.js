@@ -5,6 +5,7 @@ export default {
   ROLE_AUTHENTICATED: "Authenticated",
 
   PERMISSION_VIEW_ADMIN_DASHBOARD: "view-admin-dashboard",
+  PERMISSION_VIEW_REPORTING: "view-reporting",
   PERMISSION_VIEW_ALL_USERS: "view-all-users",
   PERMISSION_CREATE_USER: "create-user",
   PERMISSION_UPDATE_USER: "update-user",

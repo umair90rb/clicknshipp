@@ -7,7 +7,7 @@ export default async (req, res, next) => {
       return sendErrorResponse(res, 401, "Authentication required");
     }
 
-    const token = req.headers.authorization;
+    const token = req.headers.authorization.split(" ")[1];
     console.log(token);
     if (!token || token === "") {
       return sendErrorResponse(res, 401, "Authentication Failed");

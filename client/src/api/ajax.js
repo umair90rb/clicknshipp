@@ -13,7 +13,42 @@ if (NODE_ENV === 'production') {
   const loc = window.location;
   config.baseURL = `${loc.protocol}//${loc.host}/${REACT_APP_API_PREFIX}`;
 }
-export const http = axios.create(config);
+
+const http = axios.create(config);
+
+class Ajax {
+  getToken() {
+    return localStorage.getItem('token');
+  }
+
+  getDefaultHeaders(headers = {}) {
+    const token = this.getToken();
+    const defaultHeaders = {
+      'Content-Type': 'application/json',
+      Authorization: token ? `Bearer ${token}` : '',
+      ...headers
+    };
+    return defaultHeaders;
+  }
+
+  getJson = (url, params, headers = {}) => {
+    return http.get(url, { headers: this.getDefaultHeaders(headers), params });
+  };
+
+  post = (url, data, headers = {}) => {
+    return http.post(url, data, { headers: this.getDefaultHeaders(headers) });
+  };
+
+  put = (url, data, headers = {}) => {
+    return http.put(url, data, { headers: this.getDefaultHeaders(headers) });
+  };
+
+  delete = (url, headers = {}) => {
+    return http.delete(url, { headers: this.getDefaultHeaders(headers) });
+  };
+}
+
+export default Ajax;
 
 if (NODE_ENV !== 'production') {
   http.interceptors.request.use((request) => {
@@ -26,20 +61,3 @@ if (NODE_ENV !== 'production') {
     return response;
   });
 }
-class Ajax {
-  instance = undefined;
-  defaultHeaders = {
-    'Content-Type': 'application/json',
-    Authorization: localStorage.getItem('token')
-  };
-
-  getJson = (url, params, headers) => http.get(url, { headers: { ...this.defaultHeaders, ...headers }, params });
-
-  post = (url, data, headers = {}) => http.post(url, data, { headers: { ...this.defaultHeaders, ...headers } });
-
-  put = (url, data, headers = {}) => http.put(url, data, { headers: { ...this.defaultHeaders, ...headers } });
-
-  delete = (url, headers = {}) => http.delete(url, { headers: { ...this.defaultHeaders, ...headers } });
-}
-
-export default Ajax;

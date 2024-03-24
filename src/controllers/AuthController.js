@@ -50,7 +50,7 @@ export default {
       }
 
       const token = jwt.sign({ userId: user.id }, "your-secret-key", {
-        expiresIn: "8h",
+        expiresIn: "12h",
       });
       const userRoles = [];
       const userPermissions = [];

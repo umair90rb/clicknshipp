@@ -9,7 +9,6 @@ const AuthProvider = ({ children }) => {
 
   const login = (token) => {
     localStorage.setItem('token', token);
-    http.defaults.headers.common['Authorization'] = token;
     setAuthenticated(token);
   };
 

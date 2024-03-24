@@ -14,7 +14,6 @@ import useAuth from './useAuth';
 
 const useFetchProfile = () => {
   const dispatch = useDispatch();
-  const isLoading = useSelector(authProfileIsLoadingSelector);
   const profileFetchStatus = useSelector(authProfileFetchStatusSelector);
   const token = useSelector(authTokenSelector);
   const navigate = useNavigate();

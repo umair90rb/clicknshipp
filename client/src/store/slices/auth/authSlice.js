@@ -1,7 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import fetchStatus from 'constants/fetchStatuses';
 import { fetchLogin, fetchProfile } from './fetchAuth';
-import { http } from 'api/ajax';
 
 const initialState = {
   token: null,
