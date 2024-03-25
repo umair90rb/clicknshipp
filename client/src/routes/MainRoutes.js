@@ -7,7 +7,7 @@ import { permissions } from 'constants/roleAndPermissions';
 
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 const UserDefault = Loadable(lazy(() => import('pages/user-management')));
-const OrderManagement = Loadable(lazy(() => import('pages/order-management')));
+const Reporting = Loadable(lazy(() => import('pages/reporting')));
 
 const MainRoutes = {
   path: '/',
@@ -26,6 +26,14 @@ const MainRoutes = {
       element: (
         <PrivateRoute permission={permissions.viewAdminDashboard}>
           <DashboardDefault />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'reporting',
+      element: (
+        <PrivateRoute permission={permissions.viewReporting}>
+          <Reporting />
         </PrivateRoute>
       )
     },

@@ -19,7 +19,7 @@ const dashboard = {
       id: 'reporting',
       title: 'Reporting',
       type: 'item',
-      url: '/dashboard',
+      url: '/reporting',
       permission: permissions.viewReporting,
       icon: FileSearchOutlined,
       breadcrumbs: false

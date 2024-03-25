@@ -67,8 +67,8 @@ const AuthLogin = () => {
     event.preventDefault();
   };
 
-  const handleSubmit = async (values) => {
-    dispatch(fetchLogin({ body: values }));
+  const handleSubmit = async (body) => {
+    dispatch(fetchLogin({ body }));
   };
 
   return (

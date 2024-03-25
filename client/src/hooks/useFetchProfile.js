@@ -14,25 +14,16 @@ import useAuth from './useAuth';
 
 const useFetchProfile = () => {
   const dispatch = useDispatch();
-  const profileFetchStatus = useSelector(authProfileFetchStatusSelector);
-  const token = useSelector(authTokenSelector);
   const navigate = useNavigate();
-  const { login, logout } = useAuth();
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
-    dispatch(fetchProfile());
+    if (token) {
+      dispatch(fetchProfile());
+      return;
+    }
+    navigate(location.loginUrl());
   }, []);
-
-  useEffect(() => {
-    if (profileFetchStatus === fetchStatus.FAILURE || (profileFetchStatus === fetchStatus.SUCCESS && token)) {
-      logout();
-      navigate(location.loginUrl());
-    }
-    if (profileFetchStatus === fetchStatus.SUCCESS && token) {
-      login(token);
-      navigate(location.dashboardUrl());
-    }
-  }, [profileFetchStatus]);
 };
 
 export default useFetchProfile;

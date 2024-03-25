@@ -4,7 +4,7 @@ import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 const { Order, OrderItem, Item } = model;
 
 export default {
-  async productOrderCount(req, res) {
+  async orderProducts(req, res) {
     try {
       const { start, end } = req.body;
       return sendSuccessResponse(
