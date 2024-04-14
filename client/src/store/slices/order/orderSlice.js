@@ -36,7 +36,7 @@ const orderSlice = createSlice({
       state.list.orders = null;
       state.list.fetchStatus = fetchStatus.FAILURE;
       console.log(action.payload, 'error order all');
-      state.list.error = action.payload;
+      state.list.error = action.payload.message;
     });
 
     builder.addCase(fetchCreateOrder.pending, (state, _action) => {
