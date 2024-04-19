@@ -62,23 +62,22 @@ export const headCells = [
     label: 'Product Name'
   },
   {
-    id: 'fat',
+    id: 'generated',
     align: 'right',
     disablePadding: false,
-    label: 'Total Order'
+    label: 'Generated'
   },
   {
-    id: 'carbs',
+    id: 'confirmed',
     align: 'left',
     disablePadding: false,
-
-    label: 'Status'
+    label: 'Confirmed'
   },
   {
-    id: 'protein',
+    id: 'percentage',
     align: 'right',
     disablePadding: false,
-    label: 'Total Amount'
+    label: '%'
   }
 ];
 

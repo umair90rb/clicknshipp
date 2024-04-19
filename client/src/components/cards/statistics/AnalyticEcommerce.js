@@ -30,8 +30,11 @@ const AnalyticEcommerce = ({ color, title, count, percentage, isLoss, extra }) =
               color={color}
               icon={
                 <>
-                  {!isLoss && <RiseOutlined style={{ fontSize: '0.75rem', color: 'inherit' }} />}
-                  {isLoss && <FallOutlined style={{ fontSize: '0.75rem', color: 'inherit' }} />}
+                  {isLoss ? (
+                    <FallOutlined style={{ fontSize: '0.75rem', color: 'inherit' }} />
+                  ) : (
+                    <RiseOutlined style={{ fontSize: '0.75rem', color: 'inherit' }} />
+                  )}
                 </>
               }
               label={`${percentage}%`}
@@ -42,15 +45,17 @@ const AnalyticEcommerce = ({ color, title, count, percentage, isLoss, extra }) =
         )}
       </Grid>
     </Stack>
-    <Box sx={{ pt: 2.25 }}>
-      <Typography variant="caption" color="textSecondary">
-        You made an extra{' '}
-        <Typography component="span" variant="caption" sx={{ color: `${color || 'primary'}.main` }}>
-          {extra}
-        </Typography>{' '}
-        this year
-      </Typography>
-    </Box>
+    {extra && (
+      <Box sx={{ pt: 2.25 }}>
+        <Typography variant="caption" color="textSecondary">
+          You made an extra{' '}
+          <Typography component="span" variant="caption" sx={{ color: `${color || 'primary'}.main` }}>
+            {extra}
+          </Typography>{' '}
+          this year
+        </Typography>
+      </Box>
+    )}
   </MainCard>
 );
 

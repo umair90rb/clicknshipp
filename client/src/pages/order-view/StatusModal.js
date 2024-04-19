@@ -1,38 +1,14 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { useDispatch } from '../../../node_modules/react-redux/es/exports';
 import { fetchUpdateStatusOrder } from 'store/slices/order/fetchOrder';
 import { setMessage } from 'store/slices/util/utilSlice';
-
-// material-ui
-import {
-  Box,
-  Button,
-  MenuItem,
-  Select,
-  FormControl,
-  FormHelperText,
-  Grid,
-  ListItemText,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  OutlinedInput,
-  Stack,
-  Typography,
-  Checkbox,
-  Chip
-} from '@mui/material';
-
-// third party
+import { Button, MenuItem, Select, FormHelperText, Grid, ListItemText, InputLabel, OutlinedInput, Stack } from '@mui/material';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-
-// project import
-// import FirebaseSocial from './FirebaseSocial';
 import AnimateButton from 'components/@extended/AnimateButton';
 import { toSentense } from 'utils/string-utils';
 
-const ORDER_STATUSES = ['Confirmed', 'No Pick', 'Cancel'];
+const ORDER_STATUSES = ['Confirmed', 'No Pick', 'Cancel', 'Duplicate'];
 
 export default function StatusModal({ orderId, hideOrderStatusModal }) {
   const dispatch = useDispatch();

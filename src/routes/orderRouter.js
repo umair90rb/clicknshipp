@@ -71,8 +71,8 @@ router.post(
 router.post(
   "/status",
   Auth,
-  // can(constants.PERMISSION_UPDATE_ORDER),
-  schemaValidator(orderAssignSchema),
+  can(constants.PERMISSION_UPDATE_ORDER),
+  schemaValidator(orderStatusUpdateSchema),
   OrderController.updateStatus
 );
 

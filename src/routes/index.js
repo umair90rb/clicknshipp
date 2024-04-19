@@ -12,6 +12,7 @@ import roleRouter from "./roleRouter";
 import cityRouter from "./cityRouter";
 import orderRouter from "./orderRouter";
 import reportRouter from "./reportRouter";
+import dashboardRouter from "./dashboardRouter";
 import permissionRouter from "./permissionRouter";
 import express from "express";
 // import { sendErrorResponse } from "../utils/sendResponse";
@@ -34,6 +35,7 @@ export default (app) => {
   app.use("/api/v1/permission", permissionRouter);
   app.use("/api/v1/order", orderRouter);
   app.use("/api/v1/report", reportRouter);
+  app.use("/api/v1/dashboard", dashboardRouter);
   app.use("/api/v1/", adminRouter);
 
   app.get("/api/v1/health", (req, res) => {

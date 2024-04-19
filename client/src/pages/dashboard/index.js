@@ -1,78 +1,29 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { Grid, Typography } from '@mui/material';
 
-// material-ui
-import {
-  Avatar,
-  AvatarGroup,
-  Box,
-  Button,
-  Grid,
-  List,
-  ListItemAvatar,
-  ListItemButton,
-  ListItemSecondaryAction,
-  ListItemText,
-  MenuItem,
-  Stack,
-  TextField,
-  Typography
-} from '@mui/material';
-
-// project import
-import OrdersTable, { rows, headCells } from './OrdersTable';
-import IncomeAreaChart from './IncomeAreaChart';
-import MonthlyBarChart from './MonthlyBarChart';
-import ReportAreaChart from './ReportAreaChart';
-import SalesColumnChart from './SalesColumnChart';
+import { rows, headCells } from './OrdersTable';
 import MainCard from 'components/MainCard';
 import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
-
-// assets
-import { GiftOutlined, MessageOutlined, SettingOutlined } from '@ant-design/icons';
-import avatar1 from 'assets/images/users/avatar-1.png';
-import avatar2 from 'assets/images/users/avatar-2.png';
-import avatar3 from 'assets/images/users/avatar-3.png';
-import avatar4 from 'assets/images/users/avatar-4.png';
 import CustomTable from 'components/CustomTable';
-
-// avatar style
-const avatarSX = {
-  width: 36,
-  height: 36,
-  fontSize: '1rem'
-};
-
-// action style
-const actionSX = {
-  mt: 0.75,
-  ml: 1,
-  top: 'auto',
-  right: 'auto',
-  alignSelf: 'flex-start',
-  transform: 'none'
-};
-
-// sales report status
-const status = [
-  {
-    value: 'today',
-    label: 'Today'
-  },
-  {
-    value: 'month',
-    label: 'This Month'
-  },
-  {
-    value: 'year',
-    label: 'This Year'
-  }
-];
-
-// ==============================|| DASHBOARD - DEFAULT ||============================== //
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchDashboardStats } from 'store/slices/dashboard/fetchDashboard';
+import { dashboardIsLoadingSelector, dashboardStatsSelector } from 'store/slices/dashboard/dashboardSelector';
+import Loader from 'components/Loader';
+import CircularLoader from 'components/CircularLoader';
+import ItemsByOrders from './ItemsByOrders';
 
 const DashboardDefault = () => {
-  const [value, setValue] = useState('today');
-  const [slot, setSlot] = useState('week');
+  const dispatch = useDispatch();
+  const statsIsLoading = useSelector(dashboardIsLoadingSelector);
+  const stats = useSelector(dashboardStatsSelector);
+
+  useEffect(() => {
+    dispatch(fetchDashboardStats());
+  }, []);
+
+  if (statsIsLoading) {
+    return <CircularLoader />;
+  }
 
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
@@ -81,72 +32,20 @@ const DashboardDefault = () => {
         <Typography variant="h5">Dashboard</Typography>
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Today Orders" count="18,800" percentage={27.4} isLoss color="warning" extra="1,943" />
+        <AnalyticEcommerce title="Today Orders" count={stats.totalOrders} />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Today Confirm Orders" count="78,250" percentage={70.5} extra="8,900" />
+        <AnalyticEcommerce title="Today Confirm Orders" count={stats.confirmedOrders} />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Today Total Sales" count="Rs 35,078" percentage={27.4} isLoss color="warning" extra="Rs 20,395" />
+        <AnalyticEcommerce title="Today Booked Orders" count={stats.bookedOrders} />
       </Grid>
-
-      <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
+      <Grid item xs={12} sm={6} md={4} lg={3}>
+        <AnalyticEcommerce title="Today Total Sales" count={`Rs ${parseInt(stats.totalSalesValue)}`} />
+      </Grid>
 
       {/* row 2 */}
-      <Grid item xs={12} md={7} lg={8}>
-        <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
-            <Typography variant="h5">Unique Visitor</Typography>
-          </Grid>
-          <Grid item>
-            <Stack direction="row" alignItems="center" spacing={0}>
-              <Button
-                size="small"
-                onClick={() => setSlot('month')}
-                color={slot === 'month' ? 'primary' : 'secondary'}
-                variant={slot === 'month' ? 'outlined' : 'text'}
-              >
-                Month
-              </Button>
-              <Button
-                size="small"
-                onClick={() => setSlot('week')}
-                color={slot === 'week' ? 'primary' : 'secondary'}
-                variant={slot === 'week' ? 'outlined' : 'text'}
-              >
-                Week
-              </Button>
-            </Stack>
-          </Grid>
-        </Grid>
-        <MainCard content={false} sx={{ mt: 1.5 }}>
-          <Box sx={{ pt: 1, pr: 2 }}>
-            <IncomeAreaChart slot={slot} />
-          </Box>
-        </MainCard>
-      </Grid>
-      <Grid item xs={12} md={5} lg={4}>
-        <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
-            <Typography variant="h5">Income Overview</Typography>
-          </Grid>
-          <Grid item />
-        </Grid>
-        <MainCard sx={{ mt: 2 }} content={false}>
-          <Box sx={{ p: 3, pb: 0 }}>
-            <Stack spacing={2}>
-              <Typography variant="h6" color="textSecondary">
-                This Week Statistics
-              </Typography>
-              <Typography variant="h3">Rs 7,650</Typography>
-            </Stack>
-          </Box>
-          <MonthlyBarChart />
-        </MainCard>
-      </Grid>
-
-      {/* row 3 */}
-      <Grid item xs={12} md={6} lg={6}>
+      <Grid item xs={12} md={12} lg={12}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
             <Typography variant="h5">Recent Orders</Typography>
@@ -154,41 +53,7 @@ const DashboardDefault = () => {
           <Grid item />
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>
-          <CustomTable orderBy="trackingId" order="asc" headCells={headCells} data={rows} />
-        </MainCard>
-      </Grid>
-
-      {/* row 4 */}
-      <Grid item xs={12} md={6} lg={6}>
-        <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
-            <Typography variant="h5">Sales Report</Typography>
-          </Grid>
-          <Grid item>
-            <TextField
-              id="standard-select-currency"
-              size="small"
-              select
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              sx={{ '& .MuiInputBase-input': { py: 0.5, fontSize: '0.875rem' } }}
-            >
-              {status.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-        </Grid>
-        <MainCard sx={{ mt: 1.75 }}>
-          <Stack spacing={1.5} sx={{ mb: -12 }}>
-            <Typography variant="h6" color="secondary">
-              Net Profit
-            </Typography>
-            <Typography variant="h4">Rs 1560</Typography>
-          </Stack>
-          <SalesColumnChart />
+          <ItemsByOrders items={stats?.ordersByItem || []} />
         </MainCard>
       </Grid>
     </Grid>
