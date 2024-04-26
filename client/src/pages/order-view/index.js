@@ -48,6 +48,7 @@ const OrderView = () => {
     order_number,
     subtotal_price,
     remarks,
+    chanel,
     status,
     total_discounts,
     total_price,
@@ -157,6 +158,9 @@ const OrderView = () => {
                 Remarks
               </Typography>
               <Typography paragraph>{remarks || 'None'}</Typography>
+              <Typography sx={{ fontSize: 14 }} gutterBottom>
+                Chanel/Store: {(chanel && 'name' in chanel && chanel.name) || ''}
+              </Typography>
             </CardContent>
           </Card>
           <Card sx={{ minWidth: 275, mt: 1 }}>
@@ -206,7 +210,7 @@ const OrderView = () => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <StatusModal hideOrderStatusModal={hideOrderStatusModal} orderId={id} />
+          <StatusModal hideOrderStatusModal={hideOrderStatusModal} setOrderStatus={setOrderStatus} orderId={id} />
         </Box>
       </Modal>
     </Stack>

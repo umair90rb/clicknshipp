@@ -24,69 +24,66 @@ import { Button, Box, Modal } from '../../../node_modules/@mui/material/index';
 import AssignOrderModal from './AssingOrderModal';
 const columns = (viewAction) => [
   {
-    field: 'id',
-    headerName: 'ID.',
-    width: 100
-  },
-  {
     field: 'order_number',
     headerName: 'Order#',
-    width: 100
+    flex: 1
   },
   {
     field: 'status',
     headerName: 'Status',
-    width: 100
+    flex: 1
   },
   {
     field: 'agent',
     headerName: 'Agent',
-    width: 100,
+    flex: 1,
     valueGetter: (param) => param.row.user?.name || ''
   },
   {
     field: 'address',
     headerName: 'Address',
-    width: 300,
+    flex: 1,
     valueGetter: (param) => param.row.address?.address1 || ''
   },
   {
     field: 'city',
     headerName: 'City',
-    width: 100,
+    flex: 1,
     valueGetter: (param) => param.row.address?.city || ''
   },
 
   {
     field: 'total_price',
     headerName: 'Total Amount',
-    width: 100
+    flex: 1
   },
   {
     field: 'total_tax',
     headerName: 'Tax Amount',
-    width: 100
+    flex: 1
   },
   {
     field: 'total_discounts',
     headerName: 'Discount',
-    width: 100
+    flex: 1
   },
   {
     field: 'createdAt',
     headerName: 'Received At',
-    width: 250,
-    valueGetter: (params) => formatDateTime(params.row.createdAt)
+    flex: 1,
+    type: 'dateTime',
+    valueGetter: ({ value }) => new Date(value)
   },
   {
     field: 'chanel',
     headerName: 'Channel',
-    width: 100
+    flex: 1,
+    valueGetter: ({ value }) => (value ? value.name : '')
   },
   {
     field: 'actions',
     headerName: 'Actions',
-    width: 100,
+    flex: 1,
     type: 'actions',
     cellClassName: 'actions',
     getActions: ({ id }) => [
@@ -159,10 +156,6 @@ export default function OrderTable() {
 
   console.log(rowSelectionModel, 'rowSelectionModel');
 
-  // if (listIsLoading) {
-  //   return <CircularLoader />;
-  // }
-
   function renderToolbar() {
     return (
       <GridToolbarContainer>
@@ -182,7 +175,7 @@ export default function OrderTable() {
   }
 
   return (
-    <div style={{ height: '80vh', width: '100%' }}>
+    <div style={{ width: '100%' }}>
       <DataGrid
         loading={listIsLoading}
         checkboxSelection

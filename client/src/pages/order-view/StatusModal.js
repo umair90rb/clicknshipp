@@ -10,7 +10,7 @@ import { toSentense } from 'utils/string-utils';
 
 const ORDER_STATUSES = ['Confirmed', 'No Pick', 'Cancel', 'Duplicate'];
 
-export default function StatusModal({ orderId, hideOrderStatusModal }) {
+export default function StatusModal({ orderId, hideOrderStatusModal, setOrderStatus }) {
   const dispatch = useDispatch();
   const formRef = useRef();
 
@@ -22,6 +22,7 @@ export default function StatusModal({ orderId, hideOrderStatusModal }) {
       if (type === 'order/status/fetch/fulfilled') {
         setStatus({ success: true });
         hideOrderStatusModal();
+        setOrderStatus(values.status);
         return dispatch(setMessage({ message: `Order status updated successfully`, type: 'success' }));
       }
       setErrors({ submit: toSentense(payload.error) || `Error! Order status can't updated.` });

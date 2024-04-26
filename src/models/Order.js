@@ -12,6 +12,14 @@ module.exports = (sequelize, DataTypes) => {
         as: "customer",
         foreignKey: "customer_id",
       });
+      Order.belongsTo(models.Chanel, {
+        as: "chanel",
+        foreignKey: "chanel_id",
+      });
+      Order.belongsTo(models.Brand, {
+        as: "brand",
+        foreignKey: "brand_id",
+      });
       Order.hasOne(models.Address, { as: "address", foreignKey: "order_id" });
       Order.hasOne(models.Delivery, { as: "delivery", foreignKey: "order_id" });
       Order.hasMany(models.OrderItem, { as: "items", foreignKey: "order_id" });
@@ -67,9 +75,12 @@ module.exports = (sequelize, DataTypes) => {
       remarks: {
         type: DataTypes.STRING,
       },
-      chanel: {
-        type: DataTypes.STRING,
-        defaultValue: "Received",
+      chanel_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      brand_id: {
+        type: DataTypes.INTEGER,
         allowNull: true,
       },
       createdAt: { type: DataTypes.DATE, field: "created_at" },

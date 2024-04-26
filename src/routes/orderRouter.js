@@ -2,6 +2,7 @@ import express from "express";
 import constants from "../utils/constants";
 import can from "../middleware/canAccess";
 import Auth from "../middleware/auth";
+import getUserBrand from "../middleware/getUserBrand";
 import { idSchema } from "../schemas/commonSchema";
 import {
   orderAssignSchema,
@@ -23,6 +24,7 @@ router.post(
   "/all",
   Auth,
   can([constants.PERMISSION_VIEW_ORDERS, constants.PERMISSION_VIEW_ALL_ORDERS]),
+  getUserBrand,
   OrderController.orders
 );
 
@@ -60,6 +62,7 @@ router.post(
 
 router.post("/shopify", OrderController.createShopifyOrder);
 router.post("/import", upload.single("file"), OrderController.import);
+
 router.post(
   "/assign",
   Auth,

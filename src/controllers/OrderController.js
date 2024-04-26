@@ -56,12 +56,19 @@ export default {
       const filter = req.body;
       const permissions = req.user.permissions;
       const query = {
-        where: { user_id: req.user.id },
+        where: {
+          user_id: req.user.id,
+        },
         order: [["createdAt", "DESC"]],
         include: [
           {
             model: User,
             as: "user",
+            attributes: ["id", "name"],
+          },
+          {
+            model: Chanel,
+            as: "chanel",
             attributes: ["id", "name"],
           },
           {
@@ -75,18 +82,28 @@ export default {
             "data",
             "customer_id",
             "user_id",
+            "chanel_id",
+            "brand_id",
             "UserId",
             "CustomerId",
             "updatedAt",
           ],
         },
       };
+      console.log(req.user, "req.user");
+      if ("brands" in req.user) {
+        query.where.brand_id = req.user.brands.map((b) => b.id);
+      }
+
       if (permissions.includes(constants.PERMISSION_VIEW_ALL_ORDERS)) {
         delete query.where.user_id;
+        delete query.where.brand_id;
       }
+
       if (filter && Object.keys(filter).length) {
         query.where = { ...query.where, ...filter };
       }
+      console.log(query);
       const orders = await Order.findAll(query);
       return sendSuccessResponse(res, 200, { orders });
     } catch (e) {
@@ -109,10 +126,17 @@ export default {
             "CustomerId",
             "updatedAt",
             "customer_id",
+            "chanel_id",
+            "brand_id",
             "user_id",
           ],
         },
         include: [
+          {
+            model: Chanel,
+            as: "chanel",
+            attributes: ["id", "name"],
+          },
           {
             model: User,
             as: "user",
@@ -137,6 +161,7 @@ export default {
               exclude: [
                 "order_id",
                 "customer_id",
+
                 "CustomerId",
                 "OrderId",
                 "company",
@@ -198,7 +223,8 @@ export default {
 
       const order = await Order.create({
         ...order_data,
-        chanel: chanel?.name || storeDomain,
+        chanel_id: chanel.id,
+        brand_id: chanel.brand_id,
         data: JSON.stringify(body),
       });
       let customer;
@@ -241,7 +267,8 @@ export default {
         address1,
         address2,
         city,
-        chanel,
+        chanel_id,
+        brand_id,
         zip,
         province,
         items: itemsArray,
@@ -301,7 +328,8 @@ export default {
       const total_tax = 0;
       const total_price = subtotal_price + total_tax;
       const order = await Order.create({
-        chanel,
+        chanel_id,
+        brand_id,
         user_id: req.user.id,
         status: "Assigned",
         subtotal_price: withoutDiscount.toFixed(2),
@@ -579,7 +607,8 @@ export default {
         city,
         zip,
         province,
-        chanel,
+        chanel_id,
+        brand_id,
         items: itemsArray,
       } = req.body || {};
       const orderItems = [];
@@ -598,7 +627,8 @@ export default {
       }
       await order.update(
         {
-          chanel,
+          chanel_id,
+          brand_id,
           user_id: req.user.id,
           subtotal_price,
           total_price,

@@ -59,7 +59,7 @@ export default function CustomerTable({ openViewForm }) {
   }, []);
 
   return (
-    <div style={{ height: '80vh', width: '100%' }}>
+    <div style={{ width: '100%' }}>
       <DataGrid
         slots={{ toolbar: GridToolbar }}
         slotProps={{

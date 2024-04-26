@@ -62,7 +62,7 @@ const CreateOrderForm = () => {
   const orderForm = useRef();
   const { state } = useLocation();
   const { order } = state || {};
-  const { items: orderItems, customer, address, id, chanel, remarks } = order || {};
+  const { items: orderItems, customer, address, id, chanel_id, brand_id, remarks } = order || {};
   const { first_name, last_name, email, phone, note, id: customerId } = customer || {};
   const { address1, address2, city, zip, province, id: addressId } = address || {};
   const [items, setItems] = useState(orderItems || []);
@@ -105,6 +105,7 @@ const CreateOrderForm = () => {
   console.log(order);
 
   const handleSubmit = async (values, { setErrors }) => {
+    console.log(values, 'order fields');
     if (!items.length) {
       setErrors({ submit: 'Please add atleast one item' });
       return;
@@ -193,7 +194,8 @@ const CreateOrderForm = () => {
           phone: phone || '',
           note: note || '',
           remarks: remarks || '',
-          chanel: chanel || '',
+          chanel_id: chanel_id || '',
+          brand_id: brand_id || '',
           addressId: '',
           address1: address1 || '',
           address2: address2 || '',
@@ -213,7 +215,7 @@ const CreateOrderForm = () => {
           last_name: Yup.string().max(255),
           note: Yup.string(),
           remarks: Yup.string(),
-          chanel: Yup.string().required('Please select sale channel.'),
+          chanel_id: Yup.string().required('Please select sale channel.'),
           phone: Yup.number().min(11).required('Phone is required'),
           email: Yup.string().email('Must be a valid email').max(255),
           address1: Yup.string().required('Address is required'),
@@ -295,19 +297,21 @@ const CreateOrderForm = () => {
                   </Grid>
                   <Grid item xs={4}>
                     <Stack spacing={1}>
-                      <InputLabel htmlFor="chanel">Select Sales Chanel</InputLabel>
+                      <InputLabel htmlFor="chanel_id">Select Sales Chanel</InputLabel>
                       <Autocomplete
-                        options={chanels.map((chanel) => ({ id: chanel.id, label: chanel.name }))}
-                        id="chanel"
-                        name="chanel"
-                        value={values.chanel !== '' ? values.chanel : ''}
+                        options={chanels.map((chanel) => ({ id: chanel.id, label: chanel.name, brand_id: chanel.brand.id }))}
+                        id="chanel_id"
+                        name="chanel_id"
+                        value={values.chanel_id !== '' ? chanels.find((c) => c.id === values.chanel_id).name : ''}
                         onBlur={handleBlur}
                         onChange={(event, newValue) => {
                           if (newValue === '' || newValue === null) {
-                            setFieldValue('chanel', '');
+                            setFieldValue('chanel_id', '');
+                            setFieldValue('brand_id', '');
                             return;
                           }
-                          setFieldValue('chanel', newValue.label);
+                          setFieldValue('chanel_id', newValue.id);
+                          setFieldValue('brand_id', newValue.brand_id);
                         }}
                         openOnFocus
                         disableClearable
@@ -330,9 +334,9 @@ const CreateOrderForm = () => {
                           />
                         )}
                       />
-                      {touched.chanel && errors.chanel && (
-                        <FormHelperText error id="helper-text-chanel-signup">
-                          {errors.chanel}
+                      {touched.chanel_id && errors.chanel_id && (
+                        <FormHelperText error id="helper-text-chanel_id-signup">
+                          {errors.chanel_id}
                         </FormHelperText>
                       )}
                     </Stack>
