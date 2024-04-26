@@ -6,7 +6,7 @@ import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
 import { brandBrandsSelector, brandIsLoadingSelector } from 'store/slices/brand/brandSelector';
 import { fetchAllBrand, fetchDeleteBrand } from 'store/slices/brand/fetchBrand';
 import { deleteBrand } from 'store/slices/brand/brandSlice';
-const columns = () => [
+const columns = (handleUpdate, handleDelete) => [
   {
     field: 'id',
     headerName: 'ID.',
@@ -34,7 +34,7 @@ const columns = () => [
         icon={<EditIcon />}
         label="View"
         className="textPrimary"
-        onClick={() => handleUpdate('Category', row)}
+        onClick={() => handleUpdate('Brand', row)}
         color="inherit"
       />,
       <GridActionsCellItem
@@ -67,7 +67,7 @@ export default function BrandTable({ handleUpdate }) {
   };
 
   return (
-    <div style={{ height: '40vh', width: '100%' }}>
+    <div style={{ width: '100%' }}>
       <DataGrid
         slots={{ toolbar: GridToolbar }}
         slotProps={{

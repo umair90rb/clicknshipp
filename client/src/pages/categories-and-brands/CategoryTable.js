@@ -67,7 +67,7 @@ export default function CategoryTable({ handleUpdate }) {
   };
 
   return (
-    <div style={{ height: '40vh', width: '100%' }}>
+    <div style={{ width: '100%' }}>
       <DataGrid
         slots={{ toolbar: GridToolbar }}
         slotProps={{
