@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const {
   User,
   Role,
+  Brand,
   Permission,
   UserRole,
   UserPermission,
@@ -32,6 +33,14 @@ export default {
                 },
               },
             ],
+          },
+          {
+            model: Brand,
+            as: "brands",
+            attributes: ["id", "name"],
+            through: {
+              attributes: [],
+            },
           },
         ],
       });
@@ -81,6 +90,13 @@ export default {
               },
             ],
           },
+          {
+            model: Brand,
+            as: "brands",
+            through: {
+              attributes: [],
+            },
+          },
         ],
       });
       if (user) {
@@ -89,7 +105,7 @@ export default {
           200,
           {
             user: {
-              ...user.dataValues,
+              ...user.get(),
               roles: user.roles.map((role) => role.name),
               permissions: user.roles.reduce(
                 (t, c) => [...t, ...c.permissions],
@@ -136,6 +152,13 @@ export default {
               },
             ],
           },
+          {
+            model: Brand,
+            as: "brands",
+            through: {
+              attributes: [],
+            },
+          },
         ],
       });
       console.log((users || []).map((u) => JSON.stringify(u.get())));
@@ -145,7 +168,8 @@ export default {
           200,
           {
             users: users.map((user) => ({
-              ...user.dataValues,
+              ...user.get(),
+              brands: user.brands.map((brand) => brand.name),
               roles: user.roles.map((role) => role.name),
             })),
           },
@@ -165,7 +189,7 @@ export default {
   },
 
   async create(req, res) {
-    const { name, email, password, phone, roles } = req.body;
+    const { name, email, password, phone, roles, brands } = req.body;
     try {
       let user = await User.findOne({
         where: { [Op.or]: [{ email }, { phone }] },
@@ -185,8 +209,12 @@ export default {
         phone,
       });
       await user.addRoles(roles);
+      if (brands.length) {
+        await user.addBrands(brands);
+      }
 
       const assignedRoles = await user.getRoles();
+      const assignedBrands = brands.length ? await user.getBrands() : [];
 
       const rolesWithPermissions = await Promise.all(
         assignedRoles.map((role) => role.getPermissions())
@@ -210,6 +238,10 @@ export default {
             status: user.status,
             roles: assignedRoles.map((role) => role.name),
             permissions: permissions.map((permission) => permission.name),
+            brands: assignedBrands.map((brand) => ({
+              id: brand.id,
+              name: brand.name,
+            })),
           },
         },
         "Account created successfully"
@@ -228,7 +260,7 @@ export default {
     try {
       const id = req.params.id;
       const userUpdatedData = req.body;
-      const { name, email, phone, password, roles, status } =
+      const { name, email, phone, password, roles, brands, status } =
         userUpdatedData || {};
       if (email && phone) {
         const userWithEmailOrPhone = await User.findOne({
@@ -243,18 +275,25 @@ export default {
         }
       }
       const user = await User.findByPk(id, {
-        include: [
-          {
-            model: Role,
-            as: "roles",
-            through: { attributes: [] },
-          },
-          {
-            model: Permission,
-            as: "permissions",
-            through: { attributes: [] },
-          },
-        ],
+        // include: [
+        //   {
+        //     model: Role,
+        //     as: "roles",
+        //     through: { attributes: [] },
+        //   },
+        //   {
+        //     model: Brand,
+        //     as: "brands",
+        //     through: {
+        //       attributes: [],
+        //     },
+        //   },
+        //   {
+        //     model: Permission,
+        //     as: "permissions",
+        //     through: { attributes: [] },
+        //   },
+        // ],
       });
       if (user) {
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -268,9 +307,8 @@ export default {
         });
         let assignedRoles, permissions;
         if (roles && roles.length) {
-          // const currentRoles = await user.getRoles();
-          const currentRoles = user.roles;
-          const currentPermissions = user.permissions;
+          const currentRoles = await user.getRoles();
+          const currentPermissions = await user.getPermissions();
           await user.removeRoles(currentRoles.map((r) => r.id));
           await user.addRoles(roles);
           assignedRoles = await user.getRoles();
@@ -291,6 +329,12 @@ export default {
             permissions.map((permission) => permission.id)
           );
         }
+        if (brands && brands.length) {
+          await user.setBrands([]);
+          await user.addBrands(brands);
+        } else if (!brands.length) {
+          await user.setBrands([]);
+        }
         await user.save();
         return sendSuccessResponse(
           res,
@@ -302,6 +346,10 @@ export default {
               name: user.name,
               phone: user.phone,
               status: user.status,
+              brands: await user.getBrands({
+                attributes: ["id", "name"],
+                joinTableAttributes: [],
+              }),
               roles: assignedRoles?.length
                 ? assignedRoles.map((r) => r.name)
                 : [],
@@ -346,6 +394,7 @@ export default {
         await UserPermission.destroy({
           where: { user_id: user.id },
         });
+        await user.setBrands([]);
         await user.destroy();
         return sendSuccessResponse(res, 200, {}, "Operation successful.");
       }

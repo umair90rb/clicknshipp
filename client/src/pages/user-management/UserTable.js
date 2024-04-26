@@ -14,37 +14,43 @@ const columns = (handleEditAction, handleDeleteAction) => [
   {
     field: 'id',
     headerName: 'ID.',
-    width: 100
+    flex: 0.25
   },
   {
     field: 'name',
     headerName: 'Name',
-    width: 150
+    flex: 1
   },
   {
     field: 'email',
     headerName: 'Email',
-    width: 150
+    flex: 1
   },
   {
     field: 'phone',
     headerName: 'Phone',
-    width: 150
+    flex: 1
   },
   {
     field: 'status',
     headerName: 'Status',
-    width: 150
+    flex: 0.5
+  },
+  {
+    field: 'brands',
+    headerName: 'Associated Brands',
+    flex: 1,
+    valueGetter: ({ value }) => value.map((brand) => brand.name)
   },
   {
     field: 'roles',
     headerName: 'Roles',
-    width: 150
+    flex: 1
   },
   {
     field: 'actions',
     headerName: 'Actions',
-    width: 150,
+    flex: 1,
     type: 'actions',
     cellClassName: 'actions',
     getActions: ({ id, row }) => [
@@ -53,7 +59,7 @@ const columns = (handleEditAction, handleDeleteAction) => [
         icon={<EditIcon />}
         label="View"
         className="textPrimary"
-        onClick={handleEditAction(row)}
+        onClick={() => handleEditAction(row, null)}
         color="inherit"
       />,
       <GridActionsCellItem
@@ -61,7 +67,7 @@ const columns = (handleEditAction, handleDeleteAction) => [
         icon={<NoAccountsIcon />}
         label="Disable"
         className="textPrimary"
-        onClick={handleDeleteAction(id)}
+        onClick={() => handleDeleteAction(id)}
         color="inherit"
       />
     ]
@@ -78,7 +84,7 @@ export default function UserTable({ openUpateForm }) {
     dispatch(fetchAllUser());
   }, []);
 
-  const handleDisableUser = (id) => async () => {
+  const handleDisableUser = async (id) => {
     if (id === user.id) {
       dispatch(setMessage({ message: "You can't disabled yourself!", type: 'error' }));
       return;
@@ -92,16 +98,10 @@ export default function UserTable({ openUpateForm }) {
     }
   };
 
-  const handleUpdate = (data, index) => () => {
+  const handleUpdate = (data, index) => {
     dispatch(setUserForUpdate({ data, index }));
     openUpateForm(true);
   };
-
-  if (userIsLoading) {
-    return null;
-  }
-
-  console.log(users);
 
   return (
     <div style={{ height: '80vh', width: '100%' }}>
@@ -112,6 +112,7 @@ export default function UserTable({ openUpateForm }) {
             showQuickFilter: true
           }
         }}
+        loading={userIsLoading}
         pageSizeOptions={[25, 50, 75, 100]}
         rows={users}
         columns={columns(handleUpdate, handleDisableUser)}

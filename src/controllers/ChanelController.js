@@ -2,12 +2,15 @@ import { Op, Sequelize } from "sequelize";
 import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 
-const { Chanel } = model;
+const { Chanel, Brand } = model;
 
 export default {
   async chanels(req, res) {
     try {
-      const chanels = await Chanel.scope("clean").findAll();
+      const chanels = await Chanel.scope("clean").findAll({
+        attributes: ["id", "name", "source"],
+        include: { model: Brand, as: "brand", attributes: ["id", "name"] },
+      });
       return sendSuccessResponse(res, 200, { chanels }, "All sales chanels");
     } catch (e) {
       console.error(e);
@@ -22,7 +25,10 @@ export default {
   async chanel(req, res) {
     try {
       const { id } = req.params;
-      const chanel = await Chanel.scope("clean").findByPk(id);
+      const chanel = await Chanel.scope("clean").findByPk(id, {
+        attributes: ["id", "name", "source"],
+        include: { model: Brand, as: "brand", attributes: ["id", "name"] },
+      });
       if (chanel) {
         return sendSuccessResponse(res, 200, { chanel }, "Chanel with id");
       }
@@ -39,7 +45,7 @@ export default {
   },
 
   async create(req, res) {
-    const { name, source } = req.body;
+    const { name, source, brand_id } = req.body;
     try {
       let chanel = await Chanel.findOne({
         where: { name },
@@ -50,16 +56,17 @@ export default {
       chanel = await Chanel.create({
         name,
         source,
+        brand_id,
+      });
+      await chanel.reload({
+        attributes: ["id", "name", "source"], // not working as expected. need to figure out how to exclude unnecessary fields from chanel.reload
+        include: { model: Brand, as: "brand", attributes: ["id", "name"] },
       });
       return sendSuccessResponse(
         res,
         201,
         {
-          chanel: {
-            id: chanel.id,
-            name: chanel.name,
-            source: chanel.source,
-          },
+          chanel: chanel.get(),
         },
         "Chanel created successfully"
       );
@@ -76,24 +83,25 @@ export default {
   async update(req, res) {
     try {
       const id = req.params.id;
-      const { name, source } = req.body;
+      const { name, source, brand_id } = req.body;
       const chanel = await Chanel.findByPk(id);
       if (chanel) {
         chanel.set({
           name,
           source,
+          brand_id,
           updatedAt: new Date().toISOString(),
         });
         await chanel.save();
+        await chanel.reload({
+          attributes: ["id", "name", "source"], // not working as expected. need to figure out how to exclude unnecessary fields from chanel.reload
+          include: { model: Brand, as: "brand", attributes: ["id", "name"] },
+        });
         return sendSuccessResponse(
           res,
           200,
           {
-            chanel: {
-              id: chanel.id,
-              name: chanel.name,
-              source: chanel.source,
-            },
+            chanel: chanel.get(),
           },
           "Operation successful"
         );

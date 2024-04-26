@@ -11,6 +11,7 @@ npx sequelize-cli model:generate --name Supplier --attributes name:string,accoun
 npx sequelize-cli model:generate --name StockHistory --attributes type:string,amount:integer,comment:string,expiry:string
 npx sequelize-cli model:generate --name StockLevel --attributes level:integer
 npx sequelize-cli model:generate --name Chanel --attributes name:string,source:string
+npx sequelize-cli model:generate --name UserBrand --attributes user_id:integer,brand_id:integer
 
 sequelize migration:generate --name item-table-assocation
 
@@ -23,3 +24,6 @@ sequelize model:generate --name Payments --attributes type:string,bank:string,ti
 
 sequelize migration:generate --name update-order-and-order-item-table
 sequelize migration:generate --name update-order-related-table-columns-number-to-varchar
+sequelize migration:generate --name update-order-chanel-table-add-brand-column
+sequelize migration:generate --name update-order-table-update-chanel-column
+sequelize migration:generate --name create-user-brand-table

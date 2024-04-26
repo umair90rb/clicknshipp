@@ -40,13 +40,13 @@ export default (requiredPermission) => async (req, res, next) => {
   } else if (userPermissions.includes(requiredPermission)) {
     hasPermission = true;
   }
-  console.log(
-    "user permissions:",
-    userPermissions,
-    "has permission to",
-    requiredPermission,
-    hasPermission
-  );
+  // console.log(
+  //   "user permissions:",
+  //   userPermissions,
+  //   "has permission to",
+  //   requiredPermission,
+  //   hasPermission
+  // );
   if (hasPermission) {
     req.user.roles = userRoles;
     req.user.permissions = userPermissions;

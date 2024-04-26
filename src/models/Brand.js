@@ -7,6 +7,10 @@ module.exports = (sequelize, DataTypes) => {
         as: "items",
         foreignKey: "brand_id",
       });
+      Brand.hasMany(models.Chanel, {
+        as: "chanels",
+        foreignKey: "brand_id",
+      });
     }
   }
   Brand.init(

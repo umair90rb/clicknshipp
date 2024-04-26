@@ -1,62 +1,65 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
 import { fetchAllSupplier, fetchDeleteSupplier } from 'store/slices/supplier/fetchSupplier';
 import { supplierIsLoadingSelector, supplierSuppliersSelector } from 'store/slices/supplier/supplierSelector';
-import { IconButton } from '../../../node_modules/@mui/material/index';
 import { deleteSupplier } from 'store/slices/supplier/supplierSlice';
-const supplierTableCell = [
+const columns = (handleEditAction, handleDeleteAction) => [
   {
-    id: 'id',
-    label: 'ID.'
+    field: 'id',
+    headerName: 'ID',
+    flex: 0.3
   },
   {
-    id: 'name',
-    label: 'Name'
+    field: 'name',
+    headerName: 'Name',
+    flex: 1.7
   },
   {
-    id: 'account_number',
-    label: 'Account Number'
+    field: 'account_number',
+    headerName: 'Account Number',
+    flex: 1
   },
   {
-    id: 'company',
-    label: 'Company'
+    field: 'company',
+    headerName: 'Company',
+    flex: 1
   },
   {
-    id: 'phone',
-    label: 'Phone'
+    field: 'phone',
+    headerName: 'Phone',
+    flex: 1
+  },
+  {
+    field: 'actions',
+    headerName: 'Actions',
+    flex: 1,
+    type: 'actions',
+    cellClassName: 'actions',
+    getActions: ({ id, row }) => [
+      <GridActionsCellItem
+        key={id}
+        icon={<EditIcon />}
+        label="View"
+        className="textPrimary"
+        onClick={() => handleEditAction(row)}
+        color="inherit"
+      />,
+      <GridActionsCellItem
+        key={id}
+        icon={<DeleteIcon />}
+        label="Disable"
+        className="textPrimary"
+        onClick={() => handleDeleteAction(id)}
+        color="inherit"
+      />
+    ]
   }
 ];
 
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === 'desc' ? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
-
-export default function SupplierTable({ order = 'desc', orderBy = 'id', updateSupplierHandler }) {
+export default function SupplierTable({ updateSupplierHandler }) {
   const dispatch = useDispatch();
   const supplierIsLoading = useSelector(supplierIsLoadingSelector);
   const suppliers = useSelector(supplierSuppliersSelector);
@@ -72,78 +75,20 @@ export default function SupplierTable({ order = 'desc', orderBy = 'id', updateSu
       }
     });
   };
-
-  if (supplierIsLoading) {
-    return null;
-  }
-
   return (
-    <Box>
-      <TableContainer
-        sx={{
-          width: '100%',
-          overflowX: 'auto',
-          position: 'relative',
-          display: 'block',
-          maxWidth: '100%',
-          '& td, & th': { whiteSpace: 'nowrap' }
+    <div style={{ height: '80vh', width: '100%' }}>
+      <DataGrid
+        slots={{ toolbar: GridToolbar }}
+        slotProps={{
+          toolbar: {
+            showQuickFilter: true
+          }
         }}
-      >
-        <Table
-          aria-labelledby="tableTitle"
-          sx={{
-            '& .MuiTableCell-root:first-of-type': {
-              pl: 2
-            },
-            '& .MuiTableCell-root:last-of-type': {
-              pr: 3
-            }
-          }}
-        >
-          <TableHead>
-            <TableRow>
-              {supplierTableCell.map((headCell) => (
-                <TableCell key={headCell.id} align={'center'} padding={'normal'} sortDirection={orderBy === headCell.id ? order : false}>
-                  {headCell.label}
-                </TableCell>
-              ))}
-              <TableCell key={'actions'} align={'center'} padding={'normal'} sortDirection={orderBy === 'actions' ? order : false}>
-                Actions
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {stableSort(suppliers || [], getComparator(order, orderBy)).map((row, index) => {
-              const labelId = `enhanced-table-checkbox-${index}`;
-
-              return (
-                <TableRow hover role="checkbox" sx={{ '&:last-child td, &:last-child th': { border: 0 } }} tabIndex={-1} key={row[orderBy]}>
-                  {supplierTableCell.map(({ id: cellId }) => (
-                    <TableCell key={Math.random()} id={labelId} component="th" align="center">
-                      {row[cellId]}
-                    </TableCell>
-                  ))}
-                  <TableCell key={Math.random()} id={labelId} component="th" align="center">
-                    <>
-                      <IconButton aria-label="delete" onClick={() => handleDelete(row.id)} size="large" color="error">
-                        <DeleteOutlined />
-                      </IconButton>
-                      <IconButton aria-label="update" onClick={() => updateSupplierHandler(row)} size="large" color="primary">
-                        <EditOutlined />
-                      </IconButton>
-                    </>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
+        loading={supplierIsLoading}
+        pageSizeOptions={[25, 50, 75, 100]}
+        rows={suppliers}
+        columns={columns(updateSupplierHandler, handleDelete)}
+      />
+    </div>
   );
 }
-
-SupplierTable.propTypes = {
-  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
-  orderBy: PropTypes.string.isRequired
-};

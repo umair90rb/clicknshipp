@@ -1,73 +1,79 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
 import { itemIsLoadingSelector, itemItemsSelector } from 'store/slices/item/itemSelector';
 import { fetchAllItem, fetchDeleteItem } from 'store/slices/item/fetchItem';
-import { IconButton } from '../../../node_modules/@mui/material/index';
 import { deleteItem } from 'store/slices/item/itemSlice';
-const itemTableCell = [
+const columns = (handleEditAction, handleDeleteAction) => [
   {
-    id: 'id',
-    label: 'ID'
+    field: 'id',
+    headerName: 'ID',
+    flex: 0.3
   },
   {
-    id: 'name',
-    label: 'Item Name'
+    field: 'name',
+    headerName: 'Item Name',
+    flex: 1.7
   },
   {
-    id: 'code',
-    label: 'Code'
+    field: 'code',
+    headerName: 'Code',
+    flex: 1
   },
   {
-    id: 'unit_price',
-    label: 'Price'
+    field: 'unit_price',
+    headerName: 'Price',
+    flex: 1
   },
   {
-    id: ['category', 'name'],
-    label: 'Category'
+    field: 'category',
+    headerName: 'Category',
+    valueGetter: ({ value }) => (value ? value.name : ''),
+    flex: 1
   },
   {
-    id: ['brand', 'name'],
-    label: 'Brand'
+    field: 'brand',
+    headerName: 'Brand',
+    valueGetter: ({ value }) => (value ? value.name : ''),
+    flex: 1
   },
   {
-    id: ['supplier', 'name'],
-    label: 'Supplier'
+    field: 'supplier',
+    headerName: 'Supplier',
+    valueGetter: ({ value }) => (value ? value.name : ''),
+    flex: 1
+  },
+  {
+    field: 'actions',
+    headerName: 'Actions',
+    flex: 1,
+    type: 'actions',
+    cellClassName: 'actions',
+    getActions: ({ id, row }) => [
+      <GridActionsCellItem
+        key={id}
+        icon={<EditIcon />}
+        label="View"
+        className="textPrimary"
+        onClick={() => handleEditAction(row)}
+        color="inherit"
+      />,
+      <GridActionsCellItem
+        key={id}
+        icon={<DeleteIcon />}
+        label="Disable"
+        className="textPrimary"
+        onClick={() => handleDeleteAction(id)}
+        color="inherit"
+      />
+    ]
   }
 ];
 
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === 'desc' ? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
-
-export default function ItemTable({ order = 'desc', orderBy = 'id', updateItemHandler }) {
+export default function ItemTable({ updateItemHandler }) {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const itemIsLoading = useSelector(itemIsLoadingSelector);
   const items = useSelector(itemItemsSelector);
 
@@ -83,77 +89,21 @@ export default function ItemTable({ order = 'desc', orderBy = 'id', updateItemHa
     });
   };
 
-  if (itemIsLoading) {
-    return null;
-  }
-
   return (
-    <Box>
-      <TableContainer
-        sx={{
-          width: '100%',
-          overflowX: 'auto',
-          position: 'relative',
-          display: 'block',
-          maxWidth: '100%',
-          '& td, & th': { whiteSpace: 'nowrap' }
+    <div style={{ height: '80vh', width: '100%' }}>
+      <DataGrid
+        slots={{ toolbar: GridToolbar }}
+        slotProps={{
+          toolbar: {
+            showQuickFilter: true
+          }
         }}
-      >
-        <Table
-          aria-labelledby="tableTitle"
-          sx={{
-            '& .MuiTableCell-root:first-of-type': {
-              pl: 2
-            },
-            '& .MuiTableCell-root:last-of-type': {
-              pr: 3
-            }
-          }}
-        >
-          <TableHead>
-            <TableRow>
-              {itemTableCell.map((headCell) => (
-                <TableCell key={headCell.id} align={'center'} padding={'normal'} sortDirection={orderBy === headCell.id ? order : false}>
-                  {headCell.label}
-                </TableCell>
-              ))}
-              <TableCell key={'actions'} align={'center'} padding={'normal'} sortDirection={orderBy === 'actions' ? order : false}>
-                Actions
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {stableSort(items || [], getComparator(order, orderBy)).map((row, index) => {
-              const labelId = `enhanced-table-checkbox-${index}`;
-
-              return (
-                <TableRow hover role="checkbox" sx={{ '&:last-child td, &:last-child th': { border: 0 } }} tabIndex={-1} key={row[orderBy]}>
-                  {itemTableCell.map(({ id: cellId }) => (
-                    <TableCell key={Math.random()} id={labelId} component="th" align="center">
-                      {Array.isArray(cellId) ? (row[cellId[0]] === null ? 'None' : row[cellId[0]][cellId[1]]) : row[cellId]}
-                    </TableCell>
-                  ))}
-                  <TableCell key={Math.random()} id={labelId} component="th" align="center">
-                    <>
-                      <IconButton aria-label="delete" onClick={() => deleteItemHandler(row.id)} size="large" color="error">
-                        <DeleteOutlined />
-                      </IconButton>
-                      <IconButton aria-label="update" onClick={() => updateItemHandler(row)} size="large" color="primary">
-                        <EditOutlined />
-                      </IconButton>
-                    </>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
+        loading={itemIsLoading}
+        pageSizeOptions={[25, 50, 75, 100]}
+        rows={items}
+        columns={columns(updateItemHandler, deleteItemHandler)}
+        onPaginationModelChange={(model) => console.log(model, 'items pagination model')}
+      />
+    </div>
   );
 }
-
-ItemTable.propTypes = {
-  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
-  orderBy: PropTypes.string.isRequired
-};

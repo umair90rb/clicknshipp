@@ -32,12 +32,12 @@ import { strengthColor, strengthIndicator } from 'utils/password-strength';
 
 // assets
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
-import { roleService } from 'api/roleService/index';
 import { userService } from 'api/index';
-import { addUser, updateUser } from 'store/slices/user/userSlice';
+import { addUser, setUserForUpdate, updateUser } from 'store/slices/user/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { userUpdateUserData } from 'store/slices/user/userSelector';
 import { fetchAllRoles } from 'store/slices/role/fetchRole';
+import { fetchAllBrand } from 'store/slices/brand/fetchBrand';
 
 // ============================|| FIREBASE - REGISTER ||============================ //
 
@@ -49,6 +49,8 @@ const AuthRegister = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [roles, setRoles] = useState([]);
   const [loadingRoles, setLoadingRoles] = useState(true);
+  const [brands, setBrands] = useState([]);
+  const [loadingBrands, setLoadingBrands] = useState(true);
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -71,17 +73,33 @@ const AuthRegister = () => {
     setLoadingRoles(false);
   };
 
+  const fetchBrands = async () => {
+    setLoadingBrands(true);
+    const { type, payload } = await dispatch(fetchAllBrand());
+    if (type === 'brands/fetch/fulfilled') {
+      setBrands(payload.data.brands);
+    }
+    setLoadingBrands(false);
+  };
+
   const handleSubmit = async (values, { setErrors, setStatus, setSubmitting }) => {
-    const roleIds = [];
+    const roleIds = [],
+      brandIds = [];
     values.roles.forEach((role) => {
       const index = roles.findIndex((r) => r.name === role);
       if (index > -1) {
-        console.log(roles[index]);
         roleIds.push(roles[index].id);
         return;
       }
     });
-    const body = { ...values, roles: roleIds };
+    values.brands.forEach((brand) => {
+      const index = brands.findIndex((b) => b.name === brand);
+      if (index > -1) {
+        brandIds.push(brands[index].id);
+        return;
+      }
+    });
+    const body = { ...values, roles: roleIds, brands: brandIds };
     let response;
     try {
       if (userUpdateData.data === null) {
@@ -104,14 +122,16 @@ const AuthRegister = () => {
   useEffect(() => {
     changePassword('');
     fetchRoles();
+    fetchBrands();
 
     if (userUpdateData.data !== null) {
       console.log(userUpdateData.data, 'userUpdateData.data');
-      const { email, name, phone, roles } = userUpdateData.data;
+      const { email, name, phone, roles, brands } = userUpdateData.data;
       formRef.current.initialValues.email = email;
       formRef.current.initialValues.name = name;
       formRef.current.initialValues.phone = phone;
       formRef.current.initialValues.roles = roles;
+      formRef.current.initialValues.brands = brands.map((brand) => brand.name);
     }
   }, []);
 
@@ -124,14 +144,16 @@ const AuthRegister = () => {
           email: '',
           phone: '',
           password: '',
-          roles: []
+          roles: [],
+          brands: []
         }}
         validationSchema={Yup.object().shape({
           name: Yup.string().max(255).required('First Name is required'),
           phone: Yup.number().min(11).required('Phone is required'),
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
           password: Yup.string().max(255).required('Password is required'),
-          roles: Yup.array().of(Yup.string()).min(1).required('Minimum 1 role is required')
+          roles: Yup.array().of(Yup.string()).min(1).required('Minimum 1 role is required'),
+          brands: Yup.array().of(Yup.string())
         })}
         onSubmit={handleSubmit}
       >
@@ -182,7 +204,6 @@ const AuthRegister = () => {
                         </Box>
                       )}
                     >
-                      11``
                       {roles.map(({ name }, index) => (
                         <MenuItem key={index} value={name}>
                           <Checkbox checked={values.roles.indexOf(name) > -1} />
@@ -193,6 +214,44 @@ const AuthRegister = () => {
                     {touched.roles && errors.roles && (
                       <FormHelperText error id="helper-text-roles-signup">
                         {errors.roles}
+                      </FormHelperText>
+                    )}
+                  </Stack>
+                </Grid>
+              )}
+              {!loadingBrands && (
+                <Grid item xs={12}>
+                  <Stack spacing={1}>
+                    <InputLabel htmlFor="brands-signup">Brands*</InputLabel>
+                    <Select
+                      fullWidth
+                      multiple
+                      error={Boolean(touched.brands && errors.brands)}
+                      id="brands-signup"
+                      value={values.brands}
+                      name="brands"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      inputProps={{}}
+                      labelId="brands-signup"
+                      renderValue={(selected) => (
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                          {selected.map((value) => (
+                            <Chip key={value} label={value} />
+                          ))}
+                        </Box>
+                      )}
+                    >
+                      {brands.map(({ id, name }) => (
+                        <MenuItem key={id} value={name}>
+                          <Checkbox checked={values.brands.indexOf(name) > -1} />
+                          <ListItemText primary={name} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {touched.brands && errors.brands && (
+                      <FormHelperText error id="helper-text-brands-signup">
+                        {errors.brands}
                       </FormHelperText>
                     )}
                   </Stack>

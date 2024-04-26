@@ -1,56 +1,56 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton } from '@mui/material';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
 import { brandBrandsSelector, brandIsLoadingSelector } from 'store/slices/brand/brandSelector';
 import { fetchAllBrand, fetchDeleteBrand } from 'store/slices/brand/fetchBrand';
 import { deleteBrand } from 'store/slices/brand/brandSlice';
-const brandTableCell = [
+const columns = () => [
   {
-    id: 'id',
-    label: 'ID.'
+    field: 'id',
+    headerName: 'ID.',
+    flex: 0.3
   },
   {
-    id: 'name',
-    label: 'Brand'
+    field: 'name',
+    headerName: 'Brand',
+    flex: 1.7
   },
   {
-    id: 'itemCount',
-    label: 'Items'
+    field: 'itemCount',
+    headerName: 'Items',
+    flex: 1
+  },
+  {
+    field: 'actions',
+    headerName: 'Actions',
+    flex: 1,
+    type: 'actions',
+    cellClassName: 'actions',
+    getActions: ({ id, row }) => [
+      <GridActionsCellItem
+        key={id}
+        icon={<EditIcon />}
+        label="View"
+        className="textPrimary"
+        onClick={() => handleUpdate('Category', row)}
+        color="inherit"
+      />,
+      <GridActionsCellItem
+        key={id}
+        icon={<DeleteIcon />}
+        label="Disable"
+        className="textPrimary"
+        onClick={() => handleDelete(id)}
+        color="inherit"
+      />
+    ]
   }
 ];
 
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === 'desc' ? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
-
-export default function BrandTable({ order = 'desc', orderBy = 'id', handleUpdate }) {
+export default function BrandTable({ handleUpdate }) {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const brandIsLoading = useSelector(brandIsLoadingSelector);
   const brands = useSelector(brandBrandsSelector);
 
@@ -66,77 +66,20 @@ export default function BrandTable({ order = 'desc', orderBy = 'id', handleUpdat
     });
   };
 
-  if (brandIsLoading) {
-    return null;
-  }
-
   return (
-    <Box>
-      <TableContainer
-        sx={{
-          width: '100%',
-          overflowX: 'auto',
-          position: 'relative',
-          display: 'block',
-          maxWidth: '100%',
-          '& td, & th': { whiteSpace: 'nowrap' }
+    <div style={{ height: '40vh', width: '100%' }}>
+      <DataGrid
+        slots={{ toolbar: GridToolbar }}
+        slotProps={{
+          toolbar: {
+            showQuickFilter: true
+          }
         }}
-      >
-        <Table
-          aria-labelledby="tableTitle"
-          sx={{
-            '& .MuiTableCell-root:first-of-type': {
-              pl: 2
-            },
-            '& .MuiTableCell-root:last-of-type': {
-              pr: 3
-            }
-          }}
-        >
-          <TableHead>
-            <TableRow>
-              {brandTableCell.map((headCell) => (
-                <TableCell key={headCell.id} align={'center'} padding={'normal'} sortDirection={orderBy === headCell.id ? order : false}>
-                  {headCell.label}
-                </TableCell>
-              ))}
-              <TableCell key={'actions'} align={'center'} padding={'normal'} sortDirection={orderBy === 'actions' ? order : false}>
-                Actions
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {stableSort(brands || [], getComparator(order, orderBy)).map((row, index) => {
-              const labelId = `enhanced-table-checkbox-${index}`;
-
-              return (
-                <TableRow hover role="checkbox" sx={{ '&:last-child td, &:last-child th': { border: 0 } }} tabIndex={-1} key={row[orderBy]}>
-                  {brandTableCell.map(({ id: cellId }) => (
-                    <TableCell key={Math.random()} id={labelId} component="th" align="center">
-                      {row[cellId]}
-                    </TableCell>
-                  ))}
-                  <TableCell key={Math.random()} id={labelId} component="th" align="center">
-                    <>
-                      <IconButton aria-label="delete" onClick={() => handleDelete(row.id)} size="large" color="error">
-                        <DeleteOutlined />
-                      </IconButton>
-                      <IconButton aria-label="update" onClick={() => handleUpdate('Brand', row)} size="large" color="primary">
-                        <EditOutlined />
-                      </IconButton>
-                    </>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
+        loading={brandIsLoading}
+        pageSizeOptions={[25, 50, 75, 100]}
+        rows={brands}
+        columns={columns(handleUpdate, handleDelete)}
+      />
+    </div>
   );
 }
-
-BrandTable.propTypes = {
-  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
-  orderBy: PropTypes.string.isRequired
-};

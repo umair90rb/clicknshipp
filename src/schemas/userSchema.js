@@ -10,6 +10,7 @@ const createUserSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(8).required(),
   roles: Joi.array().items(Joi.number().integer()).min(1),
+  brands: Joi.array().items(Joi.number().integer()),
 });
 
 const updateUserSchema = Joi.object({
@@ -19,6 +20,7 @@ const updateUserSchema = Joi.object({
   password: Joi.string().min(8),
   status: Joi.string(),
   roles: Joi.array().items(Joi.number().integer()),
+  brands: Joi.array().items(Joi.number().integer()),
 });
 
 export { fetchUserWithPermissionsSchema, createUserSchema, updateUserSchema };

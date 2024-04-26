@@ -1,5 +1,18 @@
-import { useRef } from 'react';
-import { Button, FormHelperText, Grid, InputLabel, OutlinedInput, Stack } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
+import {
+  Button,
+  FormHelperText,
+  Grid,
+  InputLabel,
+  OutlinedInput,
+  Stack,
+  Box,
+  Chip,
+  MenuItem,
+  Checkbox,
+  ListItemText,
+  Select
+} from '@mui/material';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import AnimateButton from 'components/@extended/AnimateButton';
@@ -7,10 +20,14 @@ import { useDispatch } from 'react-redux';
 import { createChanel, updateChanel } from 'store/slices/chanel/chanelSlice';
 import { fetchCreateChanel, fetchUpdateChanel } from 'store/slices/chanel/fetchChanel';
 import { setMessage } from 'store/slices/util/utilSlice';
+import { fetchAllBrand } from 'store/slices/brand/fetchBrand';
 
 const AddUpdateForm = ({ chanelToUpdate }) => {
   const dispatch = useDispatch();
   const formRef = useRef();
+  const [brands, setBrands] = useState([]);
+  const [loadingBrands, setLoadingBrands] = useState(true);
+
   const handleSubmit = async (values, { setErrors, setStatus, setSubmitting }) => {
     if (chanelToUpdate) {
       return dispatch(fetchUpdateChanel({ id: chanelToUpdate.id, body: values })).then((action) => {
@@ -31,17 +48,32 @@ const AddUpdateForm = ({ chanelToUpdate }) => {
     });
   };
 
+  const fetchBrands = async () => {
+    setLoadingBrands(true);
+    const { type, payload } = await dispatch(fetchAllBrand());
+    if (type === 'brands/fetch/fulfilled') {
+      setBrands(payload.data.brands);
+    }
+    setLoadingBrands(false);
+  };
+
+  useEffect(() => {
+    fetchBrands();
+  }, []);
+
   return (
     <>
       <Formik
         innerRef={formRef}
         initialValues={{
           name: chanelToUpdate?.name || '',
-          source: chanelToUpdate?.source || ''
+          source: chanelToUpdate?.source || '',
+          brand_id: chanelToUpdate?.brand?.id || ''
         }}
         validationSchema={Yup.object().shape({
           name: Yup.string().max(255).required('Chanel name is required'),
-          source: Yup.string().max(255).required('Source is required')
+          source: Yup.string().max(255).required('Source is required'),
+          brand_id: Yup.number().required('Brand is required')
         })}
         onSubmit={handleSubmit}
       >
@@ -91,11 +123,49 @@ const AddUpdateForm = ({ chanelToUpdate }) => {
                 </Stack>
               </Grid>
 
+              {!loadingBrands && (
+                <Grid item xs={12}>
+                  <Stack spacing={1}>
+                    <InputLabel htmlFor="brand_id-signup">Brand*</InputLabel>
+                    <Select
+                      fullWidth
+                      error={Boolean(touched.brand_id && errors.brand_id)}
+                      id="brand_id-signup"
+                      value={values.brand_id}
+                      name="brand_id"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      inputProps={{}}
+                      labelId="brand_id-signup"
+                      // renderValue={(selected) => (
+                      //   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      //     {selected.map((value) => (
+                      //       <Chip key={value} label={value} />
+                      //     ))}
+                      //   </Box>
+                      // )}
+                    >
+                      {brands.map(({ id, name }) => (
+                        <MenuItem key={id} value={id}>
+                          <ListItemText primary={name} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {touched.brand_id && errors.brand_id && (
+                      <FormHelperText error id="helper-text-brand_id-signup">
+                        {errors.brand_id}
+                      </FormHelperText>
+                    )}
+                  </Stack>
+                </Grid>
+              )}
+
               {errors.submit && (
                 <Grid item xs={12}>
                   <FormHelperText error>{errors.submit}</FormHelperText>
                 </Grid>
               )}
+
               <Grid item xs={12}>
                 <AnimateButton>
                   <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">

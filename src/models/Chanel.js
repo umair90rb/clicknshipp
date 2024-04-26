@@ -2,7 +2,12 @@
 import { Model } from "sequelize";
 module.exports = (sequelize, DataTypes) => {
   class Chanel extends Model {
-    static associate(models) {}
+    static associate(models) {
+      Chanel.belongsTo(models.Brand, {
+        as: "brand",
+        foreignKey: "brand_id",
+      });
+    }
   }
   Chanel.init(
     {
