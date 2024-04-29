@@ -16,7 +16,6 @@ export default async (req, res, next) => {
     req.user = { id: userId };
     next();
   } catch (e) {
-    console.error(e, "in authjs");
     return sendErrorResponse(res, 401, "Authentication Failed", e);
   }
 };
