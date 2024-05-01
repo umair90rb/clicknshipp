@@ -6,7 +6,7 @@ import { Box, useMediaQuery } from '@mui/material';
 // import Search from './Search';
 import Profile from './Profile';
 // import Notification from './Notification';
-import MobileSection from './MobileSection';
+// import MobileSection from './MobileSection';
 
 // ==============================|| HEADER - CONTENT ||============================== //
 
@@ -29,10 +29,10 @@ const HeaderContent = () => {
       >
         <GithubOutlined />
       </IconButton> */}
-
+      <Profile />
       {/* <Notification /> */}
-      {!matchesXs && <Profile />}
-      {matchesXs && <MobileSection />}
+      {/* {!matchesXs && <Profile />} */}
+      {/* {matchesXs && <MobileSection />} */}
     </>
   );
 };

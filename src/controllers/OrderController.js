@@ -90,9 +90,13 @@ export default {
           ],
         },
       };
-      console.log(req.user, "req.user");
-      if ("brands" in req.user) {
-        query.where.brand_id = req.user.brands.map((b) => b.id);
+      if (
+        "settings" in req.user &&
+        req.user.settings.hasOwnProperty("default_brand_id")
+      ) {
+        query.where.brand_id = req.user.settings.default_brand_id;
+      } else if ("brands" in req.user) {
+        query.where.brand_id = req.user.brands[0].id;
       }
 
       if (permissions.includes(constants.PERMISSION_VIEW_ALL_ORDERS)) {

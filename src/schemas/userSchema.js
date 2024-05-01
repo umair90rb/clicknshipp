@@ -19,8 +19,18 @@ const updateUserSchema = Joi.object({
   email: Joi.string().email(),
   password: Joi.string().min(8),
   status: Joi.string(),
+  settings: Joi.string(),
   roles: Joi.array().items(Joi.number().integer()),
   brands: Joi.array().items(Joi.number().integer()),
 });
 
-export { fetchUserWithPermissionsSchema, createUserSchema, updateUserSchema };
+const setDefaultBrandSchema = Joi.object({
+  settings: Joi.string(),
+});
+
+export {
+  fetchUserWithPermissionsSchema,
+  createUserSchema,
+  updateUserSchema,
+  setDefaultBrandSchema,
+};

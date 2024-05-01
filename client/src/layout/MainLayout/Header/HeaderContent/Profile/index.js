@@ -14,48 +14,58 @@ import {
   Paper,
   Popper,
   Stack,
-  Tab,
-  Tabs,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
   Typography
 } from '@mui/material';
 
 // project import
 import MainCard from 'components/MainCard';
 import Transitions from 'components/@extended/Transitions';
-import ProfileTab from './ProfileTab';
-import SettingTab from './SettingTab';
 
 // assets
-import avatar1 from 'assets/images/users/avatar-1.png';
-import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
-import { authUserSelector } from 'store/slices/auth/authSelector';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { authBrandsSelector, authSettingsSelector, authUserSelector } from 'store/slices/auth/authSelector';
 import { useDispatch, useSelector } from 'react-redux';
-import { clearAuthState } from 'store/slices/auth/authSlice';
+import { clearAuthState, setUserSetting } from 'store/slices/auth/authSlice';
 import useAuth from 'hooks/useAuth';
+import { Divider } from '../../../../../../node_modules/@mui/material/index';
+import { fetchSetUserDefaultBrand } from 'store/slices/user/fetchUser';
+import { setMessage } from 'store/slices/util/utilSlice';
+import { fetchAllOrder } from 'store/slices/order/fetchOrder';
 
 // tab panel wrapper
-function TabPanel({ children, value, index, ...other }) {
-  return (
-    <div role="tabpanel" hidden={value !== index} id={`profile-tabpanel-${index}`} aria-labelledby={`profile-tab-${index}`} {...other}>
-      {value === index && children}
-    </div>
-  );
-}
+// function TabPanel({ children, value, index, ...other }) {
+//   return (
+//     <div role="tabpanel" hidden={value !== index} id={`profile-tabpanel-${index}`} aria-labelledby={`profile-tab-${index}`} {...other}>
+//       {value === index && children}
+//     </div>
+//   );
+// }
 
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired
-};
+// TabPanel.propTypes = {
+//   children: PropTypes.node,
+//   index: PropTypes.any.isRequired,
+//   value: PropTypes.any.isRequired
+// };
 
-function a11yProps(index) {
-  return {
-    id: `profile-tab-${index}`,
-    'aria-controls': `profile-tabpanel-${index}`
-  };
-}
+// function a11yProps(index) {
+//   return {
+//     id: `profile-tab-${index}`,
+//     'aria-controls': `profile-tabpanel-${index}`
+//   };
+// }
 
 // ==============================|| HEADER CONTENT - PROFILE ||============================== //
+
+const ListItem = ({ text, selected, onClick, icon }) => (
+  <ListItemButton selected={selected} onClick={onClick}>
+    {icon && <ListItemIcon>{icon}</ListItemIcon>}
+    <ListItemText primary={text} />
+  </ListItemButton>
+);
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -63,6 +73,8 @@ const Profile = () => {
 
   const { logout } = useAuth();
   const user = useSelector(authUserSelector);
+  const userBrands = useSelector(authBrandsSelector);
+  const userSetting = useSelector(authSettingsSelector);
 
   const handleLogout = async () => {
     logout();
@@ -82,10 +94,20 @@ const Profile = () => {
     setOpen(false);
   };
 
-  const [value, setValue] = useState(0);
+  // const [value, setValue] = useState(0);
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+  // const handleChange = (event, newValue) => {
+  //   setValue(newValue);
+  // };
+
+  const handlBrandChange = async (event, brand) => {
+    const { type, payload } = await dispatch(fetchSetUserDefaultBrand({ id: brand.id }));
+    if (type === 'user/setDefaultBrand/fetch/fulfilled') {
+      dispatch(setUserSetting(payload.data.settings));
+      dispatch(fetchAllOrder({ body: {} }));
+    } else {
+      dispatch(setMessage({ message: payload.error || 'Brand not switch! try again.', type: 'error' }));
+    }
   };
 
   const iconBackColorOpen = 'grey.300';
@@ -163,11 +185,24 @@ const Profile = () => {
                         </Grid>
                         <Grid item>
                           <IconButton size="large" color="secondary" onClick={handleLogout}>
-                            <LogoutOutlined />
+                            <LogoutIcon />
                           </IconButton>
                         </Grid>
                       </Grid>
                     </CardContent>
+                    <Divider />
+                    <List component="nav" sx={{ p: 0, '& .MuiListItemIcon-root': { minWidth: 32, color: theme.palette.grey[500] } }}>
+                      {userBrands?.map((brand, index) => (
+                        <ListItem
+                          selected={brand.id === userSetting?.default_brand_id || (!userSetting?.default_brand_id && index === 0)}
+                          key={brand.id}
+                          text={brand.name.toUpperCase()}
+                          onClick={(event) => handlBrandChange(event, brand)}
+                        />
+                      ))}
+                      <Divider />
+                      <ListItem text="Logout" onClick={handleLogout} icon={<LogoutIcon />} />
+                    </List>
                     {/* {open && (
                       <>
                         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

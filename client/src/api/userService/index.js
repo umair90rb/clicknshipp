@@ -13,6 +13,8 @@ class UserService extends Ajax {
 
   fetchUpdateUser = (id, data) => this.put(`${this.pathname}/${id}`, data);
 
+  fetchSetDefaultBrand = (id) => this.getJson(`${this.pathname}/set-default-brand/${id}`);
+
   fetchDeleteUser = (id) => this.delete(`${this.pathname}/${id}`);
 }
 

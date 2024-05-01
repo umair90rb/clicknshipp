@@ -10,7 +10,7 @@ export default async (req, res, next) => {
     }
 
     const user = await User.findByPk(req.user.id, {
-      attributes: ["id"],
+      attributes: ["id", "settings"],
       include: [
         {
           model: Brand,
@@ -20,10 +20,14 @@ export default async (req, res, next) => {
       ],
     });
 
-    req.user = { ...req.user, brands: user.brands };
+    req.user = {
+      ...req.user,
+      brands: user.brands,
+      settings: user.settings,
+    };
     next();
   } catch (e) {
     console.error(e);
-    return sendErrorResponse(res, 401, "Authentication Failed", e);
+    return sendErrorResponse(res, 401, "Error! Something goes wrong.", e);
   }
 };

@@ -4,7 +4,7 @@ import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-const { User, Role, Permission } = models;
+const { User, Role, Permission, Brand } = models;
 
 export default {
   async login(req, res) {
@@ -12,19 +12,7 @@ export default {
 
     try {
       const user = await User.scope("withPassword").findOne({
-        where: { email },
-        include: [
-          {
-            model: Role,
-            as: "roles",
-            include: [
-              {
-                model: Permission,
-                as: "permissions",
-              },
-            ],
-          },
-        ],
+        where: { email, status: "active" },
       });
       if (!user)
         return sendErrorResponse(
@@ -37,41 +25,18 @@ export default {
         return sendErrorResponse(
           res,
           400,
-          "Incorrect login credentials. Kindly check and try again"
-        );
-      }
-
-      if (user.status !== "active") {
-        return sendErrorResponse(
-          res,
-          401,
-          "Your account has been suspended. Contact admin"
+          "Incorrect login credentials or account is not active!"
         );
       }
 
       const token = jwt.sign({ userId: user.id }, "your-secret-key", {
         expiresIn: "12h",
       });
-      const userRoles = [];
-      const userPermissions = [];
-      user.roles.forEach((role) => {
-        userRoles.push(role.name);
-        userPermissions.push(
-          ...role.permissions.map((permission) => permission.name)
-        );
-      });
       return sendSuccessResponse(
         res,
         200,
         {
           token,
-          user: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            roles: userRoles,
-            permissions: userPermissions,
-          },
         },
         "Login successfully"
       );
@@ -89,7 +54,16 @@ export default {
     try {
       const { user } = req;
       const userData = await User.scope("withPassword").findByPk(user.id, {
+        attributes: ["id", "name", "email", "phone", "settings"],
         include: [
+          {
+            model: Brand,
+            as: "brands",
+            attributes: ["id", "name"],
+            through: {
+              attributes: [],
+            },
+          },
           {
             model: Role,
             as: "roles",
@@ -116,9 +90,7 @@ export default {
           200,
           {
             user: {
-              id: userData.id,
-              name: userData.name,
-              email: userData.email,
+              ...userData.get(),
               roles: userRoles,
               permissions: userPermissions,
             },

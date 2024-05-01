@@ -17,12 +17,16 @@ const fetchCreateUser = createAsyncThunk('user/create/fetch', ({ body }, { rejec
   userService.fetchCreateUser(body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
-const fetchUpdateUser = createAsyncThunk('user/update/fetch', ({ body }, { rejectWithValue }) =>
-  userService.fetchUpdateUser(body).catch((error) => rejectWithValue(error.response.data || error.message))
+const fetchUpdateUser = createAsyncThunk('user/update/fetch', ({ id, body }, { rejectWithValue }) =>
+  userService.fetchUpdateUser(id, body).catch((error) => rejectWithValue(error.response.data || error.message))
+);
+
+const fetchSetUserDefaultBrand = createAsyncThunk('user/setDefaultBrand/fetch', ({ id }, { rejectWithValue }) =>
+  userService.fetchSetDefaultBrand(id).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
 const fetchDeleteUser = createAsyncThunk('user/delete/fetch', ({ id }, { rejectWithValue }) =>
   userService.fetchDeleteUser(id).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
-export { fetchAllUser, fetchUser, fetchUsersWithPermission, fetchCreateUser, fetchUpdateUser, fetchDeleteUser };
+export { fetchAllUser, fetchUser, fetchUsersWithPermission, fetchCreateUser, fetchUpdateUser, fetchSetUserDefaultBrand, fetchDeleteUser };

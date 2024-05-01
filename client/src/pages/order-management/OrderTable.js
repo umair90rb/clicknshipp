@@ -22,6 +22,7 @@ import { formatDateTime } from 'utils/format-date';
 import CircularLoader from 'components/CircularLoader';
 import { Button, Box, Modal } from '../../../node_modules/@mui/material/index';
 import AssignOrderModal from './AssingOrderModal';
+import CustomNoRowsOverlay from './NoRowCustomOverlay';
 const columns = (viewAction) => [
   {
     field: 'order_number',
@@ -154,7 +155,7 @@ export default function OrderTable() {
 
   // console.log(tableRef);
 
-  console.log(rowSelectionModel, 'rowSelectionModel');
+  // console.log(rowSelectionModel, 'rowSelectionModel');
 
   function renderToolbar() {
     return (
@@ -175,12 +176,13 @@ export default function OrderTable() {
   }
 
   return (
-    <div style={{ width: '100%' }}>
+    <div style={{ height: !orders || !orders.length ? 400 : undefined, width: '100%' }}>
       <DataGrid
         loading={listIsLoading}
         checkboxSelection
         slots={{
-          toolbar: renderToolbar
+          toolbar: renderToolbar,
+          noRowsOverlay: CustomNoRowsOverlay
         }}
         pageSizeOptions={[25, 50, 75, 100]}
         onRowSelectionModelChange={(newRowSelectionModel) => setRowSelectionModel(newRowSelectionModel)}

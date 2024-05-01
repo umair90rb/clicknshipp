@@ -260,7 +260,7 @@ export default {
     try {
       const id = req.params.id;
       const userUpdatedData = req.body;
-      const { name, email, phone, password, roles, brands, status } =
+      const { name, email, phone, password, roles, brands, status, settings } =
         userUpdatedData || {};
       if (email && phone) {
         const userWithEmailOrPhone = await User.findOne({
@@ -274,27 +274,7 @@ export default {
           );
         }
       }
-      const user = await User.findByPk(id, {
-        // include: [
-        //   {
-        //     model: Role,
-        //     as: "roles",
-        //     through: { attributes: [] },
-        //   },
-        //   {
-        //     model: Brand,
-        //     as: "brands",
-        //     through: {
-        //       attributes: [],
-        //     },
-        //   },
-        //   {
-        //     model: Permission,
-        //     as: "permissions",
-        //     through: { attributes: [] },
-        //   },
-        // ],
-      });
+      const user = await User.findByPk(id);
       if (user) {
         const hashedPassword = await bcrypt.hash(password, 10);
         user.set({
@@ -302,6 +282,7 @@ export default {
           name: name || user.name,
           phone: phone || user.phone,
           status: status || user.status,
+          settings: settings || user.settings,
           password: password ? hashedPassword : user.password,
           updatedAt: new Date().toISOString(),
         });
@@ -362,6 +343,54 @@ export default {
         );
       }
       return sendErrorResponse(res, 404, "No data found with this id.");
+    } catch (e) {
+      console.error(e);
+      return sendErrorResponse(
+        res,
+        500,
+        "Could not perform operation at this time, kindly try again later.",
+        e
+      );
+    }
+  },
+
+  async setDefaultBrand(req, res) {
+    try {
+      const brandId = req.params.id;
+      const userId = req.user.id;
+      const settings = { default_brand_id: brandId };
+      const user = await User.findByPk(userId, {
+        include: {
+          model: Brand,
+          as: "brands",
+          attributes: ["id", "name"],
+          through: {
+            attributes: [],
+          },
+        },
+      });
+      if (user) {
+        const brandIds = user.brands.map((brand) => brand.id);
+        if (brandIds.includes(brandId)) {
+          await user.update({ settings });
+          return sendSuccessResponse(
+            res,
+            200,
+            {
+              settings,
+            },
+            "Operation successful."
+          );
+        } else {
+          return sendErrorResponse(
+            res,
+            403,
+            {},
+            "You don't have permission to this brand."
+          );
+        }
+      }
+      return sendErrorResponse(res, 404, {}, "User not found!");
     } catch (e) {
       console.error(e);
       return sendErrorResponse(

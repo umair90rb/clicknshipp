@@ -5,8 +5,10 @@ import { fetchLogin, fetchProfile } from './fetchAuth';
 const initialState = {
   token: null,
   user: null,
-  fetchStatus: fetchStatus.IDLE,
-  error: null,
+  login: {
+    fetchStatus: fetchStatus.IDLE,
+    error: null
+  },
   profile: {
     fetchStatus: fetchStatus.IDLE,
     error: null
@@ -17,24 +19,26 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    setUserSetting: (state, action) => {
+      state.user = { ...state.user, settings: action.payload };
+    },
     clearAuthState: () => initialState
   },
   extraReducers: (builder) => {
     builder.addCase(fetchLogin.pending, (state, _action) => {
-      state.fetchStatus = fetchStatus.REQUEST;
+      state.login.fetchStatus = fetchStatus.REQUEST;
     });
     builder.addCase(fetchLogin.fulfilled, (state, action) => {
       const { data } = action.payload;
-      state.fetchStatus = fetchStatus.SUCCESS;
+      state.login.fetchStatus = fetchStatus.SUCCESS;
       state.token = data.token;
-      state.user = data.user;
       state.error = null;
     });
     builder.addCase(fetchLogin.rejected, (state, action) => {
       state.user = null;
       state.token = null;
-      state.fetchStatus = fetchStatus.FAILURE;
-      state.error = action.payload;
+      state.login.fetchStatus = fetchStatus.FAILURE;
+      state.login.error = action.payload?.error || "Can't login! Please try again.";
     });
     builder.addCase(fetchProfile.pending, (state, _action) => {
       state.profile.fetchStatus = fetchStatus.REQUEST;
@@ -55,5 +59,5 @@ const authSlice = createSlice({
   }
 });
 
-export const { clearAuthState } = authSlice.actions;
+export const { setUserSetting, clearAuthState } = authSlice.actions;
 export default authSlice.reducer;

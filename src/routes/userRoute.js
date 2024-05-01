@@ -7,6 +7,7 @@ import {
   createUserSchema,
   fetchUserWithPermissionsSchema,
   updateUserSchema,
+  setDefaultBrandSchema,
 } from "../schemas/userSchema";
 import { idSchema } from "../schemas/commonSchema";
 import schemaValidator from "../middleware/schemaValidator";
@@ -53,6 +54,13 @@ router.put(
   validator.params(idSchema),
   schemaValidator(updateUserSchema),
   UserController.update
+);
+
+router.get(
+  "/set-default-brand/:id",
+  Auth,
+  validator.params(idSchema),
+  UserController.setDefaultBrand
 );
 
 router.delete(

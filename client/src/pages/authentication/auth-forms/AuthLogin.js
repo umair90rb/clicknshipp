@@ -35,6 +35,7 @@ import fetchStatus from 'constants/fetchStatuses';
 import useAuth from 'hooks/useAuth';
 import { toSentense } from 'utils/string-utils';
 import location from 'utils/location';
+import { fetchProfile } from 'store/index';
 
 const AuthLogin = () => {
   const dispatch = useDispatch();
@@ -49,15 +50,13 @@ const AuthLogin = () => {
   useEffect(() => {
     if (token) {
       login(token);
+      dispatch(fetchProfile());
       navigate(location.dashboardUrl());
     }
-    if (authError) {
-      formRef.current.setFieldError('submit', toSentense(authError.error || ''));
-    }
     if (authFetchStatus === fetchStatus.FAILURE) {
-      formRef.current.setFieldError('submit', toSentense("Can't login! Please try again."));
+      formRef.current.setFieldError('submit', toSentense(authError));
     }
-  }, [authFetchStatus, authError]);
+  }, [authFetchStatus]);
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
