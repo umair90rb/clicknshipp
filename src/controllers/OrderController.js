@@ -53,9 +53,11 @@ const item_data_keys = [
 export default {
   async orders(req, res) {
     try {
-      const filter = req.body;
+      const { page, pageSize, ...filter } = req.body;
       const permissions = req.user.permissions;
       const query = {
+        offset: page * pageSize,
+        limit: pageSize,
         where: {
           user_id: req.user.id,
         },
@@ -90,7 +92,9 @@ export default {
           ],
         },
       };
-      if (
+      if (permissions.includes(constants.PERMISSION_VIEW_ALL_ORDERS)) {
+        delete query.where.user_id;
+      } else if (
         "settings" in req.user &&
         req.user.settings.hasOwnProperty("default_brand_id")
       ) {
@@ -99,17 +103,14 @@ export default {
         query.where.brand_id = req.user.brands[0].id;
       }
 
-      if (permissions.includes(constants.PERMISSION_VIEW_ALL_ORDERS)) {
-        delete query.where.user_id;
-        delete query.where.brand_id;
-      }
-
       if (filter && Object.keys(filter).length) {
         query.where = { ...query.where, ...filter };
       }
       console.log(query);
-      const orders = await Order.findAll(query);
-      return sendSuccessResponse(res, 200, { orders });
+      const orders = await Order.findAndCountAll(query);
+      return sendSuccessResponse(res, 200, {
+        orders: { ...orders, ...req.body },
+      });
     } catch (e) {
       console.error(e);
       return sendErrorResponse(

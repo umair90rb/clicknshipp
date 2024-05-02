@@ -14,8 +14,15 @@ import {
   GridLogicOperator
 } from '@mui/x-data-grid';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import FilterListIcon from '@mui/icons-material/FilterList';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
-import { orderListIsLoadingSelector, orderListSelector } from 'store/slices/order/orderSelector';
+import {
+  orderListIsLoadingSelector,
+  orderListSelector,
+  orderPageSelector,
+  orderPageSizeSelector,
+  orderTotalSelector
+} from 'store/slices/order/orderSelector';
 import { fetchAllOrder } from 'store/slices/order/fetchOrder';
 import location from 'utils/location';
 import { formatDateTime } from 'utils/format-date';
@@ -23,6 +30,7 @@ import CircularLoader from 'components/CircularLoader';
 import { Button, Box, Modal } from '../../../node_modules/@mui/material/index';
 import AssignOrderModal from './AssingOrderModal';
 import CustomNoRowsOverlay from './NoRowCustomOverlay';
+import { setOrderPagination } from 'store/slices/order/orderSlice';
 const columns = (viewAction) => [
   {
     field: 'order_number',
@@ -44,6 +52,7 @@ const columns = (viewAction) => [
     field: 'address',
     headerName: 'Address',
     flex: 1,
+    resizable: true,
     valueGetter: (param) => param.row.address?.address1 || ''
   },
   {
@@ -114,56 +123,47 @@ const style = {
 export default function OrderTable() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const listIsLoading = useSelector(orderListIsLoadingSelector);
+  const orders = useSelector(orderListSelector);
+  const page = useSelector(orderPageSelector);
+  const pageSize = useSelector(orderPageSizeSelector);
+  const total = useSelector(orderTotalSelector);
+
+  const [filterModel, setFilterModel] = useState({});
+  const [rowSelectionModel, setRowSelectionModel] = useState([]);
+  const [columnVisibilityModel, setColumnVisibilityModel] = useState({
+    status: false,
+    chanel: false,
+    agent: false,
+    total_tax: false,
+    total_discounts: false
+  });
 
   const [showAssignModal, setShowAssignModal] = useState(false);
   const displayShowAssignModal = () => setShowAssignModal(true);
   const hideAssignModal = () => setShowAssignModal(false);
 
-  // const [filterModel, setFilterModel] = React.useState({
-  //   linkOperator: 'Or',
-  //   items: [
-  //     {
-  //       field: 'order_number',
-  //       id: 31996,
-  //       operator: 'contains',
-  //       value: '75'
-  //     },
-  //     {
-  //       field: 'status',
-  //       id: 31926,
-  //       operator: 'contains',
-  //       value: 'Booked'
-  //     }
-  //   ]
-  // });
-
-  // const orderImportIsLoading = useSelector(orderImportIsLoadingSelector);
-  const orders = useSelector(orderListSelector);
-
   useEffect(() => {
-    dispatch(fetchAllOrder({ body: {} }));
-  }, []);
+    dispatch(fetchAllOrder({ body: { page, pageSize } }));
+  }, [page, pageSize]);
 
   const handleViewOrder = (id) => () => navigate(location.viewOrder(id));
 
-  // const onFilterChange = useCallback((newFilterModel) => {
-  //   console.log(newFilterModel);
-  //   setFilterModel(newFilterModel);
-  // }, []);
-
-  // console.log(tableRef);
-
-  // console.log(rowSelectionModel, 'rowSelectionModel');
+  const onFilterChange = useCallback((newFilterModel) => {
+    console.log(newFilterModel);
+    setFilterModel(newFilterModel);
+  }, []);
 
   function renderToolbar() {
     return (
       <GridToolbarContainer>
         <GridToolbarColumnsButton />
-        <GridToolbarFilterButton />
+        {/* <GridToolbarFilterButton /> */}
         <GridToolbarExport />
         <GridToolbarDensitySelector />
+        <Button onClick={displayShowAssignModal} size="small" startIcon={<FilterListIcon />}>
+          Filters
+        </Button>
         {rowSelectionModel.length > 0 && (
           <Button onClick={displayShowAssignModal} size="small" startIcon={<AssignmentIndIcon />}>
             Assign
@@ -184,13 +184,18 @@ export default function OrderTable() {
           toolbar: renderToolbar,
           noRowsOverlay: CustomNoRowsOverlay
         }}
-        pageSizeOptions={[25, 50, 75, 100]}
-        onRowSelectionModelChange={(newRowSelectionModel) => setRowSelectionModel(newRowSelectionModel)}
         rowSelectionModel={rowSelectionModel}
-        // filterModel={filterModel}
-        // onFilterModelChange={onFilterChange}
+        onRowSelectionModelChange={(newRowSelectionModel) => setRowSelectionModel(newRowSelectionModel)}
+        paginationMode="server"
+        pageSizeOptions={[10, 25, 50, 75, 100]}
+        onPaginationModelChange={(paginationModal) => dispatch(setOrderPagination(paginationModal))}
+        paginationModel={{ page, pageSize }}
+        rowCount={total}
+        columnVisibilityModel={columnVisibilityModel}
+        onColumnVisibilityModelChange={setColumnVisibilityModel}
         rows={orders || []}
         columns={columns(handleViewOrder)}
+        disableColumnResize={false}
       />
       <Modal
         open={showAssignModal}

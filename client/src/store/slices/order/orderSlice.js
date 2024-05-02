@@ -6,7 +6,10 @@ const initialState = {
   list: {
     orders: [],
     fetchStatus: fetchStatus.IDLE,
-    error: null
+    error: null,
+    page: 0,
+    pageSize: 50,
+    total: 0
   },
   create: {
     fetchStatus: fetchStatus.IDLE,
@@ -21,15 +24,27 @@ const initialState = {
 const orderSlice = createSlice({
   name: 'order',
   initialState,
-  reducers: {},
+  reducers: {
+    setOrderPagination: (state, action) => {
+      const { page, pageSize } = action.payload;
+      state.list.page = page;
+      state.list.pageSize = pageSize;
+    },
+    clearOrderState: (_state, _action) => initialState
+  },
   extraReducers: (builder) => {
     builder.addCase(fetchAllOrder.pending, (state, _action) => {
       state.list.fetchStatus = fetchStatus.REQUEST;
     });
     builder.addCase(fetchAllOrder.fulfilled, (state, action) => {
-      const { data } = action.payload;
+      const {
+        data: { orders }
+      } = action.payload;
       state.list.fetchStatus = fetchStatus.SUCCESS;
-      state.list.orders = data.orders;
+      state.list.orders = orders.rows;
+      state.list.page = orders.page;
+      state.list.pageSize = orders.pageSize;
+      state.list.total = orders.count;
       state.list.error = null;
     });
     builder.addCase(fetchAllOrder.rejected, (state, action) => {
@@ -66,5 +81,5 @@ const orderSlice = createSlice({
     });
   }
 });
-// export const {} = userSlice.actions;
+export const { setOrderPagination, clearOrderState } = orderSlice.actions;
 export default orderSlice.reducer;

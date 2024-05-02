@@ -9,7 +9,12 @@ import { useNavigate } from 'react-router-dom';
 import location from 'utils/location';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllOrder, fetchImportOrder } from 'store/slices/order/fetchOrder';
-import { orderImportFetchStatusSelector, orderImportIsLoadingSelector } from 'store/slices/order/orderSelector';
+import {
+  orderImportFetchStatusSelector,
+  orderImportIsLoadingSelector,
+  orderPageSelector,
+  orderPageSizeSelector
+} from 'store/slices/order/orderSelector';
 import fetchStatus from 'constants/fetchStatuses';
 
 const VisuallyHiddenInput = styled('input')({
@@ -29,6 +34,8 @@ const OrderManagement = () => {
   const dispatch = useDispatch();
   const orderImportIsLoading = useSelector(orderImportIsLoadingSelector);
   const orderImportFetchStatus = useSelector(orderImportFetchStatusSelector);
+  const orderPaginationPage = useSelector(orderPageSelector);
+  const orderPaginationPageSize = useSelector(orderPageSizeSelector);
 
   const uploadFile = (event) => {
     console.log(event.target.files, 'event.target.files');
@@ -55,7 +62,11 @@ const OrderManagement = () => {
           <Grid item>
             <Grid container spacing={1}>
               <Grid item>
-                <Button variant="contained" startIcon={<SyncIcon />} onClick={() => dispatch(fetchAllOrder({ body: {} }))}>
+                <Button
+                  variant="contained"
+                  startIcon={<SyncIcon />}
+                  onClick={() => dispatch(fetchAllOrder({ body: { page: orderPaginationPage, pageSize: orderPaginationPageSize } }))}
+                >
                   Refresh
                 </Button>
               </Grid>
