@@ -299,7 +299,7 @@ const CreateOrderForm = () => {
                     <Stack spacing={1}>
                       <InputLabel htmlFor="chanel_id">Select Sales Chanel</InputLabel>
                       <Autocomplete
-                        options={chanels.map((chanel) => ({ id: chanel.id, label: chanel.name, brand_id: chanel.brand.id }))}
+                        options={chanels.map((chanel) => ({ id: chanel.id, label: chanel.name, brand_id: chanel?.brand?.id }))}
                         id="chanel_id"
                         name="chanel_id"
                         value={values.chanel_id !== '' ? chanels.find((c) => c.id === values.chanel_id).name : ''}

@@ -34,7 +34,7 @@ export default (app) => {
   app.use("/api/v1/city", cityRouter);
   app.use("/api/v1/permission", permissionRouter);
   app.use("/api/v1/order", orderRouter);
-  //[domain]/api/v1/order/shopify
+  //https://sukoon-inc-96f4d4ef3e58.herokuapp.com/api/v1/order/shopify
   app.use("/api/v1/report", reportRouter);
   app.use("/api/v1/dashboard", dashboardRouter);
   app.use("/api/v1/", adminRouter);
