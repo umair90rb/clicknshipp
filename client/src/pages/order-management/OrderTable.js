@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -25,12 +25,11 @@ import {
 } from 'store/slices/order/orderSelector';
 import { fetchAllOrder } from 'store/slices/order/fetchOrder';
 import location from 'utils/location';
-import { formatDateTime } from 'utils/format-date';
-import CircularLoader from 'components/CircularLoader';
-import { Button, Box, Modal } from '../../../node_modules/@mui/material/index';
-import AssignOrderModal from './AssingOrderModal';
+import { Button, Box, Modal } from '@mui/material';
+import AssignOrderModal from './AssignOrderModal';
 import CustomNoRowsOverlay from './NoRowCustomOverlay';
 import { setOrderPagination } from 'store/slices/order/orderSlice';
+import FilterModal from './FilterModal';
 const columns = (viewAction) => [
   {
     field: 'order_number',
@@ -129,7 +128,7 @@ export default function OrderTable() {
   const pageSize = useSelector(orderPageSizeSelector);
   const total = useSelector(orderTotalSelector);
 
-  const [filterModel, setFilterModel] = useState({});
+  // const [filterModel, setFilterModel] = useState({});
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({
     status: false,
@@ -143,6 +142,10 @@ export default function OrderTable() {
   const displayShowAssignModal = () => setShowAssignModal(true);
   const hideAssignModal = () => setShowAssignModal(false);
 
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const displayFilterModal = () => setShowFilterModal(true);
+  const hideFilterModal = () => setShowFilterModal(false);
+
   useEffect(() => {
     dispatch(fetchAllOrder({ body: { page, pageSize } }));
   }, [page, pageSize]);
@@ -151,17 +154,16 @@ export default function OrderTable() {
 
   const onFilterChange = useCallback((newFilterModel) => {
     console.log(newFilterModel);
-    setFilterModel(newFilterModel);
   }, []);
 
   function renderToolbar() {
     return (
       <GridToolbarContainer>
         <GridToolbarColumnsButton />
-        {/* <GridToolbarFilterButton /> */}
+        <GridToolbarFilterButton />
         <GridToolbarExport />
         <GridToolbarDensitySelector />
-        <Button onClick={displayShowAssignModal} size="small" startIcon={<FilterListIcon />}>
+        <Button onClick={displayFilterModal} size="small" startIcon={<FilterListIcon />}>
           Filters
         </Button>
         {rowSelectionModel.length > 0 && (
@@ -195,7 +197,7 @@ export default function OrderTable() {
         onColumnVisibilityModelChange={setColumnVisibilityModel}
         rows={orders || []}
         columns={columns(handleViewOrder)}
-        disableColumnResize={false}
+        onFilterModelChange={onFilterChange}
       />
       <Modal
         open={showAssignModal}
@@ -207,6 +209,12 @@ export default function OrderTable() {
           <AssignOrderModal hideModal={hideAssignModal} selectedRows={rowSelectionModel} />
         </Box>
       </Modal>
+      <FilterModal
+        visible={showFilterModal}
+        onClose={hideFilterModal}
+        onApplyFilters={(columnWithFilters) => console.log(columnWithFilters)}
+        columns={[...columns().slice(0, -1)]}
+      />
     </div>
   );
 }
