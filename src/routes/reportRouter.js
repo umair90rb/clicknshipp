@@ -1,7 +1,8 @@
 import express from "express";
 import Auth from "../middleware/auth";
 import can from "../middleware/canAccess";
-import Constants from "../utils/constants";
+import { PERMISSIONS } from "../constants/constants";
+
 import ReportingController from "../controllers/ReportingController";
 
 const router = express.Router();
@@ -9,7 +10,7 @@ const router = express.Router();
 router.post(
   "/order-products",
   Auth,
-  can(Constants.PERMISSION_VIEW_REPORTING),
+  can(PERMISSIONS.PERMISSION_VIEW_REPORTING),
   ReportingController.orderProducts
 );
 

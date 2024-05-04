@@ -6,6 +6,8 @@ import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
 import { fetchAllSupplier, fetchDeleteSupplier } from 'store/slices/supplier/fetchSupplier';
 import { supplierIsLoadingSelector, supplierSuppliersSelector } from 'store/slices/supplier/supplierSelector';
 import { deleteSupplier } from 'store/slices/supplier/supplierSlice';
+import useAccess from 'hooks/useAccess';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
 const columns = (handleEditAction, handleDeleteAction) => [
   {
     field: 'id',
@@ -38,24 +40,35 @@ const columns = (handleEditAction, handleDeleteAction) => [
     flex: 1,
     type: 'actions',
     cellClassName: 'actions',
-    getActions: ({ id, row }) => [
-      <GridActionsCellItem
-        key={id}
-        icon={<EditIcon />}
-        label="View"
-        className="textPrimary"
-        onClick={() => handleEditAction(row)}
-        color="inherit"
-      />,
-      <GridActionsCellItem
-        key={id}
-        icon={<DeleteIcon />}
-        label="Disable"
-        className="textPrimary"
-        onClick={() => handleDeleteAction(id)}
-        color="inherit"
-      />
-    ]
+    getActions: ({ id, row }) => {
+      const actions = [];
+      if (handleEditAction) {
+        actions.push(
+          <GridActionsCellItem
+            key={id}
+            icon={<EditIcon />}
+            label="View"
+            className="textPrimary"
+            onClick={() => handleEditAction(row)}
+            color="inherit"
+          />
+        );
+      }
+      if (handleDeleteAction) {
+        actions.push(
+          <GridActionsCellItem
+            key={id}
+            icon={<DeleteIcon />}
+            label="Disable"
+            className="textPrimary"
+            onClick={() => handleDeleteAction(id)}
+            color="inherit"
+          />
+        );
+      }
+
+      return actions;
+    }
   }
 ];
 
@@ -63,6 +76,7 @@ export default function SupplierTable({ updateSupplierHandler }) {
   const dispatch = useDispatch();
   const supplierIsLoading = useSelector(supplierIsLoadingSelector);
   const suppliers = useSelector(supplierSuppliersSelector);
+  const { hasPermission } = useAccess();
 
   useEffect(() => {
     dispatch(fetchAllSupplier());
@@ -87,7 +101,10 @@ export default function SupplierTable({ updateSupplierHandler }) {
         loading={supplierIsLoading}
         pageSizeOptions={[25, 50, 75, 100]}
         rows={suppliers}
-        columns={columns(updateSupplierHandler, handleDelete)}
+        columns={columns(
+          hasPermission(PERMISSIONS.PERMISSION_UPDATE_SUPPLIER) ? updateSupplierHandler : undefined,
+          hasPermission(PERMISSIONS.PERMISSION_DELETE_SUPPLIER) ? handleDelete : undefined
+        )}
       />
     </div>
   );

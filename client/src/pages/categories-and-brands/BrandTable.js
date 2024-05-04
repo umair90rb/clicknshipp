@@ -6,6 +6,8 @@ import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
 import { brandBrandsSelector, brandIsLoadingSelector } from 'store/slices/brand/brandSelector';
 import { fetchAllBrand, fetchDeleteBrand } from 'store/slices/brand/fetchBrand';
 import { deleteBrand } from 'store/slices/brand/brandSlice';
+import useAccess from 'hooks/useAccess';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
 const columns = (handleUpdate, handleDelete) => [
   {
     field: 'id',
@@ -28,24 +30,35 @@ const columns = (handleUpdate, handleDelete) => [
     flex: 1,
     type: 'actions',
     cellClassName: 'actions',
-    getActions: ({ id, row }) => [
-      <GridActionsCellItem
-        key={id}
-        icon={<EditIcon />}
-        label="View"
-        className="textPrimary"
-        onClick={() => handleUpdate('Brand', row)}
-        color="inherit"
-      />,
-      <GridActionsCellItem
-        key={id}
-        icon={<DeleteIcon />}
-        label="Disable"
-        className="textPrimary"
-        onClick={() => handleDelete(id)}
-        color="inherit"
-      />
-    ]
+    getActions: ({ id, row }) => {
+      const actions = [];
+      if (handleUpdate) {
+        actions.push(
+          <GridActionsCellItem
+            key={id}
+            icon={<EditIcon />}
+            label="View"
+            className="textPrimary"
+            onClick={() => handleUpdate('Brand', row)}
+            color="inherit"
+          />
+        );
+      }
+      if (handleDelete) {
+        actions.push(
+          <GridActionsCellItem
+            key={id}
+            icon={<DeleteIcon />}
+            label="Disable"
+            className="textPrimary"
+            onClick={() => handleDelete(id)}
+            color="inherit"
+          />
+        );
+      }
+
+      return actions;
+    }
   }
 ];
 
@@ -53,6 +66,7 @@ export default function BrandTable({ handleUpdate }) {
   const dispatch = useDispatch();
   const brandIsLoading = useSelector(brandIsLoadingSelector);
   const brands = useSelector(brandBrandsSelector);
+  const { hasPermission } = useAccess();
 
   useEffect(() => {
     dispatch(fetchAllBrand());
@@ -78,7 +92,10 @@ export default function BrandTable({ handleUpdate }) {
         loading={brandIsLoading}
         pageSizeOptions={[25, 50, 75, 100]}
         rows={brands}
-        columns={columns(handleUpdate, handleDelete)}
+        columns={columns(
+          hasPermission(PERMISSIONS.PERMISSION_UPDATE_BRAND) ? handleUpdate : undefined,
+          hasPermission(PERMISSIONS.PERMISSION_DELETE_BRAND) ? handleDelete : undefined
+        )}
       />
     </div>
   );

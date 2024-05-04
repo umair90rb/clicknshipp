@@ -16,6 +16,8 @@ import {
   orderPageSizeSelector
 } from 'store/slices/order/orderSelector';
 import fetchStatus from 'constants/fetchStatuses';
+import useAccess from 'hooks/useAccess';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -36,6 +38,8 @@ const OrderManagement = () => {
   const orderImportFetchStatus = useSelector(orderImportFetchStatusSelector);
   const orderPaginationPage = useSelector(orderPageSelector);
   const orderPaginationPageSize = useSelector(orderPageSizeSelector);
+
+  const { hasPermission } = useAccess();
 
   const uploadFile = (event) => {
     console.log(event.target.files, 'event.target.files');
@@ -70,22 +74,26 @@ const OrderManagement = () => {
                   Refresh
                 </Button>
               </Grid>
-              <Grid item>
-                <Button
-                  component="label"
-                  variant="contained"
-                  disabled={orderImportIsLoading ? true : undefined}
-                  startIcon={orderImportIsLoading ? <LoadingOutlined /> : <FileExcelOutlined />}
-                >
-                  Add Bulk Order
-                  <VisuallyHiddenInput type="file" onChange={uploadFile} />
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button variant="contained" startIcon={<PlusOutlined />} onClick={() => navigate(location.createOrder())}>
-                  Create New Order
-                </Button>
-              </Grid>
+              {hasPermission(PERMISSIONS.PERMISSION_CREATE_BULK_ORDER) && (
+                <Grid item>
+                  <Button
+                    component="label"
+                    variant="contained"
+                    disabled={orderImportIsLoading ? true : undefined}
+                    startIcon={orderImportIsLoading ? <LoadingOutlined /> : <FileExcelOutlined />}
+                  >
+                    Add Bulk Order
+                    <VisuallyHiddenInput type="file" onChange={uploadFile} />
+                  </Button>
+                </Grid>
+              )}
+              {hasPermission(PERMISSIONS.PERMISSION_CREATE_ORDER) && (
+                <Grid item>
+                  <Button variant="contained" startIcon={<PlusOutlined />} onClick={() => navigate(location.createOrder())}>
+                    Create New Order
+                  </Button>
+                </Grid>
+              )}
             </Grid>
           </Grid>
         </Grid>

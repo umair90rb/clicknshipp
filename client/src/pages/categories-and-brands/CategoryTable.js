@@ -6,6 +6,8 @@ import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
 import { categoryCategoriesSelector, categoryIsLoadingSelector } from 'store/slices/category/categorySelector';
 import { fetchAllCategory, fetchDeleteCategory } from 'store/slices/category/fetchCategory';
 import { deleteCategory } from 'store/slices/category/categorySlice';
+import useAccess from 'hooks/useAccess';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
 const columns = (handleUpdate, handleDelete) => [
   {
     field: 'id',
@@ -28,24 +30,35 @@ const columns = (handleUpdate, handleDelete) => [
     flex: 1,
     type: 'actions',
     cellClassName: 'actions',
-    getActions: ({ id, row }) => [
-      <GridActionsCellItem
-        key={id}
-        icon={<EditIcon />}
-        label="View"
-        className="textPrimary"
-        onClick={() => handleUpdate('Category', row)}
-        color="inherit"
-      />,
-      <GridActionsCellItem
-        key={id}
-        icon={<DeleteIcon />}
-        label="Disable"
-        className="textPrimary"
-        onClick={() => handleDelete(id)}
-        color="inherit"
-      />
-    ]
+    getActions: ({ id, row }) => {
+      const actions = [];
+
+      if (handleUpdate) {
+        actions.push(
+          <GridActionsCellItem
+            key={id}
+            icon={<EditIcon />}
+            label="View"
+            className="textPrimary"
+            onClick={() => handleUpdate('Category', row)}
+            color="inherit"
+          />
+        );
+      }
+      if (handleDelete) {
+        actions.push(
+          <GridActionsCellItem
+            key={id}
+            icon={<DeleteIcon />}
+            label="Disable"
+            className="textPrimary"
+            onClick={() => handleDelete(id)}
+            color="inherit"
+          />
+        );
+      }
+      return actions;
+    }
   }
 ];
 
@@ -53,6 +66,8 @@ export default function CategoryTable({ handleUpdate }) {
   const dispatch = useDispatch();
   const categoryIsLoading = useSelector(categoryIsLoadingSelector);
   const categories = useSelector(categoryCategoriesSelector);
+
+  const { hasPermission } = useAccess();
 
   useEffect(() => {
     dispatch(fetchAllCategory());
@@ -78,7 +93,10 @@ export default function CategoryTable({ handleUpdate }) {
         loading={categoryIsLoading}
         pageSizeOptions={[25, 50, 75, 100]}
         rows={categories}
-        columns={columns(handleUpdate, handleDelete)}
+        columns={columns(
+          hasPermission(PERMISSIONS.PERMISSION_UPDATE_CATEGORY) ? handleUpdate : undefined,
+          hasPermission(PERMISSIONS.PERMISSION_DELETE_CATEGORY) ? handleDelete : undefined
+        )}
       />
     </div>
   );

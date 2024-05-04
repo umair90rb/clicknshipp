@@ -1,6 +1,7 @@
 import express from "express";
 import StockController from "../controllers/StockController";
-import constants from "../utils/constants";
+import { PERMISSIONS } from "../constants/constants";
+
 import can from "../middleware/canAccess";
 import Auth from "../middleware/auth";
 import { createStockSchema } from "../schemas/stockSchema";
@@ -14,14 +15,14 @@ const validator = createValidator();
 router.get(
   "/all",
   Auth,
-  can(constants.PERMISSION_VIEW_ALL_USERS),
+  can(PERMISSIONS.PERMISSION_VIEW_STOCK),
   StockController.stocks
 );
 
 router.get(
   "/:id",
   Auth,
-  can(constants.PERMISSION_VIEW_ALL_USERS),
+  can(PERMISSIONS.PERMISSION_VIEW_STOCK),
   validator.params(idSchema),
   StockController.stock
 );
@@ -29,7 +30,7 @@ router.get(
 router.post(
   "/",
   Auth,
-  can(constants.PERMISSION_CREATE_USER),
+  can(PERMISSIONS.PERMISSION_RECEIVE_STOCK),
   schemaValidator(createStockSchema),
   StockController.create
 );

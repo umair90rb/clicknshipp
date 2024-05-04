@@ -9,6 +9,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { itemItemsSelector } from 'store/slices/item/itemSelector';
 import { fetchAllItem, fetchImportItems } from 'store/slices/item/fetchItem';
 import { setMessage } from 'store/slices/util/utilSlice';
+import useAccess from 'hooks/useAccess';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
 
 const style = {
   position: 'absolute',
@@ -39,6 +41,7 @@ const ItemsManagement = () => {
   const items = useSelector(itemItemsSelector);
   const [importingItems, setImportingItems] = useState(false);
   const [itemToUpdate, setItemToUpdate] = useState();
+  const { hasPermission } = useAccess();
 
   const uploadFile = (event) => {
     setImportingItems(true);
@@ -87,22 +90,26 @@ const ItemsManagement = () => {
           </Grid>
           <Grid item>
             <Grid container spacing={2}>
-              <Grid item>
-                <Button
-                  component="label"
-                  variant="contained"
-                  disabled={importingItems ? true : undefined}
-                  startIcon={importingItems ? <LoadingOutlined /> : <FileExcelOutlined />}
-                >
-                  Add Bulk Item
-                  <VisuallyHiddenInput type="file" onChange={uploadFile} />
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button variant="contained" startIcon={<PlusOutlined />} onClick={addItemHandler}>
-                  Add Item
-                </Button>
-              </Grid>
+              {hasPermission(PERMISSIONS.PERMISSION_BULK_CREATE_ITEMS) && (
+                <Grid item>
+                  <Button
+                    component="label"
+                    variant="contained"
+                    disabled={importingItems ? true : undefined}
+                    startIcon={importingItems ? <LoadingOutlined /> : <FileExcelOutlined />}
+                  >
+                    Add Bulk Item
+                    <VisuallyHiddenInput type="file" onChange={uploadFile} />
+                  </Button>
+                </Grid>
+              )}
+              {hasPermission(PERMISSIONS.PERMISSION_CREATE_ITEM) && (
+                <Grid item>
+                  <Button variant="contained" startIcon={<PlusOutlined />} onClick={addItemHandler}>
+                    Add Item
+                  </Button>
+                </Grid>
+              )}
             </Grid>
           </Grid>
         </Grid>

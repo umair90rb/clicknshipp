@@ -9,6 +9,8 @@ import { authUserSelector } from 'store/slices/auth/authSelector';
 import { setMessage } from 'store/slices/util/utilSlice';
 import { setUserForUpdate, disableUser } from 'store/slices/user/userSlice';
 import { userService } from 'api/index';
+import useAccess from 'hooks/useAccess';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
 
 const columns = (handleEditAction, handleDeleteAction) => [
   {
@@ -53,24 +55,34 @@ const columns = (handleEditAction, handleDeleteAction) => [
     flex: 1,
     type: 'actions',
     cellClassName: 'actions',
-    getActions: ({ id, row }) => [
-      <GridActionsCellItem
-        key={id}
-        icon={<EditIcon />}
-        label="View"
-        className="textPrimary"
-        onClick={() => handleEditAction(row, null)}
-        color="inherit"
-      />,
-      <GridActionsCellItem
-        key={id}
-        icon={<NoAccountsIcon />}
-        label="Disable"
-        className="textPrimary"
-        onClick={() => handleDeleteAction(id)}
-        color="inherit"
-      />
-    ]
+    getActions: ({ id, row }) => {
+      const actions = [];
+      if (handleEditAction) {
+        actions.push(
+          <GridActionsCellItem
+            key={id}
+            icon={<EditIcon />}
+            label="View"
+            className="textPrimary"
+            onClick={() => handleEditAction(row, null)}
+            color="inherit"
+          />
+        );
+      }
+      if (handleDeleteAction) {
+        actions.push(
+          <GridActionsCellItem
+            key={id}
+            icon={<NoAccountsIcon />}
+            label="Disable"
+            className="textPrimary"
+            onClick={() => handleDeleteAction(id)}
+            color="inherit"
+          />
+        );
+      }
+      return actions;
+    }
   }
 ];
 
@@ -79,6 +91,7 @@ export default function UserTable({ openUpateForm }) {
   const userIsLoading = useSelector(userIsLoadingSelector);
   const users = useSelector(userUsersSelector);
   const user = useSelector(authUserSelector);
+  const { hasPermission } = useAccess();
 
   useEffect(() => {
     dispatch(fetchAllUser());
@@ -115,7 +128,10 @@ export default function UserTable({ openUpateForm }) {
         loading={userIsLoading}
         pageSizeOptions={[25, 50, 75, 100]}
         rows={users}
-        columns={columns(handleUpdate, handleDisableUser)}
+        columns={columns(
+          hasPermission(PERMISSIONS.PERMISSION_UPDATE_USER) ? handleUpdate : undefined,
+          hasPermission(PERMISSIONS.PERMISSION_DELETE_USER) ? handleDisableUser : undefined
+        )}
       />
     </div>
   );

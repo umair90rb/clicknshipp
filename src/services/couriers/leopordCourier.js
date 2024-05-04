@@ -1,4 +1,4 @@
-import { returnAddress } from "../../utils/constants";
+import { returnAddress } from "../../constants/constants";
 import CourierInterface from "../courierInterface";
 import getAxiosInstance from "../http";
 

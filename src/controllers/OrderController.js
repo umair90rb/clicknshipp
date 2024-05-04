@@ -1,11 +1,12 @@
 import { Op } from "sequelize";
+import { sequelize } from "../models/index";
 import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 import { extract } from "../utils/extract";
 import excelToJson from "../helpers/excelToJson";
 import formatPhoneNumber from "../helpers/formatPhone";
 import BookingService from "../services/BookingService";
-import constants from "../utils/constants";
+import { PERMISSIONS } from "../constants/constants";
 
 const { Order, OrderItem, Customer, Address, User, Chanel, Payments } = model;
 
@@ -746,7 +747,12 @@ export default {
       const order = await Order.findByPk(id);
       if (order) {
         await order.destroy();
-        return sendSuccessResponse(res, 200, {}, "Operation successful.");
+        return sendSuccessResponse(
+          res,
+          200,
+          {},
+          `Order with id ${id} has been deleted successful.`
+        );
       }
       return sendErrorResponse(res, 404, "No data found with this id.");
     } catch (e) {
@@ -756,6 +762,40 @@ export default {
         500,
         "Could not perform operation at this time, kindly try again later.",
         e
+      );
+    }
+  },
+
+  async bulkDestroy(req, res) {
+    const t = await sequelize.transaction();
+    try {
+      const body = req.body;
+      const orderIds = body.orderIds;
+      await Payments.destroy(
+        {
+          where: {
+            order_id: orderIds,
+          },
+        },
+        { transaction: t }
+      );
+      await Order.destroy(
+        {
+          where: {
+            id: orderIds,
+          },
+        },
+        { transaction: t }
+      );
+      await t.commit();
+      return sendSuccessResponse(res, 200, {}, "Orders deleted successful.");
+    } catch (error) {
+      await t.rollback();
+      return sendErrorResponse(
+        res,
+        500,
+        "Could not perform operation at this time, kindly try again later.",
+        error
       );
     }
   },

@@ -16,6 +16,7 @@ import {
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import {
   orderListIsLoadingSelector,
   orderListSelector,
@@ -23,13 +24,16 @@ import {
   orderPageSizeSelector,
   orderTotalSelector
 } from 'store/slices/order/orderSelector';
-import { fetchAllOrder } from 'store/slices/order/fetchOrder';
+import { fetchAllOrder, fetchBulkOrdersDelete } from 'store/slices/order/fetchOrder';
 import location from 'utils/location';
 import { Button, Box, Modal } from '@mui/material';
 import AssignOrderModal from './AssignOrderModal';
 import CustomNoRowsOverlay from './NoRowCustomOverlay';
 import { setOrderPagination } from 'store/slices/order/orderSlice';
 import FilterModal from './FilterModal';
+import { setMessage } from 'store/slices/util/utilSlice';
+import { authPermissionsSelector } from 'store/slices/auth/authSelector';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
 const columns = (viewAction) => [
   {
     field: 'order_number',
@@ -127,6 +131,7 @@ export default function OrderTable() {
   const page = useSelector(orderPageSelector);
   const pageSize = useSelector(orderPageSizeSelector);
   const total = useSelector(orderTotalSelector);
+  const userPermissions = useSelector(authPermissionsSelector);
 
   // const [filterModel, setFilterModel] = useState({});
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
@@ -146,15 +151,24 @@ export default function OrderTable() {
   const displayFilterModal = () => setShowFilterModal(true);
   const hideFilterModal = () => setShowFilterModal(false);
 
+  const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false);
+
   useEffect(() => {
     dispatch(fetchAllOrder({ body: { page, pageSize } }));
   }, [page, pageSize]);
 
   const handleViewOrder = (id) => () => navigate(location.viewOrder(id));
 
-  const onFilterChange = useCallback((newFilterModel) => {
-    console.log(newFilterModel);
-  }, []);
+  const handleBulkDelete = async () => {
+    setBulkDeleteLoading(true);
+    const { type, payload } = await dispatch(fetchBulkOrdersDelete({ body: { orderIds: rowSelectionModel } }));
+    if (type === 'order/bulk/delete/fetch/fulfilled') {
+      dispatch(setMessage({ type: 'success', message: payload?.data?.message || 'Orders deleted successfully!' }));
+    } else {
+      dispatch(setMessage({ type: 'error', message: payload?.data?.message || 'Orders not deleted!' }));
+    }
+    setBulkDeleteLoading(false);
+  };
 
   function renderToolbar() {
     return (
@@ -169,6 +183,11 @@ export default function OrderTable() {
         {rowSelectionModel.length > 0 && (
           <Button onClick={displayShowAssignModal} size="small" startIcon={<AssignmentIndIcon />}>
             Assign
+          </Button>
+        )}
+        {userPermissions.includes(PERMISSIONS.bulkOrderDelete) && rowSelectionModel.length > 0 && (
+          <Button disabled={bulkDeleteLoading} onClick={() => {}} size="small" startIcon={<DeleteSweepIcon />}>
+            Delete All
           </Button>
         )}
         <Box sx={{ flexGrow: 1 }} />
@@ -197,7 +216,6 @@ export default function OrderTable() {
         onColumnVisibilityModelChange={setColumnVisibilityModel}
         rows={orders || []}
         columns={columns(handleViewOrder)}
-        onFilterModelChange={onFilterChange}
       />
       <Modal
         open={showAssignModal}

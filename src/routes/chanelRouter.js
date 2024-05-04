@@ -1,6 +1,7 @@
 import express from "express";
 import ChanelController from "../controllers/ChanelController";
-import constants from "../utils/constants";
+import { PERMISSIONS } from "../constants/constants";
+
 import can from "../middleware/canAccess";
 import Auth from "../middleware/auth";
 import {
@@ -17,14 +18,14 @@ const validator = createValidator();
 router.get(
   "/all",
   Auth,
-  can(constants.PERMISSION_VIEW_ALL_USERS),
+  can(PERMISSIONS.PERMISSION_VIEW_SALES_CHANEL),
   ChanelController.chanels
 );
 
 router.get(
   "/:id",
   Auth,
-  can(constants.PERMISSION_VIEW_ALL_USERS),
+  can(PERMISSIONS.PERMISSION_VIEW_SALES_CHANEL),
   validator.params(idSchema),
   ChanelController.chanel
 );
@@ -32,7 +33,7 @@ router.get(
 router.post(
   "/",
   Auth,
-  can(constants.PERMISSION_CREATE_USER),
+  can(PERMISSIONS.PERMISSION_CREATE_SALES_CHANEL),
   schemaValidator(createChanelSchema),
   ChanelController.create
 );
@@ -40,7 +41,7 @@ router.post(
 router.put(
   "/:id",
   Auth,
-  can(constants.PERMISSION_UPDATE_USER),
+  can(PERMISSIONS.PERMISSION_UPDATE_SALES_CHANEL),
   validator.params(idSchema),
   schemaValidator(updateChanelSchema),
   ChanelController.update
@@ -49,7 +50,7 @@ router.put(
 router.delete(
   "/:id",
   Auth,
-  can(constants.PERMISSION_DELETE_USER),
+  can(PERMISSIONS.PERMISSION_DELETE_SALES_CHANEL),
   validator.params(idSchema),
   ChanelController.destroy
 );

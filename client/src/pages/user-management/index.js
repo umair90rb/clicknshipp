@@ -8,6 +8,8 @@ import { useSelector } from 'react-redux';
 import { userUsersSelector } from 'store/slices/user/userSelector';
 import UserTable from './UserTable';
 import AddUpdateRoleModal from './AddUpdateRoleModal';
+import useAccess from 'hooks/useAccess';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
 
 const style = {
   position: 'absolute',
@@ -31,6 +33,8 @@ const UserManagment = () => {
   const handleOpenAddRoleModal = () => setOpenAddRoleModal(true);
   const handleCloseAddRoleModal = () => setOpenAddRoleModal(false);
 
+  const { hasPermission } = useAccess();
+
   useEffect(() => {
     if (openAddUserModal) setOpenAddUserModal(false);
   }, [users]);
@@ -44,16 +48,20 @@ const UserManagment = () => {
           </Grid>
           <Grid item>
             <Grid container spacing={2}>
-              <Grid item>
-                <Button variant="contained" startIcon={<AddModeratorIcon />} onClick={handleOpenAddRoleModal}>
-                  Add/Update Role
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button variant="contained" startIcon={<UserAddOutlined />} onClick={handleOpenAddUserModal}>
-                  Add User
-                </Button>
-              </Grid>
+              {hasPermission(PERMISSIONS.PERMISSION_CREATE_ROLE) && hasPermission(PERMISSIONS.PERMISSION_UPDATE_ROLE) && (
+                <Grid item>
+                  <Button variant="contained" startIcon={<AddModeratorIcon />} onClick={handleOpenAddRoleModal}>
+                    Manage Roles
+                  </Button>
+                </Grid>
+              )}
+              {hasPermission(PERMISSIONS.PERMISSION_CREATE_USER) && (
+                <Grid item>
+                  <Button variant="contained" startIcon={<UserAddOutlined />} onClick={handleOpenAddUserModal}>
+                    Add User
+                  </Button>
+                </Grid>
+              )}
             </Grid>
           </Grid>
         </Grid>

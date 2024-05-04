@@ -10,7 +10,7 @@ import useFetchProfile from 'hooks/useFetchProfile';
 
 const App = () => {
   const dispatch = useDispatch();
-  const { message, type } = useSelector(utilMessageSelector);
+  const { message, type, sticky } = useSelector(utilMessageSelector);
   const handleExited = () => dispatch(setMessage({ message: '', type: '' }));
 
   useFetchProfile();
@@ -21,7 +21,7 @@ const App = () => {
         <Snackbar
           onClose={handleExited}
           TransitionProps={{ onExited: handleExited }}
-          autoHideDuration={3000}
+          autoHideDuration={!sticky && 3000}
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
           open={!!message}
         >

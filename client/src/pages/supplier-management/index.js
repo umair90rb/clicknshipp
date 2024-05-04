@@ -6,6 +6,8 @@ import SupplierTable from './SupplierTable';
 import AddSupplierForm from './AddSupplierForm';
 import { useSelector } from 'react-redux';
 import { supplierSuppliersSelector } from 'store/slices/supplier/supplierSelector';
+import useAccess from 'hooks/useAccess';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
 
 const style = {
   position: 'absolute',
@@ -22,6 +24,8 @@ const SupplierManagement = () => {
   const [openModal, setOpenModal] = useState(false);
   const suppliers = useSelector(supplierSuppliersSelector);
   const [supplierToUpdate, setSupplierToUpdate] = useState();
+
+  const { hasPermission } = useAccess();
 
   const addSupplierHandler = () => {
     setSupplierToUpdate(undefined);
@@ -45,11 +49,13 @@ const SupplierManagement = () => {
           <Grid item>
             <Typography variant="h5">Suppliers</Typography>
           </Grid>
-          <Grid item>
-            <Button variant="contained" startIcon={<PlusOutlined />} onClick={addSupplierHandler}>
-              Add Supplier
-            </Button>
-          </Grid>
+          {hasPermission(PERMISSIONS.PERMISSION_CREATE_SUPPLIER) && (
+            <Grid item>
+              <Button variant="contained" startIcon={<PlusOutlined />} onClick={addSupplierHandler}>
+                Add Supplier
+              </Button>
+            </Grid>
+          )}
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>
           <SupplierTable updateSupplierHandler={updateSupplierHandler} />

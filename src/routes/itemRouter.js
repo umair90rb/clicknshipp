@@ -1,6 +1,7 @@
 import express from "express";
 import ItemController from "../controllers/ItemController";
-import constants from "../utils/constants";
+import { PERMISSIONS } from "../constants/constants";
+
 import can from "../middleware/canAccess";
 import Auth from "../middleware/auth";
 import { createItemSchema, updateItemSchema } from "../schemas/itemSchema";
@@ -17,24 +18,30 @@ const validator = createValidator();
 router.get(
   "/all",
   Auth,
-  can(constants.PERMISSION_VIEW_ALL_USERS),
+  can(PERMISSIONS.PERMISSION_VIEW_ITEMS),
   ItemController.items
 );
 
 router.get(
   "/:id",
   Auth,
-  can(constants.PERMISSION_VIEW_ALL_USERS),
+  can(PERMISSIONS.PERMISSION_VIEW_ITEMS),
   validator.params(idSchema),
   ItemController.item
 );
 
-router.post("/import", upload.single("file"), ItemController.import);
+router.post(
+  "/import",
+  Auth,
+  can(PERMISSIONS.PERMISSION_BULK_CREATE_ITEMS),
+  upload.single("file"),
+  ItemController.import
+);
 
 router.post(
   "/",
   Auth,
-  can(constants.PERMISSION_CREATE_USER),
+  can(PERMISSIONS.PERMISSION_CREATE_ITEM),
   schemaValidator(createItemSchema),
   ItemController.create
 );
@@ -42,7 +49,7 @@ router.post(
 router.put(
   "/:id",
   Auth,
-  can(constants.PERMISSION_UPDATE_USER),
+  can(PERMISSIONS.PERMISSION_UPDATE_ITEM),
   validator.params(idSchema),
   schemaValidator(updateItemSchema),
   ItemController.update
@@ -51,7 +58,7 @@ router.put(
 router.delete(
   "/:id",
   Auth,
-  can(constants.PERMISSION_DELETE_USER),
+  can(PERMISSIONS.PERMISSION_DELETE_ITEM),
   validator.params(idSchema),
   ItemController.destroy
 );

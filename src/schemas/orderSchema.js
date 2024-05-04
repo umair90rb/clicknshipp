@@ -16,3 +16,7 @@ export const orderStatusUpdateSchema = Joi.object({
   reason: Joi.string().allow(""),
   remarks: Joi.string().allow(""),
 });
+
+export const bulkOrderDeleteSchema = Joi.object({
+  orderIds: Joi.array().items(Joi.number()).min(1),
+});

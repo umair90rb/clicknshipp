@@ -6,6 +6,8 @@ import { useSelector } from 'react-redux';
 import { chanelChanelsSelector } from 'store/slices/chanel/chanelSelector';
 import ChanelTable from './ChanelTable';
 import AddUpdateForm from './AddUpdateForm';
+import useAccess from 'hooks/useAccess';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
 
 const style = {
   position: 'absolute',
@@ -22,6 +24,7 @@ const ChanelManagement = () => {
   const [openModal, setOpenModal] = useState(false);
   const chanels = useSelector(chanelChanelsSelector);
   const [chanelToUpdate, setChanelToUpdate] = useState();
+  const { hasPermission } = useAccess();
 
   const addSupplierHandler = () => {
     setChanelToUpdate(undefined);
@@ -45,11 +48,13 @@ const ChanelManagement = () => {
           <Grid item>
             <Typography variant="h5">Chanels</Typography>
           </Grid>
-          <Grid item>
-            <Button variant="contained" startIcon={<PlusOutlined />} onClick={addSupplierHandler}>
-              Add New Sales Chanel
-            </Button>
-          </Grid>
+          {hasPermission(PERMISSIONS.PERMISSION_VIEW_SALES_CHANEL) && (
+            <Grid item>
+              <Button variant="contained" startIcon={<PlusOutlined />} onClick={addSupplierHandler}>
+                Add New Sales Chanel
+              </Button>
+            </Grid>
+          )}
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>
           <ChanelTable updateChanelHandler={updateChanelHandler} />

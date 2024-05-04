@@ -28,8 +28,6 @@ const CustomerManagement = () => {
     if (viewCustomerId) setViewCustomerId(null);
   }, [customers]);
 
-  // return <CustomerDetail />;
-
   return (
     <>
       <Grid item xs={12} md={7} lg={8}>

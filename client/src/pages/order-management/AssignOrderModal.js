@@ -1,9 +1,9 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import CenterCircularLoader from 'components/CenterCircularLoader';
 import { fetchUsersWithPermission } from 'store/slices/user/fetchUser';
 import { Grid, Button, FormControlLabel, FormGroup, Checkbox, Typography } from '@mui/material';
-import { permissions } from 'constants/roleAndPermissions';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
 import { fetchAssignOrders } from 'store/slices/order/fetchOrder';
 import { setMessage } from 'store/slices/util/utilSlice';
 
@@ -16,7 +16,7 @@ export default function AssignOrderModal({ selectedRows, hideModal }) {
 
   const getAssignee = () => {
     setLoading(true);
-    return dispatch(fetchUsersWithPermission({ body: { permissions: [permissions.assignOrders] } })).then(({ type, payload }) => {
+    return dispatch(fetchUsersWithPermission({ body: { permissions: [PERMISSIONS.assignOrders] } })).then(({ type, payload }) => {
       if (type === 'usersWithPermissions/fetch/fulfilled') {
         setAssignee(payload.data.users);
         setLoading(false);

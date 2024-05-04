@@ -7,6 +7,8 @@ import AddStockForm from './AddStockForm';
 import { useSelector } from 'react-redux';
 import { stockStocksSelector } from 'store/slices/stock/stockSelector';
 import StockHistory from './StockHistory';
+import useAccess from 'hooks/useAccess';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
 
 const addModalStyle = {
   position: 'absolute',
@@ -39,6 +41,8 @@ const StockManamgement = () => {
 
   const stocks = useSelector(stockStocksSelector);
 
+  const { hasPermission } = useAccess();
+
   useEffect(() => {
     if (addFormModal) {
       setAddFormModal(false);
@@ -68,11 +72,13 @@ const StockManamgement = () => {
           <Grid item>
             <Typography variant="h5">Current Inventory</Typography>
           </Grid>
-          <Grid item>
-            <Button variant="contained" startIcon={<ArrowLeftOutlined />} onClick={() => setAddFormModal(true)}>
-              Receive Inventory
-            </Button>
-          </Grid>
+          {hasPermission(PERMISSIONS.PERMISSION_RECEIVE_STOCK) && (
+            <Grid item>
+              <Button variant="contained" startIcon={<ArrowLeftOutlined />} onClick={() => setAddFormModal(true)}>
+                Receive Inventory
+              </Button>
+            </Grid>
+          )}
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>
           <StockTable receiveStock={receiveStock} showHistory={showHistory} />

@@ -1,6 +1,7 @@
 import express from "express";
 import BrandController from "../controllers/BrandController";
-import constants from "../utils/constants";
+import { PERMISSIONS } from "../constants/constants";
+
 import can from "../middleware/canAccess";
 import Auth from "../middleware/auth";
 import { createUpdateBrandSchema } from "../schemas/brandSchema";
@@ -14,14 +15,14 @@ const validator = createValidator();
 router.get(
   "/all",
   Auth,
-  can(constants.PERMISSION_VIEW_ALL_USERS),
+  can(PERMISSIONS.PERMISSION_VIEW_CATEGORIES_AND_BRANDS),
   BrandController.brands
 );
 
 router.get(
   "/:id",
   Auth,
-  can(constants.PERMISSION_VIEW_ALL_USERS),
+  can(PERMISSIONS.PERMISSION_VIEW_CATEGORIES_AND_BRANDS),
   validator.params(idSchema),
   BrandController.brand
 );
@@ -29,7 +30,7 @@ router.get(
 router.post(
   "/",
   Auth,
-  can(constants.PERMISSION_CREATE_USER),
+  can(PERMISSIONS.PERMISSION_CREATE_BRAND),
   schemaValidator(createUpdateBrandSchema),
   BrandController.create
 );
@@ -37,7 +38,7 @@ router.post(
 router.put(
   "/:id",
   Auth,
-  can(constants.PERMISSION_UPDATE_USER),
+  can(PERMISSIONS.PERMISSION_UPDATE_BRAND),
   validator.params(idSchema),
   schemaValidator(createUpdateBrandSchema),
   BrandController.update
@@ -46,7 +47,7 @@ router.put(
 router.delete(
   "/:id",
   Auth,
-  can(constants.PERMISSION_DELETE_USER),
+  can(PERMISSIONS.PERMISSION_DELETE_BRAND),
   validator.params(idSchema),
   BrandController.destroy
 );

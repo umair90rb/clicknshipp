@@ -1,6 +1,7 @@
 import express from "express";
 import UserController from "../controllers/UserController";
-import constants from "../utils/constants";
+import { PERMISSIONS } from "../constants/constants";
+
 import can from "../middleware/canAccess";
 import Auth from "../middleware/auth";
 import {
@@ -19,14 +20,14 @@ const validator = createValidator();
 router.get(
   "/all",
   Auth,
-  can(constants.PERMISSION_VIEW_ALL_USERS),
+  can(PERMISSIONS.PERMISSION_VIEW_USERS),
   UserController.users
 );
 
 router.get(
   "/:id",
   Auth,
-  can(constants.PERMISSION_VIEW_ALL_USERS),
+  can(PERMISSIONS.PERMISSION_VIEW_USERS),
   validator.params(idSchema),
   UserController.user
 );
@@ -34,7 +35,7 @@ router.get(
 router.post(
   "/with-permissions",
   Auth,
-  can(constants.PERMISSION_VIEW_ALL_USERS),
+  can(PERMISSIONS.PERMISSION_VIEW_USERS),
   schemaValidator(fetchUserWithPermissionsSchema),
   UserController.userWithPermission
 );
@@ -42,7 +43,7 @@ router.post(
 router.post(
   "/",
   Auth,
-  can(constants.PERMISSION_CREATE_USER),
+  can(PERMISSIONS.PERMISSION_CREATE_USER),
   schemaValidator(createUserSchema),
   UserController.create
 );
@@ -50,7 +51,7 @@ router.post(
 router.put(
   "/:id",
   Auth,
-  can(constants.PERMISSION_UPDATE_USER),
+  can(PERMISSIONS.PERMISSION_UPDATE_USER),
   validator.params(idSchema),
   schemaValidator(updateUserSchema),
   UserController.update
@@ -66,7 +67,7 @@ router.get(
 router.delete(
   "/:id",
   Auth,
-  can(constants.PERMISSION_DELETE_USER),
+  can(PERMISSIONS.PERMISSION_DELETE_USER),
   validator.params(idSchema),
   UserController.destroy
 );

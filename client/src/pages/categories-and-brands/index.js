@@ -8,6 +8,8 @@ import CategoryTable from './CategoryTable';
 import BrandTable from './BrandTable';
 import AddUpdateForm from './AddUpdateForm';
 import { brandBrandsSelector } from 'store/slices/brand/brandSelector';
+import useAccess from 'hooks/useAccess';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
 
 const style = {
   position: 'absolute',
@@ -27,6 +29,8 @@ const CategoriesAndBrands = () => {
 
   const categories = useSelector(categoryCategoriesSelector);
   const brands = useSelector(brandBrandsSelector);
+
+  const { hasPermission } = useAccess();
 
   const openModalHandler = (t) => {
     setType(t);
@@ -55,37 +59,49 @@ const CategoriesAndBrands = () => {
     <>
       <Grid item xs={12} md={7} lg={8}>
         <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
-            <Typography variant="h5">Categories</Typography>
-          </Grid>
+          {hasPermission(PERMISSIONS.PERMISSION_VIEW_CATEGORIES_AND_BRANDS) && (
+            <Grid item>
+              <Typography variant="h5">Categories</Typography>
+            </Grid>
+          )}
           <Grid item>
             <Grid container spacing={2}>
-              <Grid item>
-                <Button variant="contained" startIcon={<PlusOutlined />} onClick={() => openModalHandler('Category')}>
-                  Add Category
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button variant="contained" startIcon={<PlusOutlined />} onClick={() => openModalHandler('Brand')}>
-                  Add Brand
-                </Button>
-              </Grid>
+              {hasPermission(PERMISSIONS.PERMISSION_CREATE_CATEGORY) && (
+                <Grid item>
+                  <Button variant="contained" startIcon={<PlusOutlined />} onClick={() => openModalHandler('Category')}>
+                    Add Category
+                  </Button>
+                </Grid>
+              )}
+              {hasPermission(PERMISSIONS.PERMISSION_CREATE_BRAND) && (
+                <Grid item>
+                  <Button variant="contained" startIcon={<PlusOutlined />} onClick={() => openModalHandler('Brand')}>
+                    Add Brand
+                  </Button>
+                </Grid>
+              )}
             </Grid>
           </Grid>
         </Grid>
-        <MainCard sx={{ mt: 2 }} content={false}>
-          <CategoryTable handleUpdate={handleUpdate} />
-        </MainCard>
-        <Grid item xs={12} md={7} lg={8} sx={{ mt: 3 }}>
-          <Grid container alignItems="center" justifyContent="space-between">
-            <Grid item>
-              <Typography variant="h5">Brands</Typography>
+        {hasPermission(PERMISSIONS.PERMISSION_VIEW_CATEGORIES_AND_BRANDS) && (
+          <MainCard sx={{ mt: 2 }} content={false}>
+            <CategoryTable handleUpdate={handleUpdate} />
+          </MainCard>
+        )}
+        {hasPermission(PERMISSIONS.PERMISSION_VIEW_CATEGORIES_AND_BRANDS) && (
+          <Grid item xs={12} md={7} lg={8} sx={{ mt: 3 }}>
+            <Grid container alignItems="center" justifyContent="space-between">
+              <Grid item>
+                <Typography variant="h5">Brands</Typography>
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
-        <MainCard sx={{ mt: 2 }} content={false}>
-          <BrandTable handleUpdate={handleUpdate} />
-        </MainCard>
+        )}
+        {hasPermission(PERMISSIONS.PERMISSION_VIEW_CATEGORIES_AND_BRANDS) && (
+          <MainCard sx={{ mt: 2 }} content={false}>
+            <BrandTable handleUpdate={handleUpdate} />
+          </MainCard>
+        )}
       </Grid>
       <Modal open={openModal} onClose={closeModalHandler} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
         <Box sx={style}>

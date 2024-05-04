@@ -1,4 +1,6 @@
-import { ApartmentOutlined, DingdingOutlined, UserSwitchOutlined, AppstoreOutlined, DeploymentUnitOutlined } from '@ant-design/icons';
+import { ApartmentOutlined, UserSwitchOutlined, AppstoreOutlined, DeploymentUnitOutlined } from '@ant-design/icons';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
+
 const store = {
   id: 'group-store',
   title: 'Store',
@@ -9,6 +11,7 @@ const store = {
       title: 'Items',
       type: 'item',
       url: '/items',
+      permission: PERMISSIONS.PERMISSION_VIEW_ITEMS,
       icon: AppstoreOutlined,
       breadcrumbs: false
     },
@@ -17,6 +20,7 @@ const store = {
       title: 'Stock',
       type: 'item',
       url: '/stock',
+      permission: PERMISSIONS.PERMISSION_VIEW_STOCK,
       icon: DeploymentUnitOutlined,
       breadcrumbs: false
     },
@@ -25,6 +29,7 @@ const store = {
       title: 'Categories & Brands',
       type: 'item',
       url: '/categories-and-brands',
+      permission: PERMISSIONS.PERMISSION_VIEW_CATEGORIES_AND_BRANDS,
       icon: ApartmentOutlined,
       breadcrumbs: false
     },
@@ -33,6 +38,7 @@ const store = {
       title: 'Suppliers',
       type: 'item',
       url: '/suppliers',
+      permission: PERMISSIONS.PERMISSION_VIEW_SUPPLIERS,
       icon: UserSwitchOutlined,
       breadcrumbs: false
     }

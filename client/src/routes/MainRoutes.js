@@ -3,7 +3,7 @@ import { lazy } from 'react';
 import Loadable from 'components/Loadable';
 import MainLayout from 'layout/MainLayout';
 import { PrivateRoute } from 'components/PrivateRoute';
-import { permissions } from 'constants/roleAndPermissions';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
 
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 const UserDefault = Loadable(lazy(() => import('pages/user-management')));
@@ -16,7 +16,7 @@ const MainRoutes = {
     {
       path: '/',
       element: (
-        <PrivateRoute permission={permissions.viewAdminDashboard}>
+        <PrivateRoute permission={PERMISSIONS.viewAdminDashboard}>
           <DashboardDefault />
         </PrivateRoute>
       )
@@ -24,7 +24,7 @@ const MainRoutes = {
     {
       path: 'dashboard',
       element: (
-        <PrivateRoute permission={permissions.viewAdminDashboard}>
+        <PrivateRoute permission={PERMISSIONS.viewAdminDashboard}>
           <DashboardDefault />
         </PrivateRoute>
       )
@@ -32,7 +32,7 @@ const MainRoutes = {
     {
       path: 'reporting',
       element: (
-        <PrivateRoute permission={permissions.viewReporting}>
+        <PrivateRoute permission={PERMISSIONS.viewReporting}>
           <Reporting />
         </PrivateRoute>
       )

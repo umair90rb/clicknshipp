@@ -1,6 +1,7 @@
 import express from "express";
 import CategoryController from "../controllers/CategoryController";
-import constants from "../utils/constants";
+import { PERMISSIONS } from "../constants/constants";
+
 import can from "../middleware/canAccess";
 import Auth from "../middleware/auth";
 import { createUpdateCategorySchema } from "../schemas/categorySchema";
@@ -14,14 +15,14 @@ const validator = createValidator();
 router.get(
   "/all",
   Auth,
-  can(constants.PERMISSION_VIEW_ALL_USERS),
+  can(PERMISSIONS.PERMISSION_VIEW_CATEGORIES_AND_BRANDS),
   CategoryController.categories
 );
 
 router.get(
   "/:id",
   Auth,
-  can(constants.PERMISSION_VIEW_ALL_USERS),
+  can(PERMISSIONS.PERMISSION_VIEW_CATEGORIES_AND_BRANDS),
   validator.params(idSchema),
   CategoryController.category
 );
@@ -29,7 +30,7 @@ router.get(
 router.post(
   "/",
   Auth,
-  can(constants.PERMISSION_CREATE_USER),
+  can(PERMISSIONS.PERMISSION_CREATE_CATEGORY),
   schemaValidator(createUpdateCategorySchema),
   CategoryController.create
 );
@@ -37,7 +38,7 @@ router.post(
 router.put(
   "/:id",
   Auth,
-  can(constants.PERMISSION_UPDATE_USER),
+  can(PERMISSIONS.PERMISSION_UPDATE_CATEGORY),
   validator.params(idSchema),
   schemaValidator(createUpdateCategorySchema),
   CategoryController.update
@@ -46,7 +47,7 @@ router.put(
 router.delete(
   "/:id",
   Auth,
-  can(constants.PERMISSION_DELETE_USER),
+  can(PERMISSIONS.PERMISSION_DELETE_CATEGORY),
   validator.params(idSchema),
   CategoryController.destroy
 );

@@ -1,6 +1,7 @@
 import express from "express";
 import CityController from "../controllers/CityController";
-import constants from "../utils/constants";
+import { PERMISSIONS } from "../constants/constants";
+
 import can from "../middleware/canAccess";
 import Auth from "../middleware/auth";
 import { createUserSchema, updateUserSchema } from "../schemas/userSchema";
@@ -14,14 +15,14 @@ const validator = createValidator();
 router.get(
   "/all",
   Auth,
-  can(constants.PERMISSION_VIEW_ALL_USERS),
+  can(PERMISSIONS.PERMISSION_CREATE_ORDER),
   CityController.cities
 );
 
 // router.get(
 //   "/:id",
 //   Auth,
-//   can(constants.PERMISSION_VIEW_ALL_USERS),
+//   can(PERMISSIONS.PERMISSION_VIEW_ALL_USERS),
 //   validator.params(idSchema),
 //   CityController.city
 // );
@@ -29,7 +30,7 @@ router.get(
 // router.post(
 //   "/",
 //   Auth,
-//   can(constants.PERMISSION_CREATE_USER),
+//   can(PERMISSIONS.PERMISSION_CREATE_USER),
 //   schemaValidator(createUserSchema),
 //   CityController.create
 // );
@@ -37,7 +38,7 @@ router.get(
 // router.put(
 //   "/:id",
 //   Auth,
-//   can(constants.PERMISSION_UPDATE_USER),
+//   can(PERMISSIONS.PERMISSION_UPDATE_USER),
 //   validator.params(idSchema),
 //   schemaValidator(updateUserSchema),
 //   CityController.update
@@ -46,7 +47,7 @@ router.get(
 // router.delete(
 //   "/:id",
 //   Auth,
-//   can(constants.PERMISSION_DELETE_USER),
+//   can(PERMISSIONS.PERMISSION_DELETE_USER),
 //   validator.params(idSchema),
 //   CityController.destroy
 // );

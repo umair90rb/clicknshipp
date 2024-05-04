@@ -1,6 +1,7 @@
 import express from "express";
 import UserController from "../controllers/UserController";
-import constants from "../utils/constants";
+import { PERMISSIONS } from "../constants/constants";
+
 import can from "../middleware/canAccess";
 import Auth from "../middleware/auth";
 import { createRoleSchema, updateRoleSchema } from "../schemas/roleSchema";
@@ -15,14 +16,14 @@ const validator = createValidator();
 router.get(
   "/all",
   Auth,
-  can(constants.PERMISSION_VIEW_ALL_ROLES),
+  can(PERMISSIONS.PERMISSION_CREATE_ROLE),
   RoleController.roles
 );
 
 router.get(
   "/:id",
   Auth,
-  can(constants.PERMISSION_VIEW_ALL_ROLES),
+  can(PERMISSIONS.PERMISSION_CREATE_ROLE),
   validator.params(idSchema),
   RoleController.role
 );
@@ -30,7 +31,7 @@ router.get(
 router.post(
   "/",
   Auth,
-  can(constants.PERMISSION_CREATE_ROLE),
+  can(PERMISSIONS.PERMISSION_CREATE_ROLE),
   schemaValidator(createRoleSchema),
   RoleController.create
 );
@@ -38,7 +39,7 @@ router.post(
 router.put(
   "/:id",
   Auth,
-  can(constants.PERMISSION_UPDATE_ROLE),
+  can(PERMISSIONS.PERMISSION_UPDATE_ROLE),
   validator.params(idSchema),
   schemaValidator(updateRoleSchema),
   RoleController.update
@@ -47,7 +48,7 @@ router.put(
 router.delete(
   "/:id",
   Auth,
-  can(constants.PERMISSION_DELETE_ROLE),
+  can(PERMISSIONS.PERMISSION_UPDATE_ROLE),
   validator.params(idSchema),
   RoleController.destroy
 );

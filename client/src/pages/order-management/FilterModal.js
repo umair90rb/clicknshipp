@@ -68,7 +68,7 @@ function OperatorsWithInput({ column, index, addFilterInput, updateColumnFilter 
   );
 }
 
-export default function FilterModal({ visible, onClose, columns }) {
+export default function FilterModal({ visible, onClose, columns, onApplyFilters }) {
   const [columnsWithFilters, setColumnsWithFilters] = useState(columns);
 
   const addFilterInput = (_column, index) => {
@@ -119,7 +119,7 @@ export default function FilterModal({ visible, onClose, columns }) {
           <Button onClick={onClose} variant="outlined" color="error">
             Cancel
           </Button>
-          <Button onClick={() => {}} variant="contained">
+          <Button onClick={() => onApplyFilters(columnsWithFilters)} variant="contained">
             Apply
           </Button>
         </DialogActions>

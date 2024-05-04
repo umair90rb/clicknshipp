@@ -1,7 +1,7 @@
 import { clearAuthState } from 'store/slices/auth/authSlice';
 
 const tokenExpirationMiddleware = () => (next) => (action) => {
-  console.log(/rejected/g.test(action.type), '/rejected/g.test(action.type)');
+  console.log(/rejected/g.test(action.type), `/rejected/g.test(${action.type})`);
   if (/rejected/g.test(action.type)) {
     const error = action.payload?.response?.statusText;
     const status = action.payload?.response?.status;

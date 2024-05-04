@@ -37,6 +37,10 @@ const fetchDeleteOrder = createAsyncThunk('order/delete/fetch', ({ id }, { rejec
   orderService.fetchDeleteOrder(id).catch((error) => rejectWithValue(error || error.message))
 );
 
+const fetchBulkOrdersDelete = createAsyncThunk('order/bulk/delete/fetch', ({ body }, { rejectWithValue }) =>
+  orderService.fetchBulkOrdersDelete(body).catch((error) => rejectWithValue(error || error.message))
+);
+
 export {
   fetchAllOrder,
   fetchOrder,
@@ -46,5 +50,6 @@ export {
   fetchCreateOrder,
   fetchImportOrder,
   fetchUpdateOrder,
-  fetchDeleteOrder
+  fetchDeleteOrder,
+  fetchBulkOrdersDelete
 };
