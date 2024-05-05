@@ -18,6 +18,7 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import {
+  orderFiltersSelector,
   orderListIsLoadingSelector,
   orderListSelector,
   orderPageSelector,
@@ -29,7 +30,7 @@ import location from 'utils/location';
 import { Button, Box, Modal } from '@mui/material';
 import AssignOrderModal from './AssignOrderModal';
 import CustomNoRowsOverlay from './NoRowCustomOverlay';
-import { setOrderPagination } from 'store/slices/order/orderSlice';
+import { setOrderFilters, setOrderPagination } from 'store/slices/order/orderSlice';
 import FilterModal from './FilterModal';
 import { setMessage } from 'store/slices/util/utilSlice';
 import { authPermissionsSelector } from 'store/slices/auth/authSelector';
@@ -130,6 +131,7 @@ export default function OrderTable() {
   const orders = useSelector(orderListSelector);
   const page = useSelector(orderPageSelector);
   const pageSize = useSelector(orderPageSizeSelector);
+  const filters = useSelector(orderFiltersSelector);
   const total = useSelector(orderTotalSelector);
   const userPermissions = useSelector(authPermissionsSelector);
 
@@ -154,8 +156,8 @@ export default function OrderTable() {
   const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchAllOrder({ body: { page, pageSize } }));
-  }, [page, pageSize]);
+    dispatch(fetchAllOrder({ body: { page, pageSize, filters } }));
+  }, [page, pageSize, filters]);
 
   const handleViewOrder = (id) => () => navigate(location.viewOrder(id));
 
@@ -168,6 +170,16 @@ export default function OrderTable() {
       dispatch(setMessage({ type: 'error', message: payload?.data?.message || 'Orders not deleted!' }));
     }
     setBulkDeleteLoading(false);
+  };
+
+  const handleApplyFilters = (columnsWithFilter) => {
+    const filters = [];
+    columnsWithFilter.forEach((column) => {
+      if ('filter' in column) {
+        filters.push({ column: column.field, op: column.filter.op, value: column.filter.value });
+      }
+    });
+    dispatch(setOrderFilters(filters));
   };
 
   function renderToolbar() {
@@ -186,7 +198,7 @@ export default function OrderTable() {
           </Button>
         )}
         {userPermissions.includes(PERMISSIONS.bulkOrderDelete) && rowSelectionModel.length > 0 && (
-          <Button disabled={bulkDeleteLoading} onClick={() => {}} size="small" startIcon={<DeleteSweepIcon />}>
+          <Button disabled={bulkDeleteLoading} onClick={handleBulkDelete} size="small" startIcon={<DeleteSweepIcon />}>
             Delete All
           </Button>
         )}
@@ -230,7 +242,7 @@ export default function OrderTable() {
       <FilterModal
         visible={showFilterModal}
         onClose={hideFilterModal}
-        onApplyFilters={(columnWithFilters) => console.log(columnWithFilters)}
+        onApplyFilters={handleApplyFilters}
         columns={[...columns().slice(0, -1)]}
       />
     </div>

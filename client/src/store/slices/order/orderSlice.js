@@ -9,7 +9,8 @@ const initialState = {
     error: null,
     page: 0,
     pageSize: 50,
-    total: 0
+    total: 0,
+    filters: []
   },
   create: {
     fetchStatus: fetchStatus.IDLE,
@@ -29,6 +30,9 @@ const orderSlice = createSlice({
       const { page, pageSize } = action.payload;
       state.list.page = page;
       state.list.pageSize = pageSize;
+    },
+    setOrderFilters: (state, action) => {
+      state.list.filters = action.payload;
     },
     clearOrderState: (_state, _action) => initialState
   },
@@ -81,5 +85,5 @@ const orderSlice = createSlice({
     });
   }
 });
-export const { setOrderPagination, clearOrderState } = orderSlice.actions;
+export const { setOrderPagination, setOrderFilters, clearOrderState } = orderSlice.actions;
 export default orderSlice.reducer;

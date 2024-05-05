@@ -54,7 +54,7 @@ const item_data_keys = [
 export default {
   async orders(req, res) {
     try {
-      const { page, pageSize, ...filter } = req.body;
+      const { page, pageSize, filters } = req.body;
       const permissions = req.user.permissions;
       const query = {
         offset: page * pageSize,
@@ -93,7 +93,7 @@ export default {
           ],
         },
       };
-      if (permissions.includes(constants.PERMISSION_VIEW_ALL_ORDERS)) {
+      if (permissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS)) {
         delete query.where.user_id;
       } else if (
         "settings" in req.user &&
@@ -107,7 +107,6 @@ export default {
       if (filter && Object.keys(filter).length) {
         query.where = { ...query.where, ...filter };
       }
-      console.log(query);
       const orders = await Order.findAndCountAll(query);
       return sendSuccessResponse(res, 200, {
         orders: { ...orders, ...req.body },
