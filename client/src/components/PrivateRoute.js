@@ -7,17 +7,13 @@ import Unauthorized from 'pages/unauthorized/index';
 
 export const PrivateRoute = ({ children, loader = null, role, permission, ...props }) => {
   const { authenticated, loading } = useAuth();
-  const { hasPermission, hasRole } = useAccess();
+  const { hasPermission } = useAccess();
   if (loading) {
     return loader;
   }
 
   if (!authenticated) {
     return <Navigate to={location.loginUrl()} replace={true} />;
-  }
-
-  if (role && !hasRole(role)) {
-    return <Unauthorized />;
   }
 
   if (permission && !hasPermission(permission)) {

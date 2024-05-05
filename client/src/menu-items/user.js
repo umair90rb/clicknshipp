@@ -1,5 +1,6 @@
 // assets
 import { UsergroupAddOutlined } from '@ant-design/icons';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
 
 const user = {
   id: 'group-user',
@@ -11,6 +12,7 @@ const user = {
       title: 'Users',
       type: 'item',
       url: '/users',
+      permission: PERMISSIONS.PERMISSION_VIEW_USERS,
       icon: UsergroupAddOutlined,
       breadcrumbs: false
     }

@@ -3,15 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
   DataGrid,
-  GridToolbar,
   GridActionsCellItem,
   GridToolbarContainer,
   GridToolbarColumnsButton,
   GridToolbarFilterButton,
   GridToolbarQuickFilter,
   GridToolbarDensitySelector,
-  GridToolbarExport,
-  GridLogicOperator
+  GridToolbarExport
 } from '@mui/x-data-grid';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import FilterListIcon from '@mui/icons-material/FilterList';

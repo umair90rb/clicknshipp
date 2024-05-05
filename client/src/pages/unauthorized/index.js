@@ -20,7 +20,7 @@ const Unauthorized = () => {
         Unauthorized Access
       </Typography>
       <Typography variant="body1" style={messageStyle}>
-        {"Sorry, you don't have permission to access this page."}
+        You do not have permission to access this page.
       </Typography>
     </Container>
   );

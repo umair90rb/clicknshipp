@@ -16,7 +16,7 @@ const MainRoutes = {
     {
       path: '/',
       element: (
-        <PrivateRoute permission={PERMISSIONS.viewAdminDashboard}>
+        <PrivateRoute permission={PERMISSIONS.PERMISSION_VIEW_ADMIN_DASHBOARD}>
           <DashboardDefault />
         </PrivateRoute>
       )
@@ -24,7 +24,7 @@ const MainRoutes = {
     {
       path: 'dashboard',
       element: (
-        <PrivateRoute permission={PERMISSIONS.viewAdminDashboard}>
+        <PrivateRoute permission={PERMISSIONS.PERMISSION_VIEW_ADMIN_DASHBOARD}>
           <DashboardDefault />
         </PrivateRoute>
       )
@@ -32,7 +32,7 @@ const MainRoutes = {
     {
       path: 'reporting',
       element: (
-        <PrivateRoute permission={PERMISSIONS.viewReporting}>
+        <PrivateRoute permission={PERMISSIONS.PERMISSION_VIEW_REPORTING}>
           <Reporting />
         </PrivateRoute>
       )
@@ -40,7 +40,7 @@ const MainRoutes = {
     {
       path: 'users',
       element: (
-        <PrivateRoute>
+        <PrivateRoute permission={PERMISSIONS.PERMISSION_VIEW_USERS}>
           <UserDefault />
         </PrivateRoute>
       )

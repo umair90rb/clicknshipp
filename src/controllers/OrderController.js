@@ -104,8 +104,8 @@ export default {
         query.where.brand_id = req.user.brands[0].id;
       }
 
-      if (filter && Object.keys(filter).length) {
-        query.where = { ...query.where, ...filter };
+      if (filters.length) {
+        console.log(filters);
       }
       const orders = await Order.findAndCountAll(query);
       return sendSuccessResponse(res, 200, {

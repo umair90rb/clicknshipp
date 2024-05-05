@@ -1,3 +1,6 @@
+import express from "express";
+import path from "path";
+
 import authRouter from "./authRouter";
 import adminRouter from "./adminRouter";
 import userRouter from "./userRoute";
@@ -14,7 +17,6 @@ import orderRouter from "./orderRouter";
 import reportRouter from "./reportRouter";
 import dashboardRouter from "./dashboardRouter";
 import permissionRouter from "./permissionRouter";
-import express from "express";
 // import { sendErrorResponse } from "../utils/sendResponse";
 
 export default (app) => {
@@ -41,6 +43,10 @@ export default (app) => {
 
   app.get("/api/v1/health", (req, res) => {
     res.status(200).send("ok");
+  });
+
+  app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "../../client/build"));
   });
 
   app.all(

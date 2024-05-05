@@ -30,7 +30,7 @@ const style = {
   p: 4
 };
 
-const OPERATORS = ['contains', 'equals', 'starts with', 'ends with', 'is empty', 'is not empty', 'is any of'];
+const OPERATORS = ['contains', 'equals', 'starts with', 'ends with', 'is empty', 'is not empty'];
 
 function OperatorsWithInput({ column, index, addFilterInput, updateColumnFilter }) {
   return (
@@ -57,6 +57,7 @@ function OperatorsWithInput({ column, index, addFilterInput, updateColumnFilter 
             </Select>
           </FormControl>
           <TextField
+            disabled={column?.filter?.op === OPERATORS[4] || column?.filter?.op === OPERATORS[5]}
             label="Value"
             value={column?.filter?.value}
             onChange={(e) => updateColumnFilter({ ...column, filter: { ...column?.filter, value: e.target.value } }, index)}
