@@ -316,7 +316,6 @@ export default {
       const order_items_data = body["line_items"].map((item) =>
         extract(item, item_data_keys)
       );
-      throw new Error("This is a testing error");
       const order = await Order.create({
         ...order_data,
         chanel_id: chanel.id,
@@ -391,10 +390,6 @@ export default {
             },
           },
         });
-        console.log(
-          "previous order found!",
-          customerWithDuplicateOrders.Orders.length
-        );
       }
 
       for (const item of itemsArray) {
