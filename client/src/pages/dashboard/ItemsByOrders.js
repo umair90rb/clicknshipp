@@ -1,7 +1,9 @@
 import React from 'react';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { Typography, LinearProgress } from '@mui/material';
 import styled from '@mui/system/styled';
+import { useSelector } from 'react-redux';
+import { dashboardIsLoadingSelector, dashboardStatsSelector } from 'store/slices/dashboard/dashboardSelector';
 
 const BorderLinearProgress = styled(LinearProgress)(() => ({
   height: '14px',
@@ -48,13 +50,23 @@ const columns = [
   }
 ];
 
-export default function ItemsByOrders({ items }) {
+export default function ItemsByOrders() {
+  const statsIsLoading = useSelector(dashboardIsLoadingSelector);
+  const stats = useSelector(dashboardStatsSelector);
+
   return (
-    <div style={{ height: '50vh', width: '100%' }}>
+    <div style={{ width: '100%' }}>
       <DataGrid
+        loading={statsIsLoading}
+        slots={{ toolbar: GridToolbar }}
+        slotProps={{
+          toolbar: {
+            showQuickFilter: true
+          }
+        }}
         hideFooterPagination={true}
         getRowId={(row) => `${row.name}-${row.generated}-${row.confirmed}`}
-        rows={items}
+        rows={stats?.ordersByItem || []}
         columns={columns}
       />
     </div>
