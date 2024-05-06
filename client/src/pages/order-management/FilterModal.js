@@ -18,7 +18,7 @@ import {
   DialogContent,
   DialogActions
 } from '@mui/material';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 const style = {
   position: 'absolute',
   top: '50%',
@@ -30,9 +30,29 @@ const style = {
   p: 4
 };
 
-const OPERATORS = ['contains', 'equals', 'starts with', 'ends with', 'is empty', 'is not empty'];
+const OPERATORS = {
+  'Is empty': '',
+  'Is not empty': '',
+  'Text contains': 'text',
+  'Text does not contain': 'text',
+  'Text starts with': 'text',
+  'Text ends with': 'text',
+  'Text is exactly': 'text',
+  'Date is': 'date',
+  'Date is before': 'date',
+  'Date is after': 'date',
+  'Greater than': 'number',
+  'Greater than or equal to': 'number',
+  'Less than': 'number',
+  'Less than or equal to': 'number',
+  'Is equal to': 'number',
+  'Is not equal to': 'number',
+  'Is between': 'number',
+  'Is not between': 'number'
+};
 
 function OperatorsWithInput({ column, index, addFilterInput, updateColumnFilter }) {
+  const selectRef = useRef();
   return (
     <>
       <FormControlLabel
@@ -45,11 +65,15 @@ function OperatorsWithInput({ column, index, addFilterInput, updateColumnFilter 
           <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
             <InputLabel>Operator</InputLabel>
             <Select
+              inputRef={selectRef}
               value={column?.filter?.op}
               label="Operators"
-              onChange={(e) => updateColumnFilter({ ...column, filter: { ...column?.filter, op: e.target.value } }, index)}
+              onChange={(e) => {
+                selectRef.current.value = e.target.value;
+                updateColumnFilter({ ...column, filter: { ...column?.filter, op: e.target.value } }, index);
+              }}
             >
-              {OPERATORS.map((o) => (
+              {Object.keys(OPERATORS).map((o) => (
                 <MenuItem key={o} value={o}>
                   {o}
                 </MenuItem>
@@ -57,7 +81,8 @@ function OperatorsWithInput({ column, index, addFilterInput, updateColumnFilter 
             </Select>
           </FormControl>
           <TextField
-            disabled={column?.filter?.op === OPERATORS[4] || column?.filter?.op === OPERATORS[5]}
+            disabled={OPERATORS[selectRef.current?.value] === ''}
+            type={OPERATORS[selectRef.current?.value]}
             label="Value"
             value={column?.filter?.value}
             onChange={(e) => updateColumnFilter({ ...column, filter: { ...column?.filter, value: e.target.value } }, index)}

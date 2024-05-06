@@ -51,6 +51,82 @@ const item_data_keys = [
   "total_discount",
 ];
 
+function getOperator(key) {
+  switch (key) {
+    case "contains":
+      return Op.like;
+    case "equals":
+      return Op.eq;
+    case "starts with":
+      return Op.startsWith;
+    case "ends with":
+      return Op.endsWith;
+    case "is empty":
+      return Op.eq;
+    case "is not empty":
+      return Op.ne;
+    default:
+      console.error(`Operator for key "${key}" not found.`);
+      return null; // Or throw an error, depending on your use case
+  }
+}
+
+function parseValue(value, type) {
+  switch (type) {
+    case "string":
+      return value;
+    case "number":
+      return parseInt(value);
+    case "date":
+      return new Date(value);
+    default:
+      return value;
+  }
+}
+
+const FILTER_COLUMNS = {
+  order_number: { column: "order_number", type: "number" },
+  status: { column: "status", type: "string" },
+  agent: { column: "$user.name$", type: "string" },
+  address: { column: "$address.address1$", type: "string" },
+  city: { column: "$address.city$", type: "string" },
+  total_price: { column: "total_price", type: "number" },
+  total_tax: { column: "total_tax", type: "number" },
+  total_discounts: { column: "total_discounts", type: "number" },
+  createdAt: { column: "createdAt", type: "date" },
+  chanel: { column: "$chanel.name$", type: "string" },
+};
+
+// const FILTER_OP = {
+//   contains: Op.iLike,
+//   equals: Op.eq,
+//   "starts with": Op.startsWith,
+//   "ends with": Op.endsWith,
+//   "is empty": Op.eq,
+//   "is not empty": Op.ne,
+// };
+
+const FILTER_OP = {
+  "Is empty": Op.eq,
+  "Is not empty": Op.ne,
+  "Text contains": Op.iLike,
+  "Text does not contain": Op.notILike,
+  "Text starts with": Op.startsWith,
+  "Text ends with": Op.endsWith,
+  "Text is exactly": Op.eq,
+  "Date is": Op.eq,
+  "Date is before": Op.lt,
+  "Date is after": Op.gt,
+  "Greater than": Op.gt,
+  "Greater than or equal to": Op.gte,
+  "Less than": Op.lt,
+  "Less than or equal to": Op.lte,
+  "Is equal to": Op.eq,
+  "Is not equal to": Op.ne,
+  "Is between": Op.between,
+  "Is not between": Op.notBetween,
+};
+
 export default {
   async orders(req, res) {
     try {
@@ -105,7 +181,22 @@ export default {
       }
 
       if (filters.length) {
-        console.log(filters);
+        const _filters = {};
+        for (let i = 0; i < filters.length; i++) {
+          const { column, op, value } = filters[i];
+          console.log(
+            column,
+            op,
+            value,
+            parseValue(value, FILTER_COLUMNS[column].type),
+            "column, op, value, parse"
+          );
+          _filters[FILTER_COLUMNS[column].column] = {
+            //parseValue(value, FILTER_COLUMNS[column].type)
+            [FILTER_OP[op]]: value,
+          };
+        }
+        query.where = { ...query.where, ..._filters };
       }
       const orders = await Order.findAndCountAll(query);
       return sendSuccessResponse(res, 200, {
@@ -166,7 +257,6 @@ export default {
               exclude: [
                 "order_id",
                 "customer_id",
-
                 "CustomerId",
                 "OrderId",
                 "company",

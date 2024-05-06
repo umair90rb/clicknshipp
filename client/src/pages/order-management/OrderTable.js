@@ -154,7 +154,7 @@ export default function OrderTable() {
   const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchAllOrder({ body: { page, pageSize, filters } }));
+    dispatch(fetchAllOrder({ body: { page: filters.length ? 0 : page, pageSize: filters.length ? 100 : pageSize, filters } }));
   }, [page, pageSize, filters]);
 
   const handleViewOrder = (id) => () => navigate(location.viewOrder(id));

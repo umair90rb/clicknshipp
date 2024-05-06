@@ -10,6 +10,7 @@ import {
   orderBookSchema,
   orderStatusUpdateSchema,
   bulkOrderDeleteSchema,
+  orderFilterSchema,
 } from "../schemas/orderSchema";
 import schemaValidator from "../middleware/schemaValidator";
 import { createValidator } from "express-joi-validation";
@@ -30,6 +31,7 @@ router.post(
     PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS,
   ]),
   getUserBrand,
+  schemaValidator(orderFilterSchema),
   OrderController.orders
 );
 
