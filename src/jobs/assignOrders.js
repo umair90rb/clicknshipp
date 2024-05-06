@@ -42,9 +42,6 @@ schedule(every20Min, async () => {
       where: {
         status: "Received",
         user_id: null,
-        created_at: {
-          [Op.gte]: dateFromYesterday8AM,
-        },
       },
       attributes: {
         exclude: ["data"],
