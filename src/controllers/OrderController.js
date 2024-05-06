@@ -75,7 +75,7 @@ function getOperator(key) {
 function parseValue(value, type) {
   switch (type) {
     case "string":
-      return value;
+      return value || null;
     case "number":
       return parseInt(value);
     case "date":
