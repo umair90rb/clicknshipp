@@ -35,6 +35,7 @@ import { Divider } from '../../../../../../node_modules/@mui/material/index';
 import { fetchSetUserDefaultBrand } from 'store/slices/user/fetchUser';
 import { setMessage } from 'store/slices/util/utilSlice';
 import { fetchAllOrder } from 'store/slices/order/fetchOrder';
+import { clearOrderState } from 'store/slices/order/orderSlice';
 
 // tab panel wrapper
 // function TabPanel({ children, value, index, ...other }) {
@@ -77,8 +78,9 @@ const Profile = () => {
   const userSetting = useSelector(authSettingsSelector);
 
   const handleLogout = async () => {
-    logout();
     dispatch(clearAuthState());
+    dispatch(clearOrderState());
+    logout();
   };
 
   const anchorRef = useRef(null);
