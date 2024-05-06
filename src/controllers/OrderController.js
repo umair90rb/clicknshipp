@@ -186,7 +186,7 @@ export default {
         delete query.where.user_id;
       } else if (
         "settings" in req.user &&
-        req.user.settings.hasOwnProperty("default_brand_id")
+        req.user?.settings?.hasOwnProperty("default_brand_id")
       ) {
         query.where.brand_id = req.user.settings.default_brand_id;
       } else if ("brands" in req.user) {

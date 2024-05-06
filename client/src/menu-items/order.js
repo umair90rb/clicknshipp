@@ -4,7 +4,7 @@ import { PERMISSIONS } from 'constants/permissions-and-roles';
 
 const order = {
   id: 'order-dashboard',
-  title: 'Order Mangement',
+  title: 'Order Management',
   type: 'group',
   children: [
     {
@@ -12,7 +12,7 @@ const order = {
       title: 'Orders',
       type: 'item',
       url: '/order/all',
-      permission: PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS,
+      permission: PERMISSIONS.PERMISSION_VIEW_ORDERS,
       icon: CodeSandboxOutlined,
       breadcrumbs: false
     },
