@@ -1,6 +1,7 @@
 import { schedule } from "node-cron";
 const { Op } = require("sequelize");
 import model from "../models";
+import logger from "../middleware/logger";
 const { Order, User, Role, Permission } = model;
 
 function getFormattedTimestampFromYesterday() {
@@ -11,11 +12,12 @@ function getFormattedTimestampFromYesterday() {
 }
 
 const every5Sec = "*/5 * * * * *";
-const everyMin = " * * * * *";
+const every20Min = " */20 * * * *";
 const everyMorningAt8Am = "0 8 * * *";
 
-schedule(everyMorningAt8Am, async () => {
+schedule(every20Min, async () => {
   try {
+    console.log("Order assign job started at " + new Date().toISOString());
     const dateFromYesterday8AM = getFormattedTimestampFromYesterday();
     const agents = await User.findAll({
       where: {
@@ -28,13 +30,14 @@ schedule(everyMorningAt8Am, async () => {
           include: [
             {
               model: Permission,
+              as: "permissions",
               where: { name: "assign-orders" },
             },
           ],
         },
       ],
     });
-    console.log(agents, "agents to assign order");
+    console.log(agents.length, "agents to assign order");
     const unassignedOrders = await Order.findAll({
       where: {
         status: "Received",
@@ -47,9 +50,9 @@ schedule(everyMorningAt8Am, async () => {
         exclude: ["data"],
       },
     });
-    console.log(`${unassignedOrders.length}`);
+    console.log(`No of unassigned orders:${unassignedOrders.length}`);
     if (!unassignedOrders.length) {
-      console.warn("in order assign job no order meet critera");
+      console.warn("No order assigned because no order meet criteria");
       return;
     }
     const numberOfOrderForAgents = Math.floor(
@@ -72,6 +75,6 @@ schedule(everyMorningAt8Am, async () => {
       })
     );
   } catch (error) {
-    console.error(error, "in order assign job");
+    logger.error(error.message);
   }
 });

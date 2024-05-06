@@ -1,6 +1,6 @@
 import { createLogger, format, transports } from "winston";
-const { combine, timestamp, prettyPrint } = format;
 import "winston-daily-rotate-file";
+const { combine, timestamp, prettyPrint } = format;
 
 const fileRotateTransport = new transports.DailyRotateFile({
   filename: "logs/%DATE%.log",

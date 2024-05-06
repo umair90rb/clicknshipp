@@ -8,6 +8,12 @@ module.exports = {
     port: process.env.DB_PORT,
     dialect: "postgres",
     seederStorage: "sequelize",
+    // dialectOptions: {
+    //   ssl: {
+    //     require: true,
+    //     rejectUnauthorized: false,
+    //   },
+    // },
   },
   test: {
     username: process.env.DB_USERNAME,
@@ -20,8 +26,8 @@ module.exports = {
     seederStorage: "sequelize",
     dialectOptions: {
       ssl: {
-        require: true, // This will help you. But you will see nwe error
-        rejectUnauthorized: false, // This line will fix new error
+        require: true,
+        rejectUnauthorized: false,
       },
     },
   },
@@ -36,8 +42,8 @@ module.exports = {
     seederStorage: "sequelize",
     dialectOptions: {
       ssl: {
-        require: true, // This will help you. But you will see nwe error
-        rejectUnauthorized: false, // This line will fix new error
+        require: true,
+        rejectUnauthorized: false,
       },
     },
   },

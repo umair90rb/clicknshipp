@@ -190,7 +190,7 @@ export default {
       ) {
         query.where.brand_id = req.user.settings.default_brand_id;
       } else if ("brands" in req.user) {
-        query.where.brand_id = req.user.brands[0].id;
+        query.where.brand_id = req.user?.brands[0]?.id;
       }
 
       if (filters.length) {

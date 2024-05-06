@@ -27,3 +27,5 @@ sequelize migration:generate --name update-order-related-table-columns-number-to
 sequelize migration:generate --name update-order-chanel-table-add-brand-column
 sequelize migration:generate --name update-order-table-update-chanel-column
 sequelize migration:generate --name create-user-brand-table
+
+sequelize migration:generate --name remove-user-brands-table-timestamps
