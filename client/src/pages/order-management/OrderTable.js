@@ -184,7 +184,7 @@ export default function OrderTable() {
     return (
       <GridToolbarContainer>
         <GridToolbarColumnsButton />
-        <GridToolbarFilterButton />
+        {/* <GridToolbarFilterButton /> */}
         <GridToolbarExport />
         <GridToolbarDensitySelector />
         <Button onClick={displayFilterModal} size="small" startIcon={<FilterListIcon />}>

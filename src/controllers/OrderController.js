@@ -110,8 +110,8 @@ const FILTER_COLUMNS = {
 const FILTER_OP = {
   "Is empty": Op.eq,
   "Is not empty": Op.ne,
-  "Text contains": Op.iLike,
-  "Text does not contain": Op.notILike,
+  "Text contains": Op.substring,
+  "Text does not contain": Op.notIRegexp,
   "Text starts with": Op.startsWith,
   "Text ends with": Op.endsWith,
   "Text is exactly": Op.eq,
@@ -194,7 +194,7 @@ export default {
           );
           _filters[FILTER_COLUMNS[column].column] = {
             //parseValue(value, FILTER_COLUMNS[column].type)
-            [FILTER_OP[op]]: value,
+            [FILTER_OP[op]]: value || null,
           };
         }
         query.where = { ...query.where, ..._filters };
@@ -318,8 +318,8 @@ export default {
       );
       const order = await Order.create({
         ...order_data,
-        chanel_id: chanel.id,
-        brand_id: chanel.brand_id,
+        chanel_id: chanel?.id,
+        brand_id: chanel?.brand_id,
         data: JSON.stringify(body),
       });
       let customer;
@@ -341,6 +341,7 @@ export default {
     } catch (error) {
       logger.error(error.message, {
         data: req.body,
+        stack: error.stack,
       });
       return sendErrorResponse(
         res,
