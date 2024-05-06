@@ -7,6 +7,7 @@ import excelToJson from "../helpers/excelToJson";
 import formatPhoneNumber from "../helpers/formatPhone";
 import BookingService from "../services/BookingService";
 import { PERMISSIONS } from "../constants/constants";
+import logger from "../middleware/logger";
 
 const { Order, OrderItem, Customer, Address, User, Chanel, Payments } = model;
 
@@ -315,7 +316,7 @@ export default {
       const order_items_data = body["line_items"].map((item) =>
         extract(item, item_data_keys)
       );
-
+      throw new Error("This is a testing error");
       const order = await Order.create({
         ...order_data,
         chanel_id: chanel.id,
@@ -339,7 +340,9 @@ export default {
 
       return sendSuccessResponse(res, 201, {}, "Order created successfully");
     } catch (error) {
-      console.log(error);
+      logger.error(error.message, {
+        data: req.body,
+      });
       return sendErrorResponse(
         res,
         500,
