@@ -34,6 +34,7 @@ import FilterModal from './FilterModal';
 import { setMessage } from 'store/slices/util/utilSlice';
 import { authPermissionsSelector } from 'store/slices/auth/authSelector';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
+import { formatDateTime } from 'utils/format-date';
 const columns = (viewAction) => [
   {
     field: 'order_number',
@@ -87,8 +88,7 @@ const columns = (viewAction) => [
     field: 'createdAt',
     headerName: 'Received At',
     flex: 1,
-    type: 'dateTime',
-    valueGetter: ({ value }) => new Date(value)
+    valueGetter: ({ value }) => formatDateTime(value, true)
   },
   {
     field: 'chanel',

@@ -167,9 +167,11 @@ export default {
           ],
         },
       };
-      if (page && pageSize) {
-        query.offset = page * pageSize;
+      if (pageSize > -1) {
         query.limit = pageSize;
+        if (page > -1) {
+          query.offset = page * pageSize;
+        }
       }
       if (sort && sort.length) {
         const order = sort.map((s) => [s.field, s.sort.toUpperCase()]);

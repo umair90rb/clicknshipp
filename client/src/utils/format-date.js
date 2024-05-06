@@ -14,17 +14,19 @@ export default (date = new Date().toISOString()) => {
 
 export const getDate = (date) => date.split('T')[0];
 
-export function formatDateTime(dateTimeString) {
+export function formatDateTime(dateTimeString, omitYearAndSec = false) {
   const date = new Date(dateTimeString);
 
   const options = {
-    year: 'numeric',
-    month: 'long',
+    month: 'short',
     day: 'numeric',
     hour: 'numeric',
-    minute: 'numeric',
-    second: 'numeric'
+    minute: 'numeric'
   };
+  if (!omitYearAndSec) {
+    options.year = 'numeric';
+    options.second = 'numeric';
+  }
 
   return date.toLocaleString('en-US', options);
 }
