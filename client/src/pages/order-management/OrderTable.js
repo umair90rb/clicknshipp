@@ -195,7 +195,7 @@ export default function OrderTable() {
             Assign
           </Button>
         )}
-        {userPermissions.includes(PERMISSIONS.bulkOrderDelete) && rowSelectionModel.length > 0 && (
+        {userPermissions.includes(PERMISSIONS.PERMISSION_BULK_ORDER_DELETE) && rowSelectionModel.length > 0 && (
           <Button disabled={bulkDeleteLoading} onClick={handleBulkDelete} size="small" startIcon={<DeleteSweepIcon />}>
             Delete All
           </Button>
