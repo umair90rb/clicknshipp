@@ -36,6 +36,8 @@ import useAuth from 'hooks/useAuth';
 import { toSentense } from 'utils/string-utils';
 import location from 'utils/location';
 import { fetchProfile } from 'store/index';
+import useAccess from 'hooks/useAccess';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
 
 const AuthLogin = () => {
   const dispatch = useDispatch();
@@ -46,12 +48,13 @@ const AuthLogin = () => {
   const authFetchStatus = useSelector(authFetchStatusSelector);
   const authError = useSelector(authErrorSelector);
   const token = useSelector(authTokenSelector);
+  const { hasPermission } = useAccess();
 
   useEffect(() => {
     if (token) {
       login(token);
       dispatch(fetchProfile());
-      navigate(location.dashboardUrl());
+      navigate(hasPermission(PERMISSIONS.PERMISSION_VIEW_ADMIN_DASHBOARD) ? location.dashboardUrl() : location.allOrders());
     }
     if (authFetchStatus === fetchStatus.FAILURE) {
       formRef.current.setFieldError('submit', toSentense(authError));
