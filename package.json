@@ -39,6 +39,7 @@
     "node-cron": "^3.0.3",
     "pg": "^8.11.3",
     "sequelize": "^6.34.0",
+    "serve-index": "^1.9.1",
     "winston": "^3.13.0",
     "winston-daily-rotate-file": "^5.0.0"
   },

@@ -98,15 +98,6 @@ const FILTER_COLUMNS = {
   chanel: { column: "$chanel.name$", type: "string" },
 };
 
-// const FILTER_OP = {
-//   contains: Op.iLike,
-//   equals: Op.eq,
-//   "starts with": Op.startsWith,
-//   "ends with": Op.endsWith,
-//   "is empty": Op.eq,
-//   "is not empty": Op.ne,
-// };
-
 const FILTER_OP = {
   "Is empty": Op.eq,
   "Is not empty": Op.ne,

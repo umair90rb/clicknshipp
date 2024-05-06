@@ -1,6 +1,6 @@
 import express from "express";
 import path from "path";
-
+import fs from "fs/promises";
 import authRouter from "./authRouter";
 import adminRouter from "./adminRouter";
 import userRouter from "./userRoute";
@@ -17,6 +17,7 @@ import orderRouter from "./orderRouter";
 import reportRouter from "./reportRouter";
 import dashboardRouter from "./dashboardRouter";
 import permissionRouter from "./permissionRouter";
+import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 // import { sendErrorResponse } from "../utils/sendResponse";
 
 export default (app) => {
@@ -45,13 +46,30 @@ export default (app) => {
     res.status(200).send("ok");
   });
 
+  app.get("/api/v1/logs", async (req, res) => {
+    try {
+      const dirLs = await fs.readdir(path.join(__dirname, "../../logs/"));
+      const files = Object.values(dirLs).filter((file) =>
+        file.endsWith(".log")
+      );
+      return sendSuccessResponse(res, 200, { files });
+    } catch (error) {
+      return sendErrorResponse(res, 500, error.message, error);
+    }
+  });
+
+  app.get("/api/v1/logs/:file", async (req, res) => {
+    try {
+      const file = req.params.file;
+      return res.sendFile(path.join(__dirname, "../../logs/", file));
+    } catch (error) {
+      return sendErrorResponse(res, 500, error.message, error);
+    }
+  });
+
   app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "../../client/build"));
   });
 
-  app.all(
-    "*",
-    (req, res) => res.redirect("/")
-    // sendErrorResponse(res, 404, "Route does not exist")
-  );
+  app.all("*", (req, res) => res.redirect("/"));
 };

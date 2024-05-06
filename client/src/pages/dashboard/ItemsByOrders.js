@@ -40,10 +40,11 @@ const columns = [
     flex: 1,
     valueGetter: (params) => `${(params.row.confirmed / params.row.generated) * 100}%`,
     renderCell: (params) => {
+      const percentage = ((params.row.confirmed / params.row.generated) * 100).toFixed(2);
       return (
         <>
-          <BorderLinearProgress color="success" variant="determinate" value={(params.row.confirmed / params.row.generated) * 100} />
-          <Typography variant="body2" color="text.secondary">{`${(params.row.confirmed / params.row.generated) * 100}%`}</Typography>
+          <BorderLinearProgress color="success" variant="determinate" value={percentage} />
+          <Typography variant="body2" color="text.secondary">{`${percentage}%`}</Typography>
         </>
       );
     }
