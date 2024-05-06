@@ -39,12 +39,26 @@ const columns = (viewAction) => [
   {
     field: 'order_number',
     headerName: 'Order#',
-    flex: 1
+    flex: 0.75
   },
   {
     field: 'status',
     headerName: 'Status',
     flex: 1
+  },
+  {
+    field: 'customer',
+    headerName: 'Customer',
+    flex: 1.25,
+    sortable: false,
+    valueGetter: (param) => `${param.row.customer?.first_name} ${param.row.customer?.last_name}`
+  },
+  {
+    field: 'phone',
+    headerName: 'Customer Ph',
+    flex: 1.25,
+    sortable: false,
+    valueGetter: (param) => param.row.customer?.phone || ''
   },
   {
     field: 'agent',
@@ -56,7 +70,7 @@ const columns = (viewAction) => [
   {
     field: 'address',
     headerName: 'Address',
-    flex: 1,
+    flex: 2,
     resizable: true,
     sortable: false,
     valueGetter: (param) => param.row.address?.address1 || ''
@@ -72,17 +86,17 @@ const columns = (viewAction) => [
   {
     field: 'total_price',
     headerName: 'Total Amount',
-    flex: 1
+    flex: 0.33
   },
   {
     field: 'total_tax',
     headerName: 'Tax Amount',
-    flex: 1
+    flex: 0.33
   },
   {
     field: 'total_discounts',
     headerName: 'Discount',
-    flex: 1
+    flex: 0.33
   },
   {
     field: 'createdAt',
@@ -141,7 +155,6 @@ export default function OrderTable() {
   const userPermissions = useSelector(authPermissionsSelector);
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({
-    status: false,
     chanel: false,
     agent: false,
     total_tax: false,

@@ -1,4 +1,4 @@
-import { Grid, Typography, IconButton, Box } from '@mui/material';
+import { Grid, Typography, Button, Box } from '@mui/material';
 import ReplayIcon from '@mui/icons-material/Replay';
 import MainCard from 'components/MainCard';
 import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
@@ -6,8 +6,6 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchDashboardStats } from 'store/slices/dashboard/fetchDashboard';
 import { dashboardIsLoadingSelector, dashboardStatsSelector } from 'store/slices/dashboard/dashboardSelector';
-import Loader from 'components/Loader';
-import CircularLoader from 'components/CircularLoader';
 import ItemsByOrders from './ItemsByOrders';
 
 const DashboardDefault = () => {
@@ -31,9 +29,16 @@ const DashboardDefault = () => {
           </Grid>
           <Grid item xs={6} justifyContent="flex-end">
             <Box display="flex" justifyContent="flex-end">
-              <IconButton disabled={statsIsLoading} onClick={fetchStats} aria-label="reload" color="primary">
-                <ReplayIcon />
-              </IconButton>
+              <Button
+                startIcon={<ReplayIcon />}
+                variant="contained"
+                disabled={statsIsLoading}
+                onClick={fetchStats}
+                aria-label="reload"
+                color="primary"
+              >
+                Refresh
+              </Button>
             </Box>
           </Grid>
         </Grid>

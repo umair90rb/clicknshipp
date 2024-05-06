@@ -144,6 +144,11 @@ export default {
             attributes: ["id", "name"],
           },
           {
+            model: Customer,
+            as: "customer",
+            attributes: ["id", "first_name", "last_name", "phone"],
+          },
+          {
             model: Chanel,
             as: "chanel",
             attributes: ["id", "name"],

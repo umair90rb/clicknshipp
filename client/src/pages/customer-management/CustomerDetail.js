@@ -1,40 +1,86 @@
-import CustomView from 'components/CustomTable';
-import { CircularProgress, Divider, Grid, Stack, Typography } from '../../../node_modules/@mui/material/index';
-import CustomerTable from './CustomerTable';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { Divider, Grid, Stack, Typography } from '../../../node_modules/@mui/material/index';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect, useLayoutEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { fetchCustomer } from 'store/slices/customer/fetchCustomer';
 import { customerViewDataSelector, customerViewErrorSelector, customerViewIsLoadingSelector } from 'store/slices/customer/customerSelector';
 import CenterCircularLoader from 'components/CenterCircularLoader';
+import { formatDateTime } from 'utils/format-date';
 
-const customerOrderHeadCells = [
+const customerOrderColumns = [
   {
-    id: 'id',
-    label: 'ID.'
+    field: 'id',
+    flex: 0.25,
+    headerName: 'ID.'
   },
   {
-    id: 'order_number',
-    label: 'Order#'
+    field: 'order_number',
+    flex: 1,
+    headerName: 'Order#'
   },
   {
-    id: 'total_tax',
-    label: 'Tax Amount'
+    field: 'total_tax',
+    flex: 1,
+    headerName: 'Tax Amount'
   },
   {
-    id: 'total_discounts',
-    label: 'Discount'
+    field: 'total_discounts',
+    flex: 1,
+    headerName: 'Discount'
   },
   {
-    id: 'subtotal_price',
-    label: 'Subtotal'
+    field: 'subtotal_price',
+    flex: 1,
+    headerName: 'Subtotal'
   },
   {
-    id: 'total_price',
-    label: 'Total Amount'
+    field: 'total_price',
+    flex: 1,
+    headerName: 'Total Amount'
   },
   {
-    id: 'createdAt',
-    label: 'Received At'
+    field: 'createdAt',
+    flex: 2,
+    headerName: 'Received At',
+    valueGetter: ({ value }) => formatDateTime(value, true)
+  }
+];
+
+const customerAddressColumns = [
+  {
+    field: 'id',
+    flex: 0.25,
+    headerName: 'ID.'
+  },
+  {
+    field: 'address1',
+    flex: 1,
+    headerName: 'Address'
+  },
+  {
+    field: 'address2',
+    flex: 1,
+    headerName: 'Address 2'
+  },
+  {
+    field: 'city',
+    flex: 1,
+    headerName: 'City'
+  },
+  {
+    field: 'province',
+    flex: 1,
+    headerName: 'Province'
+  },
+  {
+    field: 'country',
+    flex: 1,
+    headerName: 'Country'
+  },
+  {
+    field: 'zip',
+    flex: 1,
+    headerName: 'Zip'
   }
 ];
 
@@ -118,7 +164,22 @@ const CustomerDetail = ({ id }) => {
         </Grid>
       </Grid>
       <Divider />
-      {Addresses && renderAddresses(Addresses)}
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <div style={{ height: '35vh', width: '100%' }}>
+            <DataGrid
+              slots={{ toolbar: GridToolbar }}
+              slotProps={{
+                toolbar: {
+                  showQuickFilter: true
+                }
+              }}
+              rows={Addresses || []}
+              columns={customerAddressColumns}
+            />
+          </div>
+        </Grid>
+      </Grid>
       <Divider />
       <Stack>
         <Typography variant="h5">Orders</Typography>
@@ -126,7 +187,18 @@ const CustomerDetail = ({ id }) => {
       </Stack>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <CustomView order="desc" orderBy="id" data={orders || []} headCells={customerOrderHeadCells} />
+          <div style={{ height: '35vh', width: '100%' }}>
+            <DataGrid
+              slots={{ toolbar: GridToolbar }}
+              slotProps={{
+                toolbar: {
+                  showQuickFilter: true
+                }
+              }}
+              rows={orders || []}
+              columns={customerOrderColumns}
+            />
+          </div>
         </Grid>
       </Grid>
     </>
