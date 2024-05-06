@@ -14,6 +14,14 @@ export const orderFilterSchema = Joi.object({
       })
     )
     .default([]),
+  sort: Joi.array()
+    .items(
+      Joi.object({
+        field: Joi.string().required(),
+        sort: Joi.string().required(),
+      })
+    )
+    .default([]),
 });
 
 export const orderBookSchema = Joi.object({

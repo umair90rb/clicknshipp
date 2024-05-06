@@ -21,6 +21,7 @@ import {
   orderListSelector,
   orderPageSelector,
   orderPageSizeSelector,
+  orderSortSelector,
   orderTotalSelector
 } from 'store/slices/order/orderSelector';
 import { fetchAllOrder, fetchBulkOrdersDelete } from 'store/slices/order/fetchOrder';
@@ -28,7 +29,7 @@ import location from 'utils/location';
 import { Button, Box, Modal } from '@mui/material';
 import AssignOrderModal from './AssignOrderModal';
 import CustomNoRowsOverlay from './NoRowCustomOverlay';
-import { setOrderFilters, setOrderPagination } from 'store/slices/order/orderSlice';
+import { setOrderFilters, setOrderPagination, setOrderSort } from 'store/slices/order/orderSlice';
 import FilterModal from './FilterModal';
 import { setMessage } from 'store/slices/util/utilSlice';
 import { authPermissionsSelector } from 'store/slices/auth/authSelector';
@@ -48,6 +49,7 @@ const columns = (viewAction) => [
     field: 'agent',
     headerName: 'Agent',
     flex: 1,
+    sortable: false,
     valueGetter: (param) => param.row.user?.name || ''
   },
   {
@@ -55,12 +57,14 @@ const columns = (viewAction) => [
     headerName: 'Address',
     flex: 1,
     resizable: true,
+    sortable: false,
     valueGetter: (param) => param.row.address?.address1 || ''
   },
   {
     field: 'city',
     headerName: 'City',
     flex: 1,
+    sortable: false,
     valueGetter: (param) => param.row.address?.city || ''
   },
 
@@ -90,11 +94,13 @@ const columns = (viewAction) => [
     field: 'chanel',
     headerName: 'Channel',
     flex: 1,
+    sortable: false,
     valueGetter: ({ value }) => (value ? value.name : '')
   },
   {
     field: 'actions',
     headerName: 'Actions',
+    sortable: false,
     flex: 1,
     type: 'actions',
     cellClassName: 'actions',
@@ -130,10 +136,9 @@ export default function OrderTable() {
   const page = useSelector(orderPageSelector);
   const pageSize = useSelector(orderPageSizeSelector);
   const filters = useSelector(orderFiltersSelector);
+  const sortModel = useSelector(orderSortSelector);
   const total = useSelector(orderTotalSelector);
   const userPermissions = useSelector(authPermissionsSelector);
-
-  // const [filterModel, setFilterModel] = useState({});
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({
     status: false,
@@ -154,8 +159,10 @@ export default function OrderTable() {
   const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchAllOrder({ body: { page: filters.length ? 0 : page, pageSize: filters.length ? 100 : pageSize, filters } }));
-  }, [page, pageSize, filters]);
+    dispatch(
+      fetchAllOrder({ body: { sort: sortModel, page: filters.length ? 0 : page, pageSize: filters.length ? 100 : pageSize, filters } })
+    );
+  }, [page, pageSize, filters, sortModel]);
 
   const handleViewOrder = (id) => () => navigate(location.viewOrder(id));
 
@@ -221,6 +228,9 @@ export default function OrderTable() {
         pageSizeOptions={[10, 25, 50, 75, 100]}
         onPaginationModelChange={(paginationModal) => dispatch(setOrderPagination(paginationModal))}
         paginationModel={{ page, pageSize }}
+        sortingMode="server"
+        sortModel={sortModel}
+        onSortModelChange={(sortModel) => dispatch(setOrderSort(sortModel))}
         rowCount={total}
         columnVisibilityModel={columnVisibilityModel}
         onColumnVisibilityModelChange={setColumnVisibilityModel}

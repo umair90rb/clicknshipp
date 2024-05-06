@@ -10,10 +10,12 @@ import location from 'utils/location';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllOrder, fetchImportOrder } from 'store/slices/order/fetchOrder';
 import {
+  orderFiltersSelector,
   orderImportFetchStatusSelector,
   orderImportIsLoadingSelector,
   orderPageSelector,
-  orderPageSizeSelector
+  orderPageSizeSelector,
+  orderSortSelector
 } from 'store/slices/order/orderSelector';
 import fetchStatus from 'constants/fetchStatuses';
 import useAccess from 'hooks/useAccess';
@@ -38,6 +40,8 @@ const OrderManagement = () => {
   const orderImportFetchStatus = useSelector(orderImportFetchStatusSelector);
   const orderPaginationPage = useSelector(orderPageSelector);
   const orderPaginationPageSize = useSelector(orderPageSizeSelector);
+  const orderFilters = useSelector(orderFiltersSelector);
+  const orderSort = useSelector(orderSortSelector);
 
   const { hasPermission } = useAccess();
 
@@ -69,7 +73,13 @@ const OrderManagement = () => {
                 <Button
                   variant="contained"
                   startIcon={<SyncIcon />}
-                  onClick={() => dispatch(fetchAllOrder({ body: { page: orderPaginationPage, pageSize: orderPaginationPageSize } }))}
+                  onClick={() =>
+                    dispatch(
+                      fetchAllOrder({
+                        body: { sort: orderSort, page: orderPaginationPage, pageSize: orderPaginationPageSize, filters: orderFilters }
+                      })
+                    )
+                  }
                 >
                   Refresh
                 </Button>

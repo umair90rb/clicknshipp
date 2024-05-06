@@ -131,15 +131,12 @@ const FILTER_OP = {
 export default {
   async orders(req, res) {
     try {
-      const { page, pageSize, filters } = req.body;
+      const { page, pageSize, filters, sort } = req.body;
       const permissions = req.user.permissions;
       const query = {
-        offset: page * pageSize,
-        limit: pageSize,
         where: {
           user_id: req.user.id,
         },
-        order: [["createdAt", "DESC"]],
         include: [
           {
             model: User,
@@ -170,6 +167,14 @@ export default {
           ],
         },
       };
+      if (page && pageSize) {
+        query.offset = page * pageSize;
+        query.limit = pageSize;
+      }
+      if (sort && sort.length) {
+        const order = sort.map((s) => [s.field, s.sort.toUpperCase()]);
+        query.order = [order];
+      }
       if (permissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS)) {
         delete query.where.user_id;
       } else if (
