@@ -461,7 +461,7 @@ const CreateOrderForm = () => {
                   </Grid>
                   <Grid item xs={4}>
                     <Stack spacing={1}>
-                      <InputLabel htmlFor="city">Select City</InputLabel>
+                      <InputLabel htmlFor="city">Select City {`${values.city !== '' ? '(' + values.city + ')' : ''}`}</InputLabel>
                       <Autocomplete
                         options={cities}
                         id="city"
@@ -871,7 +871,7 @@ const CreateOrderForm = () => {
                               <PlusOutlined />
                             </IconButton>
                           </TableCell>
-                          <TableCell align="right">{row.unit}</TableCell>
+                          <TableCell align="right">{row.unit || row.price}</TableCell>
                           <TableCell align="right">{row.discount}%</TableCell>
                           <TableCell align="right">{(row.price * row.quantity).toFixed(2)}</TableCell>
                           <TableCell align="right">
@@ -889,7 +889,7 @@ const CreateOrderForm = () => {
                         <TableCell colSpan={3} align="right">
                           Total
                         </TableCell>
-                        <TableCell align="right">{items.reduce((pre, item) => parseFloat(item.unit) + pre, 0)}</TableCell>
+                        <TableCell align="right">{items.reduce((pre, item) => parseFloat(item.unit || item.price) + pre, 0)}</TableCell>
                         <TableCell></TableCell>
                       </TableRow>
                       <TableRow>
@@ -898,7 +898,7 @@ const CreateOrderForm = () => {
                           Discount
                         </TableCell>
                         <TableCell align="right">
-                          {items.reduce((pre, item) => (item.discount / 100) * item.unit + pre, 0).toFixed(2)}
+                          {items.reduce((pre, item) => ((item.discount || 0) / 100) * (item.unit || item.price) + pre, 0).toFixed(2)}
                         </TableCell>
                         <TableCell></TableCell>
                       </TableRow>

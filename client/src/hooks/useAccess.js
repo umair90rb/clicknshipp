@@ -13,12 +13,14 @@ const useAccess = () => {
   };
 
   const hasPermission = (permission) => {
-    if (!permission || (Array.isArray(permission) && !permission.length) || (!permissions && !permissions?.length)) {
+    if (!permissions || !permissions?.length) {
+      return false;
+    }
+    if (!permission || (Array.isArray(permission) && !permission.length)) {
       return false;
     }
     if (Array.isArray(permission)) {
       permission.some((p) => {
-        console.log(p, permissions.includes(p));
         if (permissions?.includes(p)) {
           return true;
         }
