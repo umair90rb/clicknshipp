@@ -19,6 +19,8 @@ import {
   DialogActions
 } from '@mui/material';
 import { useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { orderFiltersSelector } from 'store/slices/order/orderSelector';
 const style = {
   position: 'absolute',
   top: '50%',
@@ -96,7 +98,7 @@ function OperatorsWithInput({ column, index, addFilterInput, updateColumnFilter 
 
 export default function FilterModal({ visible, onClose, columns, onApplyFilters }) {
   const [columnsWithFilters, setColumnsWithFilters] = useState(columns);
-
+  console.log(columns);
   const addFilterInput = (_column, index) => {
     let column = { ..._column };
     if ('filter' in column) {

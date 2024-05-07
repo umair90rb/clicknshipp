@@ -6,7 +6,6 @@ import {
   GridActionsCellItem,
   GridToolbarContainer,
   GridToolbarColumnsButton,
-  GridToolbarFilterButton,
   GridToolbarQuickFilter,
   GridToolbarDensitySelector,
   GridToolbarExport
@@ -264,7 +263,16 @@ export default function OrderTable() {
         visible={showFilterModal}
         onClose={hideFilterModal}
         onApplyFilters={handleApplyFilters}
-        columns={[...columns().slice(0, -1)]}
+        columns={columns()
+          .slice(0, -1)
+          .map(({ field, headerName }) => {
+            const filterObj = { field, headerName };
+            const filterInState = filters.find((f) => f.column === field);
+            if (filterInState) {
+              filterObj.filter = filterInState;
+            }
+            return filterObj;
+          })}
       />
     </div>
   );
