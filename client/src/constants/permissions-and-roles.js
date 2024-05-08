@@ -52,7 +52,12 @@ export const PERMISSIONS = {
   PERMISSION_DELETE_USER: 'delete-user',
 
   PERMISSION_CREATE_ROLE: 'create-role',
-  PERMISSION_UPDATE_ROLE: 'update-role'
+  PERMISSION_UPDATE_ROLE: 'update-role',
+
+  PERMISSION_VIEW_DELIVERY_ACCOUNTS: 'view-delivery-accounts',
+  PERMISSION_CREATE_DELIVERY_ACCOUNTS: 'create-delivery-accounts',
+  PERMISSION_UPDATE_DELIVERY_ACCOUNTS: 'update-delivery-accounts',
+  PERMISSION_DELETE_DELIVERY_ACCOUNTS: 'delete-delivery-accounts'
 };
 
 export const ROLES = {

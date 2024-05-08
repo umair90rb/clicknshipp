@@ -1,7 +1,8 @@
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 
 // assets
-import { ForkOutlined } from '@ant-design/icons';
+import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
+import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 const setting = {
   id: 'chanel-dashboard',
   title: 'Setting',
@@ -13,7 +14,16 @@ const setting = {
       type: 'item',
       url: '/chanel',
       permission: PERMISSIONS.PERMISSION_VIEW_SALES_CHANEL,
-      icon: ForkOutlined,
+      icon: AccountTreeOutlinedIcon,
+      breadcrumbs: false
+    },
+    {
+      id: 'delivery-service-accounts',
+      title: 'Delivery Service Accounts',
+      type: 'item',
+      url: '/delivery-service-accounts',
+      permission: PERMISSIONS.PERMISSION_VIEW_DELIVERY_ACCOUNTS,
+      icon: LocalShippingOutlinedIcon,
       breadcrumbs: false
     }
   ]

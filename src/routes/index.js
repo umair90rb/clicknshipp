@@ -16,6 +16,7 @@ import cityRouter from "./cityRouter";
 import orderRouter from "./orderRouter";
 import reportRouter from "./reportRouter";
 import dashboardRouter from "./dashboardRouter";
+import deliverServiceAccountsRouter from "./deliverServiceAccountsRouter";
 import permissionRouter from "./permissionRouter";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 // import { sendErrorResponse } from "../utils/sendResponse";
@@ -41,6 +42,7 @@ export default (app) => {
   //https://sukoon-inc-96f4d4ef3e58.herokuapp.com/api/v1/order/shopify
   app.use("/api/v1/report", reportRouter);
   app.use("/api/v1/dashboard", dashboardRouter);
+  app.use("/api/v1/delivery-service-accounts", deliverServiceAccountsRouter);
   app.use("/api/v1/", adminRouter);
 
   app.get("/api/v1/health", (req, res) => {

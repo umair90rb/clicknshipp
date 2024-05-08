@@ -3,6 +3,7 @@ import LeapordCourier from "./couriers/leopordCourier";
 import PostexCourier from "./couriers/postexCourier";
 import SonicCourier from "./couriers/sonicCourier";
 import TCSCourier from "./couriers/tcsCourier";
+import CallCourier from "./couriers/callCourier";
 
 class BookingService {
   constructor() {
@@ -12,6 +13,7 @@ class BookingService {
       deawoo: new DeawooCourier(),
       sonic: new SonicCourier(),
       leopard: new LeapordCourier(),
+      callcourier: new CallCourier(),
     };
   }
 
