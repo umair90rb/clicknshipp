@@ -107,29 +107,28 @@ const CreateUpdateForm = ({ account }) => {
                   )}
                 </Stack>
               </Grid>
-              {!account && (
-                <Grid item xs={12}>
-                  <Stack spacing={1}>
-                    <InputLabel htmlFor="key-signup">Key</InputLabel>
-                    <OutlinedInput
-                      fullWidth
-                      error={Boolean(touched.key && errors.key)}
-                      id="key-signup"
-                      type="text"
-                      value={values.key}
-                      name="key"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      placeholder="***************"
-                    />
-                    {touched.key && errors.key && (
-                      <FormHelperText error id="helper-text-key-signup">
-                        {errors.key}
-                      </FormHelperText>
-                    )}
-                  </Stack>
-                </Grid>
-              )}
+
+              <Grid item xs={12}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="key-signup">Key</InputLabel>
+                  <OutlinedInput
+                    fullWidth
+                    error={Boolean(touched.key && errors.key)}
+                    id="key-signup"
+                    type="text"
+                    value={values.key}
+                    name="key"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="***************"
+                  />
+                  {touched.key && errors.key && (
+                    <FormHelperText error id="helper-text-key-signup">
+                      {errors.key}
+                    </FormHelperText>
+                  )}
+                </Stack>
+              </Grid>
 
               {errors.submit && (
                 <Grid item xs={12}>

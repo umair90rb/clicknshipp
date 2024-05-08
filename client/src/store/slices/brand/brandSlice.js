@@ -17,8 +17,9 @@ const brandSlice = createSlice({
     },
     updateBrand: (state, action) => {
       const index = state.brands.findIndex((brand) => brand.id === action.payload.id);
+      console.log(index, 'brand update index');
       if (index > -1) {
-        state.brands[index].name = action.payload.name;
+        state.brands[index] = action.payload;
       }
     },
     deleteBrand: (state, action) => {

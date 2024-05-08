@@ -2,7 +2,7 @@ import { Op, Sequelize } from "sequelize";
 import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 
-const { Brand, Item } = model;
+const { Brand, Item, DeliveryServiceAccounts } = model;
 
 export default {
   async brands(req, res) {
@@ -19,8 +19,13 @@ export default {
             as: "items",
             attributes: [],
           },
+          {
+            model: DeliveryServiceAccounts,
+            as: "DeliveryServiceAccount",
+            attributes: ["id", "service"],
+          },
         ],
-        group: ["Brand.id"],
+        group: ["Brand.id", "DeliveryServiceAccount.id"],
       });
       return sendSuccessResponse(res, 200, { brands }, "All brands");
     } catch (e) {
@@ -53,7 +58,7 @@ export default {
   },
 
   async create(req, res) {
-    const { name } = req.body;
+    const { name, deliver_service_account_id } = req.body;
     try {
       let brand = await Brand.findOne({
         where: { name },
@@ -61,18 +66,26 @@ export default {
       if (brand) {
         return sendErrorResponse(res, 422, "Brand with name already exists.");
       }
-      brand = await Brand.create({
-        name,
-      });
+      brand = await Brand.create(
+        {
+          name,
+          deliver_service_account_id,
+        },
+        {
+          include: [
+            {
+              model: DeliveryServiceAccounts,
+              as: "DeliveryServiceAccount",
+              attributes: ["id", "service"],
+            },
+          ],
+        }
+      );
       return sendSuccessResponse(
         res,
         201,
         {
-          brand: {
-            id: brand.id,
-            name: brand.name,
-            itemCount: 0,
-          },
+          brand: brand.get(),
         },
         "Brand created successfully"
       );
@@ -89,22 +102,40 @@ export default {
   async update(req, res) {
     try {
       const id = req.params.id;
-      const { name } = req.body;
+      const { name, deliver_service_account_id } = req.body;
       const brand = await Brand.findByPk(id);
       if (brand) {
         brand.set({
           name,
+          deliver_service_account_id,
           updatedAt: new Date().toISOString(),
         });
         await brand.save();
+        await brand.reload({
+          attributes: {
+            include: [
+              [Sequelize.fn("COUNT", Sequelize.col("items.id")), "itemCount"],
+            ],
+          },
+          include: [
+            {
+              model: DeliveryServiceAccounts,
+              as: "DeliveryServiceAccount",
+              attributes: ["id", "service"],
+            },
+            {
+              model: Item,
+              as: "items",
+              attributes: [],
+            },
+          ],
+          group: ["Brand.id", "DeliveryServiceAccount.id"],
+        });
         return sendSuccessResponse(
           res,
           200,
           {
-            brand: {
-              id: brand.id,
-              name: brand.name,
-            },
+            brand: brand.get(),
           },
           "Operation successful"
         );

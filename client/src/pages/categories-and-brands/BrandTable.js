@@ -25,6 +25,12 @@ const columns = (handleUpdate, handleDelete) => [
     flex: 1
   },
   {
+    field: 'DeliverServiceAccount',
+    headerName: 'Delivery Service Account',
+    flex: 1,
+    valueGetter: ({ row }) => row.DeliveryServiceAccount?.service || 'none'
+  },
+  {
     field: 'actions',
     headerName: 'Actions',
     flex: 1,

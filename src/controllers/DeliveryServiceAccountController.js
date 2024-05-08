@@ -8,7 +8,7 @@ export default {
   async accounts(req, res) {
     try {
       const accounts = await DeliveryServiceAccounts.findAll({
-        attributes: ["id", "service", "active"],
+        attributes: ["id", "service", "active", "key"],
       });
       return sendSuccessResponse(
         res,
@@ -54,6 +54,7 @@ export default {
             id: account.id,
             service: account.service,
             active: account.active,
+            key: account.key,
           },
         },
         "Service created successfully"
@@ -89,6 +90,7 @@ export default {
               id: account.id,
               service: account.service,
               active: account.active,
+              key: account.key,
             },
           },
           "Operation successful"

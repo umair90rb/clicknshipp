@@ -1,6 +1,20 @@
-import { useEffect, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { Box, Button, FormControl, FormHelperText, Grid, InputLabel, OutlinedInput, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Select,
+  Checkbox,
+  ListItemText,
+  Chip,
+  MenuItem,
+  FormHelperText,
+  Grid,
+  InputLabel,
+  OutlinedInput,
+  Stack,
+  Typography
+} from '@mui/material';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import AnimateButton from 'components/@extended/AnimateButton';
@@ -8,12 +22,43 @@ import { fetchCreateCategory, fetchUpdateCategory } from 'store/slices/category/
 import { createCategory, updateCategory } from 'store/slices/category/categorySlice';
 import { fetchCreateBrand, fetchUpdateBrand } from 'store/slices/brand/fetchBrand';
 import { createBrand, updateBrand } from 'store/slices/brand/brandSlice';
+import { fetchDeliveryServiceAccounts } from 'store/slices/deliveryServicesAccounts/fetchDeliveryServicesAccounts';
 
 // ============================|| FIREBASE - REGISTER ||============================ //
 
 const AddUpdateForm = ({ type = '', data }) => {
   const dispatch = useDispatch();
   const formRef = useRef();
+
+  const [loadingAccounts, setLoadingAccounts] = useState(false);
+  const [accounts, setAccounts] = useState([]);
+
+  const fetchDeliverServiceAccounts = async () => {
+    setLoadingAccounts(true);
+    const { type, payload } = await dispatch(fetchDeliveryServiceAccounts());
+    if (type === 'accounts/fetch/fulfilled') {
+      console.log(payload.data.accounts);
+      setAccounts(payload.data.accounts);
+    }
+    setLoadingAccounts(false);
+  };
+
+  useEffect(() => {
+    fetchDeliverServiceAccounts();
+  }, []);
+
+  const initialValues = {
+    name: data?.name || ''
+  };
+
+  const validationSchema = {
+    name: Yup.string().max(255).required(`${type} name is required`)
+  };
+
+  if (type === 'Brand') {
+    initialValues.deliver_service_account_id = data?.deliver_service_account_id || '';
+    validationSchema.deliver_service_account_id = Yup.number();
+  }
 
   const handleSubmit = async (values, { setErrors, setStatus, setSubmitting }) => {
     if (type === 'Category') {
@@ -49,12 +94,8 @@ const AddUpdateForm = ({ type = '', data }) => {
     <>
       <Formik
         innerRef={formRef}
-        initialValues={{
-          name: data?.name || ''
-        }}
-        validationSchema={Yup.object().shape({
-          name: Yup.string().max(255).required(`${type} name is required`)
-        })}
+        initialValues={initialValues}
+        validationSchema={Yup.object().shape(validationSchema)}
         onSubmit={handleSubmit}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
@@ -81,6 +122,34 @@ const AddUpdateForm = ({ type = '', data }) => {
                   )}
                 </Stack>
               </Grid>
+              {type === 'Brand' && !loadingAccounts && (
+                <Grid item xs={12}>
+                  <Stack spacing={1}>
+                    <InputLabel htmlFor="deliver_service_account_id-signup">Delivery Service Account</InputLabel>
+                    <Select
+                      fullWidth
+                      error={Boolean(touched.deliver_service_account_id && errors.deliver_service_account_id)}
+                      id="deliver_service_account_id-signup"
+                      value={values.deliver_service_account_id}
+                      name="deliver_service_account_id"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      labelId="deliver_service_account_id-signup"
+                    >
+                      {accounts.map(({ id, service }) => (
+                        <MenuItem key={id} value={id}>
+                          <ListItemText primary={service} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {touched.deliver_service_account_id && errors.deliver_service_account_id && (
+                      <FormHelperText error id="helper-text-deliver_service_account_id-signup">
+                        {errors.deliver_service_account_id}
+                      </FormHelperText>
+                    )}
+                  </Stack>
+                </Grid>
+              )}
               {errors.submit && (
                 <Grid item xs={12}>
                   <FormHelperText error>{errors.submit}</FormHelperText>

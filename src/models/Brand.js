@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
         as: "chanels",
         foreignKey: "brand_id",
       });
+      Brand.belongsTo(models.DeliveryServiceAccounts, {
+        as: "DeliveryServiceAccount",
+        foreignKey: "deliver_service_account_id",
+      });
     }
   }
   Brand.init(
