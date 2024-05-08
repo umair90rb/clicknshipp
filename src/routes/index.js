@@ -19,6 +19,7 @@ import dashboardRouter from "./dashboardRouter";
 import permissionRouter from "./permissionRouter";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 // import { sendErrorResponse } from "../utils/sendResponse";
+const rootDir = path.dirname(process.argv[1]);
 
 export default (app) => {
   app.use(express.urlencoded({ extended: true }));
@@ -48,7 +49,7 @@ export default (app) => {
 
   app.get("/api/v1/logs", async (req, res) => {
     try {
-      const dirLs = await fs.readdir(path.join(__dirname, "../../logs/"));
+      const dirLs = await fs.readdir(path.join(rootDir, "/logs/"));
       const files = Object.values(dirLs).filter((file) =>
         file.endsWith(".log")
       );
@@ -61,14 +62,14 @@ export default (app) => {
   app.get("/api/v1/logs/:file", async (req, res) => {
     try {
       const file = req.params.file;
-      return res.sendFile(path.join(global.__basedir, "logs", file));
+      return res.sendFile(path.join(rootDir, "logs", file));
     } catch (error) {
       return sendErrorResponse(res, 500, error.message, error);
     }
   });
 
   app.get("/", (req, res) => {
-    res.sendFile(path.join(global.__basedir, "client", "build", "index.html"));
+    res.sendFile(path.join(rootDir, "../client", "build", "index.html"));
   });
 
   app.all("*", (req, res) => res.redirect("/"));

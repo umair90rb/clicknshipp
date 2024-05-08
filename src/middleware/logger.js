@@ -1,9 +1,11 @@
 import { createLogger, format, transports } from "winston";
 import "winston-daily-rotate-file";
 const { combine, timestamp, prettyPrint } = format;
+import { dirname } from "node:path";
+const rootDir = dirname(process.argv[1]);
 
 const fileRotateTransport = new transports.DailyRotateFile({
-  filename: "logs/%DATE%.log",
+  filename: `${rootDir}/logs/%DATE%.log`,
   datePattern: "MMM-DD-YYYY",
   maxFiles: "7d",
 });

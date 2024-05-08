@@ -8,12 +8,13 @@ import logErrors from "./middleware/logError";
 import clientErrorHandler from "./middleware/clientErrorHandler";
 import errorHandler from "./middleware/errorHandler";
 import "./jobs/assignOrders";
+import { dirname } from "node:path";
+const rootDir = dirname(process.argv[1]);
 
 dotenv.config();
 const app = express();
-global.__basedir = path.resolve(__dirname, "../");
 app.use(cors());
-app.use(express.static(path.join(__dirname, "../client/build")));
+app.use(express.static(path.join(rootDir, "../client", "build")));
 
 route(app);
 
