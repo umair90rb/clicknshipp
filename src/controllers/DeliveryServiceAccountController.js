@@ -87,7 +87,8 @@ export default {
           {
             account: {
               id: account.id,
-              name: account.name,
+              service: account.service,
+              active: account.active,
             },
           },
           "Operation successful"

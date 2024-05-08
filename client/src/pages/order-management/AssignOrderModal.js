@@ -16,14 +16,16 @@ export default function AssignOrderModal({ selectedRows, hideModal }) {
 
   const getAssignee = () => {
     setLoading(true);
-    return dispatch(fetchUsersWithPermission({ body: { permissions: [PERMISSIONS.assignOrders] } })).then(({ type, payload }) => {
-      if (type === 'usersWithPermissions/fetch/fulfilled') {
-        setAssignee(payload.data.users);
-        setLoading(false);
-      } else {
-        setLoading(false);
+    return dispatch(fetchUsersWithPermission({ body: { permissions: [PERMISSIONS.PERMISSION_ASSIGN_ORDERS] } })).then(
+      ({ type, payload }) => {
+        if (type === 'usersWithPermissions/fetch/fulfilled') {
+          setAssignee(payload.data.users);
+          setLoading(false);
+        } else {
+          setLoading(false);
+        }
       }
-    });
+    );
   };
 
   const assignOrders = () => {

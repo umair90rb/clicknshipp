@@ -11,7 +11,12 @@ import {
   deliveryServiceAccountsIsLoadingSelector,
   deliveryServiceAccountsListSelector
 } from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSelector';
-import { fetchDeliveryServiceAccounts } from 'store/slices/deliveryServicesAccounts/fetchDeliveryServicesAccounts';
+import {
+  fetchDeleteDeliveryServiceAccount,
+  fetchDeliveryServiceAccounts
+} from 'store/slices/deliveryServicesAccounts/fetchDeliveryServicesAccounts';
+import { deleteDeliveryServiceAccount } from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSlice';
+import { setMessage } from 'store/slices/util/utilSlice';
 const columns = (handleEditAction, handleDeleteAction) => [
   {
     field: 'id',
@@ -41,24 +46,28 @@ const columns = (handleEditAction, handleDeleteAction) => [
     flex: 1,
     type: 'actions',
     cellClassName: 'actions',
-    getActions: ({ id, row }) => [
-      <GridActionsCellItem
-        key={id}
-        icon={<EditIcon />}
-        label="View"
-        className="textPrimary"
-        onClick={() => handleEditAction(row)}
-        color="inherit"
-      />,
-      <GridActionsCellItem
-        key={id}
-        icon={<DeleteIcon />}
-        label="Disable"
-        className="textPrimary"
-        onClick={() => handleDeleteAction(id)}
-        color="inherit"
-      />
-    ]
+    getActions: (params) => {
+      // console.log(params);
+      const { id, row } = params;
+      return [
+        <GridActionsCellItem
+          key={id}
+          icon={<EditIcon />}
+          label="View"
+          className="textPrimary"
+          onClick={() => handleEditAction(row)}
+          color="inherit"
+        />,
+        <GridActionsCellItem
+          key={id}
+          icon={<DeleteIcon />}
+          label="Disable"
+          className="textPrimary"
+          onClick={() => handleDeleteAction(id)}
+          color="inherit"
+        />
+      ];
+    }
   }
 ];
 
@@ -71,7 +80,16 @@ export default function DeliveryServiceAccountTable({ updateAccountHandler }) {
     dispatch(fetchDeliveryServiceAccounts());
   }, []);
 
-  const deleteItemHandler = (id) => {};
+  const deleteItemHandler = async (id) => {
+    console.log(id, 'id delete item');
+    const { type, payload } = await dispatch(fetchDeleteDeliveryServiceAccount(id));
+    if (type === 'account/delete/fetch/fulfilled') {
+      dispatch(deleteDeliveryServiceAccount(id));
+      dispatch(setMessage({ message: 'Account deleted successfully.', type: 'success' }));
+    } else {
+      dispatch(setMessage({ message: payload || 'Account not deleted.', type: 'success' }));
+    }
+  };
 
   return (
     <div style={{ width: '100%' }}>

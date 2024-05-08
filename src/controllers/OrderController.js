@@ -311,7 +311,7 @@ export default {
         });
       }
       const order_data = extract(body, order_data_keys);
-      const address_data = extract(body["billing_address"], address_data_keys);
+      const address_data = extract(body["shipping_address"], address_data_keys);
       const customer_data = extract(body["customer"], customer_data_keys);
       if (customer_data && "phone" in customer_data) {
         customer_data.phone = formatPhoneNumber(customer_data.phone);

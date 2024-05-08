@@ -14,7 +14,7 @@ const deliveryServiceAccounts = createSlice({
   reducers: {
     clearDeliveryServiceState: () => initialState,
     addDeliveryServiceAccount: (state, action) => {
-      state.accounts = [action.payload.account, ...state.accounts];
+      state.accounts = [action.payload, ...state.accounts];
     },
     updateDeliveryServiceAccount: (state, action) => {
       const index = state.accounts.findIndex((a) => a.id === action.payload.id);

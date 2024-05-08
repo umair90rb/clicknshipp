@@ -36,7 +36,10 @@ import {
   fetchCreateDeliveryAccountService,
   fetchUpdateDeliveryAccountService
 } from 'store/slices/deliveryServicesAccounts/fetchDeliveryServicesAccounts';
-import { addDeliveryServiceAccount } from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSlice';
+import {
+  addDeliveryServiceAccount,
+  updateDeliveryServiceAccount
+} from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSlice';
 
 // ============================|| FIREBASE - REGISTER ||============================ //
 
@@ -48,7 +51,8 @@ const CreateUpdateForm = ({ account }) => {
     if (account) {
       return dispatch(fetchUpdateDeliveryAccountService({ id: account?.id, body: values })).then((action) => {
         if (action.type === 'account/update/fetch/fulfilled') {
-          dispatch(setMessage({ message: 'Item updated successfully.', type: 'success' }));
+          dispatch(updateDeliveryServiceAccount(action.payload.data.account));
+          dispatch(setMessage({ message: 'Account updated successfully.', type: 'success' }));
         } else {
           setErrors({ submit: action.payload.error || 'Something goes wrong, please try again' });
         }
@@ -56,7 +60,7 @@ const CreateUpdateForm = ({ account }) => {
     }
     return dispatch(fetchCreateDeliveryAccountService({ body: values })).then((action) => {
       if (action.type === 'account/create/fetch/fulfilled') {
-        dispatch(addDeliveryServiceAccount({ account: action.payload.data.account }));
+        dispatch(addDeliveryServiceAccount(action.payload.data.account));
         dispatch(setMessage({ message: 'Account created successfully.', type: 'success' }));
       } else {
         setErrors({ submit: action.payload.error || 'Something goes wrong, please try again' });
@@ -75,7 +79,7 @@ const CreateUpdateForm = ({ account }) => {
         }}
         validationSchema={Yup.object().shape({
           service: Yup.string().max(255).required('Service name is required'),
-          key: Yup.string().max(255).required('Key is required')
+          key: !account && Yup.string().max(255).required('Key is required')
         })}
         onSubmit={handleSubmit}
       >
@@ -103,27 +107,29 @@ const CreateUpdateForm = ({ account }) => {
                   )}
                 </Stack>
               </Grid>
-              <Grid item xs={12}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="key-signup">Key</InputLabel>
-                  <OutlinedInput
-                    fullWidth
-                    error={Boolean(touched.key && errors.key)}
-                    id="key-signup"
-                    type="text"
-                    value={values.key}
-                    name="key"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="***************"
-                  />
-                  {touched.key && errors.key && (
-                    <FormHelperText error id="helper-text-key-signup">
-                      {errors.key}
-                    </FormHelperText>
-                  )}
-                </Stack>
-              </Grid>
+              {!account && (
+                <Grid item xs={12}>
+                  <Stack spacing={1}>
+                    <InputLabel htmlFor="key-signup">Key</InputLabel>
+                    <OutlinedInput
+                      fullWidth
+                      error={Boolean(touched.key && errors.key)}
+                      id="key-signup"
+                      type="text"
+                      value={values.key}
+                      name="key"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      placeholder="***************"
+                    />
+                    {touched.key && errors.key && (
+                      <FormHelperText error id="helper-text-key-signup">
+                        {errors.key}
+                      </FormHelperText>
+                    )}
+                  </Stack>
+                </Grid>
+              )}
 
               {errors.submit && (
                 <Grid item xs={12}>

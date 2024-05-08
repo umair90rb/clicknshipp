@@ -70,7 +70,12 @@ const DeliveryServiceAccountsManagement = () => {
           <DeliveryServiceAccountTable updateAccountHandler={updateAccountHandler} />
         </MainCard>
       </Grid>
-      <Modal open={openModal} onClose={setOpenModal} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+      <Modal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
         <Box sx={style}>
           <CreateUpdateForm account={accountToUpdate} />
         </Box>
