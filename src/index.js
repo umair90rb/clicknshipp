@@ -11,7 +11,7 @@ import "./jobs/assignOrders";
 
 dotenv.config();
 const app = express();
-
+global.__basedir = path.resolve(__dirname, "../");
 app.use(cors());
 app.use(express.static(path.join(__dirname, "../client/build")));
 

@@ -61,14 +61,14 @@ export default (app) => {
   app.get("/api/v1/logs/:file", async (req, res) => {
     try {
       const file = req.params.file;
-      return res.sendFile(path.join(__dirname, "../../logs/", file));
+      return res.sendFile(path.join(global.__basedir, "logs", file));
     } catch (error) {
       return sendErrorResponse(res, 500, error.message, error);
     }
   });
 
   app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "../../client/build"));
+    res.sendFile(path.join(global.__basedir, "client", "build", "index.html"));
   });
 
   app.all("*", (req, res) => res.redirect("/"));

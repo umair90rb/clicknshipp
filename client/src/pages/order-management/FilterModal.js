@@ -40,9 +40,9 @@ const OPERATORS = {
   'Text starts with': 'text',
   'Text ends with': 'text',
   'Text is exactly': 'text',
-  'Date is': 'date',
-  'Date is before': 'date',
-  'Date is after': 'date',
+  'Date is': 'datetime-local',
+  'Date is before': 'datetime-local',
+  'Date is after': 'datetime-local',
   'Greater than': 'number',
   'Greater than or equal to': 'number',
   'Less than': 'number',
@@ -84,7 +84,7 @@ function OperatorsWithInput({ column, index, addFilterInput, updateColumnFilter 
           </FormControl>
           <TextField
             disabled={OPERATORS[selectRef.current?.value] === ''}
-            type={OPERATORS[selectRef.current?.value]}
+            type={OPERATORS[selectRef.current?.value || column?.filter?.op]}
             label="Value"
             value={column?.filter?.value}
             onChange={(e) => updateColumnFilter({ ...column, filter: { ...column?.filter, value: e.target.value } }, index)}
