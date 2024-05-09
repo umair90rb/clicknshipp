@@ -58,7 +58,7 @@ export default {
   },
 
   async create(req, res) {
-    const { name, deliver_service_account_id } = req.body;
+    const { name, deliver_service_account_id, shipment_series } = req.body;
     try {
       let brand = await Brand.findOne({
         where: { name },
@@ -70,6 +70,7 @@ export default {
         {
           name,
           deliver_service_account_id,
+          shipment_series,
         },
         {
           include: [
@@ -85,7 +86,10 @@ export default {
         res,
         201,
         {
-          brand: brand.get(),
+          brand: {
+            ...brand.get(),
+            itemCount: 0,
+          },
         },
         "Brand created successfully"
       );
@@ -102,12 +106,14 @@ export default {
   async update(req, res) {
     try {
       const id = req.params.id;
-      const { name, deliver_service_account_id } = req.body;
+      const { name, deliver_service_account_id, shipment_series } = req.body;
       const brand = await Brand.findByPk(id);
       if (brand) {
         brand.set({
-          name,
-          deliver_service_account_id,
+          name: name || brand.name,
+          deliver_service_account_id:
+            deliver_service_account_id || brand.deliver_service_account_id,
+          shipment_series: shipment_series || brand.shipment_series,
           updatedAt: new Date().toISOString(),
         });
         await brand.save();
@@ -135,7 +141,10 @@ export default {
           res,
           200,
           {
-            brand: brand.get(),
+            brand: {
+              ...brand.get(),
+              itemCount: 0,
+            },
           },
           "Operation successful"
         );

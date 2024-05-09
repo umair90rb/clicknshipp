@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import CenterCircularLoader from 'components/CenterCircularLoader';
 import { useDispatch } from 'react-redux';
-import { fetchConfirmOrder, fetchOrder } from 'store/slices/order/fetchOrder';
+import { fetchCancelOrderBooking, fetchConfirmOrder, fetchOrder } from 'store/slices/order/fetchOrder';
 import { setMessage } from 'store/slices/util/utilSlice';
 import OrderItemTable from './OrderItemTable';
 import OrderSummaryCard from './OrderSummaryCard';
@@ -69,11 +69,25 @@ const OrderView = () => {
         setOrderStatus(action.payload?.data?.order?.status);
       } else {
         setError(action.payload?.error || 'Something goes wrong!');
-        dispatch(setMessage({ message: action.payload?.error || 'Something goes wrong!' }));
+        dispatch(setMessage({ type: 'error', message: action.payload?.error || 'Something goes wrong!' }));
         setLoading(false);
       }
     });
   }, []);
+
+  const handleCancelDelivery = () => {
+    dispatch(fetchCancelOrderBooking({ id: orderId })).then((action) => {
+      if (action.type === 'order/cancelOrderBooking/fetch/fulfilled') {
+        setOrder(action.payload?.data?.order);
+        // setLoading(false);
+        setOrderStatus(action.payload?.data?.order?.status);
+      } else {
+        // setError(action.payload?.error || 'Something goes wrong!');
+        dispatch(setMessage({ type: 'error', message: action.payload?.error || 'Something goes wrong!' }));
+        // setLoading(false);
+      }
+    });
+  };
 
   if (loading) {
     return <CenterCircularLoader />;
@@ -86,7 +100,7 @@ const OrderView = () => {
   return (
     <Stack>
       <Grid container>
-        <Grid item xs={6}>
+        <Grid item xs={3}>
           <Typography variant="h4">
             #{order_number}{' '}
             <Chip color={orderStatus === 'Confirmed' ? 'success' : 'primary'} size="small" variant="elevated" label={orderStatus} />
@@ -95,14 +109,21 @@ const OrderView = () => {
             {`${formatDate(createdAt)} from ${first_name || 'None'} ${last_name || ''}`}
           </Typography>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={9}>
           <Grid container spacing={2} direction="row" justifyContent="flex-end" alignItems="center">
             {orderStatus === 'Booked' && (
-              <Grid item>
-                <Button variant="outlined" disabled={orderStatus !== 'Booked'} onClick={showTrackingModal} color="primary">
-                  Track Order
-                </Button>
-              </Grid>
+              <>
+                <Grid item>
+                  <Button variant="outlined" disabled={orderStatus !== 'Booked'} onClick={showTrackingModal} color="primary">
+                    Track Order
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <Button variant="outlined" onClick={handleCancelDelivery} color="primary">
+                    Cancel Delivery
+                  </Button>
+                </Grid>
+              </>
             )}
             {(orderStatus === 'Confirmed' || orderStatus === 'Booked') && (
               <Grid item>

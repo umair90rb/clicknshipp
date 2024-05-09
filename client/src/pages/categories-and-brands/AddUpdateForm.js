@@ -57,7 +57,9 @@ const AddUpdateForm = ({ type = '', data }) => {
 
   if (type === 'Brand') {
     initialValues.deliver_service_account_id = data?.deliver_service_account_id || '';
-    validationSchema.deliver_service_account_id = Yup.number();
+    initialValues.shipment_series = data?.shipment_series || '';
+    validationSchema.deliver_service_account_id = Yup.number().required('Delivery service is required');
+    validationSchema.shipment_series = Yup.number().min(1).required('Shipment series is required');
   }
 
   const handleSubmit = async (values, { setErrors, setStatus, setSubmitting }) => {
@@ -145,6 +147,29 @@ const AddUpdateForm = ({ type = '', data }) => {
                     {touched.deliver_service_account_id && errors.deliver_service_account_id && (
                       <FormHelperText error id="helper-text-deliver_service_account_id-signup">
                         {errors.deliver_service_account_id}
+                      </FormHelperText>
+                    )}
+                  </Stack>
+                </Grid>
+              )}
+              {type === 'Brand' && (
+                <Grid item xs={12}>
+                  <Stack spacing={1}>
+                    <InputLabel htmlFor="shipment_series-signup">Shipment Series</InputLabel>
+                    <OutlinedInput
+                      id="shipment_series-login"
+                      type="shipment_series"
+                      value={values.shipment_series}
+                      name="shipment_series"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      placeholder="543728"
+                      fullWidth
+                      error={Boolean(touched.shipment_series && errors.shipment_series)}
+                    />
+                    {touched.shipment_series && errors.shipment_series && (
+                      <FormHelperText error id="helper-text-shipment_series-signup">
+                        {errors.shipment_series}
                       </FormHelperText>
                     )}
                   </Stack>

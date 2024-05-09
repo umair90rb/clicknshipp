@@ -25,6 +25,11 @@ const columns = (handleUpdate, handleDelete) => [
     flex: 1
   },
   {
+    field: 'shipment_series',
+    headerName: 'Shipment Series',
+    flex: 1
+  },
+  {
     field: 'DeliverServiceAccount',
     headerName: 'Delivery Service Account',
     flex: 1,

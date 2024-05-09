@@ -9,7 +9,18 @@ import BookingService from "../services/BookingService";
 import { PERMISSIONS } from "../constants/constants";
 import logger from "../middleware/logger";
 
-const { Order, OrderItem, Customer, Address, User, Chanel, Payments } = model;
+const {
+  Order,
+  OrderItem,
+  Customer,
+  Address,
+  User,
+  Chanel,
+  Payments,
+  Brand,
+  DeliveryServiceAccounts,
+  Delivery,
+} = model;
 
 const order_data_keys = [
   "order_number",
@@ -625,6 +636,17 @@ export default {
               exclude: ["OrderId", "createdAt", "updatedAt"],
             },
           },
+          {
+            model: Brand,
+            as: "brand",
+            include: {
+              model: DeliveryServiceAccounts,
+              as: "DeliveryServiceAccount",
+            },
+            attributes: {
+              exclude: ["createdAt", "updatedAt"],
+            },
+          },
         ],
       });
       if (!order) {
@@ -634,12 +656,11 @@ export default {
         return sendErrorResponse(res, 400, "Order already booked!");
       }
       const bookingService = new BookingService();
-      const bookingResponse = bookingService.bookParcelWithCourier(
+      const bookingResponse = await bookingService.bookParcelWithCourier(
         service,
         order
       );
       const { cn, slip, isSuccess, error, response } = bookingResponse || {};
-      console.log(response, "response from courier service");
       if (isSuccess) {
         await order.createDelivery({
           courier: service,
@@ -648,8 +669,17 @@ export default {
           status: "Booked",
         });
         await order.update({ status: "Booked" });
+        await Brand.update(
+          { shipment_series: order.brand.shipment_series + 1 },
+          {
+            where: {
+              id: order.brand.id,
+            },
+          }
+        );
+        return sendSuccessResponse(res, 200, {}, "Operation successful");
       }
-      return sendSuccessResponse(res, 200, {}, "Operation successful");
+      return sendErrorResponse(res, 500, error, response);
     } catch (error) {
       console.error(error);
       return sendErrorResponse(
@@ -661,24 +691,125 @@ export default {
     }
   },
 
+  async cancelBooking(req, res) {
+    try {
+      const orderId = req.params.id;
+      const order = await Order.findByPk(orderId, {
+        include: [
+          {
+            model: Brand,
+            as: "brand",
+            include: {
+              model: DeliveryServiceAccounts,
+              as: "DeliveryServiceAccount",
+            },
+            attributes: {
+              exclude: ["createdAt", "updatedAt"],
+            },
+          },
+        ],
+      });
+      if (!order || order.status !== "Booked") {
+        return sendErrorResponse(res, 500, "Order is not in booking!");
+      }
+      const delivery = await Delivery.findOne({
+        where: {
+          order_id: order.id,
+          status: "Booked",
+        },
+      });
+      if (!delivery) {
+        return sendErrorResponse(
+          res,
+          500,
+          "Delivery not found for this order!"
+        );
+      }
+      const bookingService = new BookingService();
+      const cancelBookingResponse =
+        await bookingService.cancelBookingWithCourier(
+          delivery.cn,
+          delivery.courier,
+          order.brand.DeliveryServiceAccount.get()
+        );
+      const { isSuccess, error, response } = cancelBookingResponse || {};
+      if (isSuccess) {
+        await delivery.update({
+          slip_link: "",
+          status: "Booking Canceled",
+          updatedAt: new Date().toISOString(),
+        });
+        await order.update({ status: "Booking Canceled" });
+        return sendSuccessResponse(res, 200, {}, "Operation successful");
+      }
+      return sendErrorResponse(res, 500, error, response);
+    } catch (error) {
+      return sendErrorResponse(res, 500, error);
+    }
+  },
+
   async deliveryStatus(req, res) {
     try {
-      const id = req.params.id;
-      const order = await Order.findByPk(id);
-      const delivery = await order.getDelivery();
-      console.log(delivery);
+      const orderId = req.params.id;
+      const order = await Order.findByPk(orderId, {
+        include: [
+          {
+            model: Brand,
+            as: "brand",
+            include: {
+              model: DeliveryServiceAccounts,
+              as: "DeliveryServiceAccount",
+            },
+            attributes: {
+              exclude: ["createdAt", "updatedAt"],
+            },
+          },
+        ],
+      });
+      if (!order || order.status !== "Booked") {
+        return sendErrorResponse(res, 500, "Order is not in booking!");
+      }
+      const delivery = await Delivery.findOne({
+        where: {
+          order_id: order.id,
+          status: "Booked",
+        },
+      });
+      if (!delivery) {
+        return sendErrorResponse(
+          res,
+          500,
+          "Delivery not found for this order!"
+        );
+      }
       const bookingService = new BookingService();
-      const courierService = bookingService.getCourierService(delivery.courier);
-      const trackResponse = courierService.checkParcelStatus(delivery.cn);
-      console.log(trackResponse);
-      return sendSuccessResponse(
-        res,
-        200,
-        { deliveryStatus: trackResponse },
-        "Operation successful"
-      );
+      const bookingStatusResponse =
+        await bookingService.checkParcelStatusWithCourier(
+          delivery.cn,
+          delivery.courier,
+          order.brand.DeliveryServiceAccount.get()
+        );
+      const {
+        isSuccess,
+        data,
+        history,
+        status,
+        date,
+        remarks,
+        error,
+        response,
+      } = bookingStatusResponse || {};
+      if (isSuccess) {
+        return sendSuccessResponse(
+          res,
+          200,
+          { data, history, status, date, remarks, error, response },
+          "Operation successful"
+        );
+      }
+      return sendErrorResponse(res, 500, error, response);
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       return sendErrorResponse(
         res,
         500,

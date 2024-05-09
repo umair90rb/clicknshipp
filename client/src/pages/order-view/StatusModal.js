@@ -8,7 +8,7 @@ import { Formik } from 'formik';
 import AnimateButton from 'components/@extended/AnimateButton';
 import { toSentense } from 'utils/string-utils';
 
-const ORDER_STATUSES = ['Confirmed', 'No Pick', 'Cancel', 'Duplicate'];
+const ORDER_STATUSES = ['Confirmed', 'No Pick', 'Cancel', 'Duplicate', 'Delivered'];
 
 export default function StatusModal({ orderId, hideOrderStatusModal, setOrderStatus }) {
   const dispatch = useDispatch();

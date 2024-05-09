@@ -75,11 +75,13 @@ const CreateUpdateForm = ({ account }) => {
         initialValues={{
           service: account?.service || '',
           key: account?.key || '',
+          password: account?.password || '',
           active: account?.active || true
         }}
         validationSchema={Yup.object().shape({
           service: Yup.string().max(255).required('Service name is required'),
-          key: !account && Yup.string().max(255).required('Key is required')
+          key: Yup.string().max(255).required('Key is required'),
+          password: Yup.string().max(255).required('Key is required')
         })}
         onSubmit={handleSubmit}
       >
@@ -125,6 +127,28 @@ const CreateUpdateForm = ({ account }) => {
                   {touched.key && errors.key && (
                     <FormHelperText error id="helper-text-key-signup">
                       {errors.key}
+                    </FormHelperText>
+                  )}
+                </Stack>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="password-signup">Password (if any)</InputLabel>
+                  <OutlinedInput
+                    fullWidth
+                    error={Boolean(touched.password && errors.password)}
+                    id="password-signup"
+                    type="text"
+                    value={values.password}
+                    name="password"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="***************"
+                  />
+                  {touched.password && errors.password && (
+                    <FormHelperText error id="helper-text-password-signup">
+                      {errors.password}
                     </FormHelperText>
                   )}
                 </Stack>

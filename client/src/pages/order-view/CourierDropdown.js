@@ -6,12 +6,12 @@ import { fetchBookOrder } from 'store/slices/order/fetchOrder';
 import { setMessage } from 'store/slices/util/utilSlice';
 
 const SERVICES = [
-  ['Call Courier', 'callcourier'],
   ['Leapard', 'leopard'],
   ['Deawoo', 'deawoo'],
   ['PostEx', 'postex'],
-  ['Trax', 'trax'],
-  ['TCS', 'tcs']
+  ['TCS', 'tcs'],
+  ['Call Courier', 'callcourier'],
+  ['Trax', 'trax']
 ];
 
 export default function CourierDropdown({ orderId, updateOrderStatus }) {

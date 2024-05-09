@@ -8,11 +8,16 @@ class OrderService extends Ajax {
   fetchOrder = (id) => this.getJson(`${this.pathname}/${id}`);
 
   fetchUpdateStatusOrder = (data) => this.post(`${this.pathname}/status`, data);
+
   fetchAssignOrders = (data) => this.post(`${this.pathname}/assign`, data);
 
   fetchCreateOrder = (data) => this.post(`${this.pathname}`, data);
 
   fetchBookOrder = (data) => this.post(`${this.pathname}/book`, data);
+
+  fetchCancelOrderBooking = (id) => this.getJson(`${this.pathname}/cancel-booking/${id}`);
+
+  fetchOrderBookingStatus = (id) => this.getJson(`${this.pathname}/get-delivery-status/${id}`);
 
   fetchImportOrder = (data) => this.post(`${this.pathname}/import`, data, { 'Content-Type': 'multipart/form-data' });
 

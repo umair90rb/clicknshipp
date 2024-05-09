@@ -62,9 +62,10 @@ const CreateOrderForm = () => {
   const orderForm = useRef();
   const { state } = useLocation();
   const { order } = state || {};
-  const { items: orderItems, customer, address, id, chanel_id, brand_id, remarks } = order || {};
+  const { items: orderItems, customer, address, id, chanel, brand_id, remarks } = order || {};
   const { first_name, last_name, email, phone, note, id: customerId } = customer || {};
   const { address1, address2, city, zip, province, id: addressId } = address || {};
+  const { id: chanel_id } = chanel || {};
   const [items, setItems] = useState(orderItems || []);
   const [payments, setPayments] = useState([]);
   const [itemForUpdate, setItemForUpdate] = useState({ index: null, item: null });
@@ -101,8 +102,6 @@ const CreateOrderForm = () => {
     itemsCopy[index] = item;
     setItems(itemsCopy);
   };
-
-  console.log(order);
 
   const handleSubmit = async (values, { setErrors }) => {
     console.log(values, 'order fields');

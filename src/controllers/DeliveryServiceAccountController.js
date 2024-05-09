@@ -8,7 +8,7 @@ export default {
   async accounts(req, res) {
     try {
       const accounts = await DeliveryServiceAccounts.findAll({
-        attributes: ["id", "service", "active", "key"],
+        attributes: ["id", "service", "active", "key", "password"],
       });
       return sendSuccessResponse(
         res,
@@ -29,21 +29,22 @@ export default {
   async account(req, res) {},
 
   async create(req, res) {
-    const { service, key } = req.body;
+    const { service, key, password } = req.body;
     try {
       let account = await DeliveryServiceAccounts.findOne({
-        where: { service },
+        where: { key },
       });
       if (account) {
         return sendErrorResponse(
           res,
           422,
-          "Service name already exists, choose different service name!"
+          "Service key already exists, add different key!"
         );
       }
       account = await DeliveryServiceAccounts.create({
         service,
         key,
+        password,
         active: true,
       });
       return sendSuccessResponse(
@@ -55,6 +56,7 @@ export default {
             service: account.service,
             active: account.active,
             key: account.key,
+            password: account.password,
           },
         },
         "Service created successfully"
@@ -72,12 +74,13 @@ export default {
   async update(req, res) {
     try {
       const id = req.params.id;
-      const { service, key, active } = req.body;
+      const { service, key, active, password } = req.body;
       const account = await DeliveryServiceAccounts.findByPk(id);
       if (account) {
         account.set({
           service: service || account.service,
           key: key || account.key,
+          password: password || account.password,
           active: active || account.active,
           updatedAt: new Date().toISOString(),
         });
@@ -91,6 +94,7 @@ export default {
               service: account.service,
               active: account.active,
               key: account.key,
+              password: account.password,
             },
           },
           "Operation successful"

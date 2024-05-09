@@ -20,6 +20,8 @@ module.exports = (sequelize, DataTypes) => {
   Brand.init(
     {
       name: DataTypes.STRING,
+      shipment_series: DataTypes.INTEGER,
+      deliver_service_account_id: DataTypes.INTEGER,
     },
     {
       sequelize,

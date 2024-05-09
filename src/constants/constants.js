@@ -63,9 +63,3 @@ export const PERMISSIONS = {
 export const ROLES = {
   ROLE_SUPER_ADMIN: "Super Admin",
 };
-
-export const returnAddress = {
-  city: "Faisalabad",
-  address: "K-86",
-  phone: "03001234567",
-};

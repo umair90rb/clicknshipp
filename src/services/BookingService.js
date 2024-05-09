@@ -8,11 +8,11 @@ import CallCourier from "./couriers/callCourier";
 class BookingService {
   constructor() {
     this.availableCouriers = {
-      tcs: new TCSCourier(),
+      leopard: new LeapordCourier(),
       postex: new PostexCourier(),
       deawoo: new DeawooCourier(),
       sonic: new SonicCourier(),
-      leopard: new LeapordCourier(),
+      tcs: new TCSCourier(),
       callcourier: new CallCourier(),
     };
   }
@@ -22,10 +22,26 @@ class BookingService {
   }
 
   bookParcelWithCourier(courierName, orderDetails) {
-    console.log(courierName);
     if (courierName in this.availableCouriers) {
       const courier = this.availableCouriers[courierName];
-      return courier.bookParcel(orderDetails);
+      return courier.bookParcel(orderDetails, courierName);
+    } else {
+      throw new Error("Courier service not available");
+    }
+  }
+  cancelBookingWithCourier(cn, courierName, deliveryAccount) {
+    if (courierName in this.availableCouriers) {
+      const courier = this.availableCouriers[courierName];
+      return courier.cancelBooking(cn, deliveryAccount);
+    } else {
+      throw new Error("Courier service not available");
+    }
+  }
+
+  checkParcelStatusWithCourier(cn, courierName, deliveryAccount) {
+    if (courierName in this.availableCouriers) {
+      const courier = this.availableCouriers[courierName];
+      return courier.checkParcelStatus(cn, deliveryAccount);
     } else {
       throw new Error("Courier service not available");
     }

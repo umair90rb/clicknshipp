@@ -52,7 +52,15 @@ router.post(
 );
 
 router.get(
-  "/delivery-status/:id",
+  "/cancel-booking/:id",
+  Auth,
+  can(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS),
+  validator.params(idSchema),
+  OrderController.cancelBooking
+);
+
+router.get(
+  "/get-delivery-status/:id",
   Auth,
   can(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS),
   validator.params(idSchema),

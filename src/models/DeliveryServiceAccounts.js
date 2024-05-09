@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
   DeliveryServiceAccounts.init(
     {
       service: DataTypes.STRING,
+      password: DataTypes.STRING,
       key: DataTypes.STRING,
       active: DataTypes.BOOLEAN,
     },

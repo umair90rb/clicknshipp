@@ -1,5 +1,5 @@
 class CourierInterface {
-  bookParcel(parcelDetails) {}
+  bookParcel(parcelDetails, serviceName) {}
   checkParcelStatus(trackingNumber) {}
   downloadReceipt(trackingNumber) {}
   cancelBooking(trackingNumber) {}
