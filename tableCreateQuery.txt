@@ -30,6 +30,7 @@ sequelize migration:generate --name update-order-table-update-chanel-column
 sequelize migration:generate --name create-user-brand-table
 sequelize migration:generate --name add-delivery-service-id-column-in-brand-table
 sequelize migration:generate --name add-password-column-in-delivery-service-accounts-table
+sequelize migration:generate --name add-username-column-in-delivery-service-accounts-table
 sequelize migration:generate --name add-shipment-series-column-in-brand-table
 
 sequelize migration:generate --name remove-user-brands-table-timestamps

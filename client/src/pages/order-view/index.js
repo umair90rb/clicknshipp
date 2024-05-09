@@ -12,12 +12,25 @@ import location from 'utils/location';
 import CourierDropdown from './CourierDropdown';
 import TrackingModal from './TrackingModal';
 import StatusModal from './StatusModal';
+import { height } from '../../../node_modules/@mui/system/index';
 const style = {
   position: 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 400,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4
+};
+
+const trackingModalStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '90%',
+  height: '90vh',
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 4
@@ -220,7 +233,7 @@ const OrderView = () => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
+        <Box sx={trackingModalStyle}>
           <TrackingModal orderId={id} />
         </Box>
       </Modal>

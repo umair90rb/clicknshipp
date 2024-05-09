@@ -1,9 +1,9 @@
 import companyProfile from "../data";
-import { Op } from "sequelize";
 import CourierInterface from "../courierInterface";
 import getAxiosInstance from "../http";
-import models from "../../models";
 import logger from "../../middleware/logger";
+import models from "../../models";
+import { Op } from "sequelize";
 const { CityNameMaping } = models;
 
 class LeapordCourier extends CourierInterface {
@@ -76,7 +76,8 @@ class LeapordCourier extends CourierInterface {
         body
       );
       logger.log("info", "leopard book parcel api response", {
-        data: response.data,
+        res: response.data,
+        body,
       });
       const { track_number, slip_link, status, error } = response.data || {};
       return {
@@ -89,18 +90,18 @@ class LeapordCourier extends CourierInterface {
           : "Error: Something goes wrong!",
       };
     } catch (_error) {
-      logger.log("error", error.message, {
+      logger.log("error", _error.message, {
+        body,
+        res: response.data,
         stack: "in leopard booking function",
       });
-      const { track_number, slip_link, status, error } = response.data || {};
+      const { track_number, slip_link, status, error } = response?.data || {};
       return {
-        cn: track_number,
-        slip: slip_link,
+        cn: null,
+        slip: null,
         isSuccess: Boolean(status),
-        error: error ? error : null,
-        response: status
-          ? "Package booked with leopards"
-          : "Error: Something goes wrong!",
+        error: error,
+        response: "Error: Something goes wrong!",
       };
     }
   }
@@ -122,7 +123,8 @@ class LeapordCourier extends CourierInterface {
         body
       );
       logger.log("info", "leopard booking status,s api response", {
-        data: response.data,
+        body,
+        res: response.data,
       });
       const { status, error, packet_list } = response.data;
       const parcel = packet_list[0] || {};
@@ -143,7 +145,8 @@ class LeapordCourier extends CourierInterface {
       };
     } catch (_error) {
       logger.log("error", "leopard booking status api response", {
-        data: response.data,
+        body,
+        res: response.data,
       });
       const { status, error } = response.data;
       return {
@@ -177,7 +180,8 @@ class LeapordCourier extends CourierInterface {
         body
       );
       logger.log("info", "leopard cancel booking parcel api response", {
-        data: response.data,
+        body,
+        res: response.data,
       });
       const { status, error } = response.data;
       return {
@@ -187,7 +191,8 @@ class LeapordCourier extends CourierInterface {
       };
     } catch (_error) {
       logger.log("error", "leopard cancel booking parcel api error", {
-        data: response.data,
+        body,
+        res: response.data,
       });
       const { status, error } = response.data;
       return {

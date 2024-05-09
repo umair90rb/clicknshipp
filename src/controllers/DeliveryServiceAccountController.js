@@ -8,7 +8,7 @@ export default {
   async accounts(req, res) {
     try {
       const accounts = await DeliveryServiceAccounts.findAll({
-        attributes: ["id", "service", "active", "key", "password"],
+        attributes: ["id", "service", "active", "key", "username", "password"],
       });
       return sendSuccessResponse(
         res,
@@ -29,7 +29,7 @@ export default {
   async account(req, res) {},
 
   async create(req, res) {
-    const { service, key, password } = req.body;
+    const { service, key, username, password } = req.body;
     try {
       let account = await DeliveryServiceAccounts.findOne({
         where: { key },
@@ -44,6 +44,7 @@ export default {
       account = await DeliveryServiceAccounts.create({
         service,
         key,
+        username,
         password,
         active: true,
       });
@@ -56,6 +57,7 @@ export default {
             service: account.service,
             active: account.active,
             key: account.key,
+            username: account.username,
             password: account.password,
           },
         },
@@ -74,12 +76,13 @@ export default {
   async update(req, res) {
     try {
       const id = req.params.id;
-      const { service, key, active, password } = req.body;
+      const { service, key, active, username, password } = req.body;
       const account = await DeliveryServiceAccounts.findByPk(id);
       if (account) {
         account.set({
           service: service || account.service,
           key: key || account.key,
+          username: username || account.username,
           password: password || account.password,
           active: active || account.active,
           updatedAt: new Date().toISOString(),
@@ -94,6 +97,7 @@ export default {
               service: account.service,
               active: account.active,
               key: account.key,
+              username: account.username,
               password: account.password,
             },
           },

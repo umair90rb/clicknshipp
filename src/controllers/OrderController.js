@@ -232,15 +232,7 @@ export default {
       const { id } = req.params;
       const order = await Order.findByPk(id, {
         attributes: {
-          exclude: [
-            "data",
-            "CustomerId",
-            "updatedAt",
-            "customer_id",
-            "chanel_id",
-            "brand_id",
-            "user_id",
-          ],
+          exclude: ["data"],
         },
         include: [
           {

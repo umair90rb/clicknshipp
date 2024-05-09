@@ -34,6 +34,11 @@ const columns = (handleEditAction, handleDeleteAction) => [
     flex: 1
   },
   {
+    field: 'username',
+    headerName: 'Username',
+    flex: 1
+  },
+  {
     field: 'password',
     headerName: 'Password',
     flex: 1
