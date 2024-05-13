@@ -9422,5 +9422,2501 @@
     "active_as_origin": true,
     "active_as_destination": true,
     "courier": "postex"
+  },
+  {
+    "city": "Lahore",
+    "maped": "Lahore",
+    "assigned_id": 223,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Karachi",
+    "maped": "Karachi",
+    "assigned_id": 202,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Islamabad",
+    "maped": "Islamabad",
+    "assigned_id": 174,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Rawalpindi",
+    "maped": "Rawalpindi",
+    "assigned_id": 288,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Peshawar",
+    "maped": "Peshawar",
+    "assigned_id": 271,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Hyderabad",
+    "maped": "Hyderabad",
+    "assigned_id": 172,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Multan",
+    "maped": "Multan",
+    "assigned_id": 251,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Sialkot",
+    "maped": "Sialkot",
+    "assigned_id": 315,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Gujranwala",
+    "maped": "Gujranwala",
+    "assigned_id": 158,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Faisalabad",
+    "maped": "Faisalabad",
+    "assigned_id": 144,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Sukkur",
+    "maped": "Sukkur",
+    "assigned_id": 318,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kasur",
+    "maped": "Kasur",
+    "assigned_id": 204,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Sheikhupura",
+    "maped": "Sheikhupura",
+    "assigned_id": 311,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Quetta",
+    "maped": "Quetta",
+    "assigned_id": 283,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Sahiwal",
+    "maped": "Sahiwal",
+    "assigned_id": 293,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Sargodha",
+    "maped": "Sargodha",
+    "assigned_id": 302,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Jhelum",
+    "maped": "Jhelum",
+    "assigned_id": 186,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Abbottabad",
+    "maped": "Abbottabad",
+    "assigned_id": 101,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Bahawalpur",
+    "maped": "Bahawalpur",
+    "assigned_id": 110,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Dera ismail khan",
+    "maped": "Dera Ismail Khan",
+    "assigned_id": 135,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Dera ghazi khan",
+    "maped": "Dera Ghazi Khan",
+    "assigned_id": 134,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Hafizabad",
+    "maped": "Hafizabad",
+    "assigned_id": 161,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Mandi bahauddin",
+    "maped": "Mandi Bahauddin",
+    "assigned_id": 3410,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Phool nagar",
+    "maped": "Phool Nagar",
+    "assigned_id": 406,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Rahim yar khan",
+    "maped": "Rahim Yar Khan",
+    "assigned_id": 284,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Okara",
+    "maped": "Okara",
+    "assigned_id": 267,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Sadiqabad",
+    "maped": "Sadiqabad",
+    "assigned_id": 292,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Mianwali",
+    "maped": "Mianwali",
+    "assigned_id": 241,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Layyah",
+    "maped": "Layyah",
+    "assigned_id": 227,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Depalpur",
+    "maped": "Depalpur",
+    "assigned_id": 133,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Toba tek singh",
+    "maped": "Toba Tek Singh",
+    "assigned_id": 336,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Vehari",
+    "maped": "Vehari",
+    "assigned_id": 339,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Lala musa",
+    "maped": "Lalamusa",
+    "assigned_id": 224,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kohat",
+    "maped": "Kohat",
+    "assigned_id": 215,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Gujrat",
+    "maped": "Gujrat",
+    "assigned_id": 159,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Attock",
+    "maped": "Attock",
+    "assigned_id": 107,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Wah cantt",
+    "maped": "Wah Cantt",
+    "assigned_id": 340,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Gilgit",
+    "maped": "Gilgit",
+    "assigned_id": 3569,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Jaranwala",
+    "maped": "Jaranwala",
+    "assigned_id": 183,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Bahawalnagar",
+    "maped": "Bahawalnagar",
+    "assigned_id": 109,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Mian channu",
+    "maped": "Mian Channu",
+    "assigned_id": 240,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Gujar khan",
+    "maped": "Gujjar Khan",
+    "assigned_id": 465,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Bhai pheru",
+    "maped": "Bhai Pheru",
+    "assigned_id": 405,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Jhang",
+    "maped": "Jhang",
+    "assigned_id": 188,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Mirpur khas",
+    "maped": "Mirpur Khas",
+    "assigned_id": 243,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Muridke",
+    "maped": "Muridke",
+    "assigned_id": 503,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Muzaffargarh",
+    "maped": "Muzaffar Garh",
+    "assigned_id": 254,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Tank",
+    "maped": "Tank",
+    "assigned_id": 538,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Khanewal",
+    "maped": "Khanewal",
+    "assigned_id": 209,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Shakargarh",
+    "maped": "Shakargarh",
+    "assigned_id": 385,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Narowal",
+    "maped": "Narowal",
+    "assigned_id": 384,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Pakpattan",
+    "maped": "Pakpattan",
+    "assigned_id": 269,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Bhakkar",
+    "maped": "Bhakkar",
+    "assigned_id": 116,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Burewala",
+    "maped": "Burewala",
+    "assigned_id": 119,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kamoke",
+    "maped": "Kamoke",
+    "assigned_id": 198,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Hattar",
+    "maped": "Hattar",
+    "assigned_id": 367,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Khanpur",
+    "maped": "Khan Pur",
+    "assigned_id": 208,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Chichawatni",
+    "maped": "Chichawatni",
+    "assigned_id": 128,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Haripur",
+    "maped": "Haripur",
+    "assigned_id": 165,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Nawabshah",
+    "maped": "Nawabshah",
+    "assigned_id": 257,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Swabi",
+    "maped": "Swabi",
+    "assigned_id": 304,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Chakwal",
+    "maped": "Chakwal",
+    "assigned_id": 122,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Mardan",
+    "maped": "Mardan",
+    "assigned_id": 238,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Nowshera",
+    "maped": "Nowshera",
+    "assigned_id": 264,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Haroonabad",
+    "maped": "Haroonabad",
+    "assigned_id": 167,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Jacobabad",
+    "maped": "Jacobabad",
+    "assigned_id": 175,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Shikarpur",
+    "maped": "Shikarpur",
+    "assigned_id": 312,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Larkana",
+    "maped": "Larkana",
+    "assigned_id": 226,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kamalia",
+    "maped": "Kamaliya",
+    "assigned_id": 195,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kharian",
+    "maped": "Kharian",
+    "assigned_id": 210,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Thatta",
+    "maped": "Thatta",
+    "assigned_id": 333,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Bannu",
+    "maped": "Bannu",
+    "assigned_id": 111,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Nankana sahib",
+    "maped": "Nankana Sahib",
+    "assigned_id": 256,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Khushab",
+    "maped": "Khushab",
+    "assigned_id": 214,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Ahmedpur east",
+    "maped": "Ahmed Pur East",
+    "assigned_id": 103,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Akora khatak",
+    "maped": "Akora Khattak",
+    "assigned_id": 355,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Arifwala",
+    "maped": "Arifwala",
+    "assigned_id": 106,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Bhara kahu",
+    "maped": "Bhara Kahu",
+    "assigned_id": 1386,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Charsadda",
+    "maped": "Charsadda",
+    "assigned_id": 125,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Chiniot",
+    "maped": "Chiniot",
+    "assigned_id": 129,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Chistian",
+    "maped": "Chishtian",
+    "assigned_id": 130,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Chunian",
+    "maped": "Chunian",
+    "assigned_id": 507,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Daska",
+    "maped": "Daska",
+    "assigned_id": 383,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Dina",
+    "maped": "Dina",
+    "assigned_id": 138,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Farooqabad",
+    "maped": "Farooqabad",
+    "assigned_id": 1380,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Fateh jang",
+    "maped": "Fateh Jang",
+    "assigned_id": 2468,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Gamber",
+    "maped": "Qamber",
+    "assigned_id": 911,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kahauta",
+    "maped": "Kahuta",
+    "assigned_id": 192,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Khairpur",
+    "maped": "Khairpur",
+    "assigned_id": 502,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kotri",
+    "maped": "Kotli",
+    "assigned_id": 221,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Lodhran",
+    "maped": "Lodhran",
+    "assigned_id": 229,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Mandra",
+    "maped": "Mandrah",
+    "assigned_id": 390,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Manga mandi",
+    "maped": "Manga Mandi",
+    "assigned_id": 512,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Mansehra",
+    "maped": "Mansehra",
+    "assigned_id": 237,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Moro",
+    "maped": "Moro",
+    "assigned_id": 250,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Patoki",
+    "maped": "Pattoki",
+    "assigned_id": 443,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Raiwind",
+    "maped": "Raiwind",
+    "assigned_id": 505,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Risalpur",
+    "maped": "Risalpur",
+    "assigned_id": 290,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Rohri",
+    "maped": "Rohri",
+    "assigned_id": 291,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Sari alamgir",
+    "maped": "Sarai Alamgir",
+    "assigned_id": 273,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Swat",
+    "maped": "Swat",
+    "assigned_id": 319,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Shahkot",
+    "maped": "Shah Kot",
+    "assigned_id": 308,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Sumbrial",
+    "maped": "Sambrial",
+    "assigned_id": 382,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Taxla",
+    "maped": "Taxila",
+    "assigned_id": 332,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Timargarah",
+    "maped": "Timergarah",
+    "assigned_id": 335,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Timargarah",
+    "maped": "Timergarah",
+    "assigned_id": 335,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kot addu",
+    "maped": "Kot Addu",
+    "assigned_id": 216,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Hassan abdal",
+    "maped": "Hasan Abdal",
+    "assigned_id": 168,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Fort abbas",
+    "maped": "Fort Abbas",
+    "assigned_id": 149,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Gojra",
+    "maped": "Gojra",
+    "assigned_id": 154,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Pind dadan khan",
+    "maped": "Pind Dadan Khan",
+    "assigned_id": 418,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Deharki",
+    "maped": "Daharki",
+    "assigned_id": 136,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Tandliawala",
+    "maped": "Tandlianwala",
+    "assigned_id": 321,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Ghotki",
+    "maped": "Ghotki",
+    "assigned_id": 152,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Ahmedpur sial",
+    "maped": "Ahmedpur Sial",
+    "assigned_id": 547,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Alipur",
+    "maped": "Alipur",
+    "assigned_id": 104,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Allah abad",
+    "maped": "ALLAH ABAD",
+    "assigned_id": 2156,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Amangarh",
+    "maped": "Aman Garh",
+    "assigned_id": 3536,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Badin",
+    "maped": "Badin",
+    "assigned_id": 108,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Baddomalhi",
+    "maped": "Baddomalhi",
+    "assigned_id": 1382,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Baffa",
+    "maped": "BAFFA",
+    "assigned_id": 2010,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Bhagtanwala",
+    "maped": "Bhagtanwala",
+    "assigned_id": 115,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Basharat",
+    "maped": "BASHARAT",
+    "assigned_id": 2019,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Basirpur",
+    "maped": "Basir Pur",
+    "assigned_id": 112,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Basti malook",
+    "maped": "Basti Malook",
+    "assigned_id": 401,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Batkhela",
+    "maped": "Batkhela",
+    "assigned_id": 404,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Bhalwaal",
+    "maped": "Bhalwal",
+    "assigned_id": 117,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Bhan sayedabad",
+    "maped": "Bhan Syedabad",
+    "assigned_id": 419,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Bhowana",
+    "maped": "Bhawana",
+    "assigned_id": 544,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Bucheke",
+    "maped": "Bucheki",
+    "assigned_id": 3546,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Chak jhumra",
+    "maped": "Chak Jhumra",
+    "assigned_id": 121,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Chak parana",
+    "maped": "Chak Pirana",
+    "assigned_id": 3580,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Chaklala",
+    "maped": "Chaklala",
+    "assigned_id": 1390,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Changa manga",
+    "maped": "Changa Manga",
+    "assigned_id": 506,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Chawinda",
+    "maped": "Chawinda",
+    "assigned_id": 127,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Choa saidan shah",
+    "maped": "Choa Saidan Shah",
+    "assigned_id": 420,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Chota lahore",
+    "maped": "Chota Lahore",
+    "assigned_id": 460,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Chowk azam",
+    "maped": "Chowk Azam",
+    "assigned_id": 397,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Dadu",
+    "maped": "Dadu",
+    "assigned_id": 131,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Dargai",
+    "maped": "Dargai",
+    "assigned_id": 3523,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Darya khan",
+    "maped": "Darya Khan",
+    "assigned_id": 348,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Daul tala",
+    "maped": "Daultala",
+    "assigned_id": 3607,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Daur",
+    "maped": "Daur",
+    "assigned_id": 142,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Dera murad jamali",
+    "maped": "Dera Murad Jamali",
+    "assigned_id": 407,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Dijkot",
+    "maped": "Dijkot",
+    "assigned_id": 137,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Dinga",
+    "maped": "Dina",
+    "assigned_id": 138,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Dokri",
+    "maped": "Dokri",
+    "assigned_id": 912,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Donga bonga",
+    "maped": "Donga Bonga",
+    "assigned_id": 140,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Dulle wala",
+    "maped": "Dulle wala",
+    "assigned_id": 526,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Duniapur",
+    "maped": "Dunyapur",
+    "assigned_id": 141,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Faqirwali",
+    "maped": "Faqir Wali",
+    "assigned_id": 145,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Faroka",
+    "maped": "Farooka",
+    "assigned_id": 146,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Fateh pur",
+    "maped": "Fateh Pur",
+    "assigned_id": 396,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Fazil pur",
+    "maped": "Fazilpur",
+    "assigned_id": 350,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Gaggo mandi",
+    "maped": "Gaggoo Mandi",
+    "assigned_id": 150,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Gambat",
+    "maped": "Gambat",
+    "assigned_id": 151,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Ghakkar mandi",
+    "maped": "Ghakhar Mandi",
+    "assigned_id": 543,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Gharo",
+    "maped": "Gharo",
+    "assigned_id": 1385,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Ghazi",
+    "maped": "Ghazi",
+    "assigned_id": 424,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Ghous pur",
+    "maped": "Ghous Pur",
+    "assigned_id": 925,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Golarchi",
+    "maped": "Golarchi",
+    "assigned_id": 248,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Goth machi",
+    "maped": "Goth Machi",
+    "assigned_id": 155,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Gulyana",
+    "maped": "GULIANA",
+    "assigned_id": 2054,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Hajeera",
+    "maped": "HAJEERA",
+    "assigned_id": 2078,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Hala",
+    "maped": "Hala",
+    "assigned_id": 162,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Hangu",
+    "maped": "Hangu",
+    "assigned_id": 163,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Hasil pur",
+    "maped": "Hasil Pur",
+    "assigned_id": 169,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Haveli lakha",
+    "maped": "Haveli Lakha",
+    "assigned_id": 170,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Hazro",
+    "maped": "Hazro",
+    "assigned_id": 352,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Hujra shah mukeem",
+    "maped": "Hujra Shah Muqeem",
+    "assigned_id": 171,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Iqbal abad",
+    "maped": "Iqbalabad",
+    "assigned_id": 3531,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Iqbal nagar",
+    "maped": "Iqbal Nagar",
+    "assigned_id": 450,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Jahanian",
+    "maped": "Jahanian",
+    "assigned_id": 177,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Jalalpur bhattian",
+    "maped": "Jalalpur Bhattian",
+    "assigned_id": 1394,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Jalalpur jattan",
+    "maped": "Jalalpur Jattan",
+    "assigned_id": 179,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Jampur",
+    "maped": "Jampur",
+    "assigned_id": 181,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Jamshoro",
+    "maped": "Jamshoro",
+    "assigned_id": 182,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Jatoi",
+    "maped": "Jatoi",
+    "assigned_id": 184,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Jehangira",
+    "maped": "Jehangira",
+    "assigned_id": 176,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Jhol",
+    "maped": "Jhol",
+    "assigned_id": 928,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Jhuddo",
+    "maped": "Jhuddo",
+    "assigned_id": 363,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kabirwala",
+    "maped": "Kabir Wala",
+    "assigned_id": 190,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kallar kahar",
+    "maped": "Kallar Kahar",
+    "assigned_id": 194,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kallar syeddan",
+    "maped": "Kallar Syedan",
+    "assigned_id": 157,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kalor kot",
+    "maped": "Kalor Kot",
+    "assigned_id": 531,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kamra",
+    "maped": "Kamra",
+    "assigned_id": 199,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kand kot",
+    "maped": "Kandh Kot",
+    "assigned_id": 200,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kandiaro",
+    "maped": "Kandiaro",
+    "assigned_id": 201,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kangan pur",
+    "maped": "Kangan Pur",
+    "assigned_id": 508,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kangra",
+    "maped": "KANGRA",
+    "assigned_id": 1992,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Karor lal easan",
+    "maped": "Karor Lal Esan",
+    "assigned_id": 488,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kashmore",
+    "maped": "Kashmore",
+    "assigned_id": 203,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kassowal",
+    "maped": "Kassowal",
+    "assigned_id": 449,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Khairpur tamewali",
+    "maped": "Khairpur Tamiwali",
+    "assigned_id": 206,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Khan bela",
+    "maped": "Khan Bela",
+    "assigned_id": 207,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Khanpur mahar",
+    "maped": "Khanpur Mahar",
+    "assigned_id": 429,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Khudian khas",
+    "maped": "Khudian Khas",
+    "assigned_id": 509,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Khurrianwala",
+    "maped": "Khurrianwala",
+    "assigned_id": 213,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kot chutta",
+    "maped": "Kot Chutta",
+    "assigned_id": 349,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kot ghulam muhammad",
+    "maped": "Kot Ghulam Muhammad",
+    "assigned_id": 360,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kot momin",
+    "maped": "Kot Momin",
+    "assigned_id": 218,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kot radha kishan",
+    "maped": "Kot Radha Kishan",
+    "assigned_id": 510,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kot samabah",
+    "maped": "Kot Samaba",
+    "assigned_id": 220,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kotla arab ali khan",
+    "maped": "Kotla Arab Ali Khan",
+    "assigned_id": 516,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kotli loharan",
+    "maped": "Kotli Loharan",
+    "assigned_id": 431,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kuchlak",
+    "maped": "Kuchlak",
+    "assigned_id": 523,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kulachi",
+    "maped": "Kulachi",
+    "assigned_id": 525,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kundian",
+    "maped": "Kundian",
+    "assigned_id": 541,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Kunri",
+    "maped": "Kunri",
+    "assigned_id": 357,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Lakki marwat",
+    "maped": "Lakki Marwat",
+    "assigned_id": 532,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Lalian",
+    "maped": "Lalian",
+    "assigned_id": 225,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Lallian",
+    "maped": "Lalian",
+    "assigned_id": 225,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Liaqat pur",
+    "maped": "Liaquat Pur",
+    "assigned_id": 228,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Lower dir",
+    "maped": "Lower Dir",
+    "assigned_id": 3520,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Mailsi",
+    "maped": "Mailsi",
+    "assigned_id": 233,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Malakand",
+    "maped": "Malakand",
+    "assigned_id": 3522,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Malakwal",
+    "maped": "Malakwal",
+    "assigned_id": 467,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Mamu kanjan",
+    "maped": "Mamu Kanjan",
+    "assigned_id": 235,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Manawala",
+    "maped": "Manawala",
+    "assigned_id": 1381,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Mandian",
+    "maped": "Mandan",
+    "assigned_id": 1879,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Mankera",
+    "maped": "Mankera",
+    "assigned_id": 530,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Mari",
+    "maped": "Miri",
+    "assigned_id": 865,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Matiari",
+    "maped": "Matiari",
+    "assigned_id": 247,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Matli",
+    "maped": "Makli",
+    "assigned_id": 347,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Meher",
+    "maped": "Mehar",
+    "assigned_id": 918,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Mehrab pur",
+    "maped": "Mehrabpur",
+    "assigned_id": 917,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Miani",
+    "maped": "Miami",
+    "assigned_id": 1729,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Minchinabad",
+    "maped": "Minchin Abad",
+    "assigned_id": 242,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Mingora",
+    "maped": "Mingora",
+    "assigned_id": 415,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Mitha tiwana",
+    "maped": "Mitha Tiwana",
+    "assigned_id": 1495,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Mitthi",
+    "maped": "Mithi",
+    "assigned_id": 246,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "More khunda",
+    "maped": "More Khunda",
+    "assigned_id": 3545,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Noorpur thal",
+    "maped": "Noor Pur Thal",
+    "assigned_id": 259,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Noriabad",
+    "maped": "Nooriabad",
+    "assigned_id": 3556,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Nowshera virkan",
+    "maped": "Nowshera Virkan",
+    "assigned_id": 265,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Naushahro feroze",
+    "maped": "Naushahro Feroze",
+    "assigned_id": 266,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Pabi",
+    "maped": "Pai",
+    "assigned_id": 816,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Paharpur",
+    "maped": "Paharpur",
+    "assigned_id": 528,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Paroa",
+    "maped": "Paroa",
+    "assigned_id": 524,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Pezu",
+    "maped": "Pezu",
+    "assigned_id": 533,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Phalia",
+    "maped": "Phalia",
+    "assigned_id": 438,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Pindi bhatian",
+    "maped": "Pindi Bhatiyan",
+    "assigned_id": 272,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Pindi gheb",
+    "maped": "Pindi Gheb",
+    "assigned_id": 2469,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Piplan",
+    "maped": "Piplan",
+    "assigned_id": 274,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Pir baba",
+    "maped": "Pir Bala",
+    "assigned_id": 373,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Pitaro",
+    "maped": "Petaro",
+    "assigned_id": 437,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Qabal",
+    "maped": "Kabal",
+    "assigned_id": 461,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Qadir pur rawan",
+    "maped": "Qadirpur Rawan",
+    "assigned_id": 392,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Qaidabad",
+    "maped": "Quaidabad",
+    "assigned_id": 282,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Qasba gujrat.",
+    "maped": "Qasba Gujrat",
+    "assigned_id": 391,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Qazi ahmed",
+    "maped": "Qazi Ahmed",
+    "assigned_id": 278,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Raja jang",
+    "maped": "Raja Jang",
+    "assigned_id": 513,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Rajanpur",
+    "maped": "Rajan Pur",
+    "assigned_id": 285,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Rajana",
+    "maped": "Rajana",
+    "assigned_id": 1264,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Rajar",
+    "maped": "RAJJAR",
+    "assigned_id": 1995,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Ramak",
+    "maped": "Ramak",
+    "assigned_id": 535,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Rani pur",
+    "maped": "Ranipur",
+    "assigned_id": 286,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Rao khan wala",
+    "maped": "Rao Khan Wala",
+    "assigned_id": 514,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Rato dearo",
+    "maped": "Rato Dero",
+    "assigned_id": 287,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Rawat",
+    "maped": "Rawat",
+    "assigned_id": 466,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Renala khurd",
+    "maped": "Renala Khurd",
+    "assigned_id": 289,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Rubwa",
+    "maped": "Rabwa",
+    "assigned_id": 1376,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Saidu sharif",
+    "maped": "Saidu Sharif",
+    "assigned_id": 462,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Sakrand",
+    "maped": "Sakrand",
+    "assigned_id": 297,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Sanghar",
+    "maped": "Sanghar",
+    "assigned_id": 299,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Sangla hill",
+    "maped": "Sangla Hill",
+    "assigned_id": 300,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Sanjhoro",
+    "maped": "Sinjhoro",
+    "assigned_id": 930,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Sardar garh",
+    "maped": "Sardargarh",
+    "assigned_id": 3532,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Sawabi",
+    "maped": "Swabi",
+    "assigned_id": 304,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Shabqadar",
+    "maped": "Shabqadar",
+    "assigned_id": 453,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Shadiwal",
+    "maped": "Shadiwal",
+    "assigned_id": 520,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Shah pur chakar",
+    "maped": "Shahpur Chakar",
+    "assigned_id": 365,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Shahdad pur",
+    "maped": "Shahdad Pur",
+    "assigned_id": 310,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Sham kot",
+    "maped": "Shah Kot",
+    "assigned_id": 308,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Shewa adda",
+    "maped": "Shewa Adda",
+    "assigned_id": 459,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Shorkot",
+    "maped": "Shorkot",
+    "assigned_id": 402,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Sibi",
+    "maped": "Sibi",
+    "assigned_id": 940,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Sihala",
+    "maped": "SIHALA",
+    "assigned_id": 2066,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Sikandarabad",
+    "maped": "SIKANDAR ABAD",
+    "assigned_id": 2160,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Silanwali",
+    "maped": "Sillanwali",
+    "assigned_id": 317,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Talagung",
+    "maped": "Talagang",
+    "assigned_id": 320,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Talhar",
+    "maped": "Talhar",
+    "assigned_id": 927,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Tando adam",
+    "maped": "Tando Adam",
+    "assigned_id": 322,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Tando jam",
+    "maped": "Tando Jam",
+    "assigned_id": 324,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Tando jan muhammad",
+    "maped": "Tando Jan Mohammad",
+    "assigned_id": 364,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Tarnol",
+    "maped": "Tarnol",
+    "assigned_id": 1388,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Taunsa sharif",
+    "maped": "Taunsa Sharif",
+    "assigned_id": 331,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Thull",
+    "maped": "Thul",
+    "assigned_id": 1402,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Tranda saway khan",
+    "maped": "Taranda Saway Khan",
+    "assigned_id": 328,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Tulamba",
+    "maped": "Tulamba",
+    "assigned_id": 3529,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Ubaro",
+    "maped": "Ubauro",
+    "assigned_id": 1403,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Uch shrif",
+    "maped": "Uch Sharif",
+    "assigned_id": 338,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Umerkot",
+    "maped": "Umerkot",
+    "assigned_id": 356,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Usta muhammad",
+    "maped": "Usta Muhammad",
+    "assigned_id": 941,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Yazman",
+    "maped": "Yazman",
+    "assigned_id": 343,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Zafarwal",
+    "maped": "Zaffarwal",
+    "assigned_id": 387,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Zahir pir",
+    "maped": "Zahir Pir",
+    "assigned_id": 344,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Makli",
+    "maped": "Makli",
+    "assigned_id": 347,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Bela",
+    "maped": "Belva",
+    "assigned_id": 2710,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Havelian",
+    "maped": "Havelian",
+    "assigned_id": 366,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Chenab nagar",
+    "maped": "Chenab Nagar",
+    "assigned_id": 124,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Sinjhoro",
+    "maped": "Sinjhoro",
+    "assigned_id": 930,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Banguldero",
+    "maped": "Banguldero",
+    "assigned_id": 914,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Qambar",
+    "maped": "Ambar",
+    "assigned_id": 458,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Chowk munda",
+    "maped": "Chowk Munda",
+    "assigned_id": 399,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Mehmood kot",
+    "maped": "Mehmood Kot",
+    "assigned_id": 394,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Ghouspur",
+    "maped": "Ghous Pur",
+    "assigned_id": 925,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Chashma",
+    "maped": "Chashma",
+    "assigned_id": 126,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Daud khel",
+    "maped": "Daud Khel",
+    "assigned_id": 1375,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Naya lahore",
+    "maped": "Naya Lahore",
+    "assigned_id": 545,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Aminpur bangla",
+    "maped": "Aminpur Bangla",
+    "assigned_id": 3548,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
+  },
+  {
+    "city": "Wazirabad",
+    "maped": "Wazirabad",
+    "assigned_id": 342,
+    "active_as_origin": true,
+    "active_as_destination": true,
+    "courier": "trax"
   }
 ]

@@ -1,18 +1,18 @@
 const data = require("../data/index");
 const fs = require("fs");
 
-const capitalizeWord = (word) => word[0] + word.substring(1).toLowerCase();
-const capitalizeSentense = (sentense) => {
-  if (!/" "/g.test(sentense)) {
-    return capitalizeWord(sentense);
-  }
-  const splited = sentense.split(" ");
-  if (splited.length > 1) {
-    const capilizedArray = splited.map((word) => capitalizeWord(word));
-    return capilizedArray.join(" ");
-  }
-  return splited[0];
-};
+// const capitalizeWord = (word) => word[0] + word.substring(1).toLowerCase();
+// const capitalizeSentense = (sentense) => {
+//   if (!/" "/g.test(sentense)) {
+//     return capitalizeWord(sentense);
+//   }
+//   const splited = sentense.split(" ");
+//   if (splited.length > 1) {
+//     const capilizedArray = splited.map((word) => capitalizeWord(word));
+//     return capilizedArray.join(" ");
+//   }
+//   return splited[0];
+// };
 
 function levenshteinDistance(a, b) {
   // Convert strings to lowercase for case-insensitive comparison
@@ -103,7 +103,7 @@ mappedCities.forEach((list) => {
   });
 });
 const result = JSON.stringify(singleArr);
-const filePath = "output.json";
+const filePath = __dirname + "/output.json";
 fs.writeFile(filePath, result, "utf8", (err) => {
   if (err) {
     console.error("Error writing JSON to file:", err);

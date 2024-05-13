@@ -4,6 +4,7 @@ import getAxiosInstance from "../http";
 class CallCourier extends CourierInterface {
   constructor() {
     super();
+
     this.http = getAxiosInstance("https://codapi.daewoo.net.pk/", {});
   }
   getUrlWithApiCred(url) {

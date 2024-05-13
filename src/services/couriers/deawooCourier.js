@@ -60,7 +60,7 @@ class DeawooCourier extends CourierInterface {
         destination_location_point: "0.0",
         source_location_address: `${companyProfile.address} ${companyProfile.city}`,
         destination_location_address: `${order.address.address1}, ${destinationCity.maped}`,
-        item_description: order.items[0].name,
+        item_description: order.items.reduce((p, c) => `${p}/${c.name}`, ""),
       };
       response = await this.http.post(
         this.getUrlWithApiCred(

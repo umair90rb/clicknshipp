@@ -45,7 +45,7 @@ class LeapordCourier extends CourierInterface {
         booked_packet_vol_weight_w: 0,
         booked_packet_vol_weight_h: 0,
         booked_packet_vol_weight_l: 0,
-        booked_packet_no_piece: order?.items?.length || 1,
+        booked_packet_no_piece: order?.items?.length,
         booked_packet_collect_amount: order.total_price,
         booked_packet_order_id: order.order_number,
         origin_city: 322,
@@ -63,7 +63,9 @@ class LeapordCourier extends CourierInterface {
         consignment_phone_two: "",
         consignment_phone_three: "",
         consignment_address: `${order.address.address1} ${order.address.city}`,
-        special_instructions: order.address.address2 || order.items[0].name,
+        special_instructions:
+          order.address.address2 ||
+          order.items.reduce((p, c) => `${p}/${c.name}`, ""),
         shipment_type: "overnight",
         custom_data: "",
         return_address: companyProfile.address,

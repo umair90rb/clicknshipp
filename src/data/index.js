@@ -3,10 +3,16 @@ const leopardCities = require("./leopardProductionCityList");
 const deawooCities = require("./deawooProductionCityList");
 const tcsCities = require("./tcsProductionCityList");
 const postexCities = require("./postexCourierProductionCityList");
-
+const traxCities = require("./traxProductionCitiesList");
 module.exports = {
   cities,
-  servicesCities: [leopardCities, deawooCities, tcsCities, postexCities],
+  servicesCities: [
+    leopardCities,
+    deawooCities,
+    tcsCities,
+    postexCities,
+    traxCities,
+  ],
   courierList: [
     {
       service: "leopard",
@@ -35,6 +41,13 @@ module.exports = {
       originKey: "isPickupCity",
       destnationKey: "isDeliveryCity",
       nameKey: "operationalCityName",
+    },
+    {
+      service: "trax",
+      idKey: "id",
+      originKey: "pickup",
+      destnationKey: "",
+      nameKey: "name",
     },
   ],
 };
