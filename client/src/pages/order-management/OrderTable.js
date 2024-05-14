@@ -50,14 +50,14 @@ const columns = (viewAction) => [
     headerName: 'Customer',
     flex: 1.25,
     sortable: false,
-    valueGetter: (param) => `${param.row.customer?.first_name} ${param.row.customer?.last_name}`
+    valueGetter: (param) => `${param.row.customer?.first_name || ''} ${param.row.customer?.last_name || ''}`
   },
   {
     field: 'phone',
     headerName: 'Customer Ph',
     flex: 1.25,
     sortable: false,
-    valueGetter: (param) => param.row.customer?.phone || ''
+    valueGetter: (param) => param.row.customer?.phone || param.row.address?.phone || ''
   },
   {
     field: 'agent',

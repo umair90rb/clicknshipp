@@ -34,3 +34,5 @@ sequelize migration:generate --name add-username-column-in-delivery-service-acco
 sequelize migration:generate --name add-shipment-series-column-in-brand-table
 
 sequelize migration:generate --name remove-user-brands-table-timestamps
+sequelize migration:generate --name add-phone-name-column-in-addresses
+sequelize migration:generate --name add-shopify-id-column-in-customer-table

@@ -18,6 +18,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      shopify_id: {
+        type: DataTypes.BIGINT,
+        allowNull: true,
+      },
       first_name: {
         type: DataTypes.STRING,
         allowNull: true,

@@ -35,6 +35,8 @@ const address_data_keys = [
   "address1",
   "city",
   "zip",
+  "name",
+  "phone",
   "province",
   "country",
   "address2",
@@ -46,6 +48,7 @@ const address_data_keys = [
 ];
 
 const customer_data_keys = [
+  "id",
   "email",
   "first_name",
   "last_name",
@@ -62,26 +65,6 @@ const item_data_keys = [
   "sku",
   "total_discount",
 ];
-
-function getOperator(key) {
-  switch (key) {
-    case "contains":
-      return Op.like;
-    case "equals":
-      return Op.eq;
-    case "starts with":
-      return Op.startsWith;
-    case "ends with":
-      return Op.endsWith;
-    case "is empty":
-      return Op.eq;
-    case "is not empty":
-      return Op.ne;
-    default:
-      console.error(`Operator for key "${key}" not found.`);
-      return null; // Or throw an error, depending on your use case
-  }
-}
 
 function parseValue(value, type) {
   switch (type) {
@@ -158,7 +141,7 @@ export default {
           {
             model: Address,
             as: "address",
-            attributes: ["city", "address1"],
+            attributes: ["name", "phone", "city", "address1"],
           },
         ],
         attributes: {
@@ -316,7 +299,11 @@ export default {
       const order_data = extract(body, order_data_keys);
       const address_data = extract(body["shipping_address"], address_data_keys);
       const customer_data = extract(body["customer"], customer_data_keys);
-      if (customer_data && "phone" in customer_data) {
+      if (
+        customer_data &&
+        "phone" in customer_data &&
+        customer_data.phone !== null
+      ) {
         customer_data.phone = formatPhoneNumber(customer_data.phone);
       }
       const order_items_data = body["line_items"].map((item) =>
@@ -329,13 +316,22 @@ export default {
         data: JSON.stringify(body),
       });
       let customer;
-      if (customer_data && "phone" in customer_data) {
+      if (
+        customer_data &&
+        "phone" in customer_data &&
+        customer_data.phone !== null
+      ) {
         customer = await Customer.findOne({
           where: { phone: customer_data?.phone },
         });
       }
       if (!customer) {
-        customer = await order.createCustomer(customer_data);
+        const cus = { shopify_id: customer_data.id, ...customer_data };
+        delete cus.id;
+        if (cus.phone === null) {
+          cus.phone = address_data.phone;
+        }
+        customer = await order.createCustomer(cus);
       }
       await order.setCustomer(customer);
       const address = await order.createAddress(address_data);

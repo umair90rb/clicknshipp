@@ -85,7 +85,7 @@ const OrderView = () => {
   } = order || {};
   const [orderStatus, setOrderStatus] = useState('');
   const { email, first_name, last_name, id: customerId, name, note, phone } = customer || {};
-  const { city, zip, country, address1 } = address || {};
+  const { city, zip, country, address1, phone: address_phone } = address || {};
   useEffect(() => {
     dispatch(fetchOrder({ id: orderId })).then((action) => {
       if (action.type === 'order/fetch/fulfilled') {
@@ -228,7 +228,8 @@ const OrderView = () => {
                 Shipping Address
               </Typography>
               <Typography key={address1}>
-                {address1} <br /> {city} {zip} <br /> {country}
+                Address: {address1} <br /> City:{city} Zip:{zip || 'None'} <br /> Country: {country}
+                <br /> Phone: {address_phone}
               </Typography>
             </CardContent>
           </Card>
