@@ -11,7 +11,7 @@ class BookingService {
       leopard: new LeapordCourier(),
       postex: new PostexCourier(),
       deawoo: new DeawooCourier(),
-      sonic: new SonicCourier(),
+      trax: new SonicCourier(),
       tcs: new TCSCourier(),
       callcourier: new CallCourier(),
     };

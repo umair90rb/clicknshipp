@@ -5,49 +5,72 @@ class CallCourier extends CourierInterface {
   constructor() {
     super();
 
-    this.http = getAxiosInstance("https://codapi.daewoo.net.pk/", {});
+    this.http = getAxiosInstance(
+      "http://cod.callcourier.com.pk/API/CallCourier/",
+      {}
+    );
   }
-  getUrlWithApiCred(url) {
-    return `${url}?apiKey=${process.env.DeawooAPI}&apiUser=${process.env.DeawooUsername}&apiPassword=${process.env.DeawooPassword}`;
-  }
-  async bookParcel(order) {
+
+  async bookParcel(order, courier) {
+    let response, body;
     try {
-      const body = {
-        order_no: order.order_number,
-        source_terminal_id: "0",
-        destination_terminal_id: "18",
-        receiver_name: order.customer.name,
-        receiver_cnic: "",
-        receiver_mobile: order.customer.phone,
-        receiver_address: `${order.address.address1}, ${order.address.city}, ${order.address.country}`,
-        receiver_city: order.address.city,
-        receiver_email: order.customer.email || "",
-        remarks: order.address.address2 || "",
-        category_id: "0",
-        qty: "1",
-        weight: "1",
-        barcode: "0",
-        cod_amount: order.total_price,
-        source_location_point: "0.0",
-        destination_location_point: "0.0",
-        source_location_address: "Faisalabad",
-        destination_location_address: `${order.address.address1}, ${order.address.city}, ${order.address.country} `,
-        item_description: "",
-      };
+      const destinationCity = await CityNameMaping.findOne({
+        where: {
+          [Op.or]: [
+            {
+              city: order.address.city,
+            },
+            { maped: order.address.city },
+          ],
+          courier,
+        },
+        raw: true,
+      });
+      if (!destinationCity) {
+        return {
+          cn: null,
+          slip: null,
+          isSuccess: false,
+          error: "City not found in the database, contact admin",
+          response: "destination not found in the db",
+        };
+      }
+      body = `SaveBooking?loginId=${
+        order.brand.DeliveryServiceAccount.key
+      }&ConsigneeName="${order.customer.first_name}${
+        order.customer.last_name || ""
+      }"&ConsigneeRefNo="${order.brand.name}x${
+        order.brand.shipment_series
+      }"&ConsigneeCellNo=${order.customer.phone}&Address=${
+        order.address.address1
+      }&Origin=FAISALABAD&DestCityId=${
+        destinationCity.assigned_id
+      }&ServiceTypeId=7&Pcs=${
+        order.items.length
+      }&Weight=${0.5}&Description=${order.items.reduce(
+        (p, c, i) => (i > 0 ? `${c.name}/${p}` : c.name),
+        ""
+      )}&SelOrigin=Domestic&CodAmount=${
+        order.total_price
+      }&SpecialHandling=false&MyBoxId=1&Holiday=false&remarks=Rush%20Delivery&ShipperName=SWAP&ShipperCellNo=03005444103&ShipperArea=1&ShipperCity=1&ShipperAddress=286-K,%20GULISTAN%20COLONY%20NO.1,NEAR%20GIRLS%20HIGH%20SCHOOL,%20FAISALABAD"
+      &ShipperLandLineNo=03005444103&ShipperEmail=SWAPNEARN@GMAIL.COM`;
       const response = await this.http.post(
         this.getUrlWithApiCred("api/booking/quickBook"),
         body
       );
-      const {
-        TrackNo,
-        Error,
-        Success,
-        Validations,
-        Response,
-        Barcode,
-        CashCollection,
-        OrderId,
-      } = response.data || {};
+      logger.log("info", "leopard book parcel api response", {
+        res: response.data,
+        body,
+      });
+      return {
+        cn: track_number,
+        slip: slip_link,
+        isSuccess: Boolean(status),
+        error: error ? error : null,
+        response: status
+          ? "Package booked with leopards"
+          : "Error: Something goes wrong!",
+      };
       return {
         cn: TrackNo,
         slip: "",

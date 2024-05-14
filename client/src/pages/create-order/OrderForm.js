@@ -301,7 +301,7 @@ const CreateOrderForm = () => {
                         options={chanels.map((chanel) => ({ id: chanel.id, label: chanel.name, brand_id: chanel?.brand?.id }))}
                         id="chanel_id"
                         name="chanel_id"
-                        value={values.chanel_id !== '' ? chanels.find((c) => c.id === values.chanel_id).name : ''}
+                        value={values.chanel_id !== '' ? chanels.find((c) => c.id === values.chanel_id)?.name : ''}
                         onBlur={handleBlur}
                         onChange={(event, newValue) => {
                           if (newValue === '' || newValue === null) {
@@ -888,7 +888,9 @@ const CreateOrderForm = () => {
                         <TableCell colSpan={3} align="right">
                           Total
                         </TableCell>
-                        <TableCell align="right">{items.reduce((pre, item) => parseFloat(item.unit || item.price) + pre, 0)}</TableCell>
+                        <TableCell align="right">
+                          {items.reduce((pre, item) => parseFloat((item.unit || item.price) * item.quantity) + pre, 0)}
+                        </TableCell>
                         <TableCell></TableCell>
                       </TableRow>
                       <TableRow>

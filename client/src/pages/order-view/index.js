@@ -24,6 +24,18 @@ const style = {
   p: 4
 };
 
+const courierServiceModalStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  height: 150,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4
+};
+
 const trackingModalStyle = {
   position: 'absolute',
   top: '50%',
@@ -223,7 +235,7 @@ const OrderView = () => {
         </Grid>
       </Grid>
       <Modal open={showBookModal} onClose={hideBookingModal} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
-        <Box sx={style}>
+        <Box sx={courierServiceModalStyle}>
           <CourierDropdown updateOrderStatus={setOrderStatus} orderId={id} />
         </Box>
       </Modal>

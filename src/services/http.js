@@ -3,7 +3,7 @@ import axios from "axios";
 const getAxiosInstance = (baseURL, headers) => {
   const http = axios.create({
     baseURL: baseURL,
-    timeout: 3000,
+    timeout: 10000,
     headers: { ...headers },
   });
   http.interceptors.request.use((request) => {

@@ -604,6 +604,7 @@ export default {
             model: Customer,
             as: "customer",
           },
+
           {
             model: Address,
             as: "address",
@@ -653,6 +654,7 @@ export default {
         order
       );
       const { cn, slip, isSuccess, error, response } = bookingResponse || {};
+      console.log(bookingResponse, "bookingResponse");
       if (isSuccess) {
         await order.createDelivery({
           courier: service,
@@ -725,6 +727,7 @@ export default {
           order.brand.DeliveryServiceAccount.get()
         );
       const { isSuccess, error, response } = cancelBookingResponse || {};
+      console.log(cancelBookingResponse, "cancelBookingResponse");
       if (isSuccess) {
         await delivery.update({
           slip_link: "",
@@ -791,6 +794,7 @@ export default {
         error,
         response,
       } = bookingStatusResponse || {};
+      console.log(bookingStatusResponse, "status response");
       if (isSuccess) {
         return sendSuccessResponse(
           res,

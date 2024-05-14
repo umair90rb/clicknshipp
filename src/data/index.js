@@ -4,6 +4,7 @@ const deawooCities = require("./deawooProductionCityList");
 const tcsCities = require("./tcsProductionCityList");
 const postexCities = require("./postexCourierProductionCityList");
 const traxCities = require("./traxProductionCitiesList");
+const callCourierCities = require("./callCourierProductionCityList.js");
 module.exports = {
   cities,
   servicesCities: [
@@ -12,6 +13,7 @@ module.exports = {
     tcsCities,
     postexCities,
     traxCities,
+    callCourierCities,
   ],
   courierList: [
     {
@@ -48,6 +50,13 @@ module.exports = {
       originKey: "pickup",
       destnationKey: "",
       nameKey: "name",
+    },
+    {
+      service: "callcourier",
+      idKey: "CityID",
+      originKey: "",
+      destnationKey: "",
+      nameKey: "CityName",
     },
   ],
 };

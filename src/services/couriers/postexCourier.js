@@ -1,12 +1,18 @@
 import logger from "../../middleware/logger";
 import CourierInterface from "../courierInterface";
 import getAxiosInstance from "../http";
+import models from "../../models";
+import { Op } from "sequelize";
+const { CityNameMaping } = models;
 
 class PostexCourier extends CourierInterface {
   constructor() {
     super();
     this.http = getAxiosInstance(
-      "https://api.postex.pk/services/integration/api/order/v3/"
+      "https://api.postex.pk/services/integration/api/order/v3/",
+      {
+        "Content-Type": "application/json",
+      }
     );
   }
 
@@ -38,19 +44,26 @@ class PostexCourier extends CourierInterface {
         cityName: destinationCity.maped,
         customerName: order.customer.name,
         customerPhone: order.customer.phone,
+        customerEmail: order.customer.email || "customer@mail.com",
         deliveryAddress: `${order.address.address1}, ${order.address.city}`,
         invoiceDivision: 0,
         invoicePayment: order.total_price,
         items: order.items.length,
-        orderDetail: order.items.reduce((p, c) => `${p}/${c.name}`, ""),
+        orderDetail: order.items.reduce(
+          (p, c, i) => (i > 0 ? `${c.name}/${p}` : c.name),
+          ""
+        ),
         orderRefNumber: `${order.brand.name}x${order.brand.shipment_series}`,
         orderType: "Normal",
         transactionNotes: "Rush Delivery",
-        pickupAddressCode: "string", //required
-        storeAddressCode: "string", //required
+        pickupAddressCode: "001", //required
+        // storeAddressCode: "001", //required
       };
       const response = await this.http.post("create-order", body, {
         headers: { token: order.brand.DeliveryServiceAccount.key },
+      });
+      logger.log("info", "postex book api response", {
+        data: response.data,
       });
       const { statusCode, statusMessage, dist } = response.data || {};
       const { trackingNumber, orderStatus, orderDate } = dist;
@@ -62,10 +75,10 @@ class PostexCourier extends CourierInterface {
         response: statusMessage,
       };
     } catch (error) {
-      const { statusCode, statusMessage, dist } = response.data || {};
+      const { statusMessage } = response || {};
       logger.log("error", error.message, {
         body,
-        res: response.data,
+        res: response?.data,
         stack: "in postex booking function",
       });
       return {
@@ -135,33 +148,33 @@ class PostexCourier extends CourierInterface {
     try {
       const body = { trackingNumber };
       response = await this.http.put(
-        "https://api.postex.pk/services/integration/api/order/v1/cancel-order/",
+        "https://api.postex.pk/services/integration/api/order/v1/cancel-order",
         body,
         {
           headers: { token: deliveryAccount.key },
         }
       );
+      console.log(response, "postex cancel response");
       logger.log("info", "postex cancel booking parcel api response", {
         body,
-        res: response,
+        res: response?.data,
       });
+      const { statusCode, statusMessage } = response?.data || {};
       return {
-        isSuccess: response.statusCode === 200,
-        error: response.statusCode !== 200 ? "Booking not found!" : null,
-        response:
-          response.statusCode === 200
-            ? "Booking canceled!"
-            : "Booking not found!",
+        isSuccess: statusCode == "200" ? true : false,
+        error: statusCode != "200" ? statusMessage : null,
+        response: statusMessage,
       };
     } catch (error) {
+      console.log(error, "postex cancel error");
       logger.log("error", "postex cancel booking parcel api error", {
-        res: response,
+        res: response?.data,
         stack: "in postex cancel booking function",
       });
       return {
         isSuccess: false,
-        error: "Something goes wrong!",
-        response: "Error in booking cancelation!",
+        error,
+        response,
       };
     }
   }

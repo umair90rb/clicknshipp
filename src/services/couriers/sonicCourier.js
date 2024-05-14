@@ -1,5 +1,9 @@
 import logger from "../../middleware/logger";
 import CourierInterface from "../courierInterface";
+import getAxiosInstance from "../http";
+import models from "../../models";
+import { Op } from "sequelize";
+const { CityNameMaping } = models;
 
 class SonicCourier extends CourierInterface {
   constructor() {
@@ -40,22 +44,25 @@ class SonicCourier extends CourierInterface {
         }`,
         consignee_address: order.address.address1,
         consignee_phone_number_1: order.customer.phone,
-        consignee_phone_number_2: "",
-        consignee_email_address: order.customer.email || "",
+        // consignee_phone_number_2: "",
+        // consignee_email_address: order.customer.email || "",
         order_id: `${order.brand.name}x${order.brand.shipment_series}`,
         item_product_type_id: 15,
-        item_description: order.items.reduce((p, c) => `${p}/${c.name}`, ""),
+        item_description: order.items.reduce(
+          (p, c, i) => (i > 0 ? `${c.name}/${p}` : c.name),
+          ""
+        ),
         item_quantity: order.items.length,
         item_insurance: 0,
         item_price: order.total_price,
         pickup_date: new Date().toISOString().split("T")[0],
-        special_instructions: order.address.address2 || "",
+        // special_instructions: order.address.address2 || "",
         estimated_weight: 0.5,
         shipping_mode_id: 1,
         // same_day_timing_id: "",
         amount: order.total_price,
         payment_mode_id: 1,
-        charges_mode_id: 3,
+        // charges_mode_id: 3,
         open_shipment: 0,
         pieces_quantity: order.items.length,
         shipper_reference_number_1: "",
@@ -64,28 +71,31 @@ class SonicCourier extends CourierInterface {
         // shipper_reference_number_4: "",
         // shipper_reference_number_5: "",
       };
-      response = await this.http.post("book", body);
+      response = await this.http.post("book", body, {
+        headers: { Authorization: order.brand.DeliveryServiceAccount.key },
+      });
       logger.log("info", "trax book parcel api response", {
-        res: response.data,
+        res: response?.data,
         body,
       });
-      const { message, status, ...tracking_number } = response.data || {};
+      const { message, status, ...rest } = response?.data || {};
+      const { tracking_number } = rest || {};
       return {
-        cn: tracking_number,
+        cn: status < 1 ? tracking_number : null,
         slip: JSON.stringify({ message, status }),
-        isSuccess: Boolean(status),
-        error: status === 0 ? message : null,
+        isSuccess: Boolean(status < 1),
+        error: status > 0 ? message : null,
         response: message,
       };
     } catch (error) {
       logger.log("error", error.message, {
         body,
-        res: response.data,
+        res: response?.data,
         stack: "in trax booking function",
       });
-      const { message, status, ...tracking_number } = response?.data || {};
+      const { message, status, ...rest } = response?.data || {};
       return {
-        cn: tracking_number,
+        cn: null,
         slip: null,
         isSuccess: false,
         error: message,
@@ -109,7 +119,7 @@ class SonicCourier extends CourierInterface {
       const { message, status, details } = response.data || {};
       const { tracking_history, ...rest } = details || {};
       return {
-        isSuccess: Boolean(status),
+        isSuccess: Boolean(status === 0),
         error: status > 0 ? message : null,
         history: tracking_history,
         status: tracking_history[0].status,
@@ -144,8 +154,11 @@ class SonicCourier extends CourierInterface {
   async cancelBooking(trackingNumber, deliveryAccount) {
     let response;
     try {
-      response = await this.http.get(
-        `cancel?tracking_number=${trackingNumber}`,
+      response = await this.http.post(
+        "cancel",
+        {
+          tracking_number: trackingNumber,
+        },
         {
           headers: { Authorization: deliveryAccount.key },
         }
@@ -155,8 +168,8 @@ class SonicCourier extends CourierInterface {
       });
       const { message, status } = response.data || {};
       return {
-        isSuccess: Boolean(status),
-        error: status === 0 ? message : null,
+        isSuccess: Boolean(status === 0),
+        error: status > 0 ? message : null,
         response: message,
       };
     } catch (error) {
@@ -166,9 +179,9 @@ class SonicCourier extends CourierInterface {
         stack: "in trax cancel function",
       });
       return {
-        isSuccess: Boolean(status),
-        error: status === 0 ? message : null,
-        response: message,
+        isSuccess: false,
+        error: message,
+        response: "Error in cancel booking",
       };
     }
   }

@@ -9,14 +9,17 @@ const { CityNameMaping } = models;
 class LeapordCourier extends CourierInterface {
   constructor() {
     super();
-    this.http = getAxiosInstance("http://new.leopardscod.com/webservice/", {});
+    this.stagingURL = "https://merchantapistaging.leopardscourier.com/api/";
+    this.prodURL = "https://merchantapi.leopardscourier.com/api/";
+    this.http = getAxiosInstance(
+      process.env.NODE_ENV === "development" ? this.stagingURL : this.prodURL,
+      {}
+    );
   }
 
   async bookParcel(order, courier) {
-    let response;
+    let response, body;
     try {
-      const testURL = "bookPacketTest";
-      const prodURL = "bookPacket";
       const destinationCity = await CityNameMaping.findOne({
         where: {
           [Op.or]: [
@@ -38,45 +41,44 @@ class LeapordCourier extends CourierInterface {
           response: "destination not found in the db",
         };
       }
-      const body = {
+      body = {
         api_key: order.brand.DeliveryServiceAccount.key,
         api_password: order.brand.DeliveryServiceAccount.password,
-        booked_packet_weight: companyProfile.parcelOptions.weight,
-        booked_packet_vol_weight_w: 0,
-        booked_packet_vol_weight_h: 0,
-        booked_packet_vol_weight_l: 0,
+        booked_packet_weight: 500,
+        // booked_packet_vol_weight_w: 0,
+        // booked_packet_vol_weight_h: 0,
+        // booked_packet_vol_weight_l: 0,
         booked_packet_no_piece: order?.items?.length,
         booked_packet_collect_amount: order.total_price,
-        booked_packet_order_id: order.order_number,
+        booked_packet_order_id: `${order.brand.name}x${order.brand.shipment_series}`,
         origin_city: 322,
-        destination_city: destinationCity.assigned_id,
-        shipment_id: `${order.brand.name}x${order.brand.shipment_series}`,
-        shipment_name_eng: companyProfile.name,
-        shipment_email: companyProfile.email,
-        shipment_phone: companyProfile.phone,
-        shipment_address: companyProfile.address,
+        destination_city: parseInt(destinationCity.assigned_id),
+        shipment_id: 10,
+        // shipment_id: 1504100,
+        shipment_name_eng: "self",
+        shipment_email: "umekalsoom011@gmail.com",
+        shipment_phone: "3094446319_",
+        shipment_address: "SIE MILLAT ROAD FAISALABAD",
         consignment_name_eng: `${order.customer.first_name} ${
           order.customer.last_name || ""
         }`,
-        consignment_email: order.customer.email || "",
+        // consignment_email: order.customer.email || "",
         consignment_phone: order.customer.phone,
-        consignment_phone_two: "",
-        consignment_phone_three: "",
+        // consignment_phone_two: "",
+        // consignment_phone_three: "",
         consignment_address: `${order.address.address1} ${order.address.city}`,
         special_instructions:
           order.address.address2 ||
-          order.items.reduce((p, c) => `${p}/${c.name}`, ""),
+          order.items.reduce(
+            (p, c, i) => (i > 0 ? `${c.name}/${p}` : c.name),
+            ""
+          ),
         shipment_type: "overnight",
-        custom_data: "",
-        return_address: companyProfile.address,
+        // custom_data: "",
+        return_address: "SIE MILLAT ROAD FAISALABAD",
         return_city: 322,
       };
-      response = await this.http.post(
-        `${
-          process.env.NODE_ENV === "development" ? testURL : prodURL
-        }/format/json/`,
-        body
-      );
+      response = await this.http.post("bookPacket/format/json", body);
       logger.log("info", "leopard book parcel api response", {
         res: response.data,
         body,
@@ -94,7 +96,7 @@ class LeapordCourier extends CourierInterface {
     } catch (_error) {
       logger.log("error", _error.message, {
         body,
-        res: response.data,
+        res: response?.data,
         stack: "in leopard booking function",
       });
       const { track_number, slip_link, status, error } = response?.data || {};
@@ -109,21 +111,14 @@ class LeapordCourier extends CourierInterface {
   }
 
   async checkParcelStatus(trackingNumber, deliveryAccount) {
-    let response;
+    let response, body;
     try {
-      const testURL = "trackBookedPacketTest";
-      const prodURL = "trackBookedPacket";
-      const body = {
+      body = {
         api_key: deliveryAccount.key,
         api_password: deliveryAccount.password,
         track_numbers: trackingNumber,
       };
-      response = await this.http.post(
-        `${
-          process.env.NODE_ENV === "development" ? testURL : prodURL
-        }/format/json/`,
-        body
-      );
+      response = await this.http.post("trackBookedPacket/format/json", body);
       logger.log("info", "leopard booking status,s api response", {
         body,
         res: response.data,
@@ -165,22 +160,14 @@ class LeapordCourier extends CourierInterface {
   }
 
   async cancelBooking(trackingNumber, deliveryAccount) {
-    let response;
+    let response, body;
     try {
-      const testURL = "cancelBookedPacketsTest";
-      const prodURL = "cancelBookedPackets";
-      const body = {
+      body = {
         api_key: deliveryAccount.key,
         api_password: deliveryAccount.password,
         cn_numbers: trackingNumber,
       };
-      response = await this.http.post(
-        `${
-          // process.env.NODE_ENV === "development" ? testURL : prodURL
-          prodURL
-        }/format/json/`,
-        body
-      );
+      response = await this.http.post("cancelBookedPackets/format/json", body);
       logger.log("info", "leopard cancel booking parcel api response", {
         body,
         res: response.data,
