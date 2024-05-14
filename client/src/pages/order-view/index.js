@@ -84,8 +84,8 @@ const OrderView = () => {
     createdAt
   } = order || {};
   const [orderStatus, setOrderStatus] = useState('');
-  const { email, first_name, last_name, id: customerId, name, note, phone } = customer || {};
-  const { city, zip, country, address1, phone: address_phone } = address || {};
+  const { email, first_name, last_name, id: customerId, shopify_id, name, note, phone } = customer || {};
+  const { city, zip, country, address1, address2, phone: address_phone } = address || {};
   useEffect(() => {
     dispatch(fetchOrder({ id: orderId })).then((action) => {
       if (action.type === 'order/fetch/fulfilled') {
@@ -131,7 +131,7 @@ const OrderView = () => {
             <Chip color={orderStatus === 'Confirmed' ? 'success' : 'primary'} size="small" variant="elevated" label={orderStatus} />
           </Typography>
           <Typography color="grey" variant="subtitle2">
-            {`${formatDate(createdAt)} from ${first_name || 'None'} ${last_name || ''}`}
+            {`${formatDate(createdAt)} from ${name}`}
           </Typography>
         </Grid>
         <Grid item xs={9}>
@@ -214,10 +214,9 @@ const OrderView = () => {
               <Typography variant="h5" gutterBottom>
                 Customer
               </Typography>
-              <Typography gutterBottom>
-                Name: {first_name || 'None'} {last_name || ''}
-              </Typography>
-              <Typography gutterBottom>Customer Id: {customerId || 'None'}</Typography>
+              <Typography gutterBottom>Name: {name}</Typography>
+              <Typography gutterBottom>Customer System Id: {customerId || 'None'}</Typography>
+              <Typography gutterBottom>Customer Shopify Id: {shopify_id || 'None'}</Typography>
               <Typography variant="h5" gutterBottom>
                 Contact information
               </Typography>
@@ -228,8 +227,8 @@ const OrderView = () => {
                 Shipping Address
               </Typography>
               <Typography key={address1}>
-                Address: {address1} <br /> City:{city} Zip:{zip || 'None'} <br /> Country: {country}
-                <br /> Phone: {address_phone}
+                Address: {address1} <br /> City:{city} <br /> Zip:{zip || 'None'} <br /> Country: {country}
+                <br /> Phone: {address_phone} <br /> Special Instruction: {address2}
               </Typography>
             </CardContent>
           </Card>
