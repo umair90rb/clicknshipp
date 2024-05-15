@@ -4,6 +4,7 @@ import { useDispatch } from '../../../node_modules/react-redux/es/exports';
 import { fetchBookOrder, fetchOrderBookingStatus } from 'store/slices/order/fetchOrder';
 import { setMessage } from 'store/slices/util/utilSlice';
 import CenterCircularLoader from 'components/CenterCircularLoader';
+import { Box, height } from '../../../node_modules/@mui/system/index';
 
 export default function TrackingModal({ orderId }) {
   const dispatch = useDispatch();
@@ -30,5 +31,9 @@ export default function TrackingModal({ orderId }) {
   if (loading) {
     return <CenterCircularLoader />;
   }
-  return <Typography>{JSON.stringify(deliveryStatus)}</Typography>;
+  return (
+    <Box height={'100%'} width={'100%'} sx={{ border: '2px solid grey' }}>
+      <Typography overflow="auto">{JSON.stringify(deliveryStatus)}</Typography>
+    </Box>
+  );
 }

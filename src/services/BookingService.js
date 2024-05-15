@@ -21,26 +21,26 @@ class BookingService {
     return this.availableCouriers[courierName];
   }
 
-  bookParcelWithCourier(courierName, orderDetails) {
-    if (courierName in this.availableCouriers) {
-      const courier = this.availableCouriers[courierName];
-      return courier.bookParcel(orderDetails, courierName);
+  bookParcelWithCourier(orderDetails, deliveryAccount) {
+    if (deliveryAccount.service in this.availableCouriers) {
+      const courier = this.availableCouriers[deliveryAccount.service];
+      return courier.bookParcel(orderDetails, deliveryAccount);
     } else {
       throw new Error("Courier service not available");
     }
   }
-  cancelBookingWithCourier(cn, courierName, deliveryAccount) {
-    if (courierName in this.availableCouriers) {
-      const courier = this.availableCouriers[courierName];
+  cancelBookingWithCourier(cn, deliveryAccount) {
+    if (deliveryAccount.service in this.availableCouriers) {
+      const courier = this.availableCouriers[deliveryAccount.service];
       return courier.cancelBooking(cn, deliveryAccount);
     } else {
       throw new Error("Courier service not available");
     }
   }
 
-  checkParcelStatusWithCourier(cn, courierName, deliveryAccount) {
-    if (courierName in this.availableCouriers) {
-      const courier = this.availableCouriers[courierName];
+  checkParcelStatusWithCourier(cn, deliveryAccount) {
+    if (deliveryAccount.service in this.availableCouriers) {
+      const courier = this.availableCouriers[deliveryAccount.service];
       return courier.checkParcelStatus(cn, deliveryAccount);
     } else {
       throw new Error("Courier service not available");

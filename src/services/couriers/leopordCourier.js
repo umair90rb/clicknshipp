@@ -1,4 +1,3 @@
-import companyProfile from "../data";
 import CourierInterface from "../courierInterface";
 import getAxiosInstance from "../http";
 import logger from "../../middleware/logger";
@@ -17,7 +16,7 @@ class LeapordCourier extends CourierInterface {
     );
   }
 
-  async bookParcel(order, courier) {
+  async bookParcel(order, deliveryAccount) {
     let response, body;
     try {
       const destinationCity = await CityNameMaping.findOne({
@@ -28,7 +27,7 @@ class LeapordCourier extends CourierInterface {
             },
             { maped: order.address.city },
           ],
-          courier,
+          courier: deliveryAccount.service,
         },
         raw: true,
       });
@@ -42,8 +41,8 @@ class LeapordCourier extends CourierInterface {
         };
       }
       body = {
-        api_key: order.brand.DeliveryServiceAccount.key,
-        api_password: order.brand.DeliveryServiceAccount.password,
+        api_key: deliveryAccount.key,
+        api_password: deliveryAccount.password,
         booked_packet_weight: 500,
         // booked_packet_vol_weight_w: 0,
         // booked_packet_vol_weight_h: 0,
@@ -70,7 +69,10 @@ class LeapordCourier extends CourierInterface {
         special_instructions:
           order.address.address2 ||
           order.items.reduce(
-            (p, c, i) => (i > 0 ? `${c.name}/${p}` : c.name),
+            (p, c, i) =>
+              i > 0
+                ? `${c.name}/${c.quantity}-${p}`
+                : `${c.name}/${c.quantity}`,
             ""
           ),
         shipment_type: "overnight",

@@ -1,8 +1,8 @@
 class CourierInterface {
-  bookParcel(parcelDetails, serviceName) {}
-  checkParcelStatus(trackingNumber) {}
-  downloadReceipt(trackingNumber) {}
-  cancelBooking(trackingNumber) {}
+  bookParcel(parcelDetails, deliveryAccount) {}
+  checkParcelStatus(trackingNumber, deliveryAccount) {}
+  downloadReceipt(trackingNumber, deliveryAccount) {}
+  cancelBooking(trackingNumber, deliveryAccount) {}
 }
 
 export default CourierInterface;

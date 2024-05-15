@@ -16,7 +16,7 @@ class PostexCourier extends CourierInterface {
     );
   }
 
-  async bookParcel(order, courier) {
+  async bookParcel(order, deliveryAccount) {
     let response, body;
     try {
       const destinationCity = await CityNameMaping.findOne({
@@ -27,7 +27,7 @@ class PostexCourier extends CourierInterface {
             },
             { maped: order.address.city },
           ],
-          courier,
+          courier: deliveryAccount.service,
         },
         raw: true,
       });
@@ -50,7 +50,8 @@ class PostexCourier extends CourierInterface {
         invoicePayment: order.total_price,
         items: order.items.length,
         orderDetail: order.items.reduce(
-          (p, c, i) => (i > 0 ? `${c.name}/${p}` : c.name),
+          (p, c, i) =>
+            i > 0 ? `${c.name}/${c.quantity}-${p}` : `${c.name}/${c.quantity}`,
           ""
         ),
         orderRefNumber: `${order.brand.name}x${order.brand.shipment_series}`,
@@ -60,7 +61,7 @@ class PostexCourier extends CourierInterface {
         // storeAddressCode: "001", //required
       };
       const response = await this.http.post("create-order", body, {
-        headers: { token: order.brand.DeliveryServiceAccount.key },
+        headers: { token: deliveryAccount.key },
       });
       logger.log("info", "postex book api response", {
         data: response.data,
@@ -179,7 +180,7 @@ class PostexCourier extends CourierInterface {
     }
   }
 
-  downloadReceipt(trackingNumber) {
+  downloadReceipt(trackingNumber, deliveryAccount) {
     // Implementation for downloading receipt via TCS
   }
 }

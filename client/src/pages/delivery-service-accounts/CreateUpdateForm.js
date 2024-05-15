@@ -43,6 +43,15 @@ import {
 
 // ============================|| FIREBASE - REGISTER ||============================ //
 
+const SERVICES = [
+  ['Leapard', 'leopard'],
+  ['Deawoo', 'deawoo'],
+  ['PostEx', 'postex'],
+  ['TCS', 'tcs'],
+  ['Call Courier', 'callcourier'],
+  ['Trax', 'trax']
+];
+
 const CreateUpdateForm = ({ account }) => {
   const dispatch = useDispatch();
   const formRef = useRef();
@@ -73,6 +82,7 @@ const CreateUpdateForm = ({ account }) => {
       <Formik
         innerRef={formRef}
         initialValues={{
+          name: account?.name || '',
           service: account?.service || '',
           key: account?.key || '',
           username: account?.username || '',
@@ -80,7 +90,8 @@ const CreateUpdateForm = ({ account }) => {
           active: account?.active || true
         }}
         validationSchema={Yup.object().shape({
-          service: Yup.string().max(255).required('Service name is required'),
+          name: Yup.string().max(255).required('Name is required'),
+          service: Yup.string().max(255).required('Service type is required'),
           key: Yup.string().max(255).required('Key is required'),
           username: Yup.string().max(255),
           password: Yup.string().max(255)
@@ -92,18 +103,44 @@ const CreateUpdateForm = ({ account }) => {
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="service-signup">Service Name</InputLabel>
+                  <InputLabel htmlFor="name-signup">Account Name</InputLabel>
                   <OutlinedInput
                     fullWidth
-                    error={Boolean(touched.service && errors.service)}
-                    id="service-signup"
+                    error={Boolean(touched.name && errors.name)}
+                    id="name-signup"
                     type="text"
-                    value={values.service}
-                    name="service"
+                    value={values.name}
+                    name="name"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="TCS"
+                    placeholder="TCS for sukoon"
                   />
+                  {touched.name && errors.name && (
+                    <FormHelperText error id="helper-text-name-signup">
+                      {errors.name}
+                    </FormHelperText>
+                  )}
+                </Stack>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Stack spacing={1}>
+                  <InputLabel id="courier-service-type">Select Courier Service</InputLabel>
+                  <Select
+                    error={Boolean(touched.service && errors.service)}
+                    labelId="courier-service-type"
+                    id="courier-service-type-select"
+                    value={touched.service}
+                    name="service"
+                    label="courier-service-type"
+                    onChange={handleChange}
+                  >
+                    {SERVICES.map(([name, value], index) => (
+                      <MenuItem key={index} value={value}>
+                        {name}
+                      </MenuItem>
+                    ))}
+                  </Select>
                   {touched.service && errors.service && (
                     <FormHelperText error id="helper-text-service-signup">
                       {errors.service}

@@ -58,7 +58,7 @@ const AddUpdateForm = ({ type = '', data }) => {
   if (type === 'Brand') {
     initialValues.deliver_service_account_id = data?.deliver_service_account_id || '';
     initialValues.shipment_series = data?.shipment_series || '';
-    validationSchema.deliver_service_account_id = Yup.number().required('Delivery service is required');
+    validationSchema.deliver_service_account_id = Yup.number();
     validationSchema.shipment_series = Yup.number().min(1).required('Shipment series is required');
   }
 

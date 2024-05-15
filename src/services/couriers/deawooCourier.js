@@ -14,7 +14,7 @@ class DeawooCourier extends CourierInterface {
   getUrlWithApiCred(url, api, username, password) {
     return `${url}?apiKey=${api}&apiUser=${username}&apiPassword=${password}`;
   }
-  async bookParcel(order, courier) {
+  async bookParcel(order, deliveryAccount) {
     let response;
     try {
       const destinationCity = await CityNameMaping.findOne({
@@ -25,7 +25,7 @@ class DeawooCourier extends CourierInterface {
             },
             { maped: order.address.city },
           ],
-          courier,
+          courier: deliveryAccount.service,
         },
         raw: true,
       });
@@ -61,20 +61,17 @@ class DeawooCourier extends CourierInterface {
         source_location_address: `${companyProfile.address} ${companyProfile.city}`,
         destination_location_address: `${order.address.address1}, ${destinationCity.maped}`,
         item_description: order.items.reduce(
-          (p, c, i) => (i > 0 ? `${c.name}/${p}` : c.name),
+          (p, c, i) =>
+            i > 0 ? `${c.name}/${c.quantity}-${p}` : `${c.name}/${c.quantity}`,
           ""
         ),
       };
-      console.log(
-        order.brand.DeliveryServiceAccount,
-        "order.brand.DeliveryServiceAccount"
-      );
       response = await this.http.post(
         this.getUrlWithApiCred(
           "api/booking/quickBook",
-          order.brand.DeliveryServiceAccount.key,
-          order.brand.DeliveryServiceAccount.username,
-          order.brand.DeliveryServiceAccount.password
+          deliveryAccount.key,
+          deliveryAccount.username,
+          deliveryAccount.password
         ),
         body
       );
@@ -209,7 +206,7 @@ class DeawooCourier extends CourierInterface {
     }
   }
 
-  downloadReceipt(trackingNumber) {
+  downloadReceipt(trackingNumber, deliveryAccount) {
     // Implementation for downloading receipt via TCS
   }
 }

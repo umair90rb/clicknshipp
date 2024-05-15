@@ -12,60 +12,53 @@ import {
 } from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSelector';
 import CircularLoader from 'components/CircularLoader';
 
-const SERVICES = [
-  ['Leapard', 'leopard'],
-  ['Deawoo', 'deawoo'],
-  ['PostEx', 'postex'],
-  ['TCS', 'tcs'],
-  ['Call Courier', 'callcourier'],
-  ['Trax', 'trax']
-];
-
 export default function CourierDropdown({ orderId, updateOrderStatus }) {
   const dispatch = useDispatch();
-  // const servicesList = useSelector(deliveryServiceAccountsListSelector);
-  // const servicesListIsLoading = useSelector(deliveryServiceAccountsIsLoadingSelector);
-  const [service, setService] = useState('');
+  const servicesList = useSelector(deliveryServiceAccountsListSelector);
+  const servicesListIsLoading = useSelector(deliveryServiceAccountsIsLoadingSelector);
+  const [serviceAccount, setServiceAccount] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleChange = (event) => {
-    setService(event.target.value);
+    setServiceAccount(event.target.value);
   };
 
   const handleBook = () => {
     setLoading(true);
-    return dispatch(fetchBookOrder({ body: { orderId, service } })).then(({ type, payload }) => {
+    return dispatch(fetchBookOrder({ body: { orderId, accountId: serviceAccount } })).then(({ type, payload }) => {
       if (type === 'order/book/fetch/fulfilled') {
         setLoading(false);
         updateOrderStatus('Booked');
         return dispatch(setMessage({ message: `Order booked with successfully`, type: 'success' }));
       }
       setLoading(false);
-      return dispatch(setMessage({ message: payload.error || `Error! Order can't booked!`, type: 'error' }));
+      return dispatch(
+        setMessage({ message: typeof payload.error === 'string' ? payload.error : `Error! Order can't booked!`, type: 'error' })
+      );
     });
   };
 
-  // useEffect(() => {
-  //   dispatch(fetchDeliveryServiceAccounts());
-  // }, []);
+  useEffect(() => {
+    dispatch(fetchDeliveryServiceAccounts());
+  }, []);
 
-  // if (servicesListIsLoading) {
-  //   return <CircularLoader />;
-  // }
+  if (servicesListIsLoading) {
+    return <CircularLoader />;
+  }
 
   return (
     <FormControl sx={{ minWidth: '100%' }}>
-      <InputLabel id="courier-services">Select Courier Service</InputLabel>
+      <InputLabel id="courier-services">Select Courier Account</InputLabel>
       <Select
         disabled={loading}
         labelId="courier-services"
         id="courier-services-select"
-        value={service}
+        value={serviceAccount}
         label="Services"
         onChange={handleChange}
       >
-        {SERVICES.map(([name, value], index) => (
-          <MenuItem key={index} value={value}>
+        {servicesList.map(({ id, name }) => (
+          <MenuItem key={id} value={id}>
             {name}
           </MenuItem>
         ))}

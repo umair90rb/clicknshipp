@@ -12,6 +12,10 @@ module.exports = (sequelize, DataTypes) => {
         as: "delivery",
         foreignKey: "order_id",
       });
+      Delivery.belongsTo(models.DeliveryServiceAccounts, {
+        as: "account",
+        foreignKey: "account_id",
+      });
     }
   }
   Delivery.init(
@@ -21,6 +25,9 @@ module.exports = (sequelize, DataTypes) => {
       slip_link: DataTypes.STRING,
       status: DataTypes.STRING,
       order_id: {
+        type: DataTypes.INTEGER,
+      },
+      account_id: {
         type: DataTypes.INTEGER,
       },
     },

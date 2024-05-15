@@ -1,5 +1,9 @@
 import CourierInterface from "../courierInterface";
 import getAxiosInstance from "../http";
+import models from "../../models";
+import { Op } from "sequelize";
+import logger from "../../middleware/logger";
+const { CityNameMaping } = models;
 
 class CallCourier extends CourierInterface {
   constructor() {
@@ -11,8 +15,8 @@ class CallCourier extends CourierInterface {
     );
   }
 
-  async bookParcel(order, courier) {
-    let response, body;
+  async bookParcel(order, deliveryAccount) {
+    let response, url;
     try {
       const destinationCity = await CityNameMaping.findOne({
         where: {
@@ -22,7 +26,7 @@ class CallCourier extends CourierInterface {
             },
             { maped: order.address.city },
           ],
-          courier,
+          courier: deliveryAccount.service,
         },
         raw: true,
       });
@@ -35,62 +39,96 @@ class CallCourier extends CourierInterface {
           response: "destination not found in the db",
         };
       }
-      body = `SaveBooking?loginId=${
-        order.brand.DeliveryServiceAccount.key
-      }&ConsigneeName="${order.customer.first_name}${
-        order.customer.last_name || ""
-      }"&ConsigneeRefNo="${order.brand.name}x${
-        order.brand.shipment_series
-      }"&ConsigneeCellNo=${order.customer.phone}&Address=${
-        order.address.address1
-      }&Origin=FAISALABAD&DestCityId=${
+      url = `SaveBooking?loginId=${deliveryAccount.key}&ConsigneeName="${
+        order.customer.first_name
+      } ${order.customer.last_name || ""}"&ConsigneeRefNo="${
+        order.brand.name
+      }x${order.brand.shipment_series}"&ConsigneeCellNo=${
+        order.customer.phone
+      }&Address=${order.address.address1}&Origin=FAISALABAD&DestCityId=${
         destinationCity.assigned_id
       }&ServiceTypeId=7&Pcs=${
         order.items.length
       }&Weight=${0.5}&Description=${order.items.reduce(
-        (p, c, i) => (i > 0 ? `${c.name}/${p}` : c.name),
+        (p, c, i) =>
+          i > 0 ? `${c.name}/${c.quantity}-${p}` : `${c.name}/${c.quantity}`,
         ""
       )}&SelOrigin=Domestic&CodAmount=${
         order.total_price
-      }&SpecialHandling=false&MyBoxId=1&Holiday=false&remarks=Rush%20Delivery&ShipperName=SWAP&ShipperCellNo=03005444103&ShipperArea=1&ShipperCity=1&ShipperAddress=286-K,%20GULISTAN%20COLONY%20NO.1,NEAR%20GIRLS%20HIGH%20SCHOOL,%20FAISALABAD"
+      }&SpecialHandling=false&MyBoxId=1&Holiday=false&remarks=Rush Delivery&ShipperName=SWAP&ShipperCellNo=03005444103&ShipperArea=1&ShipperCity=1&ShipperAddress=286-K, GULISTAN COLONY NO.1,NEAR GIRLS HIGH SCHOOL, FAISALABAD"
       &ShipperLandLineNo=03005444103&ShipperEmail=SWAPNEARN@GMAIL.COM`;
-      const response = await this.http.post(
-        this.getUrlWithApiCred("api/booking/quickBook"),
-        body
-      );
+      response = await this.http.get(url);
       logger.log("info", "leopard book parcel api response", {
         res: response.data,
-        body,
       });
+      const { CNNO, Response, ...rest } = response.data;
       return {
-        cn: track_number,
-        slip: slip_link,
-        isSuccess: Boolean(status),
-        error: error ? error : null,
-        response: status
-          ? "Package booked with leopards"
-          : "Error: Something goes wrong!",
-      };
-      return {
-        cn: TrackNo,
-        slip: "",
-        isSuccess: Success,
-        error: Error ? Response : null,
+        cn: CNNO,
+        slip: JSON.stringify(rest),
+        isSuccess: CNNO !== null,
+        error: CNNO === null ? Response : null,
         response: Response,
       };
-    } catch (error) {}
+    } catch (error) {
+      const { Response, ...rest } = response.data;
+      logger.log("error", error.message, {
+        data: response.data,
+        stack: "in call courier booking function",
+      });
+      return {
+        cn: null,
+        slip: null,
+        isSuccess: false,
+        error: Response,
+        response: Response,
+      };
+    }
   }
 
-  checkParcelStatus(trackingNumber) {
-    return { current: "At lahore terminal", history: [] };
+  async checkParcelStatus(trackingNumber, deliveryAccount) {
+    let response;
+    try {
+      response = await this.http.get(`GetTackingHistory?cn=${trackingNumber}`);
+      logger.log("info", "leopard booking status,s api response", {
+        res: response.data,
+      });
+      return {
+        isSuccess: true,
+        error: null,
+        history: response.data,
+        status: null,
+        date: null,
+        remarks: null,
+        data: {},
+        response: "Current Booking status!",
+      };
+    } catch (error) {
+      logger.log("error", error.message, {
+        res: response.data,
+      });
+      return {
+        isSuccess: false,
+        error,
+        history: response.data,
+        status: null,
+        date: null,
+        remarks: null,
+        data: {},
+        response: "Error in fetching current booking status!",
+      };
+    }
   }
 
-  downloadReceipt(trackingNumber) {
+  cancelBooking(trackingNumber, deliveryAccount) {
+    return {
+      isSuccess: false,
+      error: "Cancel booking not available for Call Courier",
+      response: trackingNumber,
+    };
+  }
+
+  downloadReceipt(trackingNumber, deliveryAccount) {
     // Implementation for downloading receipt via TCS
-  }
-
-  cancelBooking(trackingNumber) {
-    // Implementation for canceling booking via TCS
   }
 }
 

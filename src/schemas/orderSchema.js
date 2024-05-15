@@ -25,7 +25,7 @@ export const orderFilterSchema = Joi.object({
 });
 
 export const orderBookSchema = Joi.object({
-  service: Joi.string().required(),
+  accountId: Joi.number().required(),
   orderId: Joi.number().required(),
 });
 

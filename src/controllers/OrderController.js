@@ -571,7 +571,14 @@ export default {
 
   async book(req, res) {
     try {
-      const { orderId, service } = req.body;
+      const { orderId, accountId } = req.body;
+      const deliveryAccount = await DeliveryServiceAccounts.findByPk(
+        accountId,
+        { raw: true }
+      );
+      if (!deliveryAccount) {
+        return sendErrorResponse(res, 404, "No account found with this id");
+      }
       const order = await Order.findByPk(orderId, {
         attributes: {
           exclude: [
@@ -584,23 +591,16 @@ export default {
         },
         include: [
           {
-            model: User,
-            as: "user",
-            attributes: {
-              exclude: [
-                "password",
-                "status",
-                "settings",
-                "createdAt",
-                "updatedAt",
-              ],
-            },
-          },
-          {
             model: Customer,
             as: "customer",
           },
-
+          {
+            model: Brand,
+            as: "brand",
+            attributes: {
+              exclude: ["createdAt", "updatedAt"],
+            },
+          },
           {
             model: Address,
             as: "address",
@@ -625,17 +625,6 @@ export default {
               exclude: ["OrderId", "createdAt", "updatedAt"],
             },
           },
-          {
-            model: Brand,
-            as: "brand",
-            include: {
-              model: DeliveryServiceAccounts,
-              as: "DeliveryServiceAccount",
-            },
-            attributes: {
-              exclude: ["createdAt", "updatedAt"],
-            },
-          },
         ],
       });
       if (!order) {
@@ -646,14 +635,15 @@ export default {
       }
       const bookingService = new BookingService();
       const bookingResponse = await bookingService.bookParcelWithCourier(
-        service,
-        order
+        order,
+        deliveryAccount
       );
       const { cn, slip, isSuccess, error, response } = bookingResponse || {};
       console.log(bookingResponse, "bookingResponse");
       if (isSuccess) {
         await order.createDelivery({
-          courier: service,
+          courier: deliveryAccount.service,
+          account_id: deliveryAccount.id,
           cn,
           slip_link: slip,
           status: "Booked",
@@ -685,19 +675,7 @@ export default {
     try {
       const orderId = req.params.id;
       const order = await Order.findByPk(orderId, {
-        include: [
-          {
-            model: Brand,
-            as: "brand",
-            include: {
-              model: DeliveryServiceAccounts,
-              as: "DeliveryServiceAccount",
-            },
-            attributes: {
-              exclude: ["createdAt", "updatedAt"],
-            },
-          },
-        ],
+        attributes: ["status"],
       });
       if (!order || order.status !== "Booked") {
         return sendErrorResponse(res, 500, "Order is not in booking!");
@@ -705,7 +683,10 @@ export default {
       const delivery = await Delivery.findOne({
         where: {
           order_id: order.id,
-          status: "Booked",
+        },
+        include: {
+          model: DeliveryServiceAccounts,
+          as: "account",
         },
       });
       if (!delivery) {
@@ -719,8 +700,7 @@ export default {
       const cancelBookingResponse =
         await bookingService.cancelBookingWithCourier(
           delivery.cn,
-          delivery.courier,
-          order.brand.DeliveryServiceAccount.get()
+          delivery.account.get()
         );
       const { isSuccess, error, response } = cancelBookingResponse || {};
       console.log(cancelBookingResponse, "cancelBookingResponse");
@@ -743,19 +723,7 @@ export default {
     try {
       const orderId = req.params.id;
       const order = await Order.findByPk(orderId, {
-        include: [
-          {
-            model: Brand,
-            as: "brand",
-            include: {
-              model: DeliveryServiceAccounts,
-              as: "DeliveryServiceAccount",
-            },
-            attributes: {
-              exclude: ["createdAt", "updatedAt"],
-            },
-          },
-        ],
+        attributes: ["status"],
       });
       if (!order || order.status !== "Booked") {
         return sendErrorResponse(res, 500, "Order is not in booking!");
@@ -763,7 +731,10 @@ export default {
       const delivery = await Delivery.findOne({
         where: {
           order_id: order.id,
-          status: "Booked",
+        },
+        include: {
+          model: DeliveryServiceAccounts,
+          as: "account",
         },
       });
       if (!delivery) {
@@ -777,8 +748,7 @@ export default {
       const bookingStatusResponse =
         await bookingService.checkParcelStatusWithCourier(
           delivery.cn,
-          delivery.courier,
-          order.brand.DeliveryServiceAccount.get()
+          delivery.account.get()
         );
       const {
         isSuccess,

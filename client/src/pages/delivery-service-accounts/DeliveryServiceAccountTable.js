@@ -24,23 +24,19 @@ const columns = (handleEditAction, handleDeleteAction) => [
     flex: 0.3
   },
   {
+    field: 'name',
+    headerName: 'Account Name',
+    flex: 1
+  },
+  {
     field: 'service',
-    headerName: 'Service Name',
-    flex: 1
+    headerName: 'Type',
+    flex: 1,
+    valueGetter: ({ value }) => value.toUpperCase()
   },
   {
-    field: 'key',
+    field: 'halfKey',
     headerName: 'Key',
-    flex: 1
-  },
-  {
-    field: 'username',
-    headerName: 'Username',
-    flex: 1
-  },
-  {
-    field: 'password',
-    headerName: 'Password',
     flex: 1
   },
   {

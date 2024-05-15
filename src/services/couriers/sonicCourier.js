@@ -10,7 +10,7 @@ class SonicCourier extends CourierInterface {
     super();
     this.http = getAxiosInstance("https://sonic.pk/api/shipment/");
   }
-  async bookParcel(order, courier) {
+  async bookParcel(order, deliveryAccount) {
     let response, body;
     try {
       const destinationCity = await CityNameMaping.findOne({
@@ -21,7 +21,7 @@ class SonicCourier extends CourierInterface {
             },
             { maped: order.address.city },
           ],
-          courier,
+          courier: deliveryAccount.service,
         },
         raw: true,
       });
@@ -49,7 +49,8 @@ class SonicCourier extends CourierInterface {
         order_id: `${order.brand.name}x${order.brand.shipment_series}`,
         item_product_type_id: 15,
         item_description: order.items.reduce(
-          (p, c, i) => (i > 0 ? `${c.name}/${p}` : c.name),
+          (p, c, i) =>
+            i > 0 ? `${c.name}/${c.quantity}-${p}` : `${c.name}/${c.quantity}`,
           ""
         ),
         item_quantity: order.items.length,
@@ -72,7 +73,7 @@ class SonicCourier extends CourierInterface {
         // shipper_reference_number_5: "",
       };
       response = await this.http.post("book", body, {
-        headers: { Authorization: order.brand.DeliveryServiceAccount.key },
+        headers: { Authorization: deliveryAccount.key },
       });
       logger.log("info", "trax book parcel api response", {
         res: response?.data,
@@ -186,7 +187,7 @@ class SonicCourier extends CourierInterface {
     }
   }
 
-  downloadReceipt(trackingNumber) {
+  downloadReceipt(trackingNumber, deliveryAccount) {
     // Implementation for downloading receipt via TCS
   }
 }
