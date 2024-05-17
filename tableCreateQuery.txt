@@ -37,3 +37,5 @@ sequelize migration:generate --name remove-user-brands-table-timestamps
 sequelize migration:generate --name add-phone-name-column-in-addresses
 sequelize migration:generate --name add-shopify-id-column-in-customer-table
 sequelize migration:generate --name add-courier-name-column-in-courier-service-accounts-table
+sequelize migration:generate --name add-id-column-in-courier-service-accounts-table
+sequelize migration:generate --name add-city-code-column-in-city-name-mappings-table

@@ -3,13 +3,13 @@ import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 
 const Op = sequelize.Op;
-const { Order, OrderItem } = model;
+const { Order, OrderItem, Delivery } = model;
 
 export default {
   async stats(req, res) {
     try {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      const { startPeriod, endPeriod } = req.query;
+      console.log(startPeriod, endPeriod, "startPeriod, endPeriod");
       const orders = await Order.findAll({
         attributes: ["id", "status", "total_price"],
         include: [
@@ -20,10 +20,18 @@ export default {
               exclude: ["OrderId", "createdAt", "updatedAt"],
             },
           },
+          {
+            model: Delivery,
+            as: "delivery",
+            attributes: { include: ["courier", "status", "order_id", "id"] },
+          },
         ],
         where: {
           createdAt: {
-            [Op.gte]: today,
+            [Op.and]: {
+              [Op.gte]: startPeriod,
+              [Op.lte]: endPeriod,
+            },
           },
         },
       });
@@ -41,7 +49,13 @@ export default {
             ordersGroupedByItem[item.name] = {
               name: item.name + (item.sku ? ` (${item.sku})` : ""),
               generated: item.quantity || 0,
-              confirmed: order.status === "Confirmed" ? 1 : 0,
+              confirmed: order.status === "Confirmed" || "Booked" ? 1 : 0,
+              tcs: 0,
+              callcourier: 0,
+              deawoo: 0,
+              trax: 0,
+              postex: 0,
+              leapard: 0,
             };
           } else {
             ordersGroupedByItem[item.name] = {
@@ -54,12 +68,17 @@ export default {
                   : ordersGroupedByItem[item.name].confirmed,
             };
           }
+          if (order.status === "Booked" && order.delivery !== null) {
+            ordersGroupedByItem[item.name][order.delivery.courier] =
+              ordersGroupedByItem[item.name][order.delivery.courier] + 1;
+          }
         }
         totalSalesValue += order.total_price || 0;
         if (order.status == "Confirmed") {
           confirmedOrders++;
         }
         if (order.status == "Booked") {
+          confirmedOrders++;
           bookedOrders++;
         }
       }

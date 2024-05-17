@@ -85,6 +85,7 @@ const CreateUpdateForm = ({ account }) => {
           name: account?.name || '',
           service: account?.service || '',
           key: account?.key || '',
+          client_id: account?.client_id || '',
           username: account?.username || '',
           password: account?.password || '',
           active: account?.active || true
@@ -93,6 +94,7 @@ const CreateUpdateForm = ({ account }) => {
           name: Yup.string().max(255).required('Name is required'),
           service: Yup.string().max(255).required('Service type is required'),
           key: Yup.string().max(255).required('Key is required'),
+          client_id: Yup.string().max(255),
           username: Yup.string().max(255),
           password: Yup.string().max(255)
         })}
@@ -130,7 +132,7 @@ const CreateUpdateForm = ({ account }) => {
                     error={Boolean(touched.service && errors.service)}
                     labelId="courier-service-type"
                     id="courier-service-type-select"
-                    value={touched.service}
+                    value={values.service}
                     name="service"
                     label="courier-service-type"
                     onChange={handleChange}
@@ -166,6 +168,28 @@ const CreateUpdateForm = ({ account }) => {
                   {touched.key && errors.key && (
                     <FormHelperText error id="helper-text-key-signup">
                       {errors.key}
+                    </FormHelperText>
+                  )}
+                </Stack>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="client_id-signup">Client id (if any)</InputLabel>
+                  <OutlinedInput
+                    fullWidth
+                    error={Boolean(touched.client_id && errors.client_id)}
+                    id="client_id-signup"
+                    type="text"
+                    value={values.client_id}
+                    name="client_id"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="Client id"
+                  />
+                  {touched.client_id && errors.client_id && (
+                    <FormHelperText error id="helper-text-client_id-signup">
+                      {errors.client_id}
                     </FormHelperText>
                   )}
                 </Stack>

@@ -26,12 +26,12 @@ const columns = [
   {
     field: 'generated',
     headerName: 'Generated',
-    flex: 1
+    flex: 0.5
   },
   {
     field: 'confirmed',
     headerName: 'Confirmed',
-    flex: 1
+    flex: 0.5
   },
 
   {
@@ -48,6 +48,36 @@ const columns = [
         </>
       );
     }
+  },
+  {
+    field: 'postex',
+    headerName: 'POSTEX',
+    flex: 0.5
+  },
+  {
+    field: 'tcs',
+    headerName: 'TCS',
+    flex: 0.5
+  },
+  {
+    field: 'deawoo',
+    headerName: 'Daewoo',
+    flex: 0.5
+  },
+  {
+    field: 'trax',
+    headerName: 'TRAX',
+    flex: 0.5
+  },
+  {
+    field: 'leapard',
+    headerName: 'LCS',
+    flex: 0.5
+  },
+  {
+    field: 'callcourier',
+    headerName: 'Call CS',
+    flex: 0.5
   }
 ];
 
@@ -58,6 +88,7 @@ export default function ItemsByOrders() {
   return (
     <div style={{ width: '100%' }}>
       <DataGrid
+        disableRowSelectionOnClick
         loading={statsIsLoading}
         slots={{ toolbar: GridToolbar }}
         slotProps={{

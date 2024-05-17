@@ -3,7 +3,7 @@ import Ajax from 'api/ajax';
 class DashboardService extends Ajax {
   pathname = 'dashboard';
 
-  fetchStats = () => this.getJson(`${this.pathname}/stats`);
+  fetchStats = (startPeriod, endPeriod) => this.getJson(`${this.pathname}/stats?startPeriod=${startPeriod}&endPeriod=${endPeriod}`);
 }
 
 export const dashboardService = new DashboardService();

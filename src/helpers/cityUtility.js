@@ -64,6 +64,7 @@ function mapCities(
   listNameKey,
   listOriginKey,
   listDestinationKey,
+  listCodeKey,
   courier,
   thresold = 1
 ) {
@@ -74,9 +75,10 @@ function mapCities(
       return {
         city,
         maped: maped[0][listNameKey],
-        assigned_id: maped[0][listIdKey] || "",
+        assigned_id: maped[0][listIdKey] || null,
         active_as_origin: maped[0][listOriginKey] || true,
         active_as_destination: maped[0][listDestinationKey] || true,
+        code: maped[0][listCodeKey] || null,
         courier,
       };
     }
@@ -91,6 +93,7 @@ const mappedCities = data.servicesCities.map((list, index) =>
     data.courierList[index].nameKey,
     data.courierList[index].originKey,
     data.courierList[index].destnationKey,
+    data.courierList[index].code,
     data.courierList[index].service
   )
 );

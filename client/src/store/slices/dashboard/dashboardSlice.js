@@ -5,13 +5,19 @@ import { fetchDashboardStats } from './fetchDashboard';
 const initialState = {
   stats: {},
   fetchStatus: fetchStatus.IDLE,
-  error: null
+  error: null,
+  startPeriod: `${new Date(new Date().setHours(0, 0, 0, 0)).toLocaleString('en-GB', { hour12: false }).replace(',', '')}`,
+  endPeriod: `${new Date().toLocaleString('en-GB', { hour12: false }).replace(',', '')}`
 };
 
 const itemSlice = createSlice({
   name: 'dashboard',
   initialState,
   reducers: {
+    setDashboardStatPeriod: (state, action) => {
+      const { period, value } = action.payload;
+      state[period] = value;
+    },
     clearDashboardState: () => initialState
   },
   extraReducers: (builder) => {
@@ -31,5 +37,5 @@ const itemSlice = createSlice({
     });
   }
 });
-export const { clearDashboardState } = itemSlice.actions;
+export const { setDashboardStatPeriod, clearDashboardState } = itemSlice.actions;
 export default itemSlice.reducer;

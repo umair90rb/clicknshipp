@@ -87,7 +87,7 @@ export default function DeliveryServiceAccountTable({ updateAccountHandler }) {
       dispatch(deleteDeliveryServiceAccount(id));
       dispatch(setMessage({ message: 'Account deleted successfully.', type: 'success' }));
     } else {
-      dispatch(setMessage({ message: payload || 'Account not deleted.', type: 'success' }));
+      dispatch(setMessage({ message: payload || 'Account not deleted.', type: 'error' }));
     }
   };
 

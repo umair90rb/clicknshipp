@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       username: DataTypes.STRING,
       password: DataTypes.STRING,
       key: DataTypes.STRING,
+      client_id: DataTypes.STRING,
       halfKey: {
         type: DataTypes.VIRTUAL,
         get() {

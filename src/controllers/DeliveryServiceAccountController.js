@@ -8,16 +8,9 @@ export default {
   async accounts(req, res) {
     try {
       const accounts = await DeliveryServiceAccounts.findAll({
-        attributes: [
-          "id",
-          "name",
-          "halfKey",
-          "service",
-          "active",
-          "key",
-          "username",
-          "password",
-        ],
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },
       });
       return sendSuccessResponse(
         res,
@@ -38,7 +31,7 @@ export default {
   async account(req, res) {},
 
   async create(req, res) {
-    const { name, service, key, username, password } = req.body;
+    const { name, service, client_id, key, username, password } = req.body;
     try {
       let account = await DeliveryServiceAccounts.findOne({
         where: { key },
@@ -54,6 +47,7 @@ export default {
         name,
         service,
         key,
+        client_id,
         username,
         password,
         active: true,
@@ -68,6 +62,7 @@ export default {
             service: account.service,
             active: account.active,
             key: account.key,
+            client_id: account.client_id,
             halfKey: account.halfKey,
             username: account.username,
             password: account.password,
@@ -88,13 +83,15 @@ export default {
   async update(req, res) {
     try {
       const id = req.params.id;
-      const { name, service, key, active, username, password } = req.body;
+      const { name, service, key, client_key, active, username, password } =
+        req.body;
       const account = await DeliveryServiceAccounts.findByPk(id);
       if (account) {
         account.set({
           name: name || account.name,
           service: service || account.service,
           key: key || account.key,
+          client_key: client_key || account.client_key,
           username: username || account.username,
           password: password || account.password,
           active: active || account.active,
@@ -111,6 +108,7 @@ export default {
               service: account.service,
               active: account.active,
               key: account.key,
+              client_key: account.client_key,
               halfKey: account.halfKey,
               username: account.username,
               password: account.password,
