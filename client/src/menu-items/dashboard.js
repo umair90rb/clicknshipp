@@ -20,7 +20,7 @@ const dashboard = {
     //   title: 'Reporting',
     //   type: 'item',
     //   url: '/reporting',
-    // permission: PERMISSIONS.PERMISSION_VIEW_REPORTING,
+    //   permission: PERMISSIONS.PERMISSION_VIEW_REPORTING,
     //   icon: FileSearchOutlined,
     //   breadcrumbs: false
     // }

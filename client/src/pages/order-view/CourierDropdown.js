@@ -33,7 +33,7 @@ export default function CourierDropdown({ orderId, updateOrderStatus }) {
       }
       setLoading(false);
       return dispatch(
-        setMessage({ message: typeof payload.error === 'string' ? payload.error : `Error! Order can't booked!`, type: 'error' })
+        setMessage({ message: typeof payload?.error === 'string' ? payload.error : `Error! Order can't booked!`, type: 'error' })
       );
     });
   };
@@ -41,10 +41,6 @@ export default function CourierDropdown({ orderId, updateOrderStatus }) {
   useEffect(() => {
     dispatch(fetchDeliveryServiceAccounts());
   }, []);
-
-  if (servicesListIsLoading) {
-    return <CircularLoader />;
-  }
 
   return (
     <FormControl sx={{ minWidth: '100%' }}>
@@ -56,6 +52,7 @@ export default function CourierDropdown({ orderId, updateOrderStatus }) {
         value={serviceAccount}
         label="Services"
         onChange={handleChange}
+        placeholder={loading && 'loading...'}
       >
         {servicesList.map(({ id, name }) => (
           <MenuItem key={id} value={id}>

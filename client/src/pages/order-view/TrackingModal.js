@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Typography } from '@mui/material';
+import { Typography, Box } from '@mui/material';
 import { useDispatch } from '../../../node_modules/react-redux/es/exports';
-import { fetchBookOrder, fetchOrderBookingStatus } from 'store/slices/order/fetchOrder';
+import { fetchOrderBookingStatus } from 'store/slices/order/fetchOrder';
 import { setMessage } from 'store/slices/util/utilSlice';
 import CenterCircularLoader from 'components/CenterCircularLoader';
-import { Box, height } from '../../../node_modules/@mui/system/index';
 
 export default function TrackingModal({ orderId }) {
   const dispatch = useDispatch();
@@ -20,7 +19,7 @@ export default function TrackingModal({ orderId }) {
         return;
       }
       setLoading(false);
-      return dispatch(setMessage({ message: payload.error || `Error! Order booking can't tracked`, type: 'error' }));
+      return dispatch(setMessage({ message: payload?.error || `Error! Order booking can't tracked`, type: 'error' }));
     });
   };
 

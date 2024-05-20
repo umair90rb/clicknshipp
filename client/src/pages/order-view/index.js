@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import CenterCircularLoader from 'components/CenterCircularLoader';
 import { useDispatch } from 'react-redux';
-import { fetchCancelOrderBooking, fetchConfirmOrder, fetchOrder } from 'store/slices/order/fetchOrder';
+import { fetchCancelOrderBooking, fetchOrder } from 'store/slices/order/fetchOrder';
 import { setMessage } from 'store/slices/util/utilSlice';
 import OrderItemTable from './OrderItemTable';
 import OrderSummaryCard from './OrderSummaryCard';
@@ -12,7 +12,6 @@ import location from 'utils/location';
 import CourierDropdown from './CourierDropdown';
 import TrackingModal from './TrackingModal';
 import StatusModal from './StatusModal';
-import { height } from '../../../node_modules/@mui/system/index';
 const style = {
   position: 'absolute',
   top: '50%',
@@ -86,7 +85,8 @@ const OrderView = () => {
   const [orderStatus, setOrderStatus] = useState('');
   const { email, first_name, last_name, id: customerId, shopify_id, name, note, phone } = customer || {};
   const { city, zip, country, address1, address2, phone: address_phone } = address || {};
-  useEffect(() => {
+
+  const getOrderDetails = () =>
     dispatch(fetchOrder({ id: orderId })).then((action) => {
       if (action.type === 'order/fetch/fulfilled') {
         setOrder(action.payload?.data?.order);
@@ -98,14 +98,16 @@ const OrderView = () => {
         setLoading(false);
       }
     });
+
+  useEffect(() => {
+    getOrderDetails();
   }, []);
 
   const handleCancelDelivery = () => {
     dispatch(fetchCancelOrderBooking({ id: orderId })).then((action) => {
       if (action.type === 'order/cancelOrderBooking/fetch/fulfilled') {
         setOrder(action.payload?.data?.order);
-        // setLoading(false);
-        setOrderStatus(action.payload?.data?.order?.status);
+        getOrderDetails();
       } else {
         // setError(action.payload?.error || 'Something goes wrong!');
         dispatch(setMessage({ type: 'error', message: action.payload?.error || 'Something goes wrong!' }));

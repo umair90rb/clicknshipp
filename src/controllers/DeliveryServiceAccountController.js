@@ -88,13 +88,13 @@ export default {
       const account = await DeliveryServiceAccounts.findByPk(id);
       if (account) {
         account.set({
-          name: name || account.name,
-          service: service || account.service,
-          key: key || account.key,
-          client_key: client_key || account.client_key,
-          username: username || account.username,
-          password: password || account.password,
-          active: active || account.active,
+          name: name,
+          service: service,
+          key: key,
+          client_key: client_key,
+          username: username,
+          password: password,
+          active: active,
           updatedAt: new Date().toISOString(),
         });
         await account.save();

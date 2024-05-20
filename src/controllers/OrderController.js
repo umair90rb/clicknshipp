@@ -641,7 +641,7 @@ export default {
       const { cn, slip, isSuccess, error, response } = bookingResponse || {};
       console.log(bookingResponse, "bookingResponse");
       if (isSuccess) {
-        await order.createDelivery({
+        await order.setDelivery({
           courier: deliveryAccount.service,
           account_id: deliveryAccount.id,
           cn,
@@ -675,7 +675,7 @@ export default {
     try {
       const orderId = req.params.id;
       const order = await Order.findByPk(orderId, {
-        attributes: ["status"],
+        attributes: ["id", "status"],
       });
       if (!order || order.status !== "Booked") {
         return sendErrorResponse(res, 500, "Order is not in booking!");
@@ -723,7 +723,7 @@ export default {
     try {
       const orderId = req.params.id;
       const order = await Order.findByPk(orderId, {
-        attributes: ["status"],
+        attributes: ["id", "status"],
       });
       if (!order || order.status !== "Booked") {
         return sendErrorResponse(res, 500, "Order is not in booking!");

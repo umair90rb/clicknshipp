@@ -14,6 +14,7 @@ import {
 import ItemsByOrders from './ItemsByOrders';
 import { setDashboardStatPeriod } from 'store/slices/dashboard/dashboardSlice';
 import moment from 'moment';
+import MonthlyBarChart from './MonthlyBarChart';
 
 const DashboardDefault = () => {
   const dispatch = useDispatch();
@@ -85,20 +86,6 @@ const DashboardDefault = () => {
               </Button>
             </Box>
           </Grid>
-          {/* <Grid item xs={4} justifyContent="flex-end">
-            <Box display="flex" justifyContent="flex-end">
-              <Button
-                startIcon={<ReplayIcon />}
-                variant="contained"
-                disabled={statsIsLoading}
-                onClick={fetchStats}
-                aria-label="reload"
-                color="primary"
-              >
-                Refresh
-              </Button>
-            </Box>
-          </Grid> */}
         </Grid>
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
@@ -126,6 +113,19 @@ const DashboardDefault = () => {
           <ItemsByOrders />
         </MainCard>
       </Grid>
+
+      {/* row 3 */}
+      {/* <Grid item xs={12} md={12} lg={12}>
+        <Grid container alignItems="center" justifyContent="space-between">
+          <Grid item>
+            <Typography variant="h5">Last 7 days</Typography>
+          </Grid>
+          <Grid item />
+        </Grid>
+        <MainCard sx={{ mt: 2 }} content={false}>
+          <MonthlyBarChart />
+        </MainCard>
+      </Grid> */}
     </Grid>
   );
 };

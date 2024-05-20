@@ -74,12 +74,12 @@ export default {
           }
         }
         totalSalesValue += order.total_price || 0;
-        if (order.status == "Confirmed") {
-          confirmedOrders++;
+        if (order.status === "Confirmed") {
+          confirmedOrders += 1;
         }
-        if (order.status == "Booked") {
-          confirmedOrders++;
-          bookedOrders++;
+        if (order.status === "Booked") {
+          confirmedOrders += 1;
+          bookedOrders += 1;
         }
       }
       const response = {
