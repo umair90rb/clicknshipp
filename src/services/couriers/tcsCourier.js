@@ -10,29 +10,35 @@ class TCSCourier extends CourierInterface {
     this.http = getAxiosInstance("https://devconnect.tcscourier.com/", {});
   }
   async getHeaderToken(id, secret) {
+    let res;
     try {
-      const res = await this.http.get(
+      res = await this.http.get(
         `auth/api/auth?ClientID=${id}&ClientSecret=${secret}`
       );
-      console.log(res.data, "response of getHeaderToken");
       return res.data.result?.accessToken;
     } catch (error) {
-      console.log(error, "error");
+      logger.log("error", "tcs get header token api response", {
+        res: res.data,
+        error,
+      });
     }
   }
 
   async getBodyToken(token, username, password) {
+    let res;
     try {
-      const res = await this.http.get(
+      res = await this.http.get(
         `ecom/api/authentication/token?username=${username}&password=${password}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log(res.data, "response of getBodyToken");
       return res.data?.accesstoken;
     } catch (error) {
-      console.log(error, "error");
+      logger.log("error", "tcs get header token api response", {
+        res: res.data,
+        error,
+      });
     }
   }
 
