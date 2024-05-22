@@ -11,7 +11,7 @@ import logger from "../middleware/logger";
 import getNameFromSubmissionLink, {
   getSizeAndPrice,
 } from "../helpers/getNameFromLink";
-import orderService from "../services/orderService";
+import orderService from "../services/OrderService";
 
 const {
   Order,
