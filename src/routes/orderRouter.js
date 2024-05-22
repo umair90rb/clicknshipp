@@ -81,7 +81,7 @@ router.post(
   Auth,
   can(PERMISSIONS.PERMISSION_CREATE_BULK_ORDER),
   upload.single("file"),
-  OrderController.import
+  OrderController.importOrders
 );
 
 router.post(

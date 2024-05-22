@@ -8,6 +8,10 @@ import formatPhoneNumber from "../helpers/formatPhone";
 import BookingService from "../services/BookingService";
 import { PERMISSIONS } from "../constants/constants";
 import logger from "../middleware/logger";
+import getNameFromSubmissionLink, {
+  getSizeAndPrice,
+} from "../helpers/getNameFromLink";
+import orderService from "../services/orderService";
 
 const {
   Order,
@@ -82,6 +86,8 @@ function parseValue(value, type) {
 const FILTER_COLUMNS = {
   order_number: { column: "order_number", type: "number" },
   status: { column: "status", type: "string" },
+  customer: { column: "$customer.first_name$", type: "string" },
+  phone: { column: "$customer.phone$", type: "string" },
   agent: { column: "$user.name$", type: "string" },
   address: { column: "$address.address1$", type: "string" },
   city: { column: "$address.city$", type: "string" },
@@ -95,7 +101,7 @@ const FILTER_COLUMNS = {
 const FILTER_OP = {
   "Is empty": Op.eq,
   "Is not empty": Op.ne,
-  "Text contains": Op.substring,
+  "Text contains": Op.iRegexp,
   "Text does not contain": Op.notIRegexp,
   "Text starts with": Op.startsWith,
   "Text ends with": Op.endsWith,
@@ -511,21 +517,91 @@ export default {
     }
   },
 
-  async import(req, res) {
+  async importOrders(req, res) {
     try {
+      const { submission, chanel_id } = req.body;
       const json = await excelToJson(req.file.buffer);
-      const orderWithoutIds = json.map(
-        ({ id, updated_at, created_at, ...rest }) => rest
+      if (!json.length) {
+        return sendErrorResponse(res, 500, "File is empty.");
+      }
+      const chanel = await Chanel.findByPk(chanel_id);
+      const brand_id = chanel.brand_id || null;
+      if (submission && submission == "true") {
+        const orders = json.map(
+          ({ ID, Page, Account, Name, Address, City, Quantity, ...rest }) => {
+            const created_at = rest["created at"];
+            const sizeText = rest["Size: "];
+            const phone = rest["Phone Number"];
+            const { name, abri } = getNameFromSubmissionLink(Page.formula);
+            const { price, size } = getSizeAndPrice(sizeText);
+            const items = [
+              {
+                product_id: null,
+                name: name || abri,
+                price,
+                total_discount: 0,
+                quantity: parseInt(Quantity),
+                sku: `${abri}-${size}`,
+                grams: null,
+                reason: null,
+              },
+            ];
+            const address = {
+              address1: Address,
+              address2: null,
+              city: City,
+              zip: null,
+              province: null,
+              country: "Pakistan",
+              country_code: "PK",
+            };
+            const customer = { phone: formatPhoneNumber(phone), name: Name };
+            const order = {
+              chanel_id: parseInt(chanel_id),
+              brand_id,
+              user_id: null,
+              status: "Submission",
+              subtotal_price: price,
+              total_price: price,
+              total_tax: 0,
+              total_discounts: 0,
+              order_number: ID,
+              created_at,
+              updated_at: created_at,
+              data: JSON.stringify({
+                ID,
+                Page,
+                Account,
+                Name,
+                Address,
+                City,
+                Quantity,
+                ...rest,
+              }),
+            };
+            return { order, items, address, customer };
+          }
+        );
+        await Promise.all(orders.map(orderService.createSubmissionOrder));
+        return sendSuccessResponse(
+          res,
+          200,
+          {},
+          "Orders imported successfully!"
+        );
+      }
+      return sendErrorResponse(
+        res,
+        500,
+        "Only bulk order can create via submission files."
       );
-      await Order.bulkCreate(orderWithoutIds);
-      return sendSuccessResponse(res, 200, {}, "Orders imported successfully!");
     } catch (error) {
       console.error(error);
       return sendErrorResponse(
         res,
         500,
         "Could not perform operation at this time, kindly try again later.",
-        e
+        error
       );
     }
   },

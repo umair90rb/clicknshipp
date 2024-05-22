@@ -172,7 +172,8 @@ export default function OrderTable() {
 
   useEffect(() => {
     dispatch(
-      fetchAllOrder({ body: { sort: sortModel, page: filters.length ? 0 : page, pageSize: filters.length ? 100 : pageSize, filters } })
+      fetchAllOrder({ body: { sort: sortModel, page, pageSize, filters } })
+      // fetchAllOrder({ body: { sort: sortModel, page: filters.length ? 0 : page, pageSize: filters.length ? 100 : pageSize, filters } })
     );
   }, [page, pageSize, filters, sortModel]);
 

@@ -1,6 +1,6 @@
 import express from "express";
-import serveIndex from "serve-index";
 import cors from "cors";
+import bodyParser from "body-parser";
 import path from "path";
 import dotenv from "dotenv";
 import route from "./routes";
@@ -14,6 +14,7 @@ const rootDir = dirname(process.argv[1]);
 dotenv.config();
 const app = express();
 app.use(cors());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(rootDir, "../client", "build")));
 
 route(app);
