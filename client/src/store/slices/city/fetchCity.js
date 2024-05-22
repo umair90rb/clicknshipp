@@ -9,9 +9,9 @@ const fetchAllCities = createAsyncThunk('cities/fetch', (_, { rejectWithValue })
 //   cityService.fetchCity(id).catch((error) => rejectWithValue(error.response.data || error.message))
 // );
 
-// const fetchCreateCity = createAsyncThunk('city/create/fetch', ({ body }, { rejectWithValue }) =>
-//   cityService.fetchCreateCity(body).catch((error) => rejectWithValue(error.response.data || error.message))
-// );
+const fetchCreateCity = createAsyncThunk('city/create/fetch', ({ body }, { rejectWithValue }) =>
+  cityService.fetchCreateCity(body).catch((error) => rejectWithValue(error.response.data || error.message))
+);
 
 // const fetchUpdateCity = createAsyncThunk('city/update/fetch', ({ id, body }, { rejectWithValue }) =>
 //   cityService.fetchUpdateCity(id, body).catch((error) => rejectWithValue(error.response.data || error.message))
@@ -22,6 +22,7 @@ const fetchAllCities = createAsyncThunk('cities/fetch', (_, { rejectWithValue })
 // );
 
 export {
-  fetchAllCities
-  // fetchCity, fetchCreateCity, fetchUpdateCity, fetchDeleteCity
+  fetchAllCities,
+  fetchCreateCity
+  // fetchCity, fetchUpdateCity, fetchDeleteCity
 };

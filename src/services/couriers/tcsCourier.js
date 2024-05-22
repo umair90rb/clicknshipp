@@ -1,32 +1,39 @@
 import CourierInterface from "../courierInterface";
 import getAxiosInstance from "../http";
 import models from "../../models";
-import { Op } from "sequelize";
 import logger from "../../middleware/logger";
 const { CityNameMaping } = models;
 
 class TCSCourier extends CourierInterface {
   constructor() {
     super();
-    this.http = getAxiosInstance("https://devconnect.tcscourier.com/", {
-      "Content-Type": "application/json",
-    });
+    this.http = getAxiosInstance("https://devconnect.tcscourier.com/", {});
   }
   async getHeaderToken(id, secret) {
-    const res = await this.http.get(
-      `auth/api/auth?ClientID=${ClientID}&ClientSecret=${secret}`
-    );
-    return res?.result?.accessToken;
+    try {
+      const res = await this.http.get(
+        `auth/api/auth?ClientID=${id}&ClientSecret=${secret}`
+      );
+      console.log(res.data, "response of getHeaderToken");
+      return res.data.result?.accessToken;
+    } catch (error) {
+      console.log(error, "error");
+    }
   }
 
   async getBodyToken(token, username, password) {
-    const res = await this.http.get(
-      `ecom/api/authentication/token?username=${username}&password=${password}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    return res?.accesstoken;
+    try {
+      const res = await this.http.get(
+        `ecom/api/authentication/token?username=${username}&password=${password}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      console.log(res.data, "response of getBodyToken");
+      return res.data?.accesstoken;
+    } catch (error) {
+      console.log(error, "error");
+    }
   }
 
   async bookParcel(order, deliveryAccount) {
@@ -34,13 +41,8 @@ class TCSCourier extends CourierInterface {
     try {
       const destinationCity = await CityNameMaping.findOne({
         where: {
-          [Op.or]: [
-            {
-              city: { [Op.iLike]: order.address.city },
-            },
-            { maped: { [Op.iLike]: order.address.city } },
-          ],
-          courier: deliveryAccount.key,
+          city: order.address.city,
+          courier: deliveryAccount.service,
         },
         raw: true,
       });
@@ -57,11 +59,29 @@ class TCSCourier extends CourierInterface {
         deliveryAccount.client_id,
         deliveryAccount.key
       );
+      if (!headerToken) {
+        return {
+          cn: null,
+          slip: null,
+          isSuccess: false,
+          error: "Error in getting token from tcs service",
+          response: "Error in getting token from tcs service",
+        };
+      }
       const bodyToken = await this.getBodyToken(
         headerToken,
         deliveryAccount.username,
         deliveryAccount.password
       );
+      if (!bodyToken) {
+        return {
+          cn: null,
+          slip: null,
+          isSuccess: false,
+          error: "Error in getting second token from tcs service",
+          response: "Error in getting second token from tcs service",
+        };
+      }
       body = {
         accessToken: bodyToken,
         consignmentno: "",
@@ -168,10 +188,10 @@ class TCSCourier extends CourierInterface {
         res: response?.data,
         stack: "in tcs booking function",
       });
-      const { consignmentNo, message, traceid } = response.data || {};
+      const { message } = response?.data || {};
       return {
-        cn: consignmentNo,
-        slip: JSON.stringify({ traceid }),
+        cn: null,
+        slip: null,
         isSuccess: false,
         error: error.message,
         response: message,
@@ -192,7 +212,7 @@ class TCSCourier extends CourierInterface {
           headers: { Authorization: `Bearer ${headerToken}` },
         }
       );
-      logger.log("info", "tcs booking status,s api response", {
+      logger.log("info", "tcs booking status api response", {
         res: response.data,
       });
       const {

@@ -181,6 +181,12 @@ const CreateOrderForm = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (chanelsFetchStatus === fetchStatus.SUCCESS) {
+      orderForm.current.setFieldValue('chanel_id', chanel_id || '');
+    }
+  }, [chanelsFetchStatus]);
+
   return (
     <>
       <Formik

@@ -7,7 +7,7 @@ class CityService extends Ajax {
 
   //   fetchCity = (id) => this.getJson(`${this.pathname}/${id}`);
 
-  //   fetchCreateCity = (data) => this.post(`${this.pathname}`, data);
+  fetchCreateCity = (data) => this.post(`${this.pathname}`, data);
 
   //   fetchUpdateCity = (id, data) => this.put(`${this.pathname}/${id}`, data);
 

@@ -10,6 +10,10 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(models.Order, {
         foreignKey: "user_id",
       });
+      User.hasMany(models.OrderHistory, {
+        as: "orderHistory",
+        foreignKey: "user_id",
+      });
       User.belongsToMany(models.Permission, {
         through: "UserPermissions",
         as: "permissions",

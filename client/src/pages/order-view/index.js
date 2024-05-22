@@ -12,6 +12,7 @@ import location from 'utils/location';
 import CourierDropdown from './CourierDropdown';
 import TrackingModal from './TrackingModal';
 import StatusModal from './StatusModal';
+import AddCityModal from './AddCityModal';
 const style = {
   position: 'absolute',
   top: '50%',
@@ -55,6 +56,10 @@ const OrderView = () => {
   const [showBookModal, setShowBookModal] = useState(false);
   const showBookingModal = () => setShowBookModal(true);
   const hideBookingModal = () => setShowBookModal(false);
+
+  const [addCityModalVisible, setAddCityModalVisible] = useState(false);
+  const showAddCityModal = () => setAddCityModalVisible(true);
+  const hideAddCityModal = () => setAddCityModalVisible(false);
 
   const [showTrackModal, setShowTrackModal] = useState(false);
   const showTrackingModal = () => setShowTrackModal(true);
@@ -121,7 +126,7 @@ const OrderView = () => {
   }
 
   if (error) {
-    return null;
+    return <Typography variant="h4">Something goes wrong during getting order data!</Typography>;
   }
 
   return (
@@ -156,6 +161,13 @@ const OrderView = () => {
               <Grid item>
                 <Button variant="outlined" disabled={orderStatus !== 'Confirmed'} onClick={showBookingModal} color="primary">
                   Book Order
+                </Button>
+              </Grid>
+            )}
+            {(orderStatus === 'Confirmed' || orderStatus === 'Booked') && (
+              <Grid item>
+                <Button variant="outlined" disabled={orderStatus !== 'Confirmed'} onClick={showAddCityModal} color="primary">
+                  Add Courier City
                 </Button>
               </Grid>
             )}
@@ -261,6 +273,7 @@ const OrderView = () => {
           <StatusModal hideOrderStatusModal={hideOrderStatusModal} setOrderStatus={setOrderStatus} orderId={id} />
         </Box>
       </Modal>
+      <AddCityModal city={city} visible={addCityModalVisible} onClose={hideAddCityModal} />
     </Stack>
   );
 };

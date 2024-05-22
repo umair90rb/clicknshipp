@@ -40,7 +40,6 @@ schedule(every20Min, async () => {
     console.log(agents.length, "agents to assign order");
     const unassignedOrders = await Order.findAll({
       where: {
-        status: "Received",
         user_id: null,
       },
       attributes: {

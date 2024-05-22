@@ -16,7 +16,7 @@ const {
 class OrderService {
   constructor() {}
 
-  async createSubmissionOrder(_order) {
+  async createSubmissionOrder(_order, userId) {
     try {
       const {
         order: orderData,
@@ -41,6 +41,10 @@ class OrderService {
       await address.setCustomer(customer.id);
       const itemsArray = await OrderItem.bulkCreate(itemsData);
       await order.addItems(itemsArray);
+      await order.createHistory({
+        user_id: userId,
+        event: "order created via submission file upload",
+      });
       await order.reload();
       return order;
     } catch (error) {

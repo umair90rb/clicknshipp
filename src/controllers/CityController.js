@@ -1,8 +1,8 @@
 import model from "../models";
-import { Sequelize } from "sequelize";
+import { Op, Sequelize } from "sequelize";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 
-const { CityNameMaping } = model;
+const { CityNameMaping, DeliveryServiceAccounts } = model;
 
 export default {
   async cities(req, res) {
@@ -29,7 +29,50 @@ export default {
 
   async city(req, res) {},
 
-  async create(req, res) {},
+  async create(req, res) {
+    try {
+      const { city, maped, assigned_id, service_id, code } = req.body;
+      const deliveryAccount = await DeliveryServiceAccounts.findByPk(
+        service_id,
+        { raw: true }
+      );
+      const existed = await CityNameMaping.findOne({
+        where: {
+          [Op.and]: {
+            city,
+            maped,
+            courier: deliveryAccount.service,
+          },
+        },
+      });
+      console.log(existed, "existed");
+      if (existed) {
+        return sendErrorResponse(res, 500, "City with details already added.");
+      }
+
+      const addedCity = await CityNameMaping.create({
+        city,
+        maped,
+        assigned_id: assigned_id === "" ? null : assigned_id,
+        courier: deliveryAccount.service,
+        code,
+      });
+      return sendSuccessResponse(
+        res,
+        200,
+        { city: addedCity.get() },
+        "New city added."
+      );
+    } catch (e) {
+      console.error(e);
+      return sendErrorResponse(
+        res,
+        500,
+        "Could not perform operation at this time, kindly try again later.",
+        e
+      );
+    }
+  },
 
   async update(req, res) {},
 

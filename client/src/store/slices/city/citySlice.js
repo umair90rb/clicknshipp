@@ -1,11 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
 import fetchStatus from 'constants/fetchStatuses';
-import { fetchAllCities } from './fetchCity';
+import { fetchAllCities, fetchCreateCity } from './fetchCity';
 
 const initialState = {
   cities: [],
   fetchStatus: fetchStatus.IDLE,
-  error: null
+  error: null,
+  create: {
+    data: null,
+    fetchStatus: fetchStatus.IDLE,
+    error: null
+  }
 };
 
 const categorySlice = createSlice({
@@ -25,6 +30,20 @@ const categorySlice = createSlice({
       state.cities = [];
       state.fetchStatus = fetchStatus.FAILURE;
       state.error = action.payload;
+    });
+    builder.addCase(fetchCreateCity.pending, (state, _action) => {
+      state.create.fetchStatus = fetchStatus.REQUEST;
+    });
+    builder.addCase(fetchCreateCity.fulfilled, (state, action) => {
+      const { city } = action.payload;
+      state.create.fetchStatus = fetchStatus.SUCCESS;
+      state.create.data = city;
+      state.create.error = null;
+    });
+    builder.addCase(fetchCreateCity.rejected, (state, action) => {
+      state.create.data = null;
+      state.create.fetchStatus = fetchStatus.FAILURE;
+      state.create.error = action.payload?.error;
     });
   }
 });

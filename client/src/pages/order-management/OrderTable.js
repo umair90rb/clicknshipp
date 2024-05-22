@@ -238,7 +238,7 @@ export default function OrderTable() {
         rowSelectionModel={rowSelectionModel}
         onRowSelectionModelChange={(newRowSelectionModel) => setRowSelectionModel(newRowSelectionModel)}
         paginationMode="server"
-        pageSizeOptions={[10, 25, 50, 75, 100]}
+        pageSizeOptions={[10, 25, 50, 100]}
         onPaginationModelChange={(paginationModal) => dispatch(setOrderPagination(paginationModal))}
         paginationModel={{ page, pageSize }}
         sortingMode="server"

@@ -24,6 +24,7 @@ const {
   Brand,
   DeliveryServiceAccounts,
   Delivery,
+  OrderHistory,
 } = model;
 
 const order_data_keys = [
@@ -247,6 +248,10 @@ export default {
             as: "customer",
           },
           {
+            model: OrderHistory,
+            as: "history",
+          },
+          {
             model: Address,
             as: "address",
             attributes: {
@@ -344,7 +349,7 @@ export default {
       await address.setCustomer(customer.id);
       const items = await OrderItem.bulkCreate(order_items_data);
       await order.addItems(items);
-
+      await order.createHistory({ event: "order create via shopify web hook" });
       return sendSuccessResponse(res, 201, {}, "Order created successfully");
     } catch (error) {
       logger.error(error.message, {
@@ -470,6 +475,10 @@ export default {
       const items = await OrderItem.bulkCreate(orderItems);
       await order.addItems(items);
       await order.reload();
+      await order.createHistory({
+        event: "order created",
+        user_id: req.user.id,
+      });
       // remove agent assignment, update status to delete, add proper remarks.
       if (customerWithDuplicateOrders) {
         const duplicateOrders = [];
@@ -496,6 +505,15 @@ export default {
                 },
               },
             }
+          );
+          await Promise.all(
+            duplicateOrders.map((orderId) =>
+              OrderHistory.create({
+                order_id: orderId,
+                event:
+                  "order status updated to deleted by system due to duplication",
+              })
+            )
           );
         }
       }
@@ -582,7 +600,11 @@ export default {
             return { order, items, address, customer };
           }
         );
-        await Promise.all(orders.map(orderService.createSubmissionOrder));
+        await Promise.all(
+          orders.map((order) =>
+            orderService.createSubmissionOrder(order, req.user.id)
+          )
+        );
         return sendSuccessResponse(
           res,
           200,
@@ -613,7 +635,7 @@ export default {
         return sendErrorResponse(
           res,
           402,
-          "To cancel order you need to add reson for cancelation!"
+          "To cancel order you need to add reason for cancelation!"
         );
       }
       const order = await Order.findByPk(orderId);
@@ -632,6 +654,10 @@ export default {
         status,
         remarks: remarks || order.remarks,
         cancel_reason: reason || order.cancel_reason,
+      });
+      await order.createHistory({
+        event: `order status updated to ${status}, remarks: ${remarks}, cancel reason: ${reason}`,
+        user_id: req.user.id,
       });
       return sendSuccessResponse(res, 200, {}, "Operation successful");
     } catch (error) {
@@ -717,14 +743,23 @@ export default {
       const { cn, slip, isSuccess, error, response } = bookingResponse || {};
       console.log(bookingResponse, "bookingResponse");
       if (isSuccess) {
-        await order.setDelivery({
-          courier: deliveryAccount.service,
-          account_id: deliveryAccount.id,
-          cn,
-          slip_link: slip,
-          status: "Booked",
+        await Delivery.findOrCreate({
+          where: {
+            order_id: order.id,
+          },
+          defaults: {
+            courier: deliveryAccount.service,
+            account_id: deliveryAccount.id,
+            cn,
+            slip_link: slip,
+            status: "Booked",
+          },
         });
         await order.update({ status: "Booked" });
+        await order.createHistory({
+          user_id: req.user.id,
+          event: `order booked with ${deliveryAccount.service}`,
+        });
         await Brand.update(
           { shipment_series: order.brand.shipment_series + 1 },
           {
@@ -787,6 +822,10 @@ export default {
           updatedAt: new Date().toISOString(),
         });
         await order.update({ status: "Booking Canceled" });
+        await order.createHistory({
+          user_id: req.user.id,
+          event: "order booking cancel",
+        });
         return sendSuccessResponse(res, 200, {}, "Operation successful");
       }
       return sendErrorResponse(res, 500, error, response);
@@ -823,8 +862,8 @@ export default {
       const bookingService = new BookingService();
       const bookingStatusResponse =
         await bookingService.checkParcelStatusWithCourier(
-          delivery.cn,
-          delivery.account.get()
+          delivery?.cn,
+          delivery?.account?.get()
         );
       const {
         isSuccess,
@@ -982,6 +1021,10 @@ export default {
           },
         ],
       });
+      await order.createHistory({
+        user_id: req.user.id,
+        event: "order update",
+      });
       return sendSuccessResponse(
         res,
         200,
@@ -1006,6 +1049,10 @@ export default {
       const id = req.params.id;
       const order = await Order.findByPk(id);
       if (order) {
+        await order.createHistory({
+          user_id: req.user.id,
+          event: "order deleted",
+        });
         await order.destroy();
         return sendSuccessResponse(
           res,
@@ -1048,6 +1095,15 @@ export default {
         { transaction: t }
       );
       await t.commit();
+      await Promise.all(
+        orderIds.map((id) =>
+          OrderHistory.create({
+            user_id: req.user.id,
+            order_id: id,
+            event: "order deleted via bulk order delete",
+          })
+        )
+      );
       return sendSuccessResponse(res, 200, {}, "Orders deleted successful.");
     } catch (error) {
       await t.rollback();

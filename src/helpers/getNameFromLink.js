@@ -1,5 +1,14 @@
 const itemAbbreviationMapping = {
   JNT: "Joint On",
+  NTO: "Night On",
+  NRV: "Nerve On",
+  STE: "Stiff Ease",
+  RLX: "Relexo",
+  HLT: "Heel it",
+  PNT: "Penta",
+  FUE: "Flu Ease",
+  DGS: "Digesto",
+  ELF: "Enlifto",
 };
 
 export default function getNameFromSubmissionLink(link) {

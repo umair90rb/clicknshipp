@@ -4,8 +4,7 @@ import { PERMISSIONS } from "../constants/constants";
 
 import can from "../middleware/canAccess";
 import Auth from "../middleware/auth";
-import { createUserSchema, updateUserSchema } from "../schemas/userSchema";
-import { idSchema } from "../schemas/commonSchema";
+import { createMapedCitySchema } from "../schemas/citySchema";
 import schemaValidator from "../middleware/schemaValidator";
 import { createValidator } from "express-joi-validation";
 
@@ -27,13 +26,13 @@ router.get(
 //   CityController.city
 // );
 
-// router.post(
-//   "/",
-//   Auth,
-//   can(PERMISSIONS.PERMISSION_CREATE_USER),
-//   schemaValidator(createUserSchema),
-//   CityController.create
-// );
+router.post(
+  "/",
+  Auth,
+  can(PERMISSIONS.PERMISSION_CREATE_USER),
+  schemaValidator(createMapedCitySchema),
+  CityController.create
+);
 
 // router.put(
 //   "/:id",

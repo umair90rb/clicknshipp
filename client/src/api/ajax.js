@@ -4,7 +4,7 @@ const { NODE_ENV, REACT_APP_API, REACT_APP_API_PREFIX } = getEnvs();
 
 const baseURL = `${REACT_APP_API}/${REACT_APP_API_PREFIX}`;
 const config = {
-  timeout: 3000
+  timeout: 20000
 };
 if (NODE_ENV !== 'production') {
   config.baseURL = baseURL;

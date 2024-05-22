@@ -15,13 +15,11 @@ npx sequelize-cli model:generate --name UserBrand --attributes user_id:integer,b
 npx sequelize-cli model:generate --name DeliveryServiceAccounts --attributes service:string,key:string,active:boolean
 
 sequelize migration:generate --name item-table-assocation
-
 sequelize model:generate --name Delivery --attributes courier:string,cn:string,slip_link:string,status:string,order_id:integer
 sequelize model:generate --name CityNameMaping --attributes city:string,maped:string,courier:string,active:string
-
 sequelize migration:generate --name update-order-table
-
-sequelize model:generate --name Payments --attributes type:string,bank:string,tid:string,amount:number,note:string
+sequelize model:generate --name Payments --attributes type:string,bank:string,tid:string,amount:integer,note:string
+sequelize model:generate --name OrderHistory --attributes order_id:integer,user_id:integer,event:string
 
 sequelize migration:generate --name update-order-and-order-item-table
 sequelize migration:generate --name update-order-related-table-columns-number-to-varchar
