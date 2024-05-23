@@ -9,44 +9,10 @@ import { setMessage } from 'store/slices/util/utilSlice';
 import OrderItemTable from './OrderItemTable';
 import OrderSummaryCard from './OrderSummaryCard';
 import location from 'utils/location';
-import CourierDropdown from './CourierDropdown';
+import CourierDropdownModal from './CourierDropdownModal';
 import TrackingModal from './TrackingModal';
 import StatusModal from './StatusModal';
 import AddCityModal from './AddCityModal';
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4
-};
-
-const courierServiceModalStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  height: 150,
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4
-};
-
-const trackingModalStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '90%',
-  height: '90vh',
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4
-};
 
 const OrderView = () => {
   const { orderId } = useParams();
@@ -248,31 +214,10 @@ const OrderView = () => {
           </Card>
         </Grid>
       </Grid>
-      <Modal open={showBookModal} onClose={hideBookingModal} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
-        <Box sx={courierServiceModalStyle}>
-          <CourierDropdown updateOrderStatus={setOrderStatus} orderId={id} />
-        </Box>
-      </Modal>
-      <Modal
-        open={showTrackModal}
-        onClose={hideTrackingModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={trackingModalStyle}>
-          <TrackingModal orderId={id} />
-        </Box>
-      </Modal>
-      <Modal
-        open={showOrderStatusUpdateModal}
-        onClose={hideOrderStatusModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <StatusModal hideOrderStatusModal={hideOrderStatusModal} setOrderStatus={setOrderStatus} orderId={id} />
-        </Box>
-      </Modal>
+
+      <CourierDropdownModal visible={showBookModal} onClose={hideBookingModal} updateOrderStatus={setOrderStatus} orderId={id} />
+      <StatusModal visible={showOrderStatusUpdateModal} onClose={hideOrderStatusModal} setOrderStatus={setOrderStatus} orderId={id} />
+      <TrackingModal visible={showTrackModal} onClose={hideTrackingModal} orderId={id} />
       <AddCityModal city={city} visible={addCityModalVisible} onClose={hideAddCityModal} />
     </Stack>
   );

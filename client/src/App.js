@@ -3,7 +3,7 @@ import Routes from 'routes';
 import ThemeCustomization from 'themes';
 import ScrollTop from 'components/ScrollTop';
 import { setMessage } from 'store/slices/util/utilSlice';
-import { Snackbar, Alert } from '@mui/material';
+import { Typography, Snackbar, Alert } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { utilMessageSelector } from 'store/slices/util/utilSelector';
 import useFetchProfile from 'hooks/useFetchProfile';
@@ -21,11 +21,15 @@ const App = () => {
         <Snackbar
           onClose={handleExited}
           TransitionProps={{ onExited: handleExited }}
-          autoHideDuration={!sticky && 3000}
+          autoHideDuration={!sticky && 5000}
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
           open={!!message}
         >
-          <Alert severity={type}>{message}</Alert>
+          <Alert onClose={handleExited} variant="filled" severity={type}>
+            <Typography variant="h6" color="white">
+              {message}
+            </Typography>
+          </Alert>
         </Snackbar>
         <Routes />
       </ScrollTop>

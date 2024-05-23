@@ -12,13 +12,22 @@ class TCSCourier extends CourierInterface {
   async getHeaderToken(id, secret) {
     let res;
     try {
-      res = await this.http.get(
-        `auth/api/auth?ClientID=${id}&ClientSecret=${secret}`
-      );
-      return res.data.result?.accessToken;
+      let headersList = {
+        Accept: "*/*",
+      };
+
+      let reqOptions = {
+        url: `https://devconnect.tcscourier.com/auth/api/auth?ClientID=${id}&ClientSecret=${secret}`,
+        method: "GET",
+        headers: headersList,
+      };
+
+      res = await this.http.request(reqOptions);
+      console.log(res?.data);
+      return res?.data?.result?.accessToken;
     } catch (error) {
-      logger.log("error", "tcs get header token api response", {
-        res: res.data,
+      logger.log("error", error.message, {
+        res: res?.data,
         error,
       });
     }
@@ -27,16 +36,23 @@ class TCSCourier extends CourierInterface {
   async getBodyToken(token, username, password) {
     let res;
     try {
-      res = await this.http.get(
-        `ecom/api/authentication/token?username=${username}&password=${password}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      return res.data?.accesstoken;
+      let headersList = {
+        Accept: "*/*",
+        Authorization: `Bearer ${token}`,
+      };
+
+      let reqOptions = {
+        url: `https://devconnect.tcscourier.com/ecom/api/authentication/token?username=${username}&password=${password}`,
+        method: "GET",
+        headers: headersList,
+      };
+
+      res = await this.http.request(reqOptions);
+      console.log(res?.data);
+      return res?.data?.accesstoken;
     } catch (error) {
       logger.log("error", "tcs get header token api response", {
-        res: res.data,
+        res: res?.data,
         error,
       });
     }
@@ -177,10 +193,10 @@ class TCSCourier extends CourierInterface {
         headers: { Authorization: `Bearer ${headerToken}` },
       });
       logger.log("info", "tcs book parcel api response", {
-        res: response.data,
+        res: response?.data,
         body,
       });
-      const { consignmentNo, message, traceid } = response.data || {};
+      const { consignmentNo, message, traceid } = response?.data || {};
       return {
         cn: consignmentNo,
         slip: JSON.stringify({ traceid }),
@@ -212,15 +228,19 @@ class TCSCourier extends CourierInterface {
         deliveryAccount.client_id,
         deliveryAccount.key
       );
-      response = await this.http.get(
-        `tracking/api/Tracking/GetDynamicTrackDetail?consignee=${trackingNumber}`,
-        {
-          headers: { Authorization: `Bearer ${headerToken}` },
-        }
-      );
-      logger.log("info", "tcs booking status api response", {
-        res: response.data,
-      });
+      let headersList = {
+        Accept: "*/*",
+        Authorization: `Bearer ${headerToken}`,
+      };
+
+      let reqOptions = {
+        url: `https://devconnect.tcscourier.com/tracking/api/Tracking/GetDynamicTrackDetail?consignee=${trackingNumber}`,
+        method: "GET",
+        headers: headersList,
+      };
+
+      response = await this.http.request(reqOptions);
+      console.log(response?.data);
       const {
         shipmentinfo,
         deliveryinfo,
@@ -279,7 +299,7 @@ class TCSCourier extends CourierInterface {
         body,
         res: response.data,
       });
-      const { message, traceid } = response.data;
+      const { message, traceid } = response?.data;
       return {
         isSuccess: Boolean(message === "SUCCESS"),
         error: message !== "SUCCESS" ? message : null,

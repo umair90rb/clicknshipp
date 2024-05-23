@@ -743,22 +743,32 @@ export default {
       const { cn, slip, isSuccess, error, response } = bookingResponse || {};
       console.log(bookingResponse, "bookingResponse");
       if (isSuccess) {
-        await Delivery.findOrCreate({
-          where: {
-            order_id: order.id,
-          },
-          defaults: {
+        const delivery = await Delivery.findOne({
+          where: { order_id: order.id },
+        });
+        console.log(delivery?.get(), "delivery found for order");
+        if (delivery) {
+          await delivery.update({
             courier: deliveryAccount.service,
             account_id: deliveryAccount.id,
             cn,
             slip_link: slip,
             status: "Booked",
-          },
-        });
+          });
+        } else {
+          await Delivery.create({
+            courier: deliveryAccount.service,
+            account_id: deliveryAccount.id,
+            cn,
+            slip_link: slip,
+            status: "Booked",
+            order_id: order.id,
+          });
+        }
         await order.update({ status: "Booked" });
         await order.createHistory({
           user_id: req.user.id,
-          event: `order booked with ${deliveryAccount.service}`,
+          event: `order booked with ${deliveryAccount?.service}, tracking number: ${cn}, brand no: ${order?.brand?.shipment_series}`,
         });
         await Brand.update(
           { shipment_series: order.brand.shipment_series + 1 },
@@ -840,7 +850,7 @@ export default {
       const order = await Order.findByPk(orderId, {
         attributes: ["id", "status"],
       });
-      if (!order || order.status !== "Booked") {
+      if (!order || order?.status !== "Booked") {
         return sendErrorResponse(res, 500, "Order is not in booking!");
       }
       const delivery = await Delivery.findOne({
@@ -852,6 +862,7 @@ export default {
           as: "account",
         },
       });
+      console.log(delivery.get());
       if (!delivery) {
         return sendErrorResponse(
           res,
@@ -886,7 +897,9 @@ export default {
       }
       return sendErrorResponse(res, 500, error, response);
     } catch (error) {
-      logger.error(error);
+      logger.error("error", error, {
+        stack: "in delivery status function order controller",
+      });
       return sendErrorResponse(
         res,
         500,

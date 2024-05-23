@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FormControl, Select, InputLabel, MenuItem, Button } from '@mui/material';
+import { FormControl, Select, Modal, Box, InputLabel, MenuItem, Button } from '@mui/material';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useDispatch } from '../../../node_modules/react-redux/es/exports';
 import { fetchBookOrder } from 'store/slices/order/fetchOrder';
@@ -10,12 +10,22 @@ import {
   deliveryServiceAccountsIsLoadingSelector,
   deliveryServiceAccountsListSelector
 } from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSelector';
-import CircularLoader from 'components/CircularLoader';
 
-export default function CourierDropdown({ orderId, updateOrderStatus }) {
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  height: 150,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4
+};
+
+export default function CourierDropdownModal({ visible, onClose, orderId, updateOrderStatus }) {
   const dispatch = useDispatch();
   const servicesList = useSelector(deliveryServiceAccountsListSelector);
-  const servicesListIsLoading = useSelector(deliveryServiceAccountsIsLoadingSelector);
   const [serviceAccount, setServiceAccount] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -29,6 +39,7 @@ export default function CourierDropdown({ orderId, updateOrderStatus }) {
       if (type === 'order/book/fetch/fulfilled') {
         setLoading(false);
         updateOrderStatus('Booked');
+        onClose();
         return dispatch(setMessage({ message: `Order booked with successfully`, type: 'success' }));
       }
       setLoading(false);
@@ -43,26 +54,30 @@ export default function CourierDropdown({ orderId, updateOrderStatus }) {
   }, []);
 
   return (
-    <FormControl sx={{ minWidth: '100%' }}>
-      <InputLabel id="courier-services">Select Courier Account</InputLabel>
-      <Select
-        disabled={loading}
-        labelId="courier-services"
-        id="courier-services-select"
-        value={serviceAccount}
-        label="Services"
-        onChange={handleChange}
-        placeholder={loading && 'loading...'}
-      >
-        {servicesList.map(({ id, name }) => (
-          <MenuItem key={id} value={id}>
-            {name}
-          </MenuItem>
-        ))}
-      </Select>
-      <Button disabled={loading} onClick={handleBook} endIcon={loading && <LoadingOutlined />} sx={{ mt: 1 }} variant="contained">
-        Book
-      </Button>
-    </FormControl>
+    <Modal open={visible} onClose={onClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+      <Box sx={style}>
+        <FormControl sx={{ minWidth: '100%' }}>
+          <InputLabel id="courier-services">Select Courier Account</InputLabel>
+          <Select
+            disabled={loading}
+            labelId="courier-services"
+            id="courier-services-select"
+            value={serviceAccount}
+            label="Services"
+            onChange={handleChange}
+            placeholder={loading && 'loading...'}
+          >
+            {servicesList.map(({ id, name }) => (
+              <MenuItem key={id} value={id}>
+                {name}
+              </MenuItem>
+            ))}
+          </Select>
+          <Button disabled={loading} onClick={handleBook} endIcon={loading && <LoadingOutlined />} sx={{ mt: 1 }} variant="contained">
+            Book
+          </Button>
+        </FormControl>
+      </Box>
+    </Modal>
   );
 }
