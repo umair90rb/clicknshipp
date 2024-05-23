@@ -13,6 +13,7 @@ import CourierDropdownModal from './CourierDropdownModal';
 import TrackingModal from './TrackingModal';
 import StatusModal from './StatusModal';
 import AddCityModal from './AddCityModal';
+import History from './History';
 
 const OrderView = () => {
   const { orderId } = useParams();
@@ -51,7 +52,9 @@ const OrderView = () => {
     address,
     items,
     customer,
-    createdAt
+    createdAt,
+    history,
+    delivery
   } = order || {};
   const [orderStatus, setOrderStatus] = useState('');
   const { email, first_name, last_name, id: customerId, shopify_id, name, note, phone } = customer || {};
@@ -73,6 +76,36 @@ const OrderView = () => {
   useEffect(() => {
     getOrderDetails();
   }, []);
+
+  const trackOrder = () => {
+    console.log(delivery?.courier);
+    if (delivery) {
+      console.log(delivery?.courier);
+      switch (delivery?.courier) {
+        case 'leopard':
+          console.log('manual tracking');
+          break;
+        case 'deawoo':
+          console.log('manual tracking');
+          break;
+        case 'postex':
+          window.open(`https://merchant.postex.pk?cn=${delivery?.cn}`, '_blank');
+          break;
+        case 'tcs':
+          console.log(`https://www.tcsexpress.com/track/${delivery?.cn}`);
+          window.open(`https://www.tcsexpress.com/track/${delivery?.cn}`, '_blank');
+          break;
+        case 'callcourier':
+          window.open(`https://callcourier.com.pk/tracking/?tc=${delivery?.cn}`, '_blank');
+          break;
+        case 'trax':
+          window.open(`https://sonic.pk/api/shipment/track/consignee/public?tracking_number=${delivery?.cn}`, '_blank');
+          break;
+        default:
+          break;
+      }
+    }
+  };
 
   const handleCancelDelivery = () => {
     dispatch(fetchCancelOrderBooking({ id: orderId })).then((action) => {
@@ -112,7 +145,7 @@ const OrderView = () => {
             {orderStatus === 'Booked' && (
               <>
                 <Grid item>
-                  <Button variant="outlined" disabled={orderStatus !== 'Booked'} onClick={showTrackingModal} color="primary">
+                  <Button variant="outlined" disabled={orderStatus !== 'Booked'} onClick={trackOrder} color="primary">
                     Track Order
                   </Button>
                 </Grid>
@@ -172,6 +205,7 @@ const OrderView = () => {
             </CardContent>
           </Card>
           <OrderSummaryCard subtotal={subtotal_price} tax={total_tax} total={total_price} />
+          <History orderHistory={history} />
         </Grid>
         <Grid item xs={4}>
           <Card sx={{ minWidth: 275 }}>

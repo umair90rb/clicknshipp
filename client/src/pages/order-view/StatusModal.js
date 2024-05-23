@@ -19,7 +19,7 @@ const style = {
   p: 4
 };
 
-const ORDER_STATUSES = ['Confirmed', 'No Pick', 'Cancel', 'Duplicate', 'Delivered'];
+const ORDER_STATUSES = ['Confirmed', 'No Pick', 'Cancel', 'Duplicate', 'Delivered', 'Payment Pending'];
 
 export default function StatusModal({ visible, onClose, orderId, setOrderStatus }) {
   const dispatch = useDispatch();

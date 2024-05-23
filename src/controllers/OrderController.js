@@ -275,6 +275,13 @@ export default {
               exclude: ["OrderId", "createdAt", "updatedAt"],
             },
           },
+          {
+            model: Delivery,
+            as: "delivery",
+            attributes: {
+              exclude: ["slip_link", "createdAt", "updatedAt", "order_id"],
+            },
+          },
         ],
       });
       if (order) {
@@ -656,7 +663,9 @@ export default {
         cancel_reason: reason || order.cancel_reason,
       });
       await order.createHistory({
-        event: `order status updated to ${status}, remarks: ${remarks}, cancel reason: ${reason}`,
+        event: `order status updated to ${status}. ${
+          remarks && "remarks:" + remarks
+        }, ${reason && "cancel reason:" + reason}`,
         user_id: req.user.id,
       });
       return sendSuccessResponse(res, 200, {}, "Operation successful");
