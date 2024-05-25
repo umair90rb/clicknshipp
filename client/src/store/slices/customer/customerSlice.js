@@ -47,7 +47,6 @@ const customerSlice = createSlice({
       const { data } = action.payload;
       state.view.fetchStatus = fetchStatus.SUCCESS;
       state.view.data = data.customer;
-      state.view.data.orders = data.orders;
       state.view.error = null;
     });
     builder.addCase(fetchCustomer.rejected, (state, action) => {

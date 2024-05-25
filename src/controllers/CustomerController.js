@@ -1,12 +1,12 @@
 import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 
-const { Customer, Address } = model;
+const { Customer, Address, Order } = model;
 
 export default {
   async customers(req, res) {
     try {
-      const customers = await Customer.findAll({ limit: 25 });
+      const customers = await Customer.findAll();
       return sendSuccessResponse(res, 200, { customers });
     } catch (e) {
       console.error(e);
@@ -25,28 +25,29 @@ export default {
         include: [
           {
             model: Address,
-            as: "Addresses",
+            as: "addresses",
             attributes: {
               exclude: ["CustomerId", "latitude", "longitude"],
             },
           },
+          {
+            model: Order,
+            as: "orders",
+            attributes: [
+              "id",
+              "order_number",
+              "total_price",
+              "total_discounts",
+              "createdAt",
+              "total_tax",
+              "subtotal_price",
+            ],
+          },
         ],
       });
       if (customer) {
-        const orders = await customer.getOrders({
-          attributes: [
-            "id",
-            "order_number",
-            "total_price",
-            "total_discounts",
-            "createdAt",
-            "total_tax",
-            "subtotal_price",
-          ],
-        });
         return sendSuccessResponse(res, 200, {
           customer,
-          orders,
         });
       }
       return sendErrorResponse(res, 404, "No data found with this id.");

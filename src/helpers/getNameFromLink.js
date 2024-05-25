@@ -11,12 +11,8 @@ const itemAbbreviationMapping = {
   ELF: "Enlifto",
 };
 
-export default function getNameFromSubmissionLink(link) {
-  const nameText = link.split(",")[1];
-  const startIndex = nameText.indexOf('"') + 1;
-  const endIndex = nameText.lastIndexOf('"');
-  const item = nameText.slice(startIndex, endIndex);
-  const itemAbri = item.split("-")[0];
+export default function getNameFromSubmissionLink(linkText) {
+  const itemAbri = linkText.split("-")[0];
   return { name: itemAbbreviationMapping[itemAbri], abri: itemAbri };
 }
 

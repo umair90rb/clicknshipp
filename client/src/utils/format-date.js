@@ -15,6 +15,9 @@ export default (date = new Date().toISOString()) => {
 export const getDate = (date) => date.split('T')[0];
 
 export function formatDateTime(dateTimeString, omitYearAndSec = false) {
+  if (!dateTimeString) {
+    return 'None';
+  }
   const date = new Date(dateTimeString);
 
   const options = {

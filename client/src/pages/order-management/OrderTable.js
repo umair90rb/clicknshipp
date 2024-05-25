@@ -99,6 +99,12 @@ const columns = (viewAction) => [
   },
   {
     field: 'createdAt',
+    headerName: 'Created At',
+    flex: 1,
+    valueGetter: ({ value }) => formatDateTime(value, true)
+  },
+  {
+    field: 'receivedAt',
     headerName: 'Received At',
     flex: 1,
     valueGetter: ({ value }) => formatDateTime(value, true)

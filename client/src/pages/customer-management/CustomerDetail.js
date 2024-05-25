@@ -90,7 +90,7 @@ const CustomerDetail = ({ id }) => {
   const customerData = useSelector(customerViewDataSelector);
   const customerViewError = useSelector(customerViewErrorSelector);
 
-  const { name, email, note, phone, Addresses, orders } = customerData || {};
+  const { name, email, note, phone, addresses, orders } = customerData || {};
   useLayoutEffect(() => {
     dispatch(fetchCustomer({ id }));
   }, []);
@@ -99,54 +99,13 @@ const CustomerDetail = ({ id }) => {
     return <CenterCircularLoader />;
   }
 
-  const renderAddresses = (addresses) =>
-    addresses.map(({ address1, address2, city, zip, country, province }) => (
-      <>
-        <Grid container spacing={3}>
-          <Grid item xs={6}>
-            <Typography variant="body1" size={20}>
-              Address: {address1}
-            </Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="body1" size={20}>
-              More Details: {address2}
-            </Typography>
-          </Grid>
-        </Grid>
-        <Divider />
-        <Grid container spacing={3}>
-          <Grid item xs={3}>
-            <Typography variant="body1" size={20}>
-              City: {city}
-            </Typography>
-          </Grid>
-          <Grid item xs={3}>
-            <Typography variant="body1" size={20}>
-              Zip code: {zip}
-            </Typography>
-          </Grid>
-          <Grid item xs={3}>
-            <Typography variant="body1" size={20}>
-              Province: {province}
-            </Typography>
-          </Grid>
-          <Grid item xs={3}>
-            <Typography variant="body1" size={20}>
-              Country: {country}
-            </Typography>
-          </Grid>
-        </Grid>
-      </>
-    ));
-
   return (
     <>
       <Typography variant="h3">Customer Detail</Typography>
       <Divider />
       <Grid container spacing={3}>
         <Grid item xs={4}>
-          <Typography variant="body1">Name: {name}</Typography>
+          <Typography variant="body1">Name: {name || 'None'}</Typography>
         </Grid>
         <Grid item xs={4}>
           <Typography variant="body1">Email: {email || 'None'}</Typography>
@@ -174,7 +133,7 @@ const CustomerDetail = ({ id }) => {
                   showQuickFilter: true
                 }
               }}
-              rows={Addresses || []}
+              rows={addresses || []}
               columns={customerAddressColumns}
             />
           </div>

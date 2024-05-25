@@ -163,6 +163,7 @@ export default {
             "updatedAt",
           ],
         },
+        order: [["receivedAt", "ASC"]],
       };
       if (pageSize > -1) {
         query.limit = pageSize;
@@ -189,15 +190,14 @@ export default {
         const _filters = {};
         for (let i = 0; i < filters.length; i++) {
           const { column, op, value } = filters[i];
-          console.log(
-            column,
-            op,
-            value,
-            parseValue(value, FILTER_COLUMNS[column].type),
-            "column, op, value, parse"
-          );
+          // console.log(
+          //   column,
+          //   op,
+          //   value,
+          //   parseValue(value, FILTER_COLUMNS[column].type),
+          //   "column, op, value, parse"
+          // );
           _filters[FILTER_COLUMNS[column].column] = {
-            //parseValue(value, FILTER_COLUMNS[column].type)
             [FILTER_OP[op]]: value || null,
           };
         }
@@ -220,9 +220,13 @@ export default {
   async order(req, res) {
     try {
       const { id } = req.params;
+      const orderExisted = await Order.findByPk(id, { raw: true });
+      if (!orderExisted) {
+        return sendErrorResponse(res, 404, "No data found with this id.");
+      }
       const order = await Order.findByPk(id, {
         attributes: {
-          exclude: ["data"],
+          exclude: ["data", "CustomerId", "user_id", "chanel_id", "brand_id"],
         },
         include: [
           {
@@ -246,6 +250,11 @@ export default {
           {
             model: Customer,
             as: "customer",
+            include: {
+              attributes: ["id", "order_number", "status"],
+              model: Order,
+              as: "orders",
+            },
           },
           {
             model: OrderHistory,
@@ -284,10 +293,39 @@ export default {
           },
         ],
       });
-      if (order) {
-        return sendSuccessResponse(res, 200, { order });
+      if (order.items.length) {
+        const duplicateOrderWhere = order.items.map((item) => ({
+          [Op.and]: [{ name: item?.name }, { quantity: item?.quantity }],
+        }));
+        const duplicate = await Order.findAll({
+          attributes: ["id", "order_number", "status"],
+          where: {
+            id: {
+              [Op.ne]: order.id,
+            },
+          },
+          include: [
+            {
+              attributes: [],
+              model: Customer,
+              as: "customer",
+              where: {
+                phone: order?.customer?.phone,
+              },
+            },
+            {
+              attributes: [],
+              model: OrderItem,
+              as: "items",
+              where: {
+                [Op.and]: duplicateOrderWhere,
+              },
+            },
+          ],
+        });
+        order.setDataValue("duplicate", duplicate);
       }
-      return sendErrorResponse(res, 404, "No data found with this id.");
+      return sendSuccessResponse(res, 200, { order });
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
@@ -333,6 +371,14 @@ export default {
         brand_id: chanel?.brand_id,
         data: JSON.stringify(body),
       });
+      if (
+        (customer_data &&
+          "phone" in customer_data &&
+          customer_data.phone == null) ||
+        customer_data.phone == ""
+      ) {
+        customer_data.phone = address_data.phone;
+      }
       let customer;
       if (
         customer_data &&
@@ -341,17 +387,16 @@ export default {
       ) {
         customer = await Customer.findOne({
           where: { phone: customer_data?.phone },
+          raw: true,
         });
       }
+      console.log(customer, "customer in shopify create order api");
       if (!customer) {
         const cus = { shopify_id: customer_data.id, ...customer_data };
         delete cus.id;
-        if (cus.phone === null) {
-          cus.phone = address_data.phone;
-        }
         customer = await order.createCustomer(cus);
       }
-      await order.setCustomer(customer);
+      await order.setCustomer(customer.id);
       const address = await order.createAddress(address_data);
       await address.setCustomer(customer.id);
       const items = await OrderItem.bulkCreate(order_items_data);
@@ -469,7 +514,13 @@ export default {
       if (customerId) {
         customer = await order.setCustomer(customerId);
         await address.setCustomer(customerId);
-      } else {
+      } else if (phone) {
+        customer = await Customer.findOne({
+          where: {
+            phone: formatPhoneNumber(phone),
+          },
+        });
+      } else if (!customer) {
         customer = await order.createCustomer({
           first_name,
           last_name,
@@ -477,8 +528,8 @@ export default {
           email,
           phone: formatPhoneNumber(phone),
         });
-        await address.setCustomer(customer.id);
       }
+      await address.setCustomer(customer.id);
       const items = await OrderItem.bulkCreate(orderItems);
       await order.addItems(items);
       await order.reload();
@@ -486,44 +537,6 @@ export default {
         event: "order created",
         user_id: req.user.id,
       });
-      // remove agent assignment, update status to delete, add proper remarks.
-      if (customerWithDuplicateOrders) {
-        const duplicateOrders = [];
-        customerWithDuplicateOrders.Orders.forEach((order) => {
-          if (order.status !== "Confirmed" && order.status !== "Cancel") {
-            duplicateOrders.push(order.id);
-          }
-        });
-        if (duplicateOrders.length) {
-          await Order.update(
-            {
-              user_id: null,
-              status: "Deleted",
-              remarks: `This order was deleted by system due to duplication. New order id that replace this order is ${
-                order.id
-              } and created by user(id) ${
-                req.user.id
-              } at ${new Date().toLocaleString()}`,
-            },
-            {
-              where: {
-                id: {
-                  [Op.in]: duplicateOrders,
-                },
-              },
-            }
-          );
-          await Promise.all(
-            duplicateOrders.map((orderId) =>
-              OrderHistory.create({
-                order_id: orderId,
-                event:
-                  "order status updated to deleted by system due to duplication",
-              })
-            )
-          );
-        }
-      }
       let orderWithoutData = order.dataValues;
       delete orderWithoutData.data;
       return sendSuccessResponse(
@@ -552,12 +565,13 @@ export default {
       const chanel = await Chanel.findByPk(chanel_id);
       const brand_id = chanel.brand_id || null;
       if (submission && submission == "true") {
+        console.log(json);
         const orders = json.map(
           ({ ID, Page, Account, Name, Address, City, Quantity, ...rest }) => {
             const created_at = rest["created at"];
             const sizeText = rest["Size: "];
             const phone = rest["Phone Number"];
-            const { name, abri } = getNameFromSubmissionLink(Page.formula);
+            const { name, abri } = getNameFromSubmissionLink(Page.result);
             const { price, size } = getSizeAndPrice(sizeText);
             const items = [
               {

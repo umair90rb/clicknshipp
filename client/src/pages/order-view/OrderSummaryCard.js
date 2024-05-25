@@ -1,11 +1,11 @@
 import React from 'react';
-import { Grid, Card, CardContent, Typography } from '@mui/material';
+import { Divider, Grid, Card, CardContent, Typography } from '@mui/material';
 
-const OrderSummaryCard = ({ subtotal, tax, total }) => {
+const OrderSummaryCard = ({ discount, subtotal, tax, total }) => {
   return (
     <Card sx={{ minWidth: 275, mt: 2, padding: 2 }}>
       <CardContent>
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="h5" gutterBottom>
           Order Summary
         </Typography>
         <Grid container spacing={2}>
@@ -17,6 +17,9 @@ const OrderSummaryCard = ({ subtotal, tax, total }) => {
               Rs.{subtotal}
             </Typography>
           </Grid>
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
           <Grid item xs={6}>
             <Typography variant="body1">Tax:</Typography>
           </Grid>
@@ -24,6 +27,20 @@ const OrderSummaryCard = ({ subtotal, tax, total }) => {
             <Typography variant="body1" align="right">
               Rs.{tax}
             </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
+          <Grid item xs={6}>
+            <Typography variant="body1">Discount:</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography variant="body1" align="right">
+              Rs.{discount}
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Divider />
           </Grid>
           <Grid item xs={6}>
             <Typography variant="body1" className="total-label">

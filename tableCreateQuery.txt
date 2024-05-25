@@ -37,3 +37,4 @@ sequelize migration:generate --name add-shopify-id-column-in-customer-table
 sequelize migration:generate --name add-courier-name-column-in-courier-service-accounts-table
 sequelize migration:generate --name add-id-column-in-courier-service-accounts-table
 sequelize migration:generate --name add-city-code-column-in-city-name-mappings-table
+sequelize migration:generate --name add-ordered-at-column-in-orders-table

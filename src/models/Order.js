@@ -87,8 +87,17 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: true,
       },
-      createdAt: { type: DataTypes.DATE, field: "created_at" },
+      createdAt: {
+        type: DataTypes.DATE,
+        field: "created_at",
+      },
       updatedAt: { type: DataTypes.DATE, field: "updated_at" },
+      receivedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: DataTypes.NOW,
+        field: "received_at",
+      },
     },
     {
       sequelize,

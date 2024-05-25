@@ -1,5 +1,5 @@
 import formatDate from 'utils/format-date';
-import { Grid, Stack, Typography, Card, CardContent, Button, Chip, Modal, Box } from '@mui/material';
+import { Link, Grid, Stack, Typography, Card, CardContent, Button, Chip, Modal, Box } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import CenterCircularLoader from 'components/CenterCircularLoader';
@@ -14,6 +14,8 @@ import TrackingModal from './TrackingModal';
 import StatusModal from './StatusModal';
 import AddCityModal from './AddCityModal';
 import History from './History';
+import OldOrders from './OldOrders';
+import DuplicateOrders from './DuplicateOrders';
 
 const OrderView = () => {
   const { orderId } = useParams();
@@ -54,10 +56,11 @@ const OrderView = () => {
     customer,
     createdAt,
     history,
-    delivery
+    delivery,
+    duplicate: duplicateOrders
   } = order || {};
   const [orderStatus, setOrderStatus] = useState('');
-  const { email, first_name, last_name, id: customerId, shopify_id, name, note, phone } = customer || {};
+  const { email, first_name, last_name, orders: oldOrders, id: customerId, shopify_id, name, note, phone } = customer || {};
   const { city, zip, country, address1, address2, phone: address_phone } = address || {};
 
   const getOrderDetails = () =>
@@ -198,54 +201,40 @@ const OrderView = () => {
         <Grid item xs={8}>
           <Card sx={{ minWidth: 275, padding: 2 }}>
             <CardContent sx={{ padding: 0 }}>
-              <Typography variant="h6" gutterBottom>
-                Order Items
-              </Typography>
+              <Typography variant="h5">Order Items</Typography>
               <OrderItemTable orderItems={items} onDelete={() => {}} />
             </CardContent>
           </Card>
-          <OrderSummaryCard subtotal={subtotal_price} tax={total_tax} total={total_price} />
+          <OrderSummaryCard discount={total_discounts} subtotal={subtotal_price} tax={total_tax} total={total_price} />
+          <DuplicateOrders duplicateOrders={duplicateOrders} />
           <History orderHistory={history} />
         </Grid>
         <Grid item xs={4}>
           <Card sx={{ minWidth: 275 }}>
             <CardContent>
-              <Typography sx={{ fontSize: 14 }} gutterBottom>
-                Note
-              </Typography>
-              <Typography paragraph>{note || 'None'}</Typography>
-              <Typography sx={{ fontSize: 14 }} gutterBottom>
-                Remarks
-              </Typography>
-              <Typography paragraph>{remarks || 'None'}</Typography>
-              <Typography sx={{ fontSize: 14 }} gutterBottom>
-                Chanel/Store: {(chanel && 'name' in chanel && chanel.name) || ''}
-              </Typography>
+              <Typography sx={{ fontSize: 14 }}>Note: {note || 'None'}</Typography>
+              <Typography sx={{ fontSize: 14 }}>Remarks: {remarks || 'None'}</Typography>
+              <Typography sx={{ fontSize: 14 }}>Chanel/Store: {(chanel && 'name' in chanel && chanel.name) || ''}</Typography>
             </CardContent>
           </Card>
           <Card sx={{ minWidth: 275, mt: 1 }}>
             <CardContent>
-              <Typography variant="h5" gutterBottom>
-                Customer
-              </Typography>
-              <Typography gutterBottom>Name: {name}</Typography>
-              <Typography gutterBottom>Customer System Id: {customerId || 'None'}</Typography>
-              <Typography gutterBottom>Customer Shopify Id: {shopify_id || 'None'}</Typography>
-              <Typography variant="h5" gutterBottom>
-                Contact information
-              </Typography>
+              <Typography variant="h5">Customer</Typography>
+              <Link href={`/customer/all?id=${customerId}`} underline="hover">
+                Name: {name}
+              </Link>
+              <Typography>Customer Shopify Id: {shopify_id || 'None'}</Typography>
               <Typography>{`Email: ${email || 'None'}`}</Typography>
               <Typography>{`Phone: ${phone || 'None'}`}</Typography>
 
-              <Typography variant="h5" gutterBottom>
-                Shipping Address
-              </Typography>
-              <Typography key={address1}>
-                Address: {address1} <br /> City:{city} <br /> Zip:{zip || 'None'} <br /> Country: {country}
+              <Typography variant="h5">Shipping Address</Typography>
+              <Typography>
+                Address: {address1} <br /> City:{city} <br /> Zip:{zip || 'None'}
                 <br /> Phone: {address_phone} <br /> Special Instruction: {address2}
               </Typography>
             </CardContent>
           </Card>
+          <OldOrders oldOrders={oldOrders} />
         </Grid>
       </Grid>
 

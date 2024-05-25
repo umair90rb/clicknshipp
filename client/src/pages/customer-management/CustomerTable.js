@@ -1,14 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
 import { fetchAllCustomer } from 'store/slices/customer/fetchCustomer';
 import { customerCustomersSelector, customerIsLoadingSelector } from 'store/slices/customer/customerSelector';
+import { useSearchParams } from 'react-router-dom';
+
 const columns = (handleView) => [
   {
     field: 'id',
     headerName: 'ID.',
-    flex: 0.3
+    flex: 0.3,
+    type: 'number'
   },
   {
     field: 'name',
@@ -53,14 +56,28 @@ export default function CustomerTable({ openViewForm }) {
   const dispatch = useDispatch();
   const customerIsLoading = useSelector(customerIsLoadingSelector);
   const customers = useSelector(customerCustomersSelector) || [];
+  const [searchParams] = useSearchParams();
+  const searchCustomerId = searchParams.get('id');
+  const filterModel = searchCustomerId ? [{ field: 'id', operator: '=', value: searchCustomerId }] : [];
 
   useEffect(() => {
     dispatch(fetchAllCustomer());
   }, []);
 
+  useEffect(() => {
+    console.log(filterModel);
+  }, [filterModel]);
+
   return (
     <div style={{ width: '100%' }}>
       <DataGrid
+        initialState={{
+          filter: {
+            filterModel: {
+              items: filterModel
+            }
+          }
+        }}
         slots={{ toolbar: GridToolbar }}
         slotProps={{
           toolbar: {
