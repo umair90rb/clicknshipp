@@ -206,7 +206,7 @@ const OrderView = () => {
             </CardContent>
           </Card>
           <OrderSummaryCard discount={total_discounts} subtotal={subtotal_price} tax={total_tax} total={total_price} />
-          {duplicateOrders.length && <DuplicateOrders duplicateOrders={duplicateOrders} />}
+          {duplicateOrders && duplicateOrders.length && <DuplicateOrders duplicateOrders={duplicateOrders} />}
           <History orderHistory={history} />
         </Grid>
         <Grid item xs={4}>
