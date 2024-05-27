@@ -1130,6 +1130,14 @@ export default {
         },
         { transaction: t }
       );
+      await OrderHistory.destroy(
+        {
+          where: {
+            order_id: orderIds,
+          },
+        },
+        { transaction: t }
+      );
       await Order.destroy(
         {
           where: {
