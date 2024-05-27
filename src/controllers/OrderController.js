@@ -84,6 +84,11 @@ function parseValue(value, type) {
   }
 }
 
+const SORT_COLUMNS = {
+  created_at: { column: "createdAt", type: "date" },
+  received_at: { column: "createdAt", type: "date" },
+};
+
 const FILTER_COLUMNS = {
   order_number: { column: "order_number", type: "number" },
   status: { column: "status", type: "string" },
@@ -177,8 +182,8 @@ export default {
         }
       }
       if (sort && sort.length) {
-        const order = sort.map((s) => [s.field, s.sort.toUpperCase()]);
-        query.order = [order];
+        const order = sort.map((s) => [`${s.field}`, s.sort.toUpperCase()]);
+        query.order = order;
       }
       if (permissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS)) {
         delete query.where.user_id;
@@ -208,6 +213,7 @@ export default {
         }
         query.where = { ...query.where, ..._filters };
       }
+      console.log(JSON.stringify(query), "query");
       const orders = await Order.findAndCountAll(query);
       return sendSuccessResponse(res, 200, {
         orders: { ...orders, ...req.body },
