@@ -9,6 +9,7 @@ export default function DuplicateOrders({ duplicateOrders = [] }) {
 
         {duplicateOrders.map((order, index) => (
           <Chip
+            size="small"
             color="warning"
             sx={{ m: 0.5 }}
             key={index}

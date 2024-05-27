@@ -60,7 +60,7 @@ const OrderView = () => {
     duplicate: duplicateOrders
   } = order || {};
   const [orderStatus, setOrderStatus] = useState('');
-  const { email, first_name, last_name, orders: oldOrders, id: customerId, shopify_id, name, note, phone } = customer || {};
+  const { email, first_name, last_name, id: customerId, shopify_id, name, note, phone } = customer || {};
   const { city, zip, country, address1, address2, phone: address_phone } = address || {};
 
   const getOrderDetails = () =>
@@ -206,7 +206,7 @@ const OrderView = () => {
             </CardContent>
           </Card>
           <OrderSummaryCard discount={total_discounts} subtotal={subtotal_price} tax={total_tax} total={total_price} />
-          <DuplicateOrders duplicateOrders={duplicateOrders} />
+          {duplicateOrders.length && <DuplicateOrders duplicateOrders={duplicateOrders} />}
           <History orderHistory={history} />
         </Grid>
         <Grid item xs={4}>
@@ -234,7 +234,7 @@ const OrderView = () => {
               </Typography>
             </CardContent>
           </Card>
-          <OldOrders oldOrders={oldOrders} />
+          {/* <OldOrders oldOrders={oldOrders} /> */}
         </Grid>
       </Grid>
 

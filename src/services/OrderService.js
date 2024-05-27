@@ -52,6 +52,8 @@ class OrderService {
       return error.message;
     }
   }
+
+  async findDuplicateOrder(order) {}
 }
 
 const orderService = new OrderService();

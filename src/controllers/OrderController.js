@@ -141,6 +141,11 @@ export default {
             attributes: ["id", "first_name", "last_name", "phone"],
           },
           {
+            model: OrderItem,
+            as: "items",
+            attributes: ["id", "name", "quantity"],
+          },
+          {
             model: Chanel,
             as: "chanel",
             attributes: ["id", "name"],
@@ -250,11 +255,14 @@ export default {
           {
             model: Customer,
             as: "customer",
-            include: {
-              attributes: ["id", "order_number", "status"],
-              model: Order,
-              as: "orders",
-            },
+            // include: {
+            //   attributes: ["id", "order_number", "status"],
+            //   model: Order,
+            //   as: "orders",
+            //   where: {
+            //     status: ["Confirmed", "Booked"],
+            //   },
+            // },
           },
           {
             model: OrderHistory,
