@@ -176,11 +176,14 @@ export default function OrderTable() {
 
   const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false);
 
-  useEffect(() => {
+  const fetchOrders = () =>
     dispatch(
       fetchAllOrder({ body: { sort: sortModel, page, pageSize, filters } })
       // fetchAllOrder({ body: { sort: sortModel, page: filters.length ? 0 : page, pageSize: filters.length ? 100 : pageSize, filters } })
     );
+
+  useEffect(() => {
+    fetchOrders();
   }, [page, pageSize, filters, sortModel]);
 
   const handleViewOrder = (id) => () => navigate(location.viewOrder(id));
@@ -190,6 +193,7 @@ export default function OrderTable() {
     const { type, payload } = await dispatch(fetchBulkOrdersDelete({ body: { orderIds: rowSelectionModel } }));
     if (type === 'order/bulk/delete/fetch/fulfilled') {
       dispatch(setMessage({ type: 'success', message: payload?.data?.message || 'Orders deleted successfully!' }));
+      fetchOrders();
     } else {
       dispatch(setMessage({ type: 'error', message: payload?.data?.message || 'Orders not deleted!' }));
     }
