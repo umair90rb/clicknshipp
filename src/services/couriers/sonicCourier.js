@@ -15,7 +15,9 @@ class SonicCourier extends CourierInterface {
     try {
       const destinationCity = await CityNameMaping.findOne({
         where: {
-          city: order.address.city,
+          city: {
+            [Op.iLike]: order.address.city,
+          },
           courier: deliveryAccount.service,
         },
         raw: true,

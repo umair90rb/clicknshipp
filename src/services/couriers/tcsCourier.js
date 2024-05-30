@@ -2,57 +2,59 @@ import CourierInterface from "../courierInterface";
 import getAxiosInstance from "../http";
 import models from "../../models";
 import logger from "../../middleware/logger";
+import { Op } from "sequelize";
 const { CityNameMaping } = models;
 
 class TCSCourier extends CourierInterface {
   constructor() {
     super();
-    this.http = getAxiosInstance("https://devconnect.tcscourier.com/", {});
+    // dev env url => https://devconnect.tcscourier.com/
+    this.http = getAxiosInstance("https://connect.tcscourier.com", {});
   }
   async getHeaderToken(id, secret) {
-    let res;
+    let res, reqOptions;
     try {
       let headersList = {
-        Accept: "*/*",
+        accept: "text/plain",
       };
 
-      let reqOptions = {
-        url: `https://devconnect.tcscourier.com/auth/api/auth?ClientID=${id}&ClientSecret=${secret}`,
+      reqOptions = {
+        url: `https://connect.tcscourier.com/auth/api/auth?ClientID=${encodeURIComponent(
+          id
+        )}&ClientSecret=${encodeURIComponent(secret)}`,
         method: "GET",
         headers: headersList,
       };
 
       res = await this.http.request(reqOptions);
-      console.log(res?.data);
       return res?.data?.result?.accessToken;
     } catch (error) {
       logger.log("error", error.message, {
-        res: res?.data,
+        reqOptions,
         error,
       });
     }
   }
 
   async getBodyToken(token, username, password) {
-    let res;
+    let res, reqOptions;
     try {
       let headersList = {
         Accept: "*/*",
         Authorization: `Bearer ${token}`,
       };
 
-      let reqOptions = {
-        url: `https://devconnect.tcscourier.com/ecom/api/authentication/token?username=${username}&password=${password}`,
+      reqOptions = {
+        url: `https://connect.tcscourier.com/ecom/api/authentication/token?username=${username}&password=${password}`,
         method: "GET",
         headers: headersList,
       };
 
       res = await this.http.request(reqOptions);
-      console.log(res?.data);
       return res?.data?.accesstoken;
     } catch (error) {
       logger.log("error", "tcs get header token api response", {
-        res: res?.data,
+        reqOptions,
         error,
       });
     }
@@ -63,7 +65,9 @@ class TCSCourier extends CourierInterface {
     try {
       const destinationCity = await CityNameMaping.findOne({
         where: {
-          city: order.address.city,
+          city: {
+            [Op.iLike]: order.address.city,
+          },
           courier: deliveryAccount.service,
         },
         raw: true,
@@ -108,17 +112,28 @@ class TCSCourier extends CourierInterface {
         accessToken: bodyToken,
         consignmentno: "",
         shipperinfo: {
-          tcsaccount: "04011K1",
-          shippername: "Test",
-          address1: "Test address 1",
+          tcsaccount: "759776",
+          shippername: "Sukoon welness",
+          address1: "madina town faislabad",
           address2: "",
           address3: "",
-          zip: "75800",
+          zip: "38000",
           countrycode: "PK",
           countryname: "Pakistan",
-          citycode: "KHI",
-          cityname: "Karachi",
-          mobile: "03451234567",
+          citycode: "",
+          cityname: "FAISALABAD",
+          mobile: "03227276200",
+          // tcsaccount: "04011K1",
+          // shippername: "Test",
+          // address1: "Test address 1",
+          // address2: "Test address 2",
+          // address3: "Test address 3",
+          // zip: "75800",
+          // countrycode: "PK",
+          // countryname: "Pakistan",
+          // citycode: "KHI",
+          // cityname: "Karachi",
+          // mobile: "03451234567",
         },
         consigneeinfo: {
           consigneecode: "",
@@ -128,12 +143,12 @@ class TCSCourier extends CourierInterface {
           address1: order.address.address1,
           address2: "",
           address3: "",
-          zip: "38000",
+          zip: order.address.zip || "",
           countrycode: "PK",
           countryname: "Pakistan",
-          citycode: destinationCity.code,
+          citycode: "",
           cityname: destinationCity.maped,
-          email: "",
+          email: order.customer.email || "",
           areacode: "",
           areaname: "",
           blockcode: "",
@@ -143,16 +158,16 @@ class TCSCourier extends CourierInterface {
           mobile: order.customer.phone || order.address.phone,
         },
         vendorinfo: {
-          name: "Sukooon Wellness",
-          address1: "K-86",
-          address2: "Test address 2",
-          address3: "Test address 2",
+          name: "SUKOON WELLNESS & CO",
+          address1: "madina town faislabad",
+          address2: "",
+          address3: "",
           citycode: "FSD",
-          cityname: "Faisalabad",
-          mobile: "03451234567",
+          cityname: "FAISALABAD",
+          mobile: "03227276200",
         },
         shipmentinfo: {
-          costcentercode: "Test-01",
+          costcentercode: "1",
           referenceno: `${order.brand.name}x${order.brand.shipment_series}`,
           contentdesc: order.items.reduce(
             (p, c, i) =>
@@ -169,23 +184,15 @@ class TCSCourier extends CourierInterface {
           shippingtype: "",
           currency: "PKR",
           codamount: order.total_price,
-          declaredvalue: null,
-          insuredvalue: null,
+          declaredvalue: "",
+          insuredvalue: "",
           transactiontype: "",
           dsflag: "",
           carrierslug: "",
           weightinkg: 0.5,
           pieces: order.items.length,
           fragile: false,
-          remarks:
-            order.address.address2 ||
-            order.items.reduce(
-              (p, c, i) =>
-                i > 0
-                  ? `${c.name}/${c.quantity}-${p}`
-                  : `${c.name}/${c.quantity}`,
-              ""
-            ),
+          remarks: "Rush delivery",
           skus: [],
         },
       };
@@ -234,7 +241,7 @@ class TCSCourier extends CourierInterface {
       };
 
       let reqOptions = {
-        url: `https://devconnect.tcscourier.com/tracking/api/Tracking/GetDynamicTrackDetail?consignee=${trackingNumber}`,
+        url: `https://connect.tcscourier.com/tracking/api/Tracking/GetDynamicTrackDetail?consignee=${trackingNumber}`,
         method: "GET",
         headers: headersList,
       };

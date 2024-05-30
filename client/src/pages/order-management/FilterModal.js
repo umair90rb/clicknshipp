@@ -3,13 +3,9 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Box,
-  Modal,
   Grid,
   Button,
   FormControlLabel,
-  FormGroup,
-  Container,
   Stack,
   Checkbox,
   TextField,
@@ -18,19 +14,19 @@ import {
   DialogContent,
   DialogActions
 } from '@mui/material';
-import { useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { orderFiltersSelector } from 'store/slices/order/orderSelector';
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4
-};
+import { memo, useRef, useState } from 'react';
+// import { useSelector } from 'react-redux';
+// import { orderFiltersSelector } from 'store/slices/order/orderSelector';
+// const style = {
+//   position: 'absolute',
+//   top: '50%',
+//   left: '50%',
+//   transform: 'translate(-50%, -50%)',
+//   width: 400,
+//   bgcolor: 'background.paper',
+//   boxShadow: 24,
+//   p: 4
+// };
 
 const OPERATORS = {
   'Is empty': '',
@@ -42,7 +38,7 @@ const OPERATORS = {
   'Text is exactly': 'text',
   'Date is': 'datetime-local',
   'Date is before': 'datetime-local',
-  'Date is after': 'datetime-local',
+  'Date is after': ':',
   'Greater than': 'number',
   'Greater than or equal to': 'number',
   'Less than': 'number',
@@ -96,7 +92,7 @@ function OperatorsWithInput({ column, index, addFilterInput, updateColumnFilter 
   );
 }
 
-export default function FilterModal({ visible, onClose, columns, onApplyFilters }) {
+const FilterModal = memo(function FilterModal({ visible, onClose, columns, onApplyFilters }) {
   const [columnsWithFilters, setColumnsWithFilters] = useState(columns);
   console.log(columns);
   const addFilterInput = (_column, index) => {
@@ -154,4 +150,6 @@ export default function FilterModal({ visible, onClose, columns, onApplyFilters 
       </Dialog>
     </>
   );
-}
+});
+
+export default FilterModal;

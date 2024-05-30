@@ -41,6 +41,10 @@ const fetchUpdateOrder = createAsyncThunk('order/update/fetch', ({ id, body }, {
   orderService.fetchUpdateOrder(id, body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
+const fetchPartialUpdateOrder = createAsyncThunk('order/partialUpdate/fetch', ({ id, body }, { rejectWithValue }) =>
+  orderService.fetchPartialUpdateOrder(id, body).catch((error) => rejectWithValue(error.response.data || error.message))
+);
+
 const fetchDeleteOrder = createAsyncThunk('order/delete/fetch', ({ id }, { rejectWithValue }) =>
   orderService.fetchDeleteOrder(id).catch((error) => rejectWithValue(error.response.data || error.message))
 );
@@ -60,6 +64,7 @@ export {
   fetchCreateOrder,
   fetchImportOrder,
   fetchUpdateOrder,
+  fetchPartialUpdateOrder,
   fetchDeleteOrder,
   fetchBulkOrdersDelete
 };

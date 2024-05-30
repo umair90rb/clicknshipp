@@ -21,12 +21,9 @@ class PostexCourier extends CourierInterface {
     try {
       const destinationCity = await CityNameMaping.findOne({
         where: {
-          [Op.or]: [
-            {
-              city: order.address.city,
-            },
-            { maped: order.address.city },
-          ],
+          city: {
+            [Op.iLike]: order.address.city,
+          },
           courier: deliveryAccount.service,
         },
         raw: true,

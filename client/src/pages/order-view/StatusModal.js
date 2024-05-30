@@ -7,6 +7,7 @@ import * as Yup from 'yup';
 import { Formik } from 'formik';
 import AnimateButton from 'components/@extended/AnimateButton';
 import { toSentense } from 'utils/string-utils';
+import ORDER_STATUSES from 'constants/orderStatuses';
 
 const style = {
   position: 'absolute',
@@ -18,8 +19,6 @@ const style = {
   boxShadow: 24,
   p: 4
 };
-
-const ORDER_STATUSES = ['Confirmed', 'No Pick', 'Cancel', 'Duplicate', 'Delivered', 'Payment Pending'];
 
 export default function StatusModal({ visible, onClose, orderId, setOrderStatus }) {
   const dispatch = useDispatch();

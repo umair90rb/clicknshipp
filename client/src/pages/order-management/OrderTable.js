@@ -8,12 +8,19 @@ import {
   GridToolbarColumnsButton,
   GridToolbarQuickFilter,
   GridToolbarDensitySelector,
-  GridToolbarExport
+  GridToolbarExport,
+  GridRowEditStopReasons,
+  GridRowModes
 } from '@mui/x-data-grid';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
+import AddIcon from '@mui/icons-material/Add';
+import CancelIcon from '@mui/icons-material/Close';
 import {
   orderFiltersSelector,
   orderListIsLoadingSelector,
@@ -23,65 +30,93 @@ import {
   orderSortSelector,
   orderTotalSelector
 } from 'store/slices/order/orderSelector';
-import { fetchAllOrder, fetchBulkOrdersDelete } from 'store/slices/order/fetchOrder';
+import { fetchAllOrder, fetchBulkOrdersDelete, fetchPartialUpdateOrder } from 'store/slices/order/fetchOrder';
 import location from 'utils/location';
 import { Button, Box, Modal } from '@mui/material';
 import AssignOrderModal from './AssignOrderModal';
 import CustomNoRowsOverlay from './NoRowCustomOverlay';
-import { setOrderFilters, setOrderPagination, setOrderSort } from 'store/slices/order/orderSlice';
+import { setOrder, setOrderFilters, setOrderPagination, setOrderSort } from 'store/slices/order/orderSlice';
 import FilterModal from './FilterModal';
 import { setMessage } from 'store/slices/util/utilSlice';
 import { authPermissionsSelector } from 'store/slices/auth/authSelector';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 import { formatDateTime } from 'utils/format-date';
-const columns = (viewAction) => [
+import { useGridApiRef } from '../../../node_modules/@mui/x-data-grid/index';
+import GridEditTextarea from './GridEditTextarea';
+import { GRID_ORDER_STATUSES } from 'constants/orderStatuses';
+import { cityCitiesSelector, cityCreateFetchStatusSelector } from 'store/slices/city/citySelector';
+import fetchStatus from 'constants/fetchStatuses';
+import { fetchAllCities } from 'store/slices/city/fetchCity';
+import GridSearchSelect from './GridSearchSelect';
+const columns = (apiRef, rowModesModel, citiesList, handleViewClick, handleSaveClick, handleCancelClick) => [
   {
     field: 'order_number',
     headerName: 'Order#',
-    flex: 0.75
+    flex: 0.5
   },
   {
-    field: 'status',
-    headerName: 'Status',
-    flex: 1
-  },
-  {
-    field: 'customer',
+    field: 'first_name',
     headerName: 'Customer',
-    flex: 1.25,
+    flex: 0.5,
     sortable: false,
-    valueGetter: (param) => `${param.row.customer?.first_name || ''} ${param.row.customer?.last_name || ''}`
+    editable: true,
+    type: 'string',
+    valueGetter: (param) => param.row.customer?.first_name || ''
   },
   {
     field: 'phone',
     headerName: 'Customer Ph',
-    flex: 1.25,
+    flex: 0.5,
     sortable: false,
     valueGetter: (param) => param.row.customer?.phone || param.row.address?.phone || ''
   },
   {
-    field: 'agent',
-    headerName: 'Agent',
-    flex: 1,
-    sortable: false,
-    valueGetter: (param) => param.row.user?.name || ''
-  },
-  {
-    field: 'address',
+    field: 'address1',
     headerName: 'Address',
-    flex: 2,
+    flex: 1,
     resizable: true,
     sortable: false,
-    valueGetter: (param) => param.row.address?.address1 || ''
+    editable: true,
+    type: 'string',
+    valueGetter: (param) => param.row.address?.address1 || '',
+    renderEditCell: (params) => <GridEditTextarea {...params} />
   },
   {
     field: 'city',
     headerName: 'City',
     flex: 1,
     sortable: false,
-    valueGetter: (param) => param.row.address?.city || ''
+    editable: true,
+    valueGetter: (param) => param.row.address?.city || '',
+    type: 'singleSelect',
+    renderEditCell: (params) => <GridSearchSelect {...params} />
   },
-
+  {
+    field: 'status',
+    headerName: 'Status',
+    flex: 0.5,
+    editable: true,
+    type: 'singleSelect',
+    valueOptions: GRID_ORDER_STATUSES
+  },
+  {
+    field: 'item',
+    headerName: 'Items',
+    flex: 1,
+    sortable: false,
+    editable: false,
+    valueGetter: (param) => {
+      const items = param.row.items;
+      if (!items || !items.length) {
+        return 'None';
+      }
+      if (items && items.length === 1) {
+        return `${items[0].name}/${items[0].quantity}`;
+      }
+      return items.reduce((pv, cv) => `${pv}-${cv.name}/${cv.quantity}`, '');
+    },
+    type: 'string'
+  },
   {
     field: 'total_price',
     headerName: 'Total Amount',
@@ -110,6 +145,13 @@ const columns = (viewAction) => [
     valueGetter: ({ value }) => formatDateTime(value, true)
   },
   {
+    field: 'agent',
+    headerName: 'Agent',
+    flex: 1,
+    sortable: false,
+    valueGetter: (param) => param.row.user?.name || ''
+  },
+  {
     field: 'chanel',
     headerName: 'Channel',
     flex: 1,
@@ -123,16 +165,58 @@ const columns = (viewAction) => [
     flex: 1,
     type: 'actions',
     cellClassName: 'actions',
-    getActions: ({ id }) => [
-      <GridActionsCellItem
-        key={id}
-        icon={<VisibilityIcon />}
-        label="View"
-        className="textPrimary"
-        onClick={viewAction(id)}
-        color="inherit"
-      />
-    ]
+    getActions: (params) => {
+      const id = params.id;
+      const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+
+      if (isInEditMode) {
+        return [
+          <GridActionsCellItem
+            key={id}
+            icon={<SaveIcon />}
+            label="Save"
+            className="textPrimary"
+            onClick={handleSaveClick(id)}
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            key={id}
+            icon={<CancelIcon />}
+            label="Cancel"
+            className="textPrimary"
+            onClick={handleCancelClick(id)}
+            color="inherit"
+          />
+        ];
+      }
+
+      return [
+        <GridActionsCellItem
+          key={id}
+          icon={<VisibilityIcon />}
+          label="View"
+          className="textPrimary"
+          onClick={handleViewClick(id)}
+          color="inherit"
+        />,
+        <GridActionsCellItem
+          key={id}
+          icon={<AddIcon />}
+          label="Add item"
+          className="textPrimary"
+          onClick={handleCancelClick(id)}
+          color="inherit"
+        />,
+        <GridActionsCellItem
+          key={id}
+          icon={<EditIcon />}
+          label="Edit"
+          className="textPrimary"
+          onClick={() => apiRef.current.startRowEditMode({ id })}
+          color="inherit"
+        />
+      ];
+    }
   }
 ];
 
@@ -148,6 +232,7 @@ const style = {
 };
 
 export default function OrderTable() {
+  const apiRef = useGridApiRef();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const listIsLoading = useSelector(orderListIsLoadingSelector);
@@ -157,13 +242,20 @@ export default function OrderTable() {
   const filters = useSelector(orderFiltersSelector);
   const sortModel = useSelector(orderSortSelector);
   const total = useSelector(orderTotalSelector);
+
+  const citiesFetchStatus = useSelector(cityCreateFetchStatusSelector);
+  const citiesList = useSelector(cityCitiesSelector);
   const userPermissions = useSelector(authPermissionsSelector);
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({
+    order_number: false,
     chanel: false,
     agent: false,
     total_tax: false,
-    total_discounts: false
+    total_discounts: false,
+    total_price: false,
+    createdAt: false,
+    receivedAt: false
   });
 
   const [showAssignModal, setShowAssignModal] = useState(false);
@@ -175,18 +267,66 @@ export default function OrderTable() {
   const hideFilterModal = () => setShowFilterModal(false);
 
   const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false);
+  const [partialUpdateOrderLoading, setPartialUpdateOrderLoading] = useState(false);
+  const [rowModesModel, setRowModesModel] = useState({});
+  const [checkboxSelection, setCheckboxSelection] = useState(false);
 
-  const fetchOrders = () =>
-    dispatch(
-      fetchAllOrder({ body: { sort: sortModel, page, pageSize, filters } })
-      // fetchAllOrder({ body: { sort: sortModel, page: filters.length ? 0 : page, pageSize: filters.length ? 100 : pageSize, filters } })
-    );
+  const handleRowEditStop = (params, event) => {
+    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
+      event.defaultMuiPrevented = true;
+    }
+  };
+
+  const handleSaveClick = (id) => () => {
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+  };
+
+  const handleCancelClick = (id) => () => {
+    setRowModesModel({
+      ...rowModesModel,
+      [id]: { mode: GridRowModes.View, ignoreModifications: true }
+    });
+  };
+
+  const processRowUpdate = async (newRow) => {
+    console.log(newRow, 'process row update');
+    const updatedRow = { ...newRow, isNew: false };
+    const id = newRow.id;
+    const body = {
+      status: newRow?.status || '',
+      customerId: newRow?.customer?.id || '',
+      first_name: newRow?.first_name || '',
+      last_name: newRow?.customer?.last_name || '',
+      addressId: newRow?.address?.id,
+      address: newRow?.address1 || '',
+      city: newRow?.city || ''
+    };
+    setPartialUpdateOrderLoading(true);
+    const { type, payload } = await dispatch(fetchPartialUpdateOrder({ id, body }));
+    if (type === 'order/partialUpdate/fetch/fulfilled') {
+      dispatch(setOrder({ order: payload?.data.order }));
+      dispatch(setMessage({ type: 'success', message: payload?.data?.message || 'Success! Order updated!' }));
+    } else {
+      dispatch(setMessage({ type: 'error', message: payload?.data?.message || 'Failed! Order not updated!' }));
+    }
+    setPartialUpdateOrderLoading(false);
+    return updatedRow;
+  };
+
+  const handleProcessRowUpdateError = (error) => {
+    console.log(error, 'new error in handleProcessRowUpdateError');
+  };
+
+  const fetchOrders = () => dispatch(fetchAllOrder({ body: { sort: sortModel, page, pageSize, filters } }));
 
   useEffect(() => {
+    if (citiesFetchStatus !== fetchStatus.SUCCESS) {
+      dispatch(fetchAllCities());
+    }
     fetchOrders();
   }, [page, pageSize, filters, sortModel]);
 
-  const handleViewOrder = (id) => () => navigate(location.viewOrder(id));
+  const handleViewClick = (id) => () => navigate(location.viewOrder(id));
 
   const handleBulkDelete = async () => {
     setBulkDeleteLoading(true);
@@ -214,11 +354,12 @@ export default function OrderTable() {
     return (
       <GridToolbarContainer>
         <GridToolbarColumnsButton />
-        {/* <GridToolbarFilterButton /> */}
-        <GridToolbarExport />
         <GridToolbarDensitySelector />
         <Button onClick={displayFilterModal} size="small" startIcon={<FilterListIcon />}>
           Filters
+        </Button>
+        <Button onClick={() => setCheckboxSelection((pv) => !pv)} size="small" startIcon={<IndeterminateCheckBoxIcon />}>
+          Toggle Selection
         </Button>
         {rowSelectionModel.length > 0 && (
           <Button onClick={displayShowAssignModal} size="small" startIcon={<AssignmentIndIcon />}>
@@ -230,6 +371,7 @@ export default function OrderTable() {
             Delete All
           </Button>
         )}
+        {userPermissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) && <GridToolbarExport />}
         <Box sx={{ flexGrow: 1 }} />
         <GridToolbarQuickFilter />
       </GridToolbarContainer>
@@ -239,8 +381,9 @@ export default function OrderTable() {
   return (
     <div style={{ height: !orders || !orders.length ? 400 : undefined, width: '100%' }}>
       <DataGrid
+        apiRef={apiRef}
         loading={listIsLoading}
-        checkboxSelection
+        checkboxSelection={checkboxSelection}
         slots={{
           toolbar: renderToolbar,
           noRowsOverlay: CustomNoRowsOverlay
@@ -258,7 +401,13 @@ export default function OrderTable() {
         columnVisibilityModel={columnVisibilityModel}
         onColumnVisibilityModelChange={setColumnVisibilityModel}
         rows={orders || []}
-        columns={columns(handleViewOrder)}
+        editMode="row"
+        rowModesModel={rowModesModel}
+        onRowModesModelChange={setRowModesModel}
+        onRowEditStop={handleRowEditStop}
+        processRowUpdate={processRowUpdate}
+        onProcessRowUpdateError={handleProcessRowUpdateError}
+        columns={columns(apiRef, rowModesModel, citiesList, handleViewClick, handleSaveClick, handleCancelClick)}
       />
       <Modal
         open={showAssignModal}

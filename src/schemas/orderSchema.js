@@ -41,6 +41,16 @@ export const orderStatusUpdateSchema = Joi.object({
   remarks: Joi.string().allow(""),
 });
 
+export const orderPatchUpdateSchema = Joi.object({
+  customerId: Joi.number().allow(""),
+  addressId: Joi.number().allow(""),
+  first_name: Joi.string().allow(""),
+  last_name: Joi.string().allow(""),
+  address: Joi.string().required(),
+  city: Joi.string().required(),
+  status: Joi.string().required(),
+});
+
 export const bulkOrderDeleteSchema = Joi.object({
   orderIds: Joi.array().items(Joi.number()).min(1),
 });

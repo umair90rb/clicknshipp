@@ -23,6 +23,8 @@ class OrderService extends Ajax {
 
   fetchUpdateOrder = (id, data) => this.put(`${this.pathname}/${id}`, data);
 
+  fetchPartialUpdateOrder = (id, data) => this.patch(`${this.pathname}/partial/${id}`, data);
+
   fetchDeleteOrder = (id) => this.delete(`${this.pathname}/${id}`);
 
   fetchBulkOrdersDelete = (body) => this.post(`${this.pathname}/bulk`, body);

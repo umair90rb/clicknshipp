@@ -38,6 +38,15 @@ const orderSlice = createSlice({
     setOrderSort: (state, action) => {
       state.list.sort = action.payload;
     },
+    setOrder: (state, action) => {
+      const updatedOrder = action.payload.order;
+      const list = [...state.list.orders];
+      const index = list.findIndex((order) => order.id === updatedOrder.id);
+      if (index > -1) {
+        list[index] = updatedOrder;
+      }
+      state.list.orders = list;
+    },
     clearOrderState: (_state, _action) => initialState
   },
   extraReducers: (builder) => {
@@ -89,5 +98,5 @@ const orderSlice = createSlice({
     });
   }
 });
-export const { setOrderPagination, setOrderFilters, setOrderSort, clearOrderState } = orderSlice.actions;
+export const { setOrderPagination, setOrderFilters, setOrderSort, setOrder, clearOrderState } = orderSlice.actions;
 export default orderSlice.reducer;

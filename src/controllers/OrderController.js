@@ -71,23 +71,23 @@ const item_data_keys = [
   "total_discount",
 ];
 
-function parseValue(value, type) {
-  switch (type) {
-    case "string":
-      return value || null;
-    case "number":
-      return parseInt(value);
-    case "date":
-      return new Date(value);
-    default:
-      return value;
-  }
-}
+// function parseValue(value, type) {
+//   switch (type) {
+//     case "string":
+//       return value || null;
+//     case "number":
+//       return parseInt(value);
+//     case "date":
+//       return new Date(value);
+//     default:
+//       return value;
+//   }
+// }
 
-const SORT_COLUMNS = {
-  created_at: { column: "createdAt", type: "date" },
-  received_at: { column: "createdAt", type: "date" },
-};
+// const SORT_COLUMNS = {
+//   created_at: { column: "createdAt", type: "date" },
+//   received_at: { column: "createdAt", type: "date" },
+// };
 
 const FILTER_COLUMNS = {
   order_number: { column: "order_number", type: "number" },
@@ -158,7 +158,7 @@ export default {
           {
             model: Address,
             as: "address",
-            attributes: ["name", "phone", "city", "address1"],
+            attributes: ["id", "name", "phone", "city", "address1"],
           },
         ],
         attributes: {
@@ -307,7 +307,10 @@ export default {
           },
         ],
       });
-      if (order.items.length) {
+      if (
+        order.items.length &&
+        (order?.customer?.phone || order?.address?.phone)
+      ) {
         const duplicateOrderWhere = order.items.map((item) => ({
           [Op.and]: [{ name: item?.name }, { quantity: item?.quantity }],
         }));
@@ -324,7 +327,7 @@ export default {
               model: Customer,
               as: "customer",
               where: {
-                phone: order?.customer?.phone,
+                phone: order?.customer?.phone || order?.address?.phone,
               },
             },
             {
@@ -1090,6 +1093,111 @@ export default {
         500,
         "Could not perform operation at this time, kindly try again later.",
         e
+      );
+    }
+  },
+
+  async updatePartial(req, res) {
+    try {
+      const orderId = req.params.id;
+      const {
+        status,
+        customerId,
+        first_name,
+        last_name,
+        addressId,
+        address,
+        city,
+      } = req.body;
+      const order = await Order.findByPk(orderId, {
+        attributes: {
+          exclude: ["data"],
+        },
+      });
+      if (!order) {
+        return sendErrorResponse(res, 404, "Order not found!");
+      }
+      if (addressId) {
+        await Address.update(
+          { address1: address, city },
+          {
+            where: {
+              id: addressId,
+            },
+          }
+        );
+      }
+      if (customerId) {
+        let ud = { first_name };
+        if (last_name) ud.last_name = last_name;
+        await Customer.update(ud, {
+          where: {
+            id: customerId,
+          },
+        });
+      }
+      if (customerId == "" && first_name) {
+        await order.createCustomer({
+          first_name,
+        });
+      }
+      await order.update({ status });
+      await order.reload({
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "name"],
+          },
+          {
+            model: Customer,
+            as: "customer",
+            attributes: ["id", "first_name", "last_name", "phone"],
+          },
+          {
+            model: OrderItem,
+            as: "items",
+            attributes: ["id", "name", "quantity"],
+          },
+          {
+            model: Chanel,
+            as: "chanel",
+            attributes: ["id", "name"],
+          },
+          {
+            model: Address,
+            as: "address",
+            attributes: ["id", "name", "phone", "city", "address1"],
+          },
+        ],
+        attributes: {
+          exclude: [
+            "data",
+            "customer_id",
+            "user_id",
+            "chanel_id",
+            "brand_id",
+            "UserId",
+            "CustomerId",
+            "updatedAt",
+          ],
+        },
+      });
+      return sendSuccessResponse(
+        res,
+        200,
+        {
+          order,
+        },
+        "Order updated successfully!"
+      );
+    } catch (error) {
+      console.error(error);
+      return sendErrorResponse(
+        res,
+        500,
+        "Could not perform operation at this time, kindly try again later.",
+        error
       );
     }
   },

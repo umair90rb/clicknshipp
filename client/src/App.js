@@ -25,7 +25,7 @@ const App = () => {
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
           open={!!message}
         >
-          <Alert onClose={handleExited} variant="filled" severity={type}>
+          <Alert onClose={handleExited} variant="filled" severity={type || 'info'}>
             <Typography variant="h6" color="white">
               {message}
             </Typography>

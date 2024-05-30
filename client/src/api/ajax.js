@@ -43,6 +43,10 @@ class Ajax {
     return http.put(url, data, { headers: this.getDefaultHeaders(headers) });
   };
 
+  patch = (url, data, headers = {}) => {
+    return http.patch(url, data, { headers: this.getDefaultHeaders(headers) });
+  };
+
   delete = (url, headers = {}) => {
     return http.delete(url, { headers: this.getDefaultHeaders(headers) });
   };

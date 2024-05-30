@@ -8,10 +8,9 @@ const { CityNameMaping } = models;
 class LeapordCourier extends CourierInterface {
   constructor() {
     super();
-    this.stagingURL = "https://merchantapistaging.leopardscourier.com/api/";
-    this.prodURL = "https://merchantapi.leopardscourier.com/api/";
+    // staging url => https://merchantapistaging.leopardscourier.com/api/
     this.http = getAxiosInstance(
-      process.env.NODE_ENV === "development" ? this.stagingURL : this.prodURL,
+      "https://merchantapi.leopardscourier.com/api/",
       {}
     );
   }
@@ -21,12 +20,9 @@ class LeapordCourier extends CourierInterface {
     try {
       const destinationCity = await CityNameMaping.findOne({
         where: {
-          [Op.or]: [
-            {
-              city: order.address.city,
-            },
-            { maped: order.address.city },
-          ],
+          city: {
+            [Op.iLike]: order.address.city,
+          },
           courier: deliveryAccount.service,
         },
         raw: true,

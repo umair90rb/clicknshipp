@@ -9,6 +9,7 @@ import {
   orderAssignSchema,
   orderBookSchema,
   orderStatusUpdateSchema,
+  orderPatchUpdateSchema,
   bulkOrderDeleteSchema,
   orderFilterSchema,
 } from "../schemas/orderSchema";
@@ -107,6 +108,15 @@ router.put(
   validator.params(idSchema),
   //   schemaValidator(updateRoleSchema),
   OrderController.update
+);
+
+router.patch(
+  "/partial/:id",
+  Auth,
+  can(PERMISSIONS.PERMISSION_UPDATE_ORDER),
+  validator.params(idSchema),
+  schemaValidator(orderPatchUpdateSchema),
+  OrderController.updatePartial
 );
 
 router.post(

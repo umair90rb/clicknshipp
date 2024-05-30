@@ -80,22 +80,21 @@ const OrderView = () => {
     getOrderDetails();
   }, []);
 
-  const trackOrder = () => {
-    console.log(delivery?.courier);
+  const trackOrder = async () => {
     if (delivery) {
-      console.log(delivery?.courier);
       switch (delivery?.courier) {
         case 'leopard':
-          console.log('manual tracking');
+          await navigator.clipboard.writeText(delivery?.cn);
+          window.open(` https://www.leopardscourier.com/leopards-tracking`, '_blank');
           break;
         case 'deawoo':
-          console.log('manual tracking');
+          await navigator.clipboard.writeText(delivery?.cn);
+          window.open(`https://fastex.pk`, '_blank');
           break;
         case 'postex':
           window.open(`https://merchant.postex.pk?cn=${delivery?.cn}`, '_blank');
           break;
         case 'tcs':
-          console.log(`https://www.tcsexpress.com/track/${delivery?.cn}`);
           window.open(`https://www.tcsexpress.com/track/${delivery?.cn}`, '_blank');
           break;
         case 'callcourier':
@@ -206,7 +205,7 @@ const OrderView = () => {
             </CardContent>
           </Card>
           <OrderSummaryCard discount={total_discounts} subtotal={subtotal_price} tax={total_tax} total={total_price} />
-          {duplicateOrders && duplicateOrders.length && <DuplicateOrders duplicateOrders={duplicateOrders} />}
+          {duplicateOrders && duplicateOrders.length > 0 && <DuplicateOrders duplicateOrders={duplicateOrders} />}
           <History orderHistory={history} />
         </Grid>
         <Grid item xs={4}>
