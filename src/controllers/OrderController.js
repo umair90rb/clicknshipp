@@ -1142,6 +1142,10 @@ export default {
         });
       }
       await order.update({ status });
+      await order.createHistory({
+        user_id: req.user.id,
+        event: "order updated",
+      });
       await order.reload({
         include: [
           {
@@ -1207,10 +1211,6 @@ export default {
       const id = req.params.id;
       const order = await Order.findByPk(id);
       if (order) {
-        await order.createHistory({
-          user_id: req.user.id,
-          event: "order deleted",
-        });
         await order.destroy();
         return sendSuccessResponse(
           res,
