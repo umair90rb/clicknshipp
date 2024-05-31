@@ -16,11 +16,11 @@ import {
 import schemaValidator from "../middleware/schemaValidator";
 import { createValidator } from "express-joi-validation";
 import OrderController from "../controllers/OrderController";
+import DeliveryController from "../controllers/DeliveryController";
 import OrderManagementController from "../controllers/OrderManagementController";
 import multer from "multer";
 
 const upload = multer({ storage: multer.memoryStorage() });
-
 const router = express.Router();
 const validator = createValidator();
 
@@ -49,7 +49,7 @@ router.post(
   Auth,
   can(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS),
   schemaValidator(orderBookSchema),
-  OrderController.book
+  DeliveryController.book
 );
 
 router.get(
@@ -57,7 +57,7 @@ router.get(
   Auth,
   can(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS),
   validator.params(idSchema),
-  OrderController.cancelBooking
+  DeliveryController.cancelBooking
 );
 
 router.get(
@@ -65,7 +65,7 @@ router.get(
   Auth,
   can(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS),
   validator.params(idSchema),
-  OrderController.deliveryStatus
+  DeliveryController.deliveryStatus
 );
 
 router.post(

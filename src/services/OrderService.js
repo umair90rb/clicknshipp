@@ -54,6 +54,41 @@ class OrderService {
   }
 
   async findDuplicateOrder(order) {}
+
+  async findOrdersByPhone(
+    phone,
+    orderFields = ["id", "order_number", "status", "createdAt"]
+  ) {
+    try {
+      const orders = await Order.findAll({
+        attributes: orderFields,
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "name"],
+          },
+          {
+            model: Customer,
+            as: "customer",
+            attributes: ["first_name", "last_name", "name"],
+            where: {
+              phone,
+            },
+          },
+          {
+            model: OrderItem,
+            as: "items",
+            attributes: ["id", "name", "quantity"],
+          },
+        ],
+      });
+      return orders;
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
+  }
 }
 
 const orderService = new OrderService();

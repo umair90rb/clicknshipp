@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 import { Button, Grid, Typography } from '@mui/material';
 import MainCard from 'components/MainCard';
 import { FileExcelOutlined, PlusOutlined } from '@ant-design/icons';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import SyncIcon from '@mui/icons-material/Sync';
 import OrderTable from './OrderTable';
 import { useNavigate } from 'react-router-dom';
@@ -13,7 +14,7 @@ import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 import BulkUploadModal from './BulkUploadModal';
 
-const OrderManagement = () => {
+const OrderManagement = memo(() => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const orderPaginationPage = useSelector(orderPageSelector);
@@ -59,8 +60,8 @@ const OrderManagement = () => {
               )}
               {hasPermission(PERMISSIONS.PERMISSION_CREATE_ORDER) && (
                 <Grid item>
-                  <Button variant="contained" startIcon={<PlusOutlined />} onClick={() => navigate(location.createOrder())}>
-                    Create New Order
+                  <Button variant="contained" startIcon={<WhatsAppIcon />} onClick={() => navigate(location.createOrder())}>
+                    Whatsapp Order
                   </Button>
                 </Grid>
               )}
@@ -74,6 +75,6 @@ const OrderManagement = () => {
       <BulkUploadModal visible={bulkOrderModalVisible} onClose={hideBulkOrderModal} />
     </>
   );
-};
+});
 
 export default OrderManagement;

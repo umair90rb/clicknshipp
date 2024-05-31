@@ -1,13 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
 import fetchStatus from 'constants/fetchStatuses';
 import { fetchDashboardStats } from './fetchDashboard';
+import moment from '../../../../node_modules/moment/moment';
 
 const initialState = {
   stats: {},
   fetchStatus: fetchStatus.IDLE,
   error: null,
-  startPeriod: `${new Date(new Date().setHours(0, 0, 0, 0)).toLocaleString('en-GB', { hour12: false }).replace(',', '')}`,
-  endPeriod: `${new Date().toLocaleString('en-GB', { hour12: false }).replace(',', '')}`
+  startPeriod: moment(new Date()).startOf('day').format('YYYY-MM-DDTHH:MM'),
+  endPeriod: moment(new Date()).format('YYYY-MM-DDTHH:MM')
 };
 
 const itemSlice = createSlice({

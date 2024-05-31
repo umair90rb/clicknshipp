@@ -63,3 +63,62 @@ export const PERMISSIONS = {
 export const ROLES = {
   ROLE_SUPER_ADMIN: "Super Admin",
 };
+
+export const order_data_keys = [
+  "order_number",
+  "total_price",
+  "total_tax",
+  "subtotal_price",
+  "total_price",
+  "total_discounts",
+  "created_at",
+];
+export const address_data_keys = [
+  "address1",
+  "city",
+  "zip",
+  "name",
+  "phone",
+  "province",
+  "country",
+  "address2",
+  "company",
+  "latitude",
+  "longitude",
+  "country_code",
+  "province_code",
+];
+
+export const customer_data_keys = [
+  "id",
+  "email",
+  "first_name",
+  "last_name",
+  "note",
+  "phone",
+];
+
+export const item_data_keys = [
+  "name",
+  "price",
+  "grams",
+  "quantity",
+  "product_id",
+  "sku",
+  "total_discount",
+];
+
+export const FILTER_COLUMNS = {
+  order_number: { column: "order_number", type: "number" },
+  status: { column: "status", type: "string" },
+  customer: { column: "$customer.first_name$", type: "string" },
+  phone: { column: "$customer.phone$", type: "string" },
+  agent: { column: "$user.name$", type: "string" },
+  address: { column: "$address.address1$", type: "string" },
+  city: { column: "$address.city$", type: "string" },
+  total_price: { column: "total_price", type: "number" },
+  total_tax: { column: "total_tax", type: "number" },
+  total_discounts: { column: "total_discounts", type: "number" },
+  createdAt: { column: "createdAt", type: "date" },
+  chanel: { column: "$chanel.name$", type: "string" },
+};

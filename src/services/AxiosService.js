@@ -6,6 +6,7 @@ const getAxiosInstance = (baseURL, headers) => {
     timeout: 30000,
     headers: { ...headers },
   });
+
   http.interceptors.request.use((request) => {
     console.log(
       "request",

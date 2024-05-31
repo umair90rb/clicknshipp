@@ -92,7 +92,7 @@ function OperatorsWithInput({ column, index, addFilterInput, updateColumnFilter 
   );
 }
 
-const FilterModal = memo(function FilterModal({ visible, onClose, columns, onApplyFilters }) {
+const FilterModal = memo(({ visible, onClose, columns, onApplyFilters }) => {
   const [columnsWithFilters, setColumnsWithFilters] = useState(columns);
   console.log(columns);
   const addFilterInput = (_column, index) => {

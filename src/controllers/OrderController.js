@@ -6,7 +6,14 @@ import { extract } from "../utils/extract";
 import excelToJson from "../helpers/excelToJson";
 import formatPhoneNumber from "../helpers/formatPhone";
 import BookingService from "../services/BookingService";
-import { PERMISSIONS } from "../constants/constants";
+import {
+  PERMISSIONS,
+  order_data_keys,
+  address_data_keys,
+  customer_data_keys,
+  item_data_keys,
+  FILTER_COLUMNS,
+} from "../constants/constants";
 import logger from "../middleware/logger";
 import getNameFromSubmissionLink, {
   getSizeAndPrice,
@@ -26,83 +33,6 @@ const {
   Delivery,
   OrderHistory,
 } = model;
-
-const order_data_keys = [
-  "order_number",
-  "total_price",
-  "total_tax",
-  "subtotal_price",
-  "total_price",
-  "total_discounts",
-  "created_at",
-];
-const address_data_keys = [
-  "address1",
-  "city",
-  "zip",
-  "name",
-  "phone",
-  "province",
-  "country",
-  "address2",
-  "company",
-  "latitude",
-  "longitude",
-  "country_code",
-  "province_code",
-];
-
-const customer_data_keys = [
-  "id",
-  "email",
-  "first_name",
-  "last_name",
-  "note",
-  "phone",
-];
-
-const item_data_keys = [
-  "name",
-  "price",
-  "grams",
-  "quantity",
-  "product_id",
-  "sku",
-  "total_discount",
-];
-
-// function parseValue(value, type) {
-//   switch (type) {
-//     case "string":
-//       return value || null;
-//     case "number":
-//       return parseInt(value);
-//     case "date":
-//       return new Date(value);
-//     default:
-//       return value;
-//   }
-// }
-
-// const SORT_COLUMNS = {
-//   created_at: { column: "createdAt", type: "date" },
-//   received_at: { column: "createdAt", type: "date" },
-// };
-
-const FILTER_COLUMNS = {
-  order_number: { column: "order_number", type: "number" },
-  status: { column: "status", type: "string" },
-  customer: { column: "$customer.first_name$", type: "string" },
-  phone: { column: "$customer.phone$", type: "string" },
-  agent: { column: "$user.name$", type: "string" },
-  address: { column: "$address.address1$", type: "string" },
-  city: { column: "$address.city$", type: "string" },
-  total_price: { column: "total_price", type: "number" },
-  total_tax: { column: "total_tax", type: "number" },
-  total_discounts: { column: "total_discounts", type: "number" },
-  createdAt: { column: "createdAt", type: "date" },
-  chanel: { column: "$chanel.name$", type: "string" },
-};
 
 const FILTER_OP = {
   "Is empty": Op.eq,
@@ -200,13 +130,6 @@ export default {
         const _filters = {};
         for (let i = 0; i < filters.length; i++) {
           const { column, op, value } = filters[i];
-          // console.log(
-          //   column,
-          //   op,
-          //   value,
-          //   parseValue(value, FILTER_COLUMNS[column].type),
-          //   "column, op, value, parse"
-          // );
           _filters[FILTER_COLUMNS[column].column] = {
             [FILTER_OP[op]]: value || null,
           };
@@ -702,244 +625,6 @@ export default {
       return sendSuccessResponse(res, 200, {}, "Operation successful");
     } catch (error) {
       console.error(error);
-      return sendErrorResponse(
-        res,
-        500,
-        "Could not perform operation at this time, kindly try again later.",
-        error
-      );
-    }
-  },
-
-  async book(req, res) {
-    try {
-      const { orderId, accountId } = req.body;
-      const deliveryAccount = await DeliveryServiceAccounts.findByPk(
-        accountId,
-        { raw: true }
-      );
-      if (!deliveryAccount) {
-        return sendErrorResponse(res, 404, "No account found with this id");
-      }
-      const order = await Order.findByPk(orderId, {
-        attributes: {
-          exclude: [
-            "data",
-            "CustomerId",
-            "updatedAt",
-            "customer_id",
-            "user_id",
-          ],
-        },
-        include: [
-          {
-            model: Customer,
-            as: "customer",
-          },
-          {
-            model: Brand,
-            as: "brand",
-            attributes: {
-              exclude: ["createdAt", "updatedAt"],
-            },
-          },
-          {
-            model: Address,
-            as: "address",
-            attributes: {
-              exclude: [
-                "order_id",
-                "customer_id",
-                "CustomerId",
-                "OrderId",
-                "company",
-                "longitude",
-                "latitude",
-                "country_code",
-                "province_code",
-              ],
-            },
-          },
-          {
-            model: OrderItem,
-            as: "items",
-            attributes: {
-              exclude: ["OrderId", "createdAt", "updatedAt"],
-            },
-          },
-        ],
-      });
-      if (!order) {
-        return sendErrorResponse(res, 404, "No data found with this id.");
-      }
-      if (order.status === "Booked") {
-        return sendErrorResponse(res, 400, "Order already booked!");
-      }
-      const bookingService = new BookingService();
-      const bookingResponse = await bookingService.bookParcelWithCourier(
-        order,
-        deliveryAccount
-      );
-      const { cn, slip, isSuccess, error, response } = bookingResponse || {};
-      console.log(bookingResponse, "bookingResponse");
-      if (isSuccess) {
-        const delivery = await Delivery.findOne({
-          where: { order_id: order.id },
-        });
-        console.log(delivery?.get(), "delivery found for order");
-        if (delivery) {
-          await delivery.update({
-            courier: deliveryAccount.service,
-            account_id: deliveryAccount.id,
-            cn,
-            slip_link: slip,
-            status: "Booked",
-          });
-        } else {
-          await Delivery.create({
-            courier: deliveryAccount.service,
-            account_id: deliveryAccount.id,
-            cn,
-            slip_link: slip,
-            status: "Booked",
-            order_id: order.id,
-          });
-        }
-        await order.update({ status: "Booked" });
-        await order.createHistory({
-          user_id: req.user.id,
-          event: `order booked with ${deliveryAccount?.service}, tracking number: ${cn}, brand no: ${order?.brand?.shipment_series}`,
-        });
-        await Brand.update(
-          { shipment_series: order.brand.shipment_series + 1 },
-          {
-            where: {
-              id: order.brand.id,
-            },
-          }
-        );
-        return sendSuccessResponse(res, 200, {}, "Operation successful");
-      }
-      return sendErrorResponse(res, 500, error, response);
-    } catch (error) {
-      console.error(error);
-      return sendErrorResponse(
-        res,
-        500,
-        "Could not perform operation at this time, kindly try again later.",
-        error
-      );
-    }
-  },
-
-  async cancelBooking(req, res) {
-    try {
-      const orderId = req.params.id;
-      const order = await Order.findByPk(orderId, {
-        attributes: ["id", "status"],
-      });
-      if (!order || order.status !== "Booked") {
-        return sendErrorResponse(res, 500, "Order is not in booking!");
-      }
-      const delivery = await Delivery.findOne({
-        where: {
-          order_id: order.id,
-        },
-        include: {
-          model: DeliveryServiceAccounts,
-          as: "account",
-        },
-      });
-      if (!delivery) {
-        return sendErrorResponse(
-          res,
-          500,
-          "Delivery not found for this order!"
-        );
-      }
-      const bookingService = new BookingService();
-      const cancelBookingResponse =
-        await bookingService.cancelBookingWithCourier(
-          delivery.cn,
-          delivery.account.get()
-        );
-      const { isSuccess, error, response } = cancelBookingResponse || {};
-      console.log(cancelBookingResponse, "cancelBookingResponse");
-      if (isSuccess) {
-        await delivery.update({
-          slip_link: "",
-          status: "Booking Canceled",
-          updatedAt: new Date().toISOString(),
-        });
-        await order.update({ status: "Booking Canceled" });
-        await order.createHistory({
-          user_id: req.user.id,
-          event: "order booking cancel",
-        });
-        return sendSuccessResponse(res, 200, {}, "Operation successful");
-      }
-      return sendErrorResponse(res, 500, error, response);
-    } catch (error) {
-      return sendErrorResponse(res, 500, error);
-    }
-  },
-
-  async deliveryStatus(req, res) {
-    try {
-      const orderId = req.params.id;
-      const order = await Order.findByPk(orderId, {
-        attributes: ["id", "status"],
-      });
-      if (!order || order?.status !== "Booked") {
-        return sendErrorResponse(res, 500, "Order is not in booking!");
-      }
-      const delivery = await Delivery.findOne({
-        where: {
-          order_id: order.id,
-        },
-        include: {
-          model: DeliveryServiceAccounts,
-          as: "account",
-        },
-      });
-      console.log(delivery.get());
-      if (!delivery) {
-        return sendErrorResponse(
-          res,
-          500,
-          "Delivery not found for this order!"
-        );
-      }
-      const bookingService = new BookingService();
-      const bookingStatusResponse =
-        await bookingService.checkParcelStatusWithCourier(
-          delivery?.cn,
-          delivery?.account?.get()
-        );
-      const {
-        isSuccess,
-        data,
-        history,
-        status,
-        date,
-        remarks,
-        error,
-        response,
-      } = bookingStatusResponse || {};
-      console.log(bookingStatusResponse, "status response");
-      if (isSuccess) {
-        return sendSuccessResponse(
-          res,
-          200,
-          { data, history, status, date, remarks, error, response },
-          "Operation successful"
-        );
-      }
-      return sendErrorResponse(res, 500, error, response);
-    } catch (error) {
-      logger.error("error", error, {
-        stack: "in delivery status function order controller",
-      });
       return sendErrorResponse(
         res,
         500,

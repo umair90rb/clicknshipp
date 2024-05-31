@@ -18,6 +18,7 @@ import reportRouter from "./reportRouter";
 import dashboardRouter from "./dashboardRouter";
 import deliverServiceAccountsRouter from "./deliverServiceAccountsRouter";
 import permissionRouter from "./permissionRouter";
+import searchRouter from "./searchRouter";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 // import { sendErrorResponse } from "../utils/sendResponse";
 const rootDir = path.dirname(process.argv[1]);
@@ -43,6 +44,7 @@ export default (app) => {
   app.use("/api/v1/report", reportRouter);
   app.use("/api/v1/dashboard", dashboardRouter);
   app.use("/api/v1/delivery-service-accounts", deliverServiceAccountsRouter);
+  app.use("/api/v1/search", searchRouter);
   app.use("/api/v1/", adminRouter);
 
   app.get("/api/v1/health", (req, res) => {

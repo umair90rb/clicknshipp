@@ -1,7 +1,4 @@
-// third-party
 import { configureStore } from '@reduxjs/toolkit';
-
-// project import
 import reducers from './rootReducer';
 import tokenExpirationMiddleware from './middlewars/tokenExpirationMiddleware';
 import networkErrorCheckerMiddleware from './middlewars/networkErrorCheckerMiddleware';

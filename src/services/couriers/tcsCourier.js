@@ -1,5 +1,5 @@
-import CourierInterface from "../courierInterface";
-import getAxiosInstance from "../http";
+import CourierInterface from "../../interfaces/courierInterface";
+import getAxiosInstance from "../AxiosService";
 import models from "../../models";
 import logger from "../../middleware/logger";
 import { Op } from "sequelize";

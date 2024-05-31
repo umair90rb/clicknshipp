@@ -18,10 +18,28 @@ import chanel from './slices/chanel/chanelSlice';
 import city from './slices/city/citySlice';
 import dashboard from './slices/dashboard/dashboardSlice';
 import deliveryServiceAccounts from './slices/deliveryServicesAccounts/deliveryServicesAccountsSlice';
+import search from './slices/search/searchSlice';
 // ==============================|| COMBINE REDUCERS ||============================== //
 
 const reducers = combineReducers(
-  { menu, auth, user, util, order, customer, supplier, item, stock, brand, category, chanel, city, dashboard, deliveryServiceAccounts },
+  {
+    menu,
+    auth,
+    user,
+    util,
+    order,
+    customer,
+    supplier,
+    item,
+    stock,
+    brand,
+    category,
+    chanel,
+    city,
+    dashboard,
+    deliveryServiceAccounts,
+    search
+  },
   composeWithDevTools()
 );
 

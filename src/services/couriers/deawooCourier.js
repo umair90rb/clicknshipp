@@ -1,8 +1,7 @@
-import CourierInterface from "../courierInterface";
-import getAxiosInstance from "../http";
+import CourierInterface from "../../interfaces/courierInterface";
+import getAxiosInstance from "../AxiosService";
 import models from "../../models";
 import { Op } from "sequelize";
-import companyProfile from "../data";
 import logger from "../../middleware/logger";
 const { CityNameMaping } = models;
 
@@ -55,7 +54,7 @@ class DeawooCourier extends CourierInterface {
         cod_amount: order.total_price,
         source_location_point: "0.0",
         destination_location_point: "0.0",
-        source_location_address: `${companyProfile.address} ${companyProfile.city}`,
+        source_location_address: "madina town faisalabad",
         destination_location_address: `${order.address.address1}, ${destinationCity.maped}`,
         item_description: order.items.reduce(
           (p, c, i) =>

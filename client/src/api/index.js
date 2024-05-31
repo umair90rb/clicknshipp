@@ -13,3 +13,4 @@ export { permissionService } from './permissionService';
 export { cityService } from './cityService';
 export { dashboardService } from './dashboardService';
 export { deliveryServiceAccountsService } from './deliveryServiceAccountsService';
+export { searchService } from './searchService';

@@ -158,6 +158,7 @@ export default function GridSearchSelect(props) {
           id={params.id}
           inputProps={{
             ...params.inputProps,
+            tabIndex: 0,
             autoComplete: 'new-password' // disable autocomplete and autofill
           }}
           {...params.InputProps}

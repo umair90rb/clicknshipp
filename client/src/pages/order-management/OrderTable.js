@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -74,7 +74,6 @@ const columns = (apiRef, rowModesModel, citiesList, handleViewClick, handleSaveC
     field: 'address1',
     headerName: 'Address',
     flex: 1,
-    resizable: true,
     sortable: false,
     editable: true,
     type: 'string',
@@ -87,8 +86,8 @@ const columns = (apiRef, rowModesModel, citiesList, handleViewClick, handleSaveC
     flex: 1,
     sortable: false,
     editable: true,
+    type: 'string',
     valueGetter: (param) => param.row.address?.city || '',
-    type: 'singleSelect',
     renderEditCell: (params) => <GridSearchSelect {...params} />
   },
   {
@@ -231,7 +230,7 @@ const style = {
   p: 4
 };
 
-export default function OrderTable() {
+const OrderTable = memo(() => {
   const apiRef = useGridApiRef();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -436,4 +435,6 @@ export default function OrderTable() {
       />
     </div>
   );
-}
+});
+
+export default OrderTable;
