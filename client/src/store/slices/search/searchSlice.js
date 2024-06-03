@@ -27,7 +27,7 @@ const searchSlice = createSlice({
     builder.addCase(fetchSearch.rejected, (state, action) => {
       state.result = null;
       state.fetchStatus = fetchStatus.FAILURE;
-      state.error = action.payload;
+      state.error = action.payload.error;
     });
   }
 });

@@ -1,5 +1,5 @@
 import model from "../models";
-
+import { Op } from "sequelize";
 const {
   Order,
   OrderItem,
@@ -55,13 +55,20 @@ class OrderService {
 
   async findDuplicateOrder(order) {}
 
-  async findOrdersByPhone(
-    phone,
+  async findOrdersBy(
+    tag,
+    query,
     orderFields = ["id", "order_number", "status", "createdAt"]
   ) {
     try {
-      const orders = await Order.findAll({
+      const sqlQuery = {
         attributes: orderFields,
+        where:
+          tag === "Order Number"
+            ? {
+                order_number: query,
+              }
+            : undefined,
         include: [
           {
             model: User,
@@ -72,17 +79,29 @@ class OrderService {
             model: Customer,
             as: "customer",
             attributes: ["first_name", "last_name", "name"],
-            where: {
-              phone,
-            },
+            where:
+              tag === "Phone"
+                ? {
+                    phone: query,
+                  }
+                : undefined,
           },
           {
             model: OrderItem,
             as: "items",
             attributes: ["id", "name", "quantity"],
+            where:
+              tag === "Item"
+                ? {
+                    name: {
+                      [Op.iLike]: query,
+                    },
+                  }
+                : undefined,
           },
         ],
-      });
+      };
+      const orders = await Order.findAll(sqlQuery);
       return orders;
     } catch (error) {
       console.log(error);
@@ -91,5 +110,5 @@ class OrderService {
   }
 }
 
-const orderService = new OrderService();
-export default orderService;
+const _orderService = new OrderService();
+export default _orderService;

@@ -1,15 +1,11 @@
-import model from "../models";
-import orderService from "../services/OrderService";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
+import _orderService from "../services/OrderService";
 
 export default {
   async search(req, res) {
     try {
       const { query, tag } = req.body;
-      let result;
-      if (tag === "Orders") {
-        result = await orderService.findOrdersByPhone(query);
-      }
+      let result = await _orderService.findOrdersBy(tag, query);
       if (!result || !result.length) {
         return sendErrorResponse(res, 404, "No data found!");
       }

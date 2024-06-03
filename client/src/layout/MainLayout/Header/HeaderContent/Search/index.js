@@ -1,27 +1,29 @@
-import { Typography, Paper, Box, InputAdornment, OutlinedInput, Chip, IconButton } from '@mui/material';
+import { Paper, Box, InputAdornment, OutlinedInput, Chip, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSearch } from 'store/slices/search/fetchSearch';
-import { searchIsLoadingSelector, searchResultSelector } from 'store/slices/search/searchSelector';
+import { searchErrorSelector, searchIsLoadingSelector, searchResultSelector } from 'store/slices/search/searchSelector';
 import CircularLoader from 'components/CircularLoader';
 import OrderRow from './OrderRow';
+import NoResult from './NoResult';
 
-const availableTags = ['Orders', 'Customers'];
+const availableTags = ['Phone', 'Order Number', 'Item'];
 
 const Search = () => {
   const dispatch = useDispatch();
-  const searchIsLoading = useSelector(searchIsLoadingSelector);
+  const loading = useSelector(searchIsLoadingSelector);
   const result = useSelector(searchResultSelector);
+  const error = useSelector(searchErrorSelector);
   const [isFocus, setIsFocus] = useState();
   const handleFocus = () => setIsFocus(true);
   const handleBlur = () => setIsFocus(false);
-  const [tag, setTag] = useState('Orders');
+  const [tag, setTag] = useState('');
   const handleTagDelete = () => setTag('');
 
   const handleQueryChange = (e) => {
     const query = e.target.value;
-    if (query.length >= 10) {
+    if ((tag === 'Phone' && query.length >= 11) || (tag === 'Order Number' && query.length >= 3) || (tag === 'Item' && query.length >= 5)) {
       dispatch(fetchSearch({ body: { query, tag } }));
     }
   };
@@ -32,7 +34,7 @@ const Search = () => {
       if (event.ctrlKey && (event.key === 'f' || event.key === 'F')) {
         event.preventDefault();
         handleFocus();
-        setTag('Orders');
+        setTag('Phone');
         inputElement.focus();
       } else if (event.key === 'Escape' && document.activeElement === inputElement) {
         setTag('');
@@ -60,7 +62,8 @@ const Search = () => {
           minHeight: isFocus ? '25vh' : 0,
           zIndex: 2,
           padding: 1.5,
-          overflow: isFocus ? 'auto' : 'none'
+          overflow: isFocus ? 'auto' : 'none',
+          overflowX: 'hidden'
         }}
         elevation={isFocus ? 4 : 0}
       >
@@ -83,6 +86,7 @@ const Search = () => {
           }}
           placeholder="Ctrl + F"
           onChange={handleQueryChange}
+          onFocus={handleFocus}
         />
         {isFocus && (
           <>
@@ -105,8 +109,26 @@ const Search = () => {
                 ))}
               </Box>
             )}
-            {searchIsLoading && <CircularLoader height="20vh" />}
-            {result && result.map((r, index) => <OrderRow key={index} order={r} />)}
+            {loading && <CircularLoader height="18vh" />}
+            {error && !loading && <NoResult message={error} />}
+            <Box
+              sx={{
+                width: '100%',
+                maxHeight: '75vh',
+                overflow: 'auto',
+                overflowX: 'hidden',
+                border: '0px solid black',
+                scrollbarWidth: 'none', // Hide the scrollbar for firefox
+                '&::-webkit-scrollbar': {
+                  display: 'none' // Hide the scrollbar for WebKit browsers (Chrome, Safari, Edge, etc.)
+                },
+                '&-ms-overflow-style:': {
+                  display: 'none' // Hide the scrollbar for IE
+                }
+              }}
+            >
+              {result && result.map((r, index) => <OrderRow key={index} order={r} onNavigate={handleBlur} />)}
+            </Box>
           </>
         )}
       </Paper>

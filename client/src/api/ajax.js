@@ -35,8 +35,8 @@ class Ajax {
     return http.get(url, { headers: this.getDefaultHeaders(headers), params });
   };
 
-  post = (url, data, headers = {}) => {
-    return http.post(url, data, { headers: this.getDefaultHeaders(headers) });
+  post = (url, data, headers = {}, options = {}) => {
+    return http.post(url, data, { headers: this.getDefaultHeaders(headers), ...options });
   };
 
   put = (url, data, headers = {}) => {
