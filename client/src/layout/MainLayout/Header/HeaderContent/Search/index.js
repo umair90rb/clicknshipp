@@ -23,6 +23,7 @@ const Search = () => {
 
   const handleQueryChange = (e) => {
     const query = e.target.value;
+    console.log(query);
     if ((tag === 'Phone' && query.length >= 11) || (tag === 'Order Number' && query.length >= 3) || (tag === 'Item' && query.length >= 5)) {
       dispatch(fetchSearch({ body: { query, tag } }));
     }

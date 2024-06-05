@@ -78,7 +78,7 @@ const OrderView = () => {
 
   useEffect(() => {
     getOrderDetails();
-  }, []);
+  }, [orderId]);
 
   const trackOrder = async () => {
     if (delivery) {
