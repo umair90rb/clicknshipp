@@ -11,7 +11,7 @@ const initialState = {
   endPeriod: moment(new Date()).format('YYYY-MM-DDTHH:MM')
 };
 
-const itemSlice = createSlice({
+const dashboardSlice = createSlice({
   name: 'dashboard',
   initialState,
   reducers: {
@@ -38,5 +38,5 @@ const itemSlice = createSlice({
     });
   }
 });
-export const { setDashboardStatPeriod, clearDashboardState } = itemSlice.actions;
-export default itemSlice.reducer;
+export const { setDashboardStatPeriod, clearDashboardState } = dashboardSlice.actions;
+export default dashboardSlice.reducer;

@@ -1,8 +1,5 @@
-// third-party
 import { combineReducers } from 'redux';
 import { composeWithDevTools } from '@redux-devtools/extension';
-
-// project import
 import menu from './slices/menu';
 import auth from './slices/auth/authSlice';
 import user from './slices/user/userSlice';
@@ -19,7 +16,7 @@ import city from './slices/city/citySlice';
 import dashboard from './slices/dashboard/dashboardSlice';
 import deliveryServiceAccounts from './slices/deliveryServicesAccounts/deliveryServicesAccountsSlice';
 import search from './slices/search/searchSlice';
-// ==============================|| COMBINE REDUCERS ||============================== //
+import report from './slices/report/reportSlice';
 
 const reducers = combineReducers(
   {
@@ -38,7 +35,8 @@ const reducers = combineReducers(
     city,
     dashboard,
     deliveryServiceAccounts,
-    search
+    search,
+    report
   },
   composeWithDevTools()
 );

@@ -1,29 +1,37 @@
+import { useEffect, useState, useRef } from 'react';
 import { Paper, Box, InputAdornment, OutlinedInput, Chip, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSearch } from 'store/slices/search/fetchSearch';
 import { searchErrorSelector, searchIsLoadingSelector, searchResultSelector } from 'store/slices/search/searchSelector';
 import CircularLoader from 'components/CircularLoader';
 import OrderRow from './OrderRow';
 import NoResult from './NoResult';
+import { clearSearchState } from 'store/slices/search/searchSlice';
 
 const availableTags = ['Phone', 'Order Number', 'Item'];
 
 const Search = () => {
+  const searchComponentRef = useRef(null);
   const dispatch = useDispatch();
   const loading = useSelector(searchIsLoadingSelector);
   const result = useSelector(searchResultSelector);
   const error = useSelector(searchErrorSelector);
   const [isFocus, setIsFocus] = useState();
-  const handleFocus = () => setIsFocus(true);
-  const handleBlur = () => setIsFocus(false);
   const [tag, setTag] = useState('');
   const handleTagDelete = () => setTag('');
+  const handleFocus = () => {
+    setIsFocus(true);
+    setTag('Phone');
+  };
+  const handleBlur = () => {
+    handleTagDelete();
+    dispatch(clearSearchState());
+    setIsFocus(false);
+  };
 
   const handleQueryChange = (e) => {
     const query = e.target.value;
-    console.log(query);
     if ((tag === 'Phone' && query.length >= 11) || (tag === 'Order Number' && query.length >= 3) || (tag === 'Item' && query.length >= 5)) {
       dispatch(fetchSearch({ body: { query, tag } }));
     }
@@ -35,23 +43,34 @@ const Search = () => {
       if (event.ctrlKey && (event.key === 'f' || event.key === 'F')) {
         event.preventDefault();
         handleFocus();
-        setTag('Phone');
         inputElement.focus();
       } else if (event.key === 'Escape' && document.activeElement === inputElement) {
-        setTag('');
         handleBlur();
         inputElement.value = '';
         inputElement.blur();
       }
     };
+    const handleMouseOutsideClick = (event) => {
+      if (searchComponentRef.current && !searchComponentRef.current.contains(event.target) && isFocus) {
+        handleBlur();
+      }
+    };
     window.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('mousedown', handleMouseOutsideClick);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('mousedown', handleMouseOutsideClick);
     };
   }, []);
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" sx={{ width: '100%', ml: { xs: 0, md: 1 }, border: '0px solid black' }}>
+    <Box
+      ref={searchComponentRef}
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      sx={{ width: '100%', ml: { xs: 0, md: 1 }, border: '0px solid black' }}
+    >
       <Paper
         display="flex"
         justifyContent="center"

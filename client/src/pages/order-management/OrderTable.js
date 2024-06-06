@@ -10,7 +10,8 @@ import {
   GridToolbarDensitySelector,
   GridToolbarExport,
   GridRowEditStopReasons,
-  GridRowModes
+  GridRowModes,
+  GridCellEditStopReasons
 } from '@mui/x-data-grid';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import FilterListIcon from '@mui/icons-material/FilterList';
@@ -34,7 +35,7 @@ import { fetchAllOrder, fetchBulkOrdersDelete, fetchPartialUpdateOrder } from 's
 import location from 'utils/location';
 import { Button, Box, Modal } from '@mui/material';
 import AssignOrderModal from './AssignOrderModal';
-import CustomNoRowsOverlay from './NoRowCustomOverlay';
+import CustomNoRowsOverlay from '../../components/GridNoRowCustomOverlay';
 import { setOrder, setOrderFilters, setOrderPagination, setOrderSort } from 'store/slices/order/orderSlice';
 import FilterModal from './FilterModal';
 import { setMessage } from 'store/slices/util/utilSlice';
@@ -77,8 +78,9 @@ const columns = (apiRef, rowModesModel, citiesList, handleViewClick, handleSaveC
     sortable: false,
     editable: true,
     type: 'string',
+    renderEditCell: (params) => <GridEditTextarea {...params} />,
     valueGetter: (param) => param.row.address?.address1 || '',
-    renderEditCell: (params) => <GridEditTextarea {...params} />
+    valueParser: (value) => value.replace(/\n/g, ' ').replace(/\s\s+/g, ' ')
   },
   {
     field: 'city',
@@ -90,14 +92,7 @@ const columns = (apiRef, rowModesModel, citiesList, handleViewClick, handleSaveC
     valueGetter: (param) => param.row.address?.city || '',
     renderEditCell: (params) => <GridSearchSelect {...params} />
   },
-  {
-    field: 'status',
-    headerName: 'Status',
-    flex: 0.5,
-    editable: true,
-    type: 'singleSelect',
-    valueOptions: GRID_ORDER_STATUSES
-  },
+
   {
     field: 'item',
     headerName: 'Items',
@@ -117,18 +112,59 @@ const columns = (apiRef, rowModesModel, citiesList, handleViewClick, handleSaveC
     type: 'string'
   },
   {
+    field: 'addItem',
+    headerName: 'Add Item',
+    sortable: false,
+    flex: 0.2,
+    type: 'actions',
+    cellClassName: 'actions',
+    getActions: (params) => {
+      const id = params.id;
+      return [
+        <GridActionsCellItem
+          key={id}
+          icon={<AddIcon />}
+          label="Add item"
+          className="textPrimary"
+          onClick={handleCancelClick(id)}
+          color="inherit"
+        />
+      ];
+    }
+  },
+  {
     field: 'total_price',
     headerName: 'Total Amount',
     flex: 0.33
   },
   {
-    field: 'total_tax',
-    headerName: 'Tax Amount',
-    flex: 0.33
-  },
-  {
     field: 'total_discounts',
     headerName: 'Discount',
+    flex: 0.33
+  },
+  //advance payments will be here
+  {
+    field: 'status',
+    headerName: 'Status',
+    flex: 0.5,
+    editable: true,
+    type: 'singleSelect',
+    valueOptions: GRID_ORDER_STATUSES
+  },
+  {
+    field: 'remarks',
+    headerName: 'Remarks',
+    flex: 1,
+    sortable: false,
+    editable: true,
+    type: 'string',
+    renderEditCell: (params) => <GridEditTextarea {...params} />,
+    valueGetter: (param) => param.row.remarks || 'None',
+    valueParser: (value) => value.replace(/\n/g, ' ').replace(/\s\s+/g, ' ')
+  },
+  {
+    field: 'total_tax',
+    headerName: 'Tax Amount',
     flex: 0.33
   },
   {
@@ -198,14 +234,7 @@ const columns = (apiRef, rowModesModel, citiesList, handleViewClick, handleSaveC
           onClick={handleViewClick(id)}
           color="inherit"
         />,
-        <GridActionsCellItem
-          key={id}
-          icon={<AddIcon />}
-          label="Add item"
-          className="textPrimary"
-          onClick={handleCancelClick(id)}
-          color="inherit"
-        />,
+
         <GridActionsCellItem
           key={id}
           icon={<EditIcon />}
@@ -230,6 +259,10 @@ const style = {
   p: 4
 };
 
+function isKeyboardEvent(event) {
+  return !!event.key;
+}
+
 const OrderTable = memo(() => {
   const apiRef = useGridApiRef();
   const dispatch = useDispatch();
@@ -252,7 +285,6 @@ const OrderTable = memo(() => {
     agent: false,
     total_tax: false,
     total_discounts: false,
-    total_price: false,
     createdAt: false,
     receivedAt: false
   });
@@ -287,29 +319,31 @@ const OrderTable = memo(() => {
     });
   };
 
-  const processRowUpdate = async (newRow) => {
-    console.log(newRow, 'process row update');
-    const updatedRow = { ...newRow, isNew: false };
+  const processRowUpdate = async (newRow, preRow) => {
+    console.log(newRow, preRow, 'new Row pre Row');
+    dispatch(setOrder({ order: { ...newRow, address1: newRow.address1 || newRow?.address?.address1 } }));
     const id = newRow.id;
-    const body = {
-      status: newRow?.status || '',
-      customerId: newRow?.customer?.id || '',
-      first_name: newRow?.first_name || '',
-      last_name: newRow?.customer?.last_name || '',
-      addressId: newRow?.address?.id,
-      address: newRow?.address1 || '',
-      city: newRow?.city || ''
-    };
-    setPartialUpdateOrderLoading(true);
-    const { type, payload } = await dispatch(fetchPartialUpdateOrder({ id, body }));
-    if (type === 'order/partialUpdate/fetch/fulfilled') {
-      dispatch(setOrder({ order: payload?.data.order }));
-      dispatch(setMessage({ type: 'success', message: payload?.data?.message || 'Success! Order updated!' }));
-    } else {
-      dispatch(setMessage({ type: 'error', message: payload?.data?.message || 'Failed! Order not updated!' }));
+    if (newRow?.status === 'Confirmed') {
+      const body = {
+        status: newRow?.status || '',
+        customerId: newRow?.customer?.id || '',
+        first_name: newRow?.first_name || '',
+        last_name: newRow?.customer?.last_name || '',
+        addressId: newRow?.address?.id,
+        address: newRow?.address1 || '',
+        city: newRow?.city || ''
+      };
+      setPartialUpdateOrderLoading(true);
+      const { type, payload } = await dispatch(fetchPartialUpdateOrder({ id, body }));
+      if (type === 'order/partialUpdate/fetch/fulfilled') {
+        dispatch(setOrder({ order: payload?.data.order }));
+        dispatch(setMessage({ type: 'success', message: payload?.data?.message || 'Success! Order updated!' }));
+      } else {
+        dispatch(setMessage({ type: 'error', message: payload?.data?.message || 'Failed! Order not updated!' }));
+      }
+      setPartialUpdateOrderLoading(false);
     }
-    setPartialUpdateOrderLoading(false);
-    return updatedRow;
+    return { ...newRow, isNew: false };
   };
 
   const handleProcessRowUpdateError = (error) => {
@@ -378,7 +412,7 @@ const OrderTable = memo(() => {
   }
 
   return (
-    <div style={{ height: !orders || !orders.length ? 400 : undefined, width: '100%' }}>
+    <div style={{ height: !orders || !orders.length ? 400 : '80vh', width: '100%' }}>
       <DataGrid
         apiRef={apiRef}
         loading={listIsLoading}
@@ -387,6 +421,7 @@ const OrderTable = memo(() => {
           toolbar: renderToolbar,
           noRowsOverlay: CustomNoRowsOverlay
         }}
+        // autoHeight={true}
         rowSelectionModel={rowSelectionModel}
         onRowSelectionModelChange={(newRowSelectionModel) => setRowSelectionModel(newRowSelectionModel)}
         paginationMode="server"
@@ -399,10 +434,19 @@ const OrderTable = memo(() => {
         rowCount={total}
         columnVisibilityModel={columnVisibilityModel}
         onColumnVisibilityModelChange={setColumnVisibilityModel}
+        getRowHeight={() => 'auto'}
+        onCellEditStop={(params, event) => {
+          if (params.reason !== GridCellEditStopReasons.enterKeyDown) {
+            return;
+          }
+          if (isKeyboardEvent(event) && !event.ctrlKey && !event.metaKey) {
+            event.defaultMuiPrevented = true;
+          }
+        }}
         rows={orders || []}
         editMode="row"
-        rowModesModel={rowModesModel}
-        onRowModesModelChange={setRowModesModel}
+        // rowModesModel={rowModesModel}
+        // onRowModesModelChange={setRowModesModel}
         onRowEditStop={handleRowEditStop}
         processRowUpdate={processRowUpdate}
         onProcessRowUpdateError={handleProcessRowUpdateError}

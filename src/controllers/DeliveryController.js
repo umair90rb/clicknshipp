@@ -86,7 +86,7 @@ export default {
       const { cn, slip, isSuccess, error, response } = bookingResponse || {};
       console.log(bookingResponse, "bookingResponse");
       if (isSuccess) {
-        const delivery = await Delivery.findOne({
+        let delivery = await Delivery.findOne({
           where: { order_id: order.id },
         });
         console.log(delivery?.get(), "delivery found for order");
@@ -99,7 +99,7 @@ export default {
             status: "Booked",
           });
         } else {
-          await Delivery.create({
+          delivery = await Delivery.create({
             courier: deliveryAccount.service,
             account_id: deliveryAccount.id,
             cn,
@@ -121,7 +121,12 @@ export default {
             },
           }
         );
-        return sendSuccessResponse(res, 200, {}, "Operation successful");
+        return sendSuccessResponse(
+          res,
+          200,
+          { delivery },
+          "Operation successful"
+        );
       }
       return sendErrorResponse(res, 500, error, response);
     } catch (error) {

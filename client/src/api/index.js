@@ -12,5 +12,6 @@ export { orderService } from './orderService';
 export { permissionService } from './permissionService';
 export { cityService } from './cityService';
 export { dashboardService } from './dashboardService';
+export { reportService } from './reportService';
 export { deliveryServiceAccountsService } from './deliveryServiceAccountsService';
 export { searchService } from './searchService';

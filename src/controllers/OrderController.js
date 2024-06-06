@@ -5,7 +5,6 @@ import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 import { extract } from "../utils/extract";
 import excelToJson from "../helpers/excelToJson";
 import formatPhoneNumber from "../helpers/formatPhone";
-import BookingService from "../services/BookingService";
 import {
   PERMISSIONS,
   order_data_keys,
@@ -18,7 +17,7 @@ import logger from "../middleware/logger";
 import getNameFromSubmissionLink, {
   getSizeAndPrice,
 } from "../helpers/getNameFromLink";
-import orderService from "../services/OrderService";
+import { _orderService as orderService } from "../services/OrderService";
 
 const {
   Order,
@@ -84,6 +83,20 @@ export default {
             model: Chanel,
             as: "chanel",
             attributes: ["id", "name"],
+          },
+          {
+            model: Payments,
+            as: "payments",
+            attributes: {
+              exclude: ["order_id", "updatedAt"],
+            },
+          },
+          {
+            model: Delivery,
+            as: "delivery",
+            attributes: {
+              exclude: ["slip_link", "createdAt", "updatedAt", "order_id"],
+            },
           },
           {
             model: Address,
@@ -196,6 +209,13 @@ export default {
           {
             model: OrderHistory,
             as: "history",
+          },
+          {
+            model: Payments,
+            as: "payments",
+            attributes: {
+              exclude: ["order_id", "updatedAt"],
+            },
           },
           {
             model: Address,
@@ -652,6 +672,7 @@ export default {
         province,
         chanel_id,
         brand_id,
+        remarks,
         items: itemsArray,
       } = req.body || {};
       const orderItems = [];
@@ -670,13 +691,13 @@ export default {
       }
       await order.update(
         {
-          chanel_id,
-          brand_id,
-          user_id: req.user.id,
-          subtotal_price,
-          total_price,
-          total_tax,
-          total_discounts,
+          chanel_id: chanel_id || order.chanel_id,
+          brand_id: brand_id || order.brand_id,
+          subtotal_price: subtotal_price,
+          total_price: total_price || order.total_price,
+          total_tax: total_tax || order.total_tax,
+          total_discounts: total_discounts || order.total_discounts,
+          remarks: remarks || order.remarks,
         },
         { where: { id } }
       );

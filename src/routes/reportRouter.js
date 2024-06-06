@@ -8,10 +8,10 @@ import ReportingController from "../controllers/ReportingController";
 const router = express.Router();
 
 router.post(
-  "/order-products",
+  "/agent-report",
   Auth,
   can(PERMISSIONS.PERMISSION_VIEW_REPORTING),
-  ReportingController.orderProducts
+  ReportingController.agentReport
 );
 
 export default router;

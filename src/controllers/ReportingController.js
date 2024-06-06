@@ -1,17 +1,60 @@
+import Sequelize, { Op } from "sequelize";
 import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 
-const { Order, OrderItem, Item } = model;
+const { Order, User } = model;
 
 export default {
-  async orderProducts(req, res) {
+  async agentReport(req, res) {
     try {
-      const { start, end } = req.body;
+      const { startPeriod, endPeriod } = req.body;
+      const where = {
+        attributes: [
+          "user_id",
+          [Sequelize.fn("COUNT", Sequelize.col("Order.id")), "total"],
+          [
+            Sequelize.fn(
+              "SUM",
+              Sequelize.literal(
+                'CASE WHEN "Order"."status" = \'Confirmed\' THEN 1 ELSE 0 END'
+              )
+            ),
+            "confirmed",
+          ],
+          [
+            Sequelize.fn(
+              "SUM",
+              Sequelize.literal(
+                'CASE WHEN "Order"."status" = \'No Pick\' THEN 1 ELSE 0 END'
+              )
+            ),
+            "no_pick",
+          ],
+        ],
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["name"],
+          },
+        ],
+        where: {
+          createdAt: {
+            [Op.gte]: startPeriod,
+            [Op.lte]: endPeriod,
+          },
+          user_id: {
+            [Op.ne]: null,
+          },
+        },
+        group: ["Order.user_id", "user.id"],
+      };
+      const report = await Order.findAll(where);
       return sendSuccessResponse(
         res,
-        201,
-        { start, end },
-        "All registered users"
+        200,
+        { report, startPeriod, endPeriod },
+        "Agent report"
       );
     } catch (e) {
       console.error(e);

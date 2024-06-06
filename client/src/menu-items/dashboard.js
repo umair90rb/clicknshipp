@@ -14,16 +14,16 @@ const dashboard = {
       permission: PERMISSIONS.PERMISSION_VIEW_ADMIN_DASHBOARD,
       icon: DashboardOutlined,
       breadcrumbs: false
+    },
+    {
+      id: 'reporting',
+      title: 'Reporting',
+      type: 'item',
+      url: '/reporting',
+      permission: PERMISSIONS.PERMISSION_VIEW_REPORTING,
+      icon: FileSearchOutlined,
+      breadcrumbs: false
     }
-    // {
-    //   id: 'reporting',
-    //   title: 'Reporting',
-    //   type: 'item',
-    //   url: '/reporting',
-    //   permission: PERMISSIONS.PERMISSION_VIEW_REPORTING,
-    //   icon: FileSearchOutlined,
-    //   breadcrumbs: false
-    // }
   ]
 };
 

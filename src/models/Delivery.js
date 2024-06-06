@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Delivery.belongsTo(models.Order, {
-        as: "delivery",
+        as: "order",
         foreignKey: "order_id",
       });
       Delivery.belongsTo(models.DeliveryServiceAccounts, {

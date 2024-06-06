@@ -5,9 +5,9 @@ import Popper from '@mui/material/Popper';
 import Paper from '@mui/material/Paper';
 
 export default function GridEditTextarea(props) {
-  const { id, field, value, colDef, hasFocus } = props;
+  const { id, field, value, colDef, hasFocus, tabIndex, ...rest } = props;
   const [valueState, setValueState] = useState(value);
-  const [anchorEl, setAnchorEl] = useState();
+  // const [anchorEl, setAnchorEl] = useState();
   const [inputRef, setInputRef] = useState(null);
   const apiRef = useGridApiContext();
 
@@ -17,45 +17,49 @@ export default function GridEditTextarea(props) {
     }
   }, [hasFocus, inputRef]);
 
-  const handleRef = useCallback((el) => {
-    setAnchorEl(el);
-  }, []);
+  // const handleRef = useCallback((el) => {
+  //   setAnchorEl(el);
+  // }, []);
 
   const handleChange = useCallback(
-    (event) => {
+    async (event) => {
       const newValue = event.target.value;
       setValueState(newValue);
-      apiRef.current.setEditCellValue({ id, field, value: newValue, debounceMs: 200 }, event);
+      await apiRef.current.setEditCellValue({ id, field, value: newValue, debounceMs: 200 }, event);
     },
     [apiRef, field, id]
   );
 
   return (
-    <div style={{ position: 'relative', alignSelf: 'flex-start' }}>
-      <div
-        ref={handleRef}
-        style={{
-          height: 1,
-          width: colDef.computedWidth,
-          display: 'block',
-          position: 'absolute',
-          top: 0
-        }}
-      />
-      {anchorEl && (
-        <Popper open anchorEl={anchorEl} placement="bottom-start">
-          <Paper elevation={1} sx={{ p: 1, minWidth: colDef.computedWidth }}>
-            <InputBase
-              multiline
-              rows={4}
-              value={valueState}
-              sx={{ textarea: { resize: 'both' }, width: '100%' }}
-              onChange={handleChange}
-              inputRef={(ref) => setInputRef(ref)}
-            />
-          </Paper>
-        </Popper>
-      )}
-    </div>
+    // <div style={{ position: 'relative', alignSelf: 'flex-start' }}>
+    //   <div
+    //     ref={handleRef}
+    //     style={{
+    //       height: 1,
+    //       border: '1px solid red',
+    //       width: colDef.computedWidth,
+    //       display: 'block',
+    //       position: 'absolute',
+    //       top: 0
+    //     }}
+    //   />
+    //   {anchorEl && (
+    //     <Popper open anchorEl={anchorEl} placement="bottom-start">
+    //       <Paper elevation={1} sx={{ p: 1, minWidth: colDef.computedWidth }}>
+    <InputBase
+      multiline
+      rows={4}
+      value={valueState}
+      sx={{
+        textarea: { resize: 'none', overflow: 'hidden', tabIndex },
+        width: '100%'
+      }}
+      onChange={handleChange}
+      inputRef={(ref) => setInputRef(ref)}
+    />
+    //       </Paper>
+    //     </Popper>
+    //   )}
+    // </div>
   );
 }

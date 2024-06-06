@@ -11,6 +11,7 @@ const useFetchProfile = () => {
   useEffect(() => {
     if (token) {
       dispatch(fetchProfile());
+      navigate(location.dashboardUrl());
       return;
     }
     navigate(location.loginUrl());

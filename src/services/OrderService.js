@@ -53,6 +53,8 @@ class OrderService {
     }
   }
 
+  async loadFullOrder(id) {}
+
   async findDuplicateOrder(order) {}
 
   async findOrdersBy(
@@ -110,5 +112,5 @@ class OrderService {
   }
 }
 
-const _orderService = new OrderService();
+export const _orderService = new OrderService();
 export default _orderService;

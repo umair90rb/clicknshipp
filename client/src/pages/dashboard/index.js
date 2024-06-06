@@ -14,7 +14,7 @@ import {
 import ItemsByOrders from './ItemsByOrders';
 import { setDashboardStatPeriod } from 'store/slices/dashboard/dashboardSlice';
 import moment from 'moment';
-import MonthlyBarChart from './MonthlyBarChart';
+// import MonthlyBarChart from './MonthlyBarChart';
 
 const DashboardDefault = () => {
   const dispatch = useDispatch();

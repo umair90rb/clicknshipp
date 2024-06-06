@@ -42,6 +42,7 @@ const orderSlice = createSlice({
       const updatedOrder = action.payload.order;
       const list = [...state.list.orders];
       const index = list.findIndex((order) => order.id === updatedOrder.id);
+      console.log(index);
       if (index > -1) {
         list[index] = updatedOrder;
       }
