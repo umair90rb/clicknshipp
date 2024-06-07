@@ -10,8 +10,7 @@ import {
   GridToolbarDensitySelector,
   GridToolbarExport,
   GridRowEditStopReasons,
-  GridRowModes,
-  GridCellEditStopReasons
+  GridRowModes
 } from '@mui/x-data-grid';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import FilterListIcon from '@mui/icons-material/FilterList';
@@ -34,7 +33,7 @@ import {
 import { fetchAllOrder, fetchBulkOrdersDelete, fetchPartialUpdateOrder } from 'store/slices/order/fetchOrder';
 import location from 'utils/location';
 import { Button, Box, Modal } from '@mui/material';
-import AssignOrderModal from './AssignOrderModal';
+import AssignSelectedOrderModal from './AssignSelectedOrderModal';
 import CustomNoRowsOverlay from '../../components/GridNoRowCustomOverlay';
 import { setOrder, setOrderFilters, setOrderPagination, setOrderSort } from 'store/slices/order/orderSlice';
 import FilterModal from './FilterModal';
@@ -60,14 +59,14 @@ const columns = (apiRef, rowModesModel, citiesList, handleViewClick, handleSaveC
     headerName: 'Customer',
     flex: 0.5,
     sortable: false,
-    editable: true,
+    editable: false,
     type: 'string',
     valueGetter: (param) => param.row.customer?.first_name || ''
   },
   {
     field: 'phone',
     headerName: 'Customer Ph',
-    flex: 0.5,
+    flex: 0.75,
     sortable: false,
     valueGetter: (param) => param.row.customer?.phone || param.row.address?.phone || ''
   },
@@ -107,7 +106,7 @@ const columns = (apiRef, rowModesModel, citiesList, handleViewClick, handleSaveC
       if (items && items.length === 1) {
         return `${items[0].name}/${items[0].quantity}`;
       }
-      return items.reduce((pv, cv) => `${pv}-${cv.name}/${cv.quantity}`, '');
+      return items.reduce((pv, cv) => `${pv}, ${cv.name}/${cv.quantity}`, '');
     },
     type: 'string'
   },
@@ -134,7 +133,7 @@ const columns = (apiRef, rowModesModel, citiesList, handleViewClick, handleSaveC
   },
   {
     field: 'total_price',
-    headerName: 'Total Amount',
+    headerName: 'Amount',
     flex: 0.33
   },
   {
@@ -154,7 +153,7 @@ const columns = (apiRef, rowModesModel, citiesList, handleViewClick, handleSaveC
   {
     field: 'remarks',
     headerName: 'Remarks',
-    flex: 1,
+    flex: 0.5,
     sortable: false,
     editable: true,
     type: 'string',
@@ -248,21 +247,6 @@ const columns = (apiRef, rowModesModel, citiesList, handleViewClick, handleSaveC
   }
 ];
 
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4
-};
-
-function isKeyboardEvent(event) {
-  return !!event.key;
-}
-
 const OrderTable = memo(() => {
   const apiRef = useGridApiRef();
   const dispatch = useDispatch();
@@ -289,9 +273,9 @@ const OrderTable = memo(() => {
     receivedAt: false
   });
 
-  const [showAssignModal, setShowAssignModal] = useState(false);
-  const displayShowAssignModal = () => setShowAssignModal(true);
-  const hideAssignModal = () => setShowAssignModal(false);
+  const [showAssignSelectedModal, setShowAssignSelectedModal] = useState(false);
+  const displayShowAssignSelectedModal = () => setShowAssignSelectedModal(true);
+  const hideAssignSelectedModal = () => setShowAssignSelectedModal(false);
 
   const [showFilterModal, setShowFilterModal] = useState(false);
   const displayFilterModal = () => setShowFilterModal(true);
@@ -305,6 +289,12 @@ const OrderTable = memo(() => {
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true;
+    }
+    if (params.reason === GridRowEditStopReasons.enterKeyDown) {
+      event.defaultMuiPrevented = true;
+    }
+    if (event.key === 'Enter' && event.ctrlKey) {
+      event.defaultMuiPrevented = false;
     }
   };
 
@@ -323,26 +313,24 @@ const OrderTable = memo(() => {
     console.log(newRow, preRow, 'new Row pre Row');
     dispatch(setOrder({ order: { ...newRow, address1: newRow.address1 || newRow?.address?.address1 } }));
     const id = newRow.id;
-    if (newRow?.status === 'Confirmed') {
-      const body = {
-        status: newRow?.status || '',
-        customerId: newRow?.customer?.id || '',
-        first_name: newRow?.first_name || '',
-        last_name: newRow?.customer?.last_name || '',
-        addressId: newRow?.address?.id,
-        address: newRow?.address1 || '',
-        city: newRow?.city || ''
-      };
-      setPartialUpdateOrderLoading(true);
-      const { type, payload } = await dispatch(fetchPartialUpdateOrder({ id, body }));
-      if (type === 'order/partialUpdate/fetch/fulfilled') {
-        dispatch(setOrder({ order: payload?.data.order }));
-        dispatch(setMessage({ type: 'success', message: payload?.data?.message || 'Success! Order updated!' }));
-      } else {
-        dispatch(setMessage({ type: 'error', message: payload?.data?.message || 'Failed! Order not updated!' }));
-      }
-      setPartialUpdateOrderLoading(false);
+    const body = {
+      status: newRow?.status || '',
+      customerId: newRow?.customer?.id || '',
+      first_name: newRow?.first_name || '',
+      last_name: newRow?.customer?.last_name || '',
+      addressId: newRow?.address?.id,
+      address: newRow?.address1 || '',
+      city: newRow?.city || ''
+    };
+    setPartialUpdateOrderLoading(true);
+    const { type, payload } = await dispatch(fetchPartialUpdateOrder({ id, body }));
+    if (type === 'order/partialUpdate/fetch/fulfilled') {
+      dispatch(setOrder({ order: payload?.data.order }));
+      dispatch(setMessage({ type: 'success', message: payload?.data?.message || 'Success! Order updated!' }));
+    } else {
+      dispatch(setMessage({ type: 'error', message: payload?.data?.message || 'Failed! Order not updated!' }));
     }
+    setPartialUpdateOrderLoading(false);
     return { ...newRow, isNew: false };
   };
 
@@ -395,7 +383,7 @@ const OrderTable = memo(() => {
           Toggle Selection
         </Button>
         {rowSelectionModel.length > 0 && (
-          <Button onClick={displayShowAssignModal} size="small" startIcon={<AssignmentIndIcon />}>
+          <Button onClick={displayShowAssignSelectedModal} size="small" startIcon={<AssignmentIndIcon />}>
             Assign
           </Button>
         )}
@@ -435,33 +423,16 @@ const OrderTable = memo(() => {
         columnVisibilityModel={columnVisibilityModel}
         onColumnVisibilityModelChange={setColumnVisibilityModel}
         getRowHeight={() => 'auto'}
-        onCellEditStop={(params, event) => {
-          if (params.reason !== GridCellEditStopReasons.enterKeyDown) {
-            return;
-          }
-          if (isKeyboardEvent(event) && !event.ctrlKey && !event.metaKey) {
-            event.defaultMuiPrevented = true;
-          }
-        }}
         rows={orders || []}
         editMode="row"
-        // rowModesModel={rowModesModel}
-        // onRowModesModelChange={setRowModesModel}
+        rowModesModel={rowModesModel}
+        onRowModesModelChange={setRowModesModel}
         onRowEditStop={handleRowEditStop}
         processRowUpdate={processRowUpdate}
         onProcessRowUpdateError={handleProcessRowUpdateError}
         columns={columns(apiRef, rowModesModel, citiesList, handleViewClick, handleSaveClick, handleCancelClick)}
       />
-      <Modal
-        open={showAssignModal}
-        onClose={hideAssignModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <AssignOrderModal hideModal={hideAssignModal} selectedRows={rowSelectionModel} />
-        </Box>
-      </Modal>
+      <AssignSelectedOrderModal visible={showAssignSelectedModal} onClose={hideAssignSelectedModal} selectedRows={rowSelectionModel} />
       <FilterModal
         visible={showFilterModal}
         onClose={hideFilterModal}

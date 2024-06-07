@@ -226,14 +226,14 @@ const CreateOrderForm = () => {
           address1: Yup.string().required('Address is required'),
           address2: Yup.string(),
           city: Yup.string().required('City is required'),
-          zip: Yup.number(),
-          province: Yup.string(),
-          itemId: Yup.number(),
-          item: Yup.string(),
-          quantity: Yup.number(),
-          price: Yup.number(),
-          sku: Yup.string(),
-          grams: Yup.number()
+          zip: Yup.number().optional(),
+          province: Yup.string().optional(),
+          itemId: Yup.number().optional(),
+          item: Yup.string().optional(),
+          quantity: Yup.number().optional(),
+          price: Yup.number().optional(),
+          sku: Yup.string().optional(),
+          grams: Yup.number().optional()
         })}
         onSubmit={handleSubmit}
       >

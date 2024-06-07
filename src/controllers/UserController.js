@@ -7,6 +7,7 @@ const {
   User,
   Role,
   Brand,
+  Chanel,
   Permission,
   UserRole,
   UserPermission,
@@ -128,55 +129,61 @@ export default {
     }
   },
 
-  async userWithPermission(req, res) {
+  async usersFiltered(req, res) {
     try {
-      const { permissions } = req.body;
-      const users = await User.scope("clean").findAll({
-        include: [
-          {
-            model: Role,
-            as: "roles",
-            through: {
-              attributes: [],
-            },
-            required: true,
-            include: [
-              {
-                as: "permissions",
-                model: Permission,
-                where: { name: { [Op.in]: permissions } },
-                required: true,
-                through: {
-                  attributes: [],
-                },
+      const { permissions, brand, chanel } = req.body;
+      let where = {};
+      const include = [],
+        query = {
+          include,
+        };
+      if (permissions && permissions.length) {
+        include.push({
+          model: Role,
+          as: "roles",
+          through: {
+            attributes: [],
+          },
+          required: true,
+          include: [
+            {
+              as: "permissions",
+              model: Permission,
+              required: true,
+              through: {
+                attributes: [],
               },
-            ],
-          },
-          {
-            model: Brand,
-            as: "brands",
-            through: {
-              attributes: [],
             },
+          ],
+        });
+        where["$roles.permissions.name$"] = { [Op.in]: permissions };
+      }
+      if (brand && brand.length) {
+        include.push({
+          model: Brand,
+          as: "brands",
+          through: {
+            attributes: [],
           },
-        ],
-      });
-      console.log((users || []).map((u) => JSON.stringify(u.get())));
+        });
+        where["$brands.id$"] = { [Op.in]: brand };
+      }
+      if (Object.keys(where).length) {
+        query["where"] = where;
+      }
+      console.log(query, "filtered user query", JSON.stringify(query));
+      const users = await User.scope("clean").findAll(query);
       if (users && users.length) {
         return sendSuccessResponse(
           res,
           200,
           {
-            users: users.map((user) => ({
-              ...user.get(),
-              brands: user.brands.map((brand) => brand.name),
-              roles: user.roles.map((role) => role.name),
-            })),
+            users,
           },
-          "Users with permissinos"
+          "Filtered users"
         );
       }
-      return sendErrorResponse(res, 404, "No data found with this id.");
+      return sendErrorResponse(res, 404, "No data found!");
     } catch (e) {
       console.error(e);
       return sendErrorResponse(

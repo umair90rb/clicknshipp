@@ -1,7 +1,8 @@
 import Joi from "joi";
 
-const fetchUserWithPermissionsSchema = Joi.object({
-  permissions: Joi.array().items(Joi.string()).min(1),
+const filteredUsersSchema = Joi.object({
+  permissions: Joi.array().items(Joi.string()).min(0),
+  brand: Joi.array().items(Joi.number()).min(0),
 });
 
 const createUserSchema = Joi.object({
@@ -29,7 +30,7 @@ const setDefaultBrandSchema = Joi.object({
 });
 
 export {
-  fetchUserWithPermissionsSchema,
+  filteredUsersSchema,
   createUserSchema,
   updateUserSchema,
   setDefaultBrandSchema,

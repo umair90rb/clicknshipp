@@ -6,9 +6,8 @@ import can from "../middleware/canAccess";
 import Auth from "../middleware/auth";
 import {
   createUserSchema,
-  fetchUserWithPermissionsSchema,
+  filteredUsersSchema,
   updateUserSchema,
-  setDefaultBrandSchema,
 } from "../schemas/userSchema";
 import { idSchema } from "../schemas/commonSchema";
 import schemaValidator from "../middleware/schemaValidator";
@@ -33,11 +32,11 @@ router.get(
 );
 
 router.post(
-  "/with-permissions",
+  "/filtered",
   Auth,
   can(PERMISSIONS.PERMISSION_VIEW_USERS),
-  schemaValidator(fetchUserWithPermissionsSchema),
-  UserController.userWithPermission
+  schemaValidator(filteredUsersSchema),
+  UserController.usersFiltered
 );
 
 router.post(

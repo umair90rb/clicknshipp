@@ -44,6 +44,36 @@ export default {
     }
   },
 
+  async chanelFiltered(req, res) {
+    try {
+      const { brand } = req.body;
+      const query = {
+        attributes: ["id", "name"],
+        where: {
+          brand_id: {
+            [Op.in]: brand,
+          },
+        },
+      };
+      if (!brand.length) {
+        delete query.where;
+      }
+      const chanel = await Chanel.findAll(query);
+      if (chanel) {
+        return sendSuccessResponse(res, 200, { chanel }, "Filtered channels");
+      }
+      return sendErrorResponse(res, 404, "No data found!");
+    } catch (e) {
+      console.error(e);
+      return sendErrorResponse(
+        res,
+        500,
+        "Could not perform operation at this time, kindly try again later.",
+        e
+      );
+    }
+  },
+
   async create(req, res) {
     const { name, source, brand_id } = req.body;
     try {

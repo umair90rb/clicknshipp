@@ -1,5 +1,9 @@
 import Joi from "joi";
 
+const filteredChanelSchema = Joi.object({
+  brand: Joi.array().items(Joi.number()).min(0),
+});
+
 const createChanelSchema = Joi.object({
   name: Joi.string().required(),
   source: Joi.string().required(),
@@ -12,4 +16,4 @@ const updateChanelSchema = Joi.object({
   brand_id: Joi.number().required(),
 });
 
-export { createChanelSchema, updateChanelSchema };
+export { filteredChanelSchema, createChanelSchema, updateChanelSchema };

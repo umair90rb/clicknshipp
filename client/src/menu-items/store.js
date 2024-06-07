@@ -1,4 +1,4 @@
-import { ApartmentOutlined, UserSwitchOutlined, AppstoreOutlined, DeploymentUnitOutlined } from '@ant-design/icons';
+import { UserSwitchOutlined, AppstoreOutlined, DeploymentUnitOutlined } from '@ant-design/icons';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 
 const store = {
@@ -24,15 +24,7 @@ const store = {
       icon: DeploymentUnitOutlined,
       breadcrumbs: false
     },
-    {
-      id: 'category',
-      title: 'Categories & Brands',
-      type: 'item',
-      url: '/categories-and-brands',
-      permission: PERMISSIONS.PERMISSION_VIEW_CATEGORIES_AND_BRANDS,
-      icon: ApartmentOutlined,
-      breadcrumbs: false
-    },
+
     {
       id: 'suppliers',
       title: 'Suppliers',

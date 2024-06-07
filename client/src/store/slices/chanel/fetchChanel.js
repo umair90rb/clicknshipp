@@ -13,6 +13,9 @@ const fetchCreateChanel = createAsyncThunk('chanel/create/fetch', ({ body }, { r
   chanelService.fetchCreateChanel(body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
+const fetchFilteredChanel = createAsyncThunk('chanel/filtered/fetch', ({ body }, { rejectWithValue }) =>
+  chanelService.fetchFilteredChanel(body).catch((error) => rejectWithValue(error.response.data || error.message))
+);
 const fetchUpdateChanel = createAsyncThunk('chanel/update/fetch', ({ id, body }, { rejectWithValue }) =>
   chanelService.fetchUpdateChanel(id, body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
@@ -21,4 +24,4 @@ const fetchDeleteChanel = createAsyncThunk('chanel/delete/fetch', ({ id }, { rej
   chanelService.fetchDeleteChanel(id).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
-export { fetchAllChanel, fetchChanel, fetchCreateChanel, fetchUpdateChanel, fetchDeleteChanel };
+export { fetchAllChanel, fetchChanel, fetchCreateChanel, fetchFilteredChanel, fetchUpdateChanel, fetchDeleteChanel };

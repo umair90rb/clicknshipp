@@ -29,6 +29,10 @@ const fetchAssignOrders = createAsyncThunk('assign/orders/fetch', ({ body }, { r
   orderService.fetchAssignOrders(body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
+const fetchFilteredOrder = createAsyncThunk('orders/filtered/fetch', ({ body }, { rejectWithValue }) =>
+  orderService.fetchFilteredOrder(body).catch((error) => rejectWithValue(error.response.data || error.message))
+);
+
 const fetchCreateOrder = createAsyncThunk('order/create/fetch', ({ body }, { rejectWithValue }) =>
   orderService.fetchCreateOrder(body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
@@ -61,6 +65,7 @@ export {
   fetchCancelOrderBooking,
   fetchOrderBookingStatus,
   fetchAssignOrders,
+  fetchFilteredOrder,
   fetchCreateOrder,
   fetchImportOrder,
   fetchUpdateOrder,

@@ -1,4 +1,5 @@
 import { PERMISSIONS } from 'constants/permissions-and-roles';
+import { ApartmentOutlined } from '@ant-design/icons';
 
 // assets
 import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
@@ -8,6 +9,15 @@ const setting = {
   title: 'Setting',
   type: 'group',
   children: [
+    {
+      id: 'category',
+      title: 'Categories & Brands',
+      type: 'item',
+      url: '/categories-and-brands',
+      permission: PERMISSIONS.PERMISSION_VIEW_CATEGORIES_AND_BRANDS,
+      icon: ApartmentOutlined,
+      breadcrumbs: false
+    },
     {
       id: 'chanel',
       title: 'Sales Chanel',

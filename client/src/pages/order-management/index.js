@@ -1,7 +1,8 @@
 import React, { memo, useState } from 'react';
 import { Button, Grid, Typography } from '@mui/material';
 import MainCard from 'components/MainCard';
-import { FileExcelOutlined, PlusOutlined } from '@ant-design/icons';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+import StartIcon from '@mui/icons-material/Start';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import SyncIcon from '@mui/icons-material/Sync';
 import OrderTable from './OrderTable';
@@ -13,6 +14,7 @@ import { orderFiltersSelector, orderPageSelector, orderPageSizeSelector, orderSo
 import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 import BulkUploadModal from './BulkUploadModal';
+import AssignOrderModal from './AssignOrderModal';
 
 const OrderManagement = memo(() => {
   const navigate = useNavigate();
@@ -27,6 +29,10 @@ const OrderManagement = memo(() => {
   const showBulkOrderModal = () => setBulkOrderModalVisible(true);
   const hideBulkOrderModal = () => setBulkOrderModalVisible(false);
 
+  const [assignModalVisible, setAssignModalVisible] = useState(false);
+  const showAssignModal = () => setAssignModalVisible(true);
+  const hideAssignModal = () => setAssignModalVisible(false);
+
   return (
     <>
       <Grid item xs={12} md={7} lg={8}>
@@ -36,6 +42,13 @@ const OrderManagement = memo(() => {
           </Grid>
           <Grid item>
             <Grid container spacing={1}>
+              {hasPermission(PERMISSIONS.PERMISSION_CREATE_BULK_ORDER) && (
+                <Grid item>
+                  <Button component="label" variant="contained" onClick={showAssignModal} startIcon={<StartIcon />}>
+                    Day Start
+                  </Button>
+                </Grid>
+              )}
               <Grid item>
                 <Button
                   variant="contained"
@@ -53,7 +66,7 @@ const OrderManagement = memo(() => {
               </Grid>
               {hasPermission(PERMISSIONS.PERMISSION_CREATE_BULK_ORDER) && (
                 <Grid item>
-                  <Button component="label" variant="contained" onClick={showBulkOrderModal} startIcon={<FileExcelOutlined />}>
+                  <Button component="label" variant="contained" onClick={showBulkOrderModal} startIcon={<UploadFileIcon />}>
                     Add Bulk Order
                   </Button>
                 </Grid>
@@ -73,6 +86,7 @@ const OrderManagement = memo(() => {
         </MainCard>
       </Grid>
       <BulkUploadModal visible={bulkOrderModalVisible} onClose={hideBulkOrderModal} />
+      <AssignOrderModal visible={assignModalVisible} onClose={hideAssignModal} />
     </>
   );
 });

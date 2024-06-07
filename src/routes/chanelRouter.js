@@ -5,6 +5,7 @@ import { PERMISSIONS } from "../constants/constants";
 import can from "../middleware/canAccess";
 import Auth from "../middleware/auth";
 import {
+  filteredChanelSchema,
   createChanelSchema,
   updateChanelSchema,
 } from "../schemas/chanelSchema";
@@ -28,6 +29,14 @@ router.get(
   can(PERMISSIONS.PERMISSION_VIEW_SALES_CHANEL),
   validator.params(idSchema),
   ChanelController.chanel
+);
+
+router.post(
+  "/filtered",
+  Auth,
+  can(PERMISSIONS.PERMISSION_VIEW_SALES_CHANEL),
+  schemaValidator(filteredChanelSchema),
+  ChanelController.chanelFiltered
 );
 
 router.post(

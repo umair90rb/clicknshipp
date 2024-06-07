@@ -1,5 +1,5 @@
 import model from "../models";
-import { Op } from "sequelize";
+import Sequelize, { Op } from "sequelize";
 const {
   Order,
   OrderItem,
@@ -56,6 +56,64 @@ class OrderService {
   async loadFullOrder(id) {}
 
   async findDuplicateOrder(order) {}
+
+  async getOrderStats(chanel, brand, startPeriod, endPeriod) {
+    try {
+      const query = {
+          attributes: [
+            [Sequelize.fn("COUNT", Sequelize.col("Order.id")), "total"],
+            [
+              Sequelize.fn(
+                "ARRAY_AGG",
+                Sequelize.literal(
+                  'CASE WHEN "Order"."user_id" IS NULL THEN "Order"."id" ELSE NULL END'
+                )
+              ),
+              "unassigned",
+            ],
+            [
+              Sequelize.fn(
+                "ARRAY_AGG",
+                Sequelize.literal(
+                  '"Order"."id" FILTER (WHERE "Order"."user_id" IS NOT NULL)'
+                )
+              ),
+              "assigned",
+            ],
+            [
+              Sequelize.fn(
+                "ARRAY_AGG",
+                Sequelize.literal(
+                  '"Order"."id" FILTER (WHERE "Order"."user_id" IS NOT NULL AND "Order"."status" = \'Assigned\')'
+                )
+              ),
+              "assigned_not_confirmed",
+            ],
+          ],
+        },
+        where = {};
+      if (chanel && chanel.length) {
+        where["chanel_id"] = { [Op.in]: chanel };
+      }
+      if (brand && brand.length) {
+        where["brand_id"] = { [Op.in]: brand };
+      }
+      if (startPeriod) {
+        where["createdAt"] = { [Op.gte]: startPeriod };
+      }
+      if (endPeriod) {
+        where["createdAt"] = { ...where["createdAt"], [Op.lte]: endPeriod };
+      }
+      if (Object.keys(where).length) {
+        query["where"] = where;
+      }
+      const orders = await Order.findAll(query);
+      return orders;
+    } catch (error) {
+      console.error(error);
+      return error;
+    }
+  }
 
   async findOrdersBy(
     tag,

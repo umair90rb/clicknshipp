@@ -7,6 +7,8 @@ class ChanelService extends Ajax {
 
   fetchChanel = (id) => this.getJson(`${this.pathname}/${id}`);
 
+  fetchFilteredChanel = (data) => this.post(`${this.pathname}/filtered`, data);
+
   fetchCreateChanel = (data) => this.post(`${this.pathname}`, data);
 
   fetchUpdateChanel = (id, data) => this.put(`${this.pathname}/${id}`, data);

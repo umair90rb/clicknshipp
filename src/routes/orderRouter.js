@@ -12,10 +12,12 @@ import {
   orderPatchUpdateSchema,
   bulkOrderDeleteSchema,
   orderFilterSchema,
+  filteredOrderSchema,
 } from "../schemas/orderSchema";
 import schemaValidator from "../middleware/schemaValidator";
 import { createValidator } from "express-joi-validation";
 import OrderController from "../controllers/OrderController";
+import AssignOrderController from "../controllers/AssignOrderController";
 import DeliveryController from "../controllers/DeliveryController";
 import OrderManagementController from "../controllers/OrderManagementController";
 import multer from "multer";
@@ -66,6 +68,14 @@ router.get(
   can(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS),
   validator.params(idSchema),
   DeliveryController.deliveryStatus
+);
+
+router.post(
+  "/filtered",
+  Auth,
+  can(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS),
+  schemaValidator(filteredOrderSchema),
+  AssignOrderController.orderFiltered
 );
 
 router.post(

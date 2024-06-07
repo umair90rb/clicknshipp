@@ -70,7 +70,7 @@ const StockManamgement = () => {
       <Grid item xs={12} md={7} lg={8}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
-            <Typography variant="h5">Current Inventory</Typography>
+            <Typography variant="h5">Current Stock</Typography>
           </Grid>
           {hasPermission(PERMISSIONS.PERMISSION_RECEIVE_STOCK) && (
             <Grid item>

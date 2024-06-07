@@ -24,6 +24,15 @@ export const orderFilterSchema = Joi.object({
     .default([]),
 });
 
+export const filteredOrderSchema = Joi.object({
+  brand: Joi.array().items(Joi.number()).min(0).optional(),
+  users: Joi.array().items(Joi.number()).min(0).optional(),
+  chanel: Joi.array().items(Joi.number()).min(0).optional(),
+  startPeriod: Joi.string().allow("").optional(),
+  endPeriod: Joi.string().allow("").optional(),
+  type: Joi.string().allow("").optional(),
+});
+
 export const orderBookSchema = Joi.object({
   accountId: Joi.number().required(),
   orderId: Joi.number().required(),
