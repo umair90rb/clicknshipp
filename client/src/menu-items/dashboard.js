@@ -1,5 +1,6 @@
-import { DashboardOutlined, FileSearchOutlined } from '@ant-design/icons';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
+import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
+import EqualizerOutlinedIcon from '@mui/icons-material/EqualizerOutlined';
 
 const dashboard = {
   id: 'group-dashboard',
@@ -12,7 +13,7 @@ const dashboard = {
       type: 'item',
       url: '/dashboard',
       permission: PERMISSIONS.PERMISSION_VIEW_ADMIN_DASHBOARD,
-      icon: DashboardOutlined,
+      icon: DashboardOutlinedIcon,
       breadcrumbs: false
     },
     {
@@ -21,7 +22,7 @@ const dashboard = {
       type: 'item',
       url: '/reporting',
       permission: PERMISSIONS.PERMISSION_VIEW_REPORTING,
-      icon: FileSearchOutlined,
+      icon: EqualizerOutlinedIcon,
       breadcrumbs: false
     }
   ]

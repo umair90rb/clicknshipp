@@ -1,5 +1,4 @@
-// assets
-import { UsergroupAddOutlined } from '@ant-design/icons';
+import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 
 const user = {
@@ -13,7 +12,7 @@ const user = {
       type: 'item',
       url: '/users',
       permission: PERMISSIONS.PERMISSION_VIEW_USERS,
-      icon: UsergroupAddOutlined,
+      icon: PeopleOutlineIcon,
       breadcrumbs: false
     }
   ]

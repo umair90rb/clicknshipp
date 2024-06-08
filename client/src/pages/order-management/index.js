@@ -42,7 +42,7 @@ const OrderManagement = memo(() => {
           </Grid>
           <Grid item>
             <Grid container spacing={1}>
-              {hasPermission(PERMISSIONS.PERMISSION_CREATE_BULK_ORDER) && (
+              {hasPermission(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) && (
                 <Grid item>
                   <Button component="label" variant="contained" onClick={showAssignModal} startIcon={<StartIcon />}>
                     Day Start

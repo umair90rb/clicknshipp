@@ -1,6 +1,7 @@
-// assets
-import { PlusCircleOutlined, CodeSandboxOutlined, CustomerServiceOutlined, BorderOutlined } from '@ant-design/icons';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 
 const order = {
   id: 'order-dashboard',
@@ -13,16 +14,16 @@ const order = {
       type: 'item',
       url: '/order/all',
       permission: PERMISSIONS.PERMISSION_VIEW_ORDERS,
-      icon: CodeSandboxOutlined,
+      icon: ShoppingCartOutlinedIcon,
       breadcrumbs: false
     },
     {
       id: 'create-order',
-      title: 'Create order',
+      title: 'Whatsapp Order',
       type: 'item',
       url: '/order/new',
       permission: PERMISSIONS.PERMISSION_CREATE_ORDER,
-      icon: PlusCircleOutlined,
+      icon: WhatsAppIcon,
       breadcrumbs: false
     },
     {
@@ -31,7 +32,7 @@ const order = {
       type: 'item',
       url: '/customer/all',
       permission: PERMISSIONS.PERMISSION_VIEW_CUSTOMERS,
-      icon: CustomerServiceOutlined,
+      icon: PersonOutlinedIcon,
       breadcrumbs: false
     }
   ]

@@ -1,9 +1,7 @@
 import { PERMISSIONS } from 'constants/permissions-and-roles';
-import { ApartmentOutlined } from '@ant-design/icons';
-
-// assets
-import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
+import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
+import StorefrontOutlinedIcon from '@mui/icons-material/StorefrontOutlined';
 const setting = {
   id: 'chanel-dashboard',
   title: 'Setting',
@@ -15,7 +13,7 @@ const setting = {
       type: 'item',
       url: '/categories-and-brands',
       permission: PERMISSIONS.PERMISSION_VIEW_CATEGORIES_AND_BRANDS,
-      icon: ApartmentOutlined,
+      icon: CategoryOutlinedIcon,
       breadcrumbs: false
     },
     {
@@ -24,7 +22,7 @@ const setting = {
       type: 'item',
       url: '/chanel',
       permission: PERMISSIONS.PERMISSION_VIEW_SALES_CHANEL,
-      icon: AccountTreeOutlinedIcon,
+      icon: StorefrontOutlinedIcon,
       breadcrumbs: false
     },
     {
