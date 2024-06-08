@@ -53,9 +53,137 @@ class OrderService {
     }
   }
 
-  async loadFullOrder(id) {}
+  async loadFullOrder(id) {
+    try {
+      const order = await Order.findByPk(id, {
+        attributes: {
+          exclude: ["data", "CustomerId", "user_id", "chanel_id", "brand_id"],
+        },
+        include: [
+          {
+            model: Chanel,
+            as: "chanel",
+            attributes: ["id", "name"],
+          },
+          {
+            model: User,
+            as: "user",
+            attributes: {
+              exclude: [
+                "password",
+                "status",
+                "settings",
+                "createdAt",
+                "updatedAt",
+              ],
+            },
+          },
+          {
+            model: Customer,
+            as: "customer",
+            // include: {
+            //   attributes: ["id", "order_number", "status"],
+            //   model: Order,
+            //   as: "orders",
+            //   where: {
+            //     status: ["Confirmed", "Booked"],
+            //   },
+            // },
+          },
+          {
+            model: OrderHistory,
+            as: "history",
+          },
+          {
+            model: Payments,
+            as: "payments",
+            attributes: {
+              exclude: ["order_id", "updatedAt"],
+            },
+          },
+          {
+            model: Address,
+            as: "address",
+            attributes: {
+              exclude: [
+                "order_id",
+                "customer_id",
+                "CustomerId",
+                "OrderId",
+                "company",
+                "longitude",
+                "latitude",
+                "country_code",
+                "province_code",
+              ],
+            },
+          },
+          {
+            model: OrderItem,
+            as: "items",
+            attributes: {
+              exclude: ["OrderId", "createdAt", "updatedAt"],
+            },
+          },
+          {
+            model: Delivery,
+            as: "delivery",
+            attributes: {
+              exclude: ["slip_link", "createdAt", "updatedAt", "order_id"],
+            },
+          },
+        ],
+      });
+      return order;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
 
-  async findDuplicateOrder(order) {}
+  async addDuplicateOrder(order) {
+    try {
+      if (
+        order &&
+        order?.items?.length &&
+        (order?.customer?.phone || order?.address?.phone)
+      ) {
+        const duplicateOrderWhere = order.items.map((item) => ({
+          [Op.and]: [{ name: item?.name }, { quantity: item?.quantity }],
+        }));
+        const duplicate = await Order.findAll({
+          attributes: ["id", "order_number", "status"],
+          where: {
+            id: {
+              [Op.ne]: order.id,
+            },
+          },
+          include: [
+            {
+              attributes: [],
+              model: Customer,
+              as: "customer",
+              where: {
+                phone: order?.customer?.phone || order?.address?.phone,
+              },
+            },
+            {
+              attributes: [],
+              model: OrderItem,
+              as: "items",
+              where: {
+                [Op.and]: duplicateOrderWhere,
+              },
+            },
+          ],
+        });
+        order.setDataValue("duplicate", duplicate);
+      }
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
 
   async getOrderStats(chanel, brand, startPeriod, endPeriod) {
     try {
@@ -111,7 +239,7 @@ class OrderService {
       return orders;
     } catch (error) {
       console.error(error);
-      return error;
+      throw error;
     }
   }
 
@@ -165,7 +293,7 @@ class OrderService {
       return orders;
     } catch (error) {
       console.log(error);
-      return error;
+      throw error;
     }
   }
 }

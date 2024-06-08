@@ -17,7 +17,9 @@ import logger from "../middleware/logger";
 import getNameFromSubmissionLink, {
   getSizeAndPrice,
 } from "../helpers/getNameFromLink";
-import { _orderService as orderService } from "../services/OrderService";
+import _orderService, {
+  _orderService as orderService,
+} from "../services/OrderService";
 
 const {
   Order,
@@ -171,119 +173,9 @@ export default {
       if (!orderExisted) {
         return sendErrorResponse(res, 404, "No data found with this id.");
       }
-      const order = await Order.findByPk(id, {
-        attributes: {
-          exclude: ["data", "CustomerId", "user_id", "chanel_id", "brand_id"],
-        },
-        include: [
-          {
-            model: Chanel,
-            as: "chanel",
-            attributes: ["id", "name"],
-          },
-          {
-            model: User,
-            as: "user",
-            attributes: {
-              exclude: [
-                "password",
-                "status",
-                "settings",
-                "createdAt",
-                "updatedAt",
-              ],
-            },
-          },
-          {
-            model: Customer,
-            as: "customer",
-            // include: {
-            //   attributes: ["id", "order_number", "status"],
-            //   model: Order,
-            //   as: "orders",
-            //   where: {
-            //     status: ["Confirmed", "Booked"],
-            //   },
-            // },
-          },
-          {
-            model: OrderHistory,
-            as: "history",
-          },
-          {
-            model: Payments,
-            as: "payments",
-            attributes: {
-              exclude: ["order_id", "updatedAt"],
-            },
-          },
-          {
-            model: Address,
-            as: "address",
-            attributes: {
-              exclude: [
-                "order_id",
-                "customer_id",
-                "CustomerId",
-                "OrderId",
-                "company",
-                "longitude",
-                "latitude",
-                "country_code",
-                "province_code",
-              ],
-            },
-          },
-          {
-            model: OrderItem,
-            as: "items",
-            attributes: {
-              exclude: ["OrderId", "createdAt", "updatedAt"],
-            },
-          },
-          {
-            model: Delivery,
-            as: "delivery",
-            attributes: {
-              exclude: ["slip_link", "createdAt", "updatedAt", "order_id"],
-            },
-          },
-        ],
-      });
-      if (
-        order.items.length &&
-        (order?.customer?.phone || order?.address?.phone)
-      ) {
-        const duplicateOrderWhere = order.items.map((item) => ({
-          [Op.and]: [{ name: item?.name }, { quantity: item?.quantity }],
-        }));
-        const duplicate = await Order.findAll({
-          attributes: ["id", "order_number", "status"],
-          where: {
-            id: {
-              [Op.ne]: order.id,
-            },
-          },
-          include: [
-            {
-              attributes: [],
-              model: Customer,
-              as: "customer",
-              where: {
-                phone: order?.customer?.phone || order?.address?.phone,
-              },
-            },
-            {
-              attributes: [],
-              model: OrderItem,
-              as: "items",
-              where: {
-                [Op.and]: duplicateOrderWhere,
-              },
-            },
-          ],
-        });
-        order.setDataValue("duplicate", duplicate);
+      const order = await _orderService.loadFullOrder(id);
+      if (order) {
+        await _orderService.addDuplicateOrder(order);
       }
       return sendSuccessResponse(res, 200, { order });
     } catch (e) {

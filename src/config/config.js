@@ -8,12 +8,12 @@ module.exports = {
     port: process.env.DB_PORT,
     dialect: "postgres",
     seederStorage: "sequelize",
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false,
-      },
-    },
+    // dialectOptions: {
+    //   ssl: {
+    //     require: true,
+    //     rejectUnauthorized: false,
+    //   },
+    // },
   },
   test: {
     username: process.env.DB_USERNAME,

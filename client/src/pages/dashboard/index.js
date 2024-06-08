@@ -102,7 +102,7 @@ const DashboardDefault = () => {
       </Grid>
 
       {/* row 2 */}
-      <Grid item xs={12} md={12} lg={12}>
+      {/* <Grid item xs={12} md={12} lg={12}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
             <Typography variant="h5">Products by orders</Typography>
@@ -112,7 +112,7 @@ const DashboardDefault = () => {
         <MainCard sx={{ mt: 2 }} content={false}>
           <ItemsByOrders />
         </MainCard>
-      </Grid>
+      </Grid> */}
 
       {/* row 3 */}
       {/* <Grid item xs={12} md={12} lg={12}>

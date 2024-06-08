@@ -50,6 +50,11 @@ import { fetchAllCities } from 'store/slices/city/fetchCity';
 import GridSearchSelect from './GridSearchSelect';
 const columns = (apiRef, rowModesModel, citiesList, handleViewClick, handleSaveClick, handleCancelClick) => [
   {
+    field: 'id',
+    headerName: 'ID',
+    flex: 0.25
+  },
+  {
     field: 'order_number',
     headerName: 'Order#',
     flex: 0.5
@@ -309,8 +314,7 @@ const OrderTable = memo(() => {
     });
   };
 
-  const processRowUpdate = async (newRow, preRow) => {
-    console.log(newRow, preRow, 'new Row pre Row');
+  const processRowUpdate = async (newRow, oldRow) => {
     dispatch(setOrder({ order: { ...newRow, address1: newRow.address1 || newRow?.address?.address1 } }));
     const id = newRow.id;
     const body = {
@@ -327,11 +331,13 @@ const OrderTable = memo(() => {
     if (type === 'order/partialUpdate/fetch/fulfilled') {
       dispatch(setOrder({ order: payload?.data.order }));
       dispatch(setMessage({ type: 'success', message: payload?.data?.message || 'Success! Order updated!' }));
+      setPartialUpdateOrderLoading(false);
+      return payload?.data.order;
     } else {
       dispatch(setMessage({ type: 'error', message: payload?.data?.message || 'Failed! Order not updated!' }));
+      setPartialUpdateOrderLoading(false);
+      return oldRow;
     }
-    setPartialUpdateOrderLoading(false);
-    return { ...newRow, isNew: false };
   };
 
   const handleProcessRowUpdateError = (error) => {

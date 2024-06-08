@@ -71,10 +71,10 @@ export default function AssignOrderModal({ visible, onClose }) {
       })
     );
     if (type === 'users/filtered/fetch/fulfilled') {
-      setAssignee(payload.data.users);
+      setAssignee(payload?.data.users);
       setAssigneeError(null);
     } else {
-      setAssigneeError(payload.error || 'Error in loading assignee');
+      setAssigneeError(payload?.data.error || 'Error in loading assignee');
     }
     setAssigneelsLoading(false);
   };
@@ -94,10 +94,10 @@ export default function AssignOrderModal({ visible, onClose }) {
       })
     );
     if (type === 'orders/filtered/fetch/fulfilled') {
-      assignOrderForm.setFieldValue('orders', payload.data.orders);
+      assignOrderForm.setFieldValue('orders', payload?.data.orders);
       assignOrderForm.setFieldError('orders', null);
     } else {
-      assignOrderForm.setFieldError('orders', payload.error || 'Error in loading orders');
+      assignOrderForm.setFieldError('orders', payload?.data.error || 'Error in loading orders');
     }
     setOrderToAssignlsLoading(false);
   };
@@ -115,29 +115,21 @@ export default function AssignOrderModal({ visible, onClose }) {
     const { type, payload } = await dispatch(fetchAssignOrders({ body: { agentIds: _assignee, orderIds: assignOrderForm.values.orders } }));
     if (type === 'assign/orders/fetch/fulfilled') {
       onClose();
-      dispatch(setMessage({ type: 'success', message: payload.data.message }));
+      dispatch(setMessage({ type: 'success', message: payload?.data.message }));
     } else {
       dispatch(setMessage({ type: 'error', message: error.message || 'Something goes wrong!' }));
     }
     setAssigning(false);
   };
 
-  // const handleChange = (event) => {
-  //   if (event.target.checked) {
-  //     setToAssign((toAssign) => [...toAssign, Number(event.target.name)]);
-  //   } else {
-  //     setToAssign((toAssign) => toAssign.filter((a) => a !== Number(event.target.name)));
-  //   }
-  // };
-
   const fetchChannels = async (id) => {
     setChanelsLoading(true);
     const { type, payload } = await dispatch(fetchFilteredChanel({ body: { brand: id && id !== 'All' ? [id] : [] } }));
     if (type === 'chanel/filtered/fetch/fulfilled') {
-      setChanels(payload.data.chanel);
+      setChanels(payload?.data.chanel);
       setChaneError('');
     } else {
-      setChaneError(payload.error || 'Error in loading chanels');
+      setChaneError(payload?.data.error || 'Error in loading chanels');
     }
     setChanelsLoading(false);
   };
@@ -171,6 +163,8 @@ export default function AssignOrderModal({ visible, onClose }) {
   useEffect(() => {
     if (!visible) {
       assignOrderForm.resetForm();
+      setAssigneeError(null);
+      setChaneError(null);
     }
   }, [visible]);
 

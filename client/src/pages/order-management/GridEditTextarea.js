@@ -1,25 +1,21 @@
 import { useState, useCallback, useLayoutEffect } from 'react';
 import { useGridApiContext } from '@mui/x-data-grid';
 import InputBase from '@mui/material/InputBase';
-import Popper from '@mui/material/Popper';
-import Paper from '@mui/material/Paper';
-
 export default function GridEditTextarea(props) {
   const { id, field, value, colDef, hasFocus, tabIndex, ...rest } = props;
   const [valueState, setValueState] = useState(value);
-  // const [anchorEl, setAnchorEl] = useState();
   const [inputRef, setInputRef] = useState(null);
   const apiRef = useGridApiContext();
+  console.log(tabIndex, 'tabIndextabIndextabIndextabIndex');
 
   useLayoutEffect(() => {
     if (hasFocus && inputRef) {
       inputRef.focus();
+      const length = inputRef.value.length;
+      inputRef.setSelectionRange(length, length);
+      inputRef.scrollTop = inputRef.scrollHeight;
     }
   }, [hasFocus, inputRef]);
-
-  // const handleRef = useCallback((el) => {
-  //   setAnchorEl(el);
-  // }, []);
 
   const handleChange = useCallback(
     async (event) => {
@@ -31,35 +27,16 @@ export default function GridEditTextarea(props) {
   );
 
   return (
-    // <div style={{ position: 'relative', alignSelf: 'flex-start' }}>
-    //   <div
-    //     ref={handleRef}
-    //     style={{
-    //       height: 1,
-    //       border: '1px solid red',
-    //       width: colDef.computedWidth,
-    //       display: 'block',
-    //       position: 'absolute',
-    //       top: 0
-    //     }}
-    //   />
-    //   {anchorEl && (
-    //     <Popper open anchorEl={anchorEl} placement="bottom-start">
-    //       <Paper elevation={1} sx={{ p: 1, minWidth: colDef.computedWidth }}>
     <InputBase
       multiline
       rows={4}
       value={valueState}
       sx={{
-        textarea: { resize: 'none', overflow: 'hidden', tabIndex },
+        textarea: { resize: 'none', overflow: 'hidden', tabIndex: 0 },
         width: '100%'
       }}
       onChange={handleChange}
       inputRef={(ref) => setInputRef(ref)}
     />
-    //       </Paper>
-    //     </Popper>
-    //   )}
-    // </div>
   );
 }
