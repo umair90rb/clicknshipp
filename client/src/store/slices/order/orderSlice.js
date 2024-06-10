@@ -40,13 +40,10 @@ const orderSlice = createSlice({
     },
     setOrder: (state, action) => {
       const updatedOrder = action.payload.order;
-      const list = [...state.list.orders];
-      const index = list.findIndex((order) => order.id === updatedOrder.id);
-      console.log(index);
+      const index = state.list.orders.findIndex((order) => order.id === updatedOrder.id);
       if (index > -1) {
-        list[index] = updatedOrder;
+        state.list.orders[index] = updatedOrder;
       }
-      state.list.orders = list;
     },
     clearOrderState: (_state, _action) => initialState
   },

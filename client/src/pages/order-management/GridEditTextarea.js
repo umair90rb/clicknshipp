@@ -6,7 +6,6 @@ export default function GridEditTextarea(props) {
   const [valueState, setValueState] = useState(value);
   const [inputRef, setInputRef] = useState(null);
   const apiRef = useGridApiContext();
-  console.log(tabIndex, 'tabIndextabIndextabIndextabIndex');
 
   useLayoutEffect(() => {
     if (hasFocus && inputRef) {
@@ -32,7 +31,8 @@ export default function GridEditTextarea(props) {
       rows={4}
       value={valueState}
       sx={{
-        textarea: { resize: 'none', overflow: 'hidden', tabIndex: 0 },
+        tabIndex: 0,
+        textarea: { resize: 'none', overflow: 'hidden' },
         width: '100%'
       }}
       onChange={handleChange}

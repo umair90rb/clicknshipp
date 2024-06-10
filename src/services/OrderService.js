@@ -11,6 +11,7 @@ const {
   Brand,
   DeliveryServiceAccounts,
   Delivery,
+  OrderHistory,
 } = model;
 
 class OrderService {

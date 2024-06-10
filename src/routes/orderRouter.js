@@ -9,6 +9,7 @@ import {
   orderAssignSchema,
   orderBookSchema,
   orderStatusUpdateSchema,
+  orderAddItemSchema,
   orderPatchUpdateSchema,
   bulkOrderDeleteSchema,
   orderFilterSchema,
@@ -109,6 +110,14 @@ router.post(
   can(PERMISSIONS.PERMISSION_UPDATE_ORDER),
   schemaValidator(orderStatusUpdateSchema),
   OrderController.updateStatus
+);
+
+router.post(
+  "/add-items",
+  Auth,
+  can(PERMISSIONS.PERMISSION_UPDATE_ORDER),
+  schemaValidator(orderAddItemSchema),
+  OrderController.addItemInOrder
 );
 
 router.put(

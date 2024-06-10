@@ -43,12 +43,13 @@ import { PERMISSIONS } from 'constants/permissions-and-roles';
 import { formatDateTime } from 'utils/format-date';
 import { useGridApiRef } from '../../../node_modules/@mui/x-data-grid/index';
 import GridEditTextarea from './GridEditTextarea';
-import { GRID_ORDER_STATUSES } from 'constants/orderStatuses';
+import ORDER_STATUSES from 'constants/orderStatuses';
 import { cityCitiesSelector, cityCreateFetchStatusSelector } from 'store/slices/city/citySelector';
 import fetchStatus from 'constants/fetchStatuses';
 import { fetchAllCities } from 'store/slices/city/fetchCity';
 import GridSearchSelect from './GridSearchSelect';
-const columns = (apiRef, rowModesModel, citiesList, handleViewClick, handleSaveClick, handleCancelClick) => [
+import GridAddItemModal from './GridAddItemModal/index';
+const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handleCancelClick, handleAddItemClick) => [
   {
     field: 'id',
     headerName: 'ID',
@@ -61,16 +62,16 @@ const columns = (apiRef, rowModesModel, citiesList, handleViewClick, handleSaveC
   },
   {
     field: 'first_name',
-    headerName: 'Customer',
+    headerName: 'Name',
     flex: 0.5,
     sortable: false,
-    editable: false,
+    editable: true,
     type: 'string',
     valueGetter: (param) => param.row.customer?.first_name || ''
   },
   {
     field: 'phone',
-    headerName: 'Customer Ph',
+    headerName: 'Phone',
     flex: 0.75,
     sortable: false,
     valueGetter: (param) => param.row.customer?.phone || param.row.address?.phone || ''
@@ -94,7 +95,7 @@ const columns = (apiRef, rowModesModel, citiesList, handleViewClick, handleSaveC
     editable: true,
     type: 'string',
     valueGetter: (param) => param.row.address?.city || '',
-    renderEditCell: (params) => <GridSearchSelect {...params} />
+    renderEditCell: (params) => <GridSearchSelect multiple={true} {...params} />
   },
 
   {
@@ -111,7 +112,7 @@ const columns = (apiRef, rowModesModel, citiesList, handleViewClick, handleSaveC
       if (items && items.length === 1) {
         return `${items[0].name}/${items[0].quantity}`;
       }
-      return items.reduce((pv, cv) => `${pv}, ${cv.name}/${cv.quantity}`, '');
+      return items.reduce((pv, cv) => `${cv.name}/${cv.quantity}, ${pv}`, '');
     },
     type: 'string'
   },
@@ -130,7 +131,7 @@ const columns = (apiRef, rowModesModel, citiesList, handleViewClick, handleSaveC
           icon={<AddIcon />}
           label="Add item"
           className="textPrimary"
-          onClick={handleCancelClick(id)}
+          onClick={handleAddItemClick(id)}
           color="inherit"
         />
       ];
@@ -153,7 +154,7 @@ const columns = (apiRef, rowModesModel, citiesList, handleViewClick, handleSaveC
     flex: 0.5,
     editable: true,
     type: 'singleSelect',
-    valueOptions: GRID_ORDER_STATUSES
+    valueOptions: ORDER_STATUSES
   },
   {
     field: 'remarks',
@@ -286,6 +287,17 @@ const OrderTable = memo(() => {
   const displayFilterModal = () => setShowFilterModal(true);
   const hideFilterModal = () => setShowFilterModal(false);
 
+  const [addItemInOrderVisible, setAddItemInOrderVisible] = useState(false);
+  const [addItemInOrderOrderId, setAddItemInOrderOrderId] = useState(null);
+  const handleAddItemClick = (orderId) => () => {
+    setAddItemInOrderOrderId(orderId);
+    setAddItemInOrderVisible(true);
+  };
+  const hideAddItemInOrderVisible = () => {
+    setAddItemInOrderOrderId(null);
+    setAddItemInOrderVisible(false);
+  };
+
   const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false);
   const [partialUpdateOrderLoading, setPartialUpdateOrderLoading] = useState(false);
   const [rowModesModel, setRowModesModel] = useState({});
@@ -300,6 +312,14 @@ const OrderTable = memo(() => {
     }
     if (event.key === 'Enter' && event.ctrlKey) {
       event.defaultMuiPrevented = false;
+    }
+  };
+
+  const handleRowEditStart = (params, event) => {
+    if (params?.row?.status === 'Confirmed') {
+      dispatch(setMessage({ type: 'warning', message: 'Confirmed order can not updated!' }));
+      event.defaultMuiPrevented = true;
+      return;
     }
   };
 
@@ -342,6 +362,8 @@ const OrderTable = memo(() => {
 
   const handleProcessRowUpdateError = (error) => {
     console.log(error, 'new error in handleProcessRowUpdateError');
+    dispatch(setMessage({ type: 'error', message: 'Failed! Order not updated!' }));
+    return;
   };
 
   const fetchOrders = () => dispatch(fetchAllOrder({ body: { sort: sortModel, page, pageSize, filters } }));
@@ -415,7 +437,6 @@ const OrderTable = memo(() => {
           toolbar: renderToolbar,
           noRowsOverlay: CustomNoRowsOverlay
         }}
-        // autoHeight={true}
         rowSelectionModel={rowSelectionModel}
         onRowSelectionModelChange={(newRowSelectionModel) => setRowSelectionModel(newRowSelectionModel)}
         paginationMode="server"
@@ -433,11 +454,13 @@ const OrderTable = memo(() => {
         editMode="row"
         rowModesModel={rowModesModel}
         onRowModesModelChange={setRowModesModel}
+        onRowEditStart={handleRowEditStart}
         onRowEditStop={handleRowEditStop}
         processRowUpdate={processRowUpdate}
         onProcessRowUpdateError={handleProcessRowUpdateError}
-        columns={columns(apiRef, rowModesModel, citiesList, handleViewClick, handleSaveClick, handleCancelClick)}
+        columns={columns(apiRef, rowModesModel, handleViewClick, handleSaveClick, handleCancelClick, handleAddItemClick)}
       />
+      <GridAddItemModal orderId={addItemInOrderOrderId} visible={addItemInOrderVisible} onClose={hideAddItemInOrderVisible} />
       <AssignSelectedOrderModal visible={showAssignSelectedModal} onClose={hideAssignSelectedModal} selectedRows={rowSelectionModel} />
       <FilterModal
         visible={showFilterModal}

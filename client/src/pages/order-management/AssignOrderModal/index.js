@@ -1,27 +1,7 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import CenterCircularLoader from 'components/CenterCircularLoader';
 import { fetchFilteredUsers } from 'store/slices/user/fetchUser';
-import {
-  Modal,
-  Box,
-  Grid,
-  Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormHelperText,
-  OutlinedInput,
-  Chip,
-  TextField,
-  Autocomplete,
-  Stack,
-  FormControlLabel,
-  FormGroup,
-  Checkbox,
-  Typography
-} from '@mui/material';
+import { Modal, Box, Grid, Button, FormControl, InputLabel, Select, MenuItem, FormHelperText, Chip } from '@mui/material';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 import { fetchAssignOrders, fetchFilteredOrder } from 'store/slices/order/fetchOrder';
 import { setMessage } from 'store/slices/util/utilSlice';
@@ -171,10 +151,6 @@ export default function AssignOrderModal({ visible, onClose }) {
   return (
     <Modal open={visible} onClose={onClose} aria-labelledby="assign-order-modal" aria-describedby="modal-modal-description">
       <Box sx={style}>
-        {/* <Typography variant="h2">Assign Order</Typography>
-        <Typography variant="body1" id="assign-order-modal-description">
-          Start day by assigning orders to agent
-        </Typography> */}
         <FormControl fullWidth margin="normal">
           <InputLabel id="brand-label">Select Brand</InputLabel>
           <Select
@@ -245,7 +221,6 @@ export default function AssignOrderModal({ visible, onClose }) {
             error={assignOrderForm.touched.users && assignOrderForm.errors.users}
             onBlur={assignOrderForm.handleBlur}
             onChange={assignOrderForm.handleChange}
-            // input={<OutlinedInput id="select-multiple-chip" size="small" label="Chip" />}
             renderValue={(selected) => (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                 {selected.map((value) => (
@@ -332,7 +307,6 @@ export default function AssignOrderModal({ visible, onClose }) {
             error={assignOrderForm.touched.assignee && assignOrderForm.errors.assignee}
             onBlur={assignOrderForm.handleBlur}
             onChange={assignOrderForm.handleChange}
-            // input={<OutlinedInput id="select-multiple-chip" size="small" label="Chip" />}
             renderValue={(selected) => (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                 {selected.map((value) => (

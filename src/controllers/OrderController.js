@@ -272,7 +272,7 @@ export default {
   async create(req, res) {
     try {
       const {
-        addressId,
+        // addressId,
         customerId,
         first_name,
         last_name,
@@ -293,22 +293,23 @@ export default {
       let subtotal_price = 0,
         total_discount = 0,
         withoutDiscount = 0;
-      let customerWithDuplicateOrders = null;
-      if (customerId) {
-        const itemsId = itemsArray.map((item) => item.id);
-        customerWithDuplicateOrders = await Customer.findByPk(customerId, {
-          include: {
-            model: Order,
-            include: {
-              model: OrderItem,
-              as: "items",
-              where: {
-                product_id: itemsId,
-              },
-            },
-          },
-        });
-      }
+      // let customerWithDuplicateOrders = null;
+      // if (customerId) {
+      //   const itemsId = itemsArray.map((item) => item.id);
+      //   customerWithDuplicateOrders = await Customer.findByPk(customerId, {
+      //     include: {
+      //       model: Order,
+      //       as: "orders",
+      //       include: {
+      //         model: OrderItem,
+      //         as: "items",
+      //         where: {
+      //           product_id: itemsId,
+      //         },
+      //       },
+      //     },
+      //   });
+      // }
 
       for (const item of itemsArray) {
         const {
@@ -364,24 +365,27 @@ export default {
       });
       let customer;
       if (customerId) {
-        customer = await order.setCustomer(customerId);
+        await order.setCustomer(customerId);
         await address.setCustomer(customerId);
-      } else if (phone) {
-        customer = await Customer.findOne({
-          where: {
+      } else {
+        if (phone) {
+          customer = await Customer.findOne({
+            where: {
+              phone: formatPhoneNumber(phone),
+            },
+          });
+        } else if (!customer) {
+          customer = await Customer.create({
+            first_name,
+            last_name,
+            note,
+            email,
             phone: formatPhoneNumber(phone),
-          },
-        });
-      } else if (!customer) {
-        customer = await order.createCustomer({
-          first_name,
-          last_name,
-          note,
-          email,
-          phone: formatPhoneNumber(phone),
-        });
+          });
+        }
+        await order.setCustomer(customer.id);
+        await address.setCustomer(customer.id);
       }
-      await address.setCustomer(customer.id);
       const items = await OrderItem.bulkCreate(orderItems);
       await order.addItems(items);
       await order.reload();
@@ -398,6 +402,7 @@ export default {
         "Order created successfully"
       );
     } catch (error) {
+      console.log(error.stack, "error stack");
       return sendErrorResponse(
         res,
         500,
@@ -546,6 +551,68 @@ export default {
     }
   },
 
+  async addItemInOrder(req, res) {
+    try {
+      const { orderId, items } = req.body;
+      if (!orderId || (items && items.length < 1)) {
+        return sendErrorResponse(res, 404, "No data found with this id.");
+      }
+      await Promise.all(
+        items.map(async ({ id, name, quantity, price }) => {
+          const existed = await OrderItem.findOne({
+            where: { order_id: orderId, name: name },
+          });
+          if (existed) {
+            await OrderItem.update(
+              { quantity: existed.quantity + quantity },
+              {
+                where: {
+                  id: existed.id,
+                  order_id: orderId,
+                },
+              }
+            );
+            await OrderHistory.create({
+              order_id: orderId,
+              user_id: req.user.id,
+              event: "order item quantity increased!",
+            });
+          } else {
+            await OrderItem.create({
+              name,
+              quantity,
+              price,
+              product_id: id,
+              order_id: orderId,
+            });
+            await OrderHistory.create({
+              order_id: orderId,
+              user_id: req.user.id,
+              event: "new item added in order!",
+            });
+          }
+        })
+      );
+      const order = await _orderService.loadFullOrder(orderId);
+      return sendSuccessResponse(
+        res,
+        200,
+        {
+          order,
+        },
+        "Operation successful."
+      );
+    } catch (error) {
+      console.error(error);
+      return sendErrorResponse(
+        res,
+        500,
+        "Could not perform operation at this time, kindly try again later.",
+        error
+      );
+    }
+  },
+
   async update(req, res) {
     try {
       const id = req.params.id;
@@ -618,69 +685,16 @@ export default {
           OrderItem.update({ ...i }, { where: { id: i.id } })
         )
       );
-      await order.reload({
-        attributes: {
-          exclude: [
-            "data",
-            "CustomerId",
-            "updatedAt",
-            "customer_id",
-            "user_id",
-          ],
-        },
-        include: [
-          {
-            model: User,
-            as: "user",
-            attributes: {
-              exclude: [
-                "password",
-                "status",
-                "settings",
-                "createdAt",
-                "updatedAt",
-              ],
-            },
-          },
-          {
-            model: Customer,
-            as: "customer",
-          },
-          {
-            model: Address,
-            as: "address",
-            attributes: {
-              exclude: [
-                "order_id",
-                "customer_id",
-                "CustomerId",
-                "OrderId",
-                "company",
-                "longitude",
-                "latitude",
-                "country_code",
-                "province_code",
-              ],
-            },
-          },
-          {
-            model: OrderItem,
-            as: "items",
-            attributes: {
-              exclude: ["OrderId", "createdAt", "updatedAt"],
-            },
-          },
-        ],
-      });
       await order.createHistory({
         user_id: req.user.id,
         event: "order update",
       });
+      const completeOrder = await _orderService.loadFullOrder(order.id);
       return sendSuccessResponse(
         res,
         200,
         {
-          order,
+          order: completeOrder,
         },
         "Operation successful."
       );
@@ -715,6 +729,19 @@ export default {
       if (!order) {
         return sendErrorResponse(res, 404, "Order not found!");
       }
+      if (customerId) {
+        let ud = { first_name };
+        if (last_name) ud.last_name = last_name;
+        await Customer.update(ud, {
+          where: {
+            id: customerId,
+          },
+        });
+      } else if (customerId == "" && first_name) {
+        await order.createCustomer({
+          first_name,
+        });
+      }
       if (addressId) {
         await Address.update(
           { address1: address, city },
@@ -724,72 +751,25 @@ export default {
             },
           }
         );
-      }
-      if (customerId) {
-        let ud = { first_name };
-        if (last_name) ud.last_name = last_name;
-        await Customer.update(ud, {
-          where: {
-            id: customerId,
-          },
+      } else {
+        await order.createAddress({
+          address1: address,
+          city,
+          customer_id: customerId || order.customer.id,
         });
       }
-      if (customerId == "" && first_name) {
-        await order.createCustomer({
-          first_name,
-        });
-      }
+
       await order.update({ status });
       await order.createHistory({
         user_id: req.user.id,
         event: "order updated",
       });
-      await order.reload({
-        include: [
-          {
-            model: User,
-            as: "user",
-            attributes: ["id", "name"],
-          },
-          {
-            model: Customer,
-            as: "customer",
-            attributes: ["id", "first_name", "last_name", "phone"],
-          },
-          {
-            model: OrderItem,
-            as: "items",
-            attributes: ["id", "name", "quantity"],
-          },
-          {
-            model: Chanel,
-            as: "chanel",
-            attributes: ["id", "name"],
-          },
-          {
-            model: Address,
-            as: "address",
-            attributes: ["id", "name", "phone", "city", "address1"],
-          },
-        ],
-        attributes: {
-          exclude: [
-            "data",
-            "customer_id",
-            "user_id",
-            "chanel_id",
-            "brand_id",
-            "UserId",
-            "CustomerId",
-            "updatedAt",
-          ],
-        },
-      });
+      const completeOrder = await _orderService.loadFullOrder(order.id);
       return sendSuccessResponse(
         res,
         200,
         {
-          order,
+          order: completeOrder,
         },
         "Order updated successfully!"
       );

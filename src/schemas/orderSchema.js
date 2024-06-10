@@ -50,6 +50,18 @@ export const orderStatusUpdateSchema = Joi.object({
   remarks: Joi.string().allow(""),
 });
 
+export const orderAddItemSchema = Joi.object({
+  orderId: Joi.number().required(),
+  items: Joi.array()
+    .items({
+      id: Joi.alternatives(Joi.string(), Joi.number()).required(),
+      name: Joi.string().required(),
+      quantity: Joi.number().min(1).required(),
+      price: Joi.alternatives(Joi.string(), Joi.number()).required(),
+    })
+    .min(1),
+});
+
 export const orderPatchUpdateSchema = Joi.object({
   customerId: Joi.number().allow(""),
   addressId: Joi.number().allow(""),
