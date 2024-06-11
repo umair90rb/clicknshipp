@@ -1,41 +1,21 @@
-import React, { useRef, useState } from 'react';
-
-// material-ui
-import {
-  Box,
-  Button,
-  MenuItem,
-  Select,
-  FormControl,
-  FormHelperText,
-  Grid,
-  ListItemText,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  OutlinedInput,
-  Stack,
-  Typography,
-  Checkbox,
-  Chip
-} from '@mui/material';
-
-// third party
+import React from 'react';
+import { Button, MenuItem, Select, FormHelperText, Grid, ListItemText, InputLabel, OutlinedInput, Stack } from '@mui/material';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-
-// project import
-// import FirebaseSocial from './FirebaseSocial';
 import AnimateButton from 'components/@extended/AnimateButton';
-import { toSentense } from 'utils/string-utils';
 
-const PAYMENT_TYPES = ['Receive Advanced Payment', 'Received Advanced Delivery Charges', 'Other'];
+const PAYMENT_TYPES = [
+  { id: 0, label: 'Receive Advanced Payment', type: 'received' },
+  { id: 1, label: 'Received Advanced Delivery Charges', type: 'received' },
+  { id: 2, label: 'Add Delivery Charges', type: 'pending' }
+];
 
 export default function TransactionModal({ addPayment }) {
   return (
     <>
       <Formik
         initialValues={{
+          label: '',
           type: '',
           bank: '',
           tid: '',
@@ -46,16 +26,12 @@ export default function TransactionModal({ addPayment }) {
           type: Yup.string().required('Type is required'),
           bank: Yup.string().required('Bank is required'),
           tid: Yup.string().required('Transaction id is required'),
-          amount: Yup.number().required('amount is required'),
-          note: Yup.string().when('type', {
-            is: (val) => val === 'Other',
-            then: Yup.string().required('note is required when payment type is Other'),
-            otherwise: Yup.string().notRequired()
-          })
+          amount: Yup.number().required('Amount is required'),
+          note: Yup.string().required('Note is required')
         })}
         onSubmit={addPayment}
       >
-        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
+        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values, setFieldValue }) => (
           <form noValidate onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
@@ -69,13 +45,18 @@ export default function TransactionModal({ addPayment }) {
                     type="text"
                     name="type"
                     onBlur={handleBlur}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                      const option = PAYMENT_TYPES.find((pt) => pt.id === e.target.value);
+                      setFieldValue('note', option?.label);
+                      setFieldValue('type', option?.type);
+                    }}
+                    renderValue={(value) => values.label}
                     inputProps={{}}
                     labelId="type-signup"
                   >
-                    {PAYMENT_TYPES.map((type, index) => (
-                      <MenuItem key={index} value={type}>
-                        <ListItemText primary={type} />
+                    {PAYMENT_TYPES.map(({ id, label, type }, index) => (
+                      <MenuItem key={index} value={id}>
+                        <ListItemText primary={`${label} (${type})`} />
                       </MenuItem>
                     ))}
                   </Select>

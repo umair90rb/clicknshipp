@@ -138,7 +138,6 @@ const CreateOrderForm = () => {
 
   const searchCustomer = (phone) => {
     if (phone === '') return;
-    console.log(phone);
     setCustomerLoading(true);
     return dispatch(fetchSearchCustomer({ body: { phone } })).then(({ type, payload }) => {
       if (type === 'customer/search/fetch/fulfilled') {
@@ -838,8 +837,9 @@ const CreateOrderForm = () => {
                     <TableHead>
                       <TableRow>
                         <TableCell>Name</TableCell>
-                        <TableCell align="right">Qty.</TableCell>
                         <TableCell align="right">Unit Price</TableCell>
+                        <TableCell align="right">Qty.</TableCell>
+                        <TableCell align="right">Sub Total</TableCell>
                         <TableCell align="right">Disc</TableCell>
                         <TableCell align="right">Net</TableCell>
                         <TableCell align="right">Action</TableCell>
@@ -849,6 +849,7 @@ const CreateOrderForm = () => {
                       {items.map((row, index) => (
                         <TableRow key={index}>
                           <TableCell>{row.name}</TableCell>
+                          <TableCell align="right">{row.unit || 'Unknown'}</TableCell>
                           <TableCell align="right">
                             <IconButton
                               onClick={() => {
@@ -876,7 +877,7 @@ const CreateOrderForm = () => {
                               <PlusOutlined />
                             </IconButton>
                           </TableCell>
-                          <TableCell align="right">{row.unit || row.price}</TableCell>
+                          <TableCell align="right">{(row.unit * row.quantity).toFixed(2)}</TableCell>
                           <TableCell align="right">{row.discount}%</TableCell>
                           <TableCell align="right">{(row.price * row.quantity).toFixed(2)}</TableCell>
                           <TableCell align="right">
@@ -891,30 +892,36 @@ const CreateOrderForm = () => {
                       ))}
                       <TableRow>
                         <TableCell></TableCell>
-                        <TableCell colSpan={3} align="right">
-                          Total
+                        <TableCell colSpan={4} align="right">
+                          Sub Total
                         </TableCell>
                         <TableCell align="right">
-                          {items.reduce((pre, item) => parseFloat((item.unit || item.price) * item.quantity) + pre, 0)}
+                          {Array.isArray(items) &&
+                            items.length > 0 &&
+                            items.reduce((pre, item) => parseFloat((item.unit || 0) * item.quantity) + pre, 0)}
                         </TableCell>
                         <TableCell></TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell></TableCell>
-                        <TableCell colSpan={3} align="right">
-                          Discount
+                        <TableCell colSpan={4} align="right">
+                          Discount Amount
                         </TableCell>
                         <TableCell align="right">
-                          {items.reduce((pre, item) => ((item.discount || 0) / 100) * (item.unit || item.price) + pre, 0).toFixed(2)}
+                          {Array.isArray(items) &&
+                            items.length > 0 &&
+                            items.reduce((pre, item) => (item.unit - item.price) * item.quantity + pre, 0)}
                         </TableCell>
                         <TableCell></TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell></TableCell>
-                        <TableCell colSpan={3} align="right">
+                        <TableCell colSpan={4} align="right">
                           Net Total
                         </TableCell>
-                        <TableCell align="right">{items.reduce((pre, item) => item.price * item.quantity + pre, 0).toFixed(2)}</TableCell>
+                        <TableCell align="right">
+                          {Array.isArray(items) && items.length > 0 && items.reduce((pre, item) => item.price * item.quantity + pre, 0)}
+                        </TableCell>
                         <TableCell></TableCell>
                       </TableRow>
                     </TableBody>

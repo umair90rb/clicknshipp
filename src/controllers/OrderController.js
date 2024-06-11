@@ -374,15 +374,17 @@ export default {
               phone: formatPhoneNumber(phone),
             },
           });
-        } else if (!customer) {
-          customer = await Customer.create({
-            first_name,
-            last_name,
-            note,
-            email,
-            phone: formatPhoneNumber(phone),
-          });
+          if (!customer) {
+            customer = await Customer.create({
+              first_name,
+              last_name,
+              note,
+              email,
+              phone: formatPhoneNumber(phone),
+            });
+          }
         }
+        console.log(customer);
         await order.setCustomer(customer.id);
         await address.setCustomer(customer.id);
       }

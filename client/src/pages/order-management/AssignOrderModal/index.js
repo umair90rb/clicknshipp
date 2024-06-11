@@ -5,11 +5,14 @@ import { Modal, Box, Grid, Button, FormControl, InputLabel, Select, MenuItem, Fo
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 import { fetchAssignOrders, fetchFilteredOrder } from 'store/slices/order/fetchOrder';
 import { setMessage } from 'store/slices/util/utilSlice';
-import useAssignOrderForm from './useAssignOrderForm';
+// import useAssignOrderForm from './useAssignOrderForm';
 import { brandBrandsSelector, brandIsLoadingSelector } from 'store/slices/brand/brandSelector';
 import { fetchAllBrand } from 'store/slices/brand/fetchBrand';
 import { fetchFilteredChanel } from 'store/slices/chanel/fetchChanel';
-import moment from '../../../../node_modules/moment/moment';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+
+// import moment from '../../../../node_modules/moment/moment';
 
 const style = {
   position: 'absolute',
@@ -24,7 +27,7 @@ const style = {
 
 export default function AssignOrderModal({ visible, onClose }) {
   const dispatch = useDispatch();
-  const assignOrderForm = useAssignOrderForm();
+  // const assignOrderForm = useAssignOrderForm();
   const brands = useSelector(brandBrandsSelector);
   const brandsIsLoading = useSelector(brandIsLoadingSelector);
 
@@ -39,6 +42,55 @@ export default function AssignOrderModal({ visible, onClose }) {
   const [orderToAssignIsLoading, setOrderToAssignlsLoading] = useState(false);
 
   const [assigning, setAssigning] = useState(false);
+
+  const assignOrderForm = useFormik({
+    initialValues: {
+      brand: null,
+      chanel: null,
+      users: [],
+      type: '',
+      orders: [],
+      assignee: []
+    },
+    validationSchema: Yup.object().shape({
+      brand: Yup.mixed()
+        .test('is-number-or-string', 'Must be a number or a string!', (value) => typeof value === 'number' || typeof value === 'string')
+        .required('Please select brand!'),
+      chanel: Yup.mixed()
+        .test('is-number-or-string', 'Must be a number or a string!', (value) => typeof value === 'number' || typeof value === 'string')
+        .required('Please select chanel!'),
+      type: Yup.string().required('Please select orders type that need to assign/reassign!'),
+      users: Yup.array().of(
+        Yup.mixed().test(
+          'is-number-or-string',
+          'Must be a number or a string!',
+          (value) => typeof value === 'number' || typeof value === 'string'
+        )
+      ),
+      orders: Yup.array().of(Yup.number()).min(1, 'Please add at least one order to be assigned!'),
+      assignee: Yup.array()
+        .of(
+          Yup.mixed().test(
+            'is-number-or-string',
+            'Must be a number or a string!',
+            (value) => typeof value === 'number' || typeof value === 'string'
+          )
+        )
+        .min(1, 'Please add at least one agent to assign order!')
+    }),
+    onSubmit: async (values) => {
+      setAssigning(true);
+      const _assignee = values.assignee.length === 1 && values.assignee[0] === 'All' ? assignee.map((a) => a.id) : values.assignee;
+      const { type, payload } = await dispatch(fetchAssignOrders({ body: { agentIds: _assignee, orderIds: values.orders } }));
+      if (type === 'assign/orders/fetch/fulfilled') {
+        onClose();
+        dispatch(setMessage({ type: 'success', message: payload?.data?.message }));
+      } else {
+        dispatch(setMessage({ type: 'error', message: payload?.error?.message || 'Something goes wrong!' }));
+      }
+      setAssigning(false);
+    }
+  });
 
   const getAssignee = async (brand) => {
     setAssigneelsLoading(true);
@@ -66,8 +118,8 @@ export default function AssignOrderModal({ visible, onClose }) {
         body: {
           brand: brand && brand !== 'All' ? [brand] : [],
           chanel: chanel && chanel !== 'All' ? [chanel] : [],
-          startPeriod: moment(new Date()).startOf('day').format('YYYY-MM-DDTHH:MM'),
-          endPeriod: moment(new Date()).format('YYYY-MM-DDTHH:MM'),
+          // startPeriod: moment(new Date()).startOf('day').format('YYYY-MM-DDTHH:MM'),
+          // endPeriod: moment(new Date()).format('YYYY-MM-DDTHH:MM'),
           users: users && users.length === 1 && users[0] === 'All' ? [] : users,
           type: orderType
         }
@@ -80,26 +132,6 @@ export default function AssignOrderModal({ visible, onClose }) {
       assignOrderForm.setFieldError('orders', payload?.data.error || 'Error in loading orders');
     }
     setOrderToAssignlsLoading(false);
-  };
-
-  const assignOrders = async () => {
-    if (assignOrderForm.errors.orders || assignOrderForm.errors.assignee) {
-      assignOrderForm.handleSubmit();
-      return;
-    }
-    setAssigning(true);
-    const _assignee =
-      assignOrderForm.values.assignee.length === 1 && assignOrderForm.values.assignee[0] === 'All'
-        ? assignee.map((a) => a.id)
-        : assignOrderForm.values.assignee;
-    const { type, payload } = await dispatch(fetchAssignOrders({ body: { agentIds: _assignee, orderIds: assignOrderForm.values.orders } }));
-    if (type === 'assign/orders/fetch/fulfilled') {
-      onClose();
-      dispatch(setMessage({ type: 'success', message: payload?.data.message }));
-    } else {
-      dispatch(setMessage({ type: 'error', message: error.message || 'Something goes wrong!' }));
-    }
-    setAssigning(false);
   };
 
   const fetchChannels = async (id) => {
@@ -340,7 +372,7 @@ export default function AssignOrderModal({ visible, onClose }) {
 
         <Grid container sx={{ flexGrow: 1, mt: 1 }}>
           <Grid xs display="flex" justifyContent="center" alignItems="center">
-            <Button onClick={assignOrders} disabled={assigning} sx={{ flexGrow: 1 }} variant="contained">
+            <Button onClick={assignOrderForm.handleSubmit} disabled={assigning} sx={{ flexGrow: 1 }} variant="contained">
               Assign
             </Button>
           </Grid>
