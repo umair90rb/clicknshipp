@@ -48,6 +48,7 @@ export default function TransactionModal({ addPayment }) {
                     onChange={(e) => {
                       const option = PAYMENT_TYPES.find((pt) => pt.id === e.target.value);
                       setFieldValue('note', option?.label);
+                      setFieldValue('label', option?.label);
                       setFieldValue('type', option?.type);
                     }}
                     renderValue={(value) => values.label}
