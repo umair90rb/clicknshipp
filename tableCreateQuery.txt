@@ -38,3 +38,5 @@ sequelize migration:generate --name add-courier-name-column-in-courier-service-a
 sequelize migration:generate --name add-id-column-in-courier-service-accounts-table
 sequelize migration:generate --name add-city-code-column-in-city-name-mappings-table
 sequelize migration:generate --name add-ordered-at-column-in-orders-table
+
+sequelize migration:generate --name add-unit-price-column-in-order-item-table

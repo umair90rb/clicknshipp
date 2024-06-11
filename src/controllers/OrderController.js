@@ -327,6 +327,7 @@ export default {
           product_id: id,
           name,
           price,
+          unit_price: unit,
           total_discount: discount,
           quantity,
           sku,
@@ -338,7 +339,22 @@ export default {
         withoutDiscount += unit * quantity;
       }
       const total_tax = 0;
-      const total_price = subtotal_price + total_tax;
+      const subTotalWithTax = subtotal_price + total_tax;
+      let pendingPayments = 0,
+        receivedPayments = 0;
+      if (paymentsArray && paymentsArray.length) {
+        paymentsArray.forEach(({ type, amount }) => {
+          switch (type) {
+            case "received":
+              receivedPayments += amount;
+              break;
+            case "pending":
+              pendingPayments += amount;
+              break;
+          }
+        });
+      }
+      const total_price = subTotalWithTax + pendingPayments - receivedPayments;
       const order = await Order.create({
         chanel_id,
         brand_id,

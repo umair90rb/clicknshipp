@@ -24,8 +24,8 @@ export default function TransactionModal({ addPayment }) {
         }}
         validationSchema={Yup.object().shape({
           type: Yup.string().required('Type is required'),
-          bank: Yup.string().required('Bank is required'),
-          tid: Yup.string().required('Transaction id is required'),
+          bank: Yup.string(),
+          tid: Yup.string(),
           amount: Yup.number().required('Amount is required'),
           note: Yup.string().required('Note is required')
         })}
@@ -51,7 +51,7 @@ export default function TransactionModal({ addPayment }) {
                       setFieldValue('label', option?.label);
                       setFieldValue('type', option?.type);
                     }}
-                    renderValue={(value) => values.label}
+                    renderValue={(_value) => values.label}
                     inputProps={{}}
                     labelId="type-signup"
                   >

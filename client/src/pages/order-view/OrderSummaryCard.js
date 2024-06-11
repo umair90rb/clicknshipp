@@ -1,7 +1,7 @@
 import React from 'react';
 import { Divider, Grid, Card, CardContent, Typography } from '@mui/material';
 
-const OrderSummaryCard = ({ discount, subtotal, tax, total }) => {
+const OrderSummaryCard = ({ payments, discount, subtotal, tax, total }) => {
   return (
     <Card sx={{ minWidth: 275, mt: 2, padding: 2 }}>
       <CardContent>
@@ -42,6 +42,37 @@ const OrderSummaryCard = ({ discount, subtotal, tax, total }) => {
           <Grid item xs={12}>
             <Divider />
           </Grid>
+
+          <Grid item xs={6}>
+            <Typography variant="body1">Received Payments:</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography variant="body1" align="right">
+              Rs.
+              {payments != undefined &&
+                Array.isArray(payments) &&
+                payments.reduce((prev, payment) => (payment.type === 'received' ? payment.amount + prev : prev), 0)}
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
+
+          <Grid item xs={6}>
+            <Typography variant="body1">Pending Payments:</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography variant="body1" align="right">
+              Rs.
+              {payments != undefined &&
+                Array.isArray(payments) &&
+                payments.reduce((prev, payment) => (payment.type === 'pending' ? payment.amount + prev : prev), 0)}
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
+
           <Grid item xs={6}>
             <Typography variant="body1" className="total-label">
               Total:

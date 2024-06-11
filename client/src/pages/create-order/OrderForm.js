@@ -619,7 +619,7 @@ const CreateOrderForm = () => {
                           <TableBody>
                             {payments.map((row) => (
                               <TableRow key={row.id}>
-                                <TableCell align="right">{row.type}</TableCell>
+                                <TableCell align="right">{row.label}</TableCell>
                                 <TableCell align="right">{row.bank}</TableCell>
                                 <TableCell align="right">{row.tid}</TableCell>
                                 <TableCell align="right">{row.amount}</TableCell>
@@ -917,10 +917,40 @@ const CreateOrderForm = () => {
                       <TableRow>
                         <TableCell></TableCell>
                         <TableCell colSpan={4} align="right">
+                          Received Payment
+                        </TableCell>
+                        <TableCell align="right">
+                          {payments.length > 0
+                            ? payments.reduce((pre, payment) => (payment.type === 'received' ? payment.amount + pre : pre), 0)
+                            : 0}
+                        </TableCell>
+                        <TableCell></TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell></TableCell>
+                        <TableCell colSpan={4} align="right">
+                          Pending Payment
+                        </TableCell>
+                        <TableCell align="right">
+                          {payments.length > 0
+                            ? payments.reduce((pre, payment) => (payment.type == 'pending' ? payment.amount + pre : pre), 0)
+                            : 0}
+                        </TableCell>
+                        <TableCell></TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell></TableCell>
+                        <TableCell colSpan={4} align="right">
                           Net Total
                         </TableCell>
                         <TableCell align="right">
-                          {Array.isArray(items) && items.length > 0 && items.reduce((pre, item) => item.price * item.quantity + pre, 0)}
+                          {(Array.isArray(items) && items.length > 0 && items.reduce((pre, item) => item.price * item.quantity + pre, 0)) +
+                            (payments.length > 0
+                              ? payments.reduce((pre, payment) => (payment.type == 'pending' ? payment.amount + pre : pre), 0)
+                              : 0) -
+                            (payments.length > 0
+                              ? payments.reduce((pre, payment) => (payment.type === 'received' ? payment.amount + pre : pre), 0)
+                              : 0)}
                         </TableCell>
                         <TableCell></TableCell>
                       </TableRow>

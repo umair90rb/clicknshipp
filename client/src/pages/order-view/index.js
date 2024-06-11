@@ -16,6 +16,7 @@ import AddCityModal from './AddCityModal';
 import History from './History';
 import OldOrders from './OldOrders';
 import DuplicateOrders from './DuplicateOrders';
+import OrderPayments from './PaymentsTable';
 
 const OrderView = () => {
   const { orderId } = useParams();
@@ -48,11 +49,13 @@ const OrderView = () => {
     remarks,
     chanel,
     status,
+    user,
     total_discounts,
     total_price,
     total_tax,
     address,
     items,
+    payments,
     customer,
     createdAt,
     history,
@@ -204,7 +207,13 @@ const OrderView = () => {
               <OrderItemTable orderItems={items} onDelete={() => {}} />
             </CardContent>
           </Card>
-          <OrderSummaryCard discount={total_discounts} subtotal={subtotal_price} tax={total_tax} total={total_price} />
+          <Card sx={{ minWidth: 275, padding: 2, mt: 2 }}>
+            <CardContent sx={{ padding: 0 }}>
+              <Typography variant="h5">Order Payments</Typography>
+              <OrderPayments orderPayments={payments} onDelete={() => {}} />
+            </CardContent>
+          </Card>
+          <OrderSummaryCard payments={payments} discount={total_discounts} subtotal={subtotal_price} tax={total_tax} total={total_price} />
           {duplicateOrders && duplicateOrders.length > 0 && <DuplicateOrders duplicateOrders={duplicateOrders} />}
           <History orderHistory={history} />
         </Grid>
@@ -214,6 +223,7 @@ const OrderView = () => {
               <Typography sx={{ fontSize: 14 }}>Note: {note || 'None'}</Typography>
               <Typography sx={{ fontSize: 14 }}>Remarks: {remarks || 'None'}</Typography>
               <Typography sx={{ fontSize: 14 }}>Chanel/Store: {(chanel && 'name' in chanel && chanel.name) || ''}</Typography>
+              <Typography sx={{ fontSize: 14 }}>Agent: {(user && 'name' in user && user.name) || ''}</Typography>
             </CardContent>
           </Card>
           <Card sx={{ minWidth: 275, mt: 1 }}>

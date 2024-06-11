@@ -275,7 +275,6 @@ const OrderTable = memo(() => {
     agent: false,
     total_tax: false,
     total_discounts: false,
-    createdAt: false,
     receivedAt: false
   });
 

@@ -10,10 +10,15 @@ const OrderItemRow = ({ item, onDelete }) => {
         <Typography variant="body2" color="textSecondary">
           SKU: {item.sku}
         </Typography>
+        <Typography variant="body2" color="textSecondary">
+          Discount: {item.total_discount}%
+        </Typography>
       </TableCell>
       <TableCell align="right">
         <Typography variant="body1">
-          {`Rs.${item.price} x ${item.quantity}` + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + ` Rs. ${item.quantity * item.price}`}
+          {`${item.unit_price} x ${item.quantity} = ${item.unit_price * item.quantity} - ${item.unit_price * (item.total_discount / 100)}` +
+            '\xa0\xa0\xa0\xa0\xa0\xa0\xa0' +
+            ` Rs. ${item.quantity * item.price}`}
         </Typography>
       </TableCell>
     </TableRow>
