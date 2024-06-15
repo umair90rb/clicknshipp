@@ -1,6 +1,4 @@
-import { Grid, Typography, Button, Box, TextField } from '@mui/material';
-import ReplayIcon from '@mui/icons-material/Replay';
-import MainCard from 'components/MainCard';
+import { Grid, Typography } from '@mui/material';
 import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
 import { useEffect } from 'react';
 import { batch, useDispatch, useSelector } from 'react-redux';
@@ -11,9 +9,9 @@ import {
   dashboardIsLoadingSelector,
   dashboardStatsSelector
 } from 'store/slices/dashboard/dashboardSelector';
-import ItemsByOrders from './ItemsByOrders';
 import { setDashboardStatPeriod } from 'store/slices/dashboard/dashboardSlice';
 import moment from 'moment';
+import DateRangePicker from 'components/DatePicker';
 // import MonthlyBarChart from './MonthlyBarChart';
 
 const DashboardDefault = () => {
@@ -54,37 +52,13 @@ const DashboardDefault = () => {
           <Grid item xs={6}>
             <Typography variant="h5">Dashboard</Typography>
           </Grid>
-          <Grid item xs={6}>
-            <Box display="flex" spacing={3} justifyContent="flex-end">
-              <TextField
-                sx={{ mx: 1 }}
-                type="datetime-local"
-                label="Start Period"
-                value={startPeriod}
-                onChange={(e) => dispatch(setDashboardStatPeriod({ period: 'startPeriod', value: e.target.value }))}
-                size="small"
-              />
-              <TextField
-                sx={{ mx: 1 }}
-                type="datetime-local"
-                label="End Period"
-                value={endPeriod}
-                onChange={(e) => dispatch(setDashboardStatPeriod({ period: 'endPeriod', value: e.target.value }))}
-                size="small"
-              />
-              <Button
-                sx={{ mx: 1 }}
-                startIcon={<ReplayIcon />}
-                variant="contained"
-                size="small"
-                disabled={statsIsLoading}
-                onClick={fetchStats}
-                aria-label="reload"
-                color="primary"
-              >
-                Refresh
-              </Button>
-            </Box>
+          <Grid container item justifyContent="flex-end" xs={6}>
+            <DateRangePicker
+              startDate={startPeriod}
+              endDate={endPeriod}
+              setStartDate={(date) => dispatch(setDashboardStatPeriod({ period: 'startPeriod', value: date }))}
+              setEndDate={(date) => dispatch(setDashboardStatPeriod({ period: 'endPeriod', value: date }))}
+            />
           </Grid>
         </Grid>
       </Grid>

@@ -23,7 +23,7 @@ const style = {
   p: 4
 };
 
-export default function CourierDropdownModal({ visible, onClose, orderId, updateOrderStatus }) {
+export default function CourierDropdownModal({ visible, onClose, orderId, updateOrderStatus, updateDeliveryData }) {
   const dispatch = useDispatch();
   const servicesList = useSelector(deliveryServiceAccountsListSelector);
   const [serviceAccount, setServiceAccount] = useState('');
@@ -33,20 +33,18 @@ export default function CourierDropdownModal({ visible, onClose, orderId, update
     setServiceAccount(event.target.value);
   };
 
-  const handleBook = () => {
+  const handleBook = async () => {
     setLoading(true);
-    return dispatch(fetchBookOrder({ body: { orderId, accountId: serviceAccount } })).then(({ type, payload }) => {
-      if (type === 'order/book/fetch/fulfilled') {
-        setLoading(false);
-        updateOrderStatus('Booked');
-        onClose();
-        return dispatch(setMessage({ message: `Order booked with successfully`, type: 'success' }));
-      }
-      setLoading(false);
-      return dispatch(
-        setMessage({ message: typeof payload?.error === 'string' ? payload.error : `Error! Order can't booked!`, type: 'error' })
-      );
-    });
+    const { type, payload } = await dispatch(fetchBookOrder({ body: { orderId, accountId: serviceAccount } }));
+    if (type === 'order/book/fetch/fulfilled') {
+      updateOrderStatus('Booked');
+      updateDeliveryData(payload.data.delivery);
+      dispatch(setMessage({ message: `Order booked with successfully`, type: 'success' }));
+      onClose();
+    } else {
+      dispatch(setMessage({ message: typeof payload?.error === 'string' ? payload.error : `Error! Order can't booked!`, type: 'error' }));
+    }
+    setLoading(false);
   };
 
   useEffect(() => {

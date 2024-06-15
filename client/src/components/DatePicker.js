@@ -1,4 +1,3 @@
-// DateRangePicker.js
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import {
@@ -9,11 +8,9 @@ import {
   endOfMonth,
   startOfWeek,
   endOfWeek,
-  eachDayOfInterval,
   isSameMonth,
-  isSameDay,
-  parseISO,
-  addDays
+  addDays,
+  isWithinInterval
 } from 'date-fns';
 
 const Wrapper = styled.div`
@@ -22,18 +19,18 @@ const Wrapper = styled.div`
 `;
 
 const Input = styled.input`
-  padding: 10px;
-  font-size: 16px;
+  padding: 8px;
+  font-size: 14px;
   width: 250px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  margin: 0 5px;
+  margin: 0 0px;
 `;
 
 const Popup = styled.div`
   position: absolute;
   top: 100%;
-  left: 0;
+  right: 0;
   background: white;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -100,37 +97,9 @@ const Day = styled.div`
   }
 `;
 
-const ButtonWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 10px;
-`;
-
-const Button = styled.button`
-  padding: 10px 20px;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #0056b3;
-  }
-
-  &.cancel {
-    background-color: #ccc;
-    margin-right: 10px;
-
-    &:hover {
-      background-color: #999;
-    }
-  }
-`;
-
-const DateRangePicker = () => {
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+const DateRangePicker = ({ startDate, endDate, setStartDate, setEndDate }) => {
+  // const [startDate, setStartDate] = useState(null);
+  // const [endDate, setEndDate] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedRange, setSelectedRange] = useState('Today');
@@ -141,10 +110,7 @@ const DateRangePicker = () => {
     'Last 7 days': [addDays(new Date(), -6), new Date()],
     'Last 30 days': [addDays(new Date(), -29), new Date()],
     'Last 90 days': [addDays(new Date(), -89), new Date()],
-    'Last 365 days': [addDays(new Date(), -364), new Date()],
-    'Last month': [startOfMonth(subMonths(new Date(), 1)), endOfMonth(subMonths(new Date(), 1))],
-    'Last 12 months': [addMonths(new Date(), -11), new Date()],
-    'Last year': [startOfMonth(subMonths(new Date(), 12)), endOfMonth(subMonths(new Date(), 1))]
+    'Last 365 days': [addDays(new Date(), -364), new Date()]
   };
 
   const handleRangeClick = (range) => {
@@ -203,24 +169,24 @@ const DateRangePicker = () => {
   const renderCells = () => {
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(monthStart);
-    const startDate = startOfWeek(monthStart);
-    const endDate = endOfWeek(monthEnd);
+    const startOfWeekDate = startOfWeek(monthStart);
+    const endOfWeekDate = endOfWeek(monthEnd);
 
     const dateFormat = 'd';
     const rows = [];
 
     let days = [];
-    let day = startDate;
+    let day = startOfWeekDate;
     let formattedDate = '';
 
-    while (day <= endDate) {
+    while (day <= endOfWeekDate) {
       for (let i = 0; i < 7; i++) {
         formattedDate = format(day, dateFormat);
         const cloneDay = day;
         days.push(
           <Day
             key={day}
-            isSelected={(startDate && isSameDay(day, startDate)) || (endDate && isSameDay(day, endDate))}
+            isSelected={startDate && endDate && isWithinInterval(day, { start: startDate, end: endDate })}
             isCurrentMonth={isSameMonth(day, monthStart)}
             onClick={() => handleDateClick(cloneDay)}
           >
@@ -270,12 +236,6 @@ const DateRangePicker = () => {
           </Calendar>
         </Popup>
       )}
-      <ButtonWrapper>
-        <Button className="cancel" onClick={() => setIsPopupOpen(false)}>
-          Cancel
-        </Button>
-        <Button onClick={() => setIsPopupOpen(false)}>Apply</Button>
-      </ButtonWrapper>
     </Wrapper>
   );
 };

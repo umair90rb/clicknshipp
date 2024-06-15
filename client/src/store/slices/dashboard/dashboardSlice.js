@@ -8,7 +8,7 @@ const initialState = {
   fetchStatus: fetchStatus.IDLE,
   error: null,
   startPeriod: moment(new Date()).startOf('day').format('YYYY-MM-DDTHH:MM'),
-  endPeriod: moment(new Date()).format('YYYY-MM-DDTHH:MM')
+  endPeriod: moment(new Date()).endOf('day').format('YYYY-MM-DDTHH:MM')
 };
 
 const dashboardSlice = createSlice({
@@ -17,7 +17,11 @@ const dashboardSlice = createSlice({
   reducers: {
     setDashboardStatPeriod: (state, action) => {
       const { period, value } = action.payload;
-      state[period] = value;
+      if (period === 'startPeriod') {
+        state[period] = moment(value).startOf('day').format('YYYY-MM-DDTHH:MM');
+      } else {
+        state[period] = moment(value).endOf('day').format('YYYY-MM-DDTHH:MM');
+      }
     },
     clearDashboardState: () => initialState
   },

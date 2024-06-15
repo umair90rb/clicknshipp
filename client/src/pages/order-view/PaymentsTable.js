@@ -1,8 +1,7 @@
 import React from 'react';
-import { TableRow, TableCell, IconButton, Typography, Grid, Table, TableBody } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { TableRow, TableCell, Table, TableBody } from '@mui/material';
 
-const OrderPaymentRow = ({ payment, onDelete }) => {
+const OrderPaymentRow = ({ payment }) => {
   return (
     <TableRow key={payment.id} hover>
       <TableCell align="right">{payment.type}</TableCell>
@@ -14,7 +13,7 @@ const OrderPaymentRow = ({ payment, onDelete }) => {
   );
 };
 
-const OrderPayments = ({ orderPayments, onDelete }) => {
+const OrderPayments = ({ orderPayments }) => {
   return (
     <Table>
       <TableBody>
@@ -25,7 +24,7 @@ const OrderPayments = ({ orderPayments, onDelete }) => {
           <TableCell align="right">Amount</TableCell>
           <TableCell align="right">Note</TableCell>
         </TableRow>
-        {orderPayments && orderPayments.map((payment) => <OrderPaymentRow key={payment.id} payment={payment} onDelete={onDelete} />)}
+        {orderPayments && orderPayments.map((payment) => <OrderPaymentRow key={payment.id} payment={payment} />)}
       </TableBody>
     </Table>
   );

@@ -1,97 +1,75 @@
-import { useEffect } from 'react';
-import moment from 'moment';
-import ReplayIcon from '@mui/icons-material/Replay';
-import { Grid, Typography, TextField, Box, Button } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Grid, FormControl, Select, InputLabel, MenuItem, Typography } from '@mui/material';
 import MainCard from 'components/MainCard';
 import AgentsReports from './AgentsReport';
-import { batch, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { reportEndPeriodSelector, reportStartPeriodSelector } from 'store/slices/report/reportSelector';
 import { setAgentReportStatPeriod } from 'store/slices/report/reportSlice';
+// import ItemsByOrders from './ItemsByOrders';
+import DateRangePicker from 'components/DatePicker';
 import { fetchAgentReport } from 'store/slices/report/fetchReport';
-import ItemsByOrders from './ItemsByOrders';
+
+const REPORT_TYPES = ['Agent Report', 'Load Sheet'];
 
 const Reporting = () => {
   const dispatch = useDispatch();
   const startPeriod = useSelector(reportStartPeriodSelector);
   const endPeriod = useSelector(reportEndPeriodSelector);
-
-  const handleFetchAgentReport = () => dispatch(fetchAgentReport({ body: { startPeriod, endPeriod } }));
-  const setInitialPeriod = () =>
-    batch(() => {
-      dispatch(
-        setAgentReportStatPeriod({
-          period: 'startPeriod',
-          value: moment(new Date()).startOf('day').format('YYYY-MM-DDTHH:MM')
-        })
-      );
-      dispatch(
-        setAgentReportStatPeriod({
-          period: 'endPeriod',
-          value: moment(new Date()).format('YYYY-MM-DDTHH:MM')
-        })
-      );
-    });
-  useEffect(() => {
-    setInitialPeriod();
-  }, []);
+  const [report, setReport] = useState('');
 
   useEffect(() => {
-    handleFetchAgentReport();
+    dispatch(fetchAgentReport({ body: { report, startPeriod, endPeriod } }));
   }, [startPeriod, endPeriod]);
+
+  const renderReport = () => {
+    switch (report) {
+      case 'Agent Report':
+        return <AgentsReports />;
+      case 'Load Sheet':
+        return <></>;
+    }
+  };
 
   return (
     <Grid container>
       <Grid item xs={12}>
         <Grid item xs={12}>
-          <Grid container item justifyContent="center" alignItems="center">
-            <Grid item xs={6}>
-              <Typography variant="h5">Reporting</Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Box display="flex" spacing={3} justifyContent="flex-end">
-                <TextField
-                  sx={{ mx: 1 }}
-                  type="datetime-local"
-                  label="Start Period"
-                  value={startPeriod}
-                  onChange={(e) => dispatch(setAgentReportStatPeriod({ period: 'startPeriod', value: e.target.value }))}
-                  size="small"
-                />
-                <TextField
-                  sx={{ mx: 1 }}
-                  type="datetime-local"
-                  label="End Period"
-                  value={endPeriod}
-                  onChange={(e) => dispatch(setAgentReportStatPeriod({ period: 'endPeriod', value: e.target.value }))}
-                  size="small"
-                />
-                <Button
-                  sx={{ mx: 1 }}
-                  startIcon={<ReplayIcon />}
-                  variant="contained"
-                  size="small"
-                  disabled={false}
-                  onClick={handleFetchAgentReport}
-                  aria-label="reload"
-                  color="primary"
-                >
-                  Refresh
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
+          <Typography variant="h5">Reporting</Typography>
+        </Grid>
+      </Grid>
+
+      <Grid container justifyContent="center" alignItems="center" xs={12} md={12} lg={12}>
+        <Grid item container justifyContent="flex-end" xs={6} md={6} lg={6}>
+          <FormControl sx={{ m: 1, minWidth: 250 }} size="small">
+            <InputLabel id="demo-select-small-label">Select report</InputLabel>
+            <Select
+              labelId="demo-select-small-label"
+              id="demo-select-small"
+              value={report}
+              label="Select report"
+              onChange={(e) => setReport(e.target.value)}
+            >
+              {REPORT_TYPES.map((rt, index) => (
+                <MenuItem key={index} value={rt}>
+                  {rt}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={6} md={6} lg={6}>
+          <DateRangePicker
+            startDate={startPeriod}
+            endDate={endPeriod}
+            setStartDate={(date) => dispatch(setAgentReportStatPeriod({ period: 'startPeriod', value: date }))}
+            setEndDate={(date) => dispatch(setAgentReportStatPeriod({ period: 'endPeriod', value: date }))}
+          />
         </Grid>
       </Grid>
 
       <Grid item xs={12} md={12} lg={12}>
         <MainCard sx={{ mt: 2 }} content={false}>
-          <AgentsReports />
-        </MainCard>
-      </Grid>
-
-      <Grid item xs={12} md={12} lg={12}>
-        <MainCard sx={{ mt: 2 }} content={false}>
-          <ItemsByOrders />
+          {renderReport()}
         </MainCard>
       </Grid>
     </Grid>

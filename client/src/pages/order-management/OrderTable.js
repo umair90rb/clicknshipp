@@ -32,7 +32,7 @@ import {
 } from 'store/slices/order/orderSelector';
 import { fetchAllOrder, fetchBulkOrdersDelete, fetchPartialUpdateOrder } from 'store/slices/order/fetchOrder';
 import location from 'utils/location';
-import { Button, Box, Modal } from '@mui/material';
+import { Button, Box } from '@mui/material';
 import AssignSelectedOrderModal from './AssignSelectedOrderModal';
 import CustomNoRowsOverlay from '../../components/GridNoRowCustomOverlay';
 import { setOrder, setOrderFilters, setOrderPagination, setOrderSort } from 'store/slices/order/orderSlice';
@@ -49,6 +49,7 @@ import fetchStatus from 'constants/fetchStatuses';
 import { fetchAllCities } from 'store/slices/city/fetchCity';
 import GridSearchSelect from './GridSearchSelect';
 import GridAddItemModal from './GridAddItemModal/index';
+import { GridDropdownFilter } from './GridDropdownFilter';
 const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handleCancelClick, handleAddItemClick) => [
   {
     field: 'id',
@@ -420,6 +421,20 @@ const OrderTable = memo(() => {
           </Button>
         )}
         {userPermissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) && <GridToolbarExport />}
+        <GridDropdownFilter
+          multiple
+          label="status"
+          options={ORDER_STATUSES}
+          value={filters.filter((filter) => filter.column === 'status').map((filter) => filter.value)}
+          onChange={(e) =>
+            dispatch(
+              setOrderFilters([
+                ...filters.filter((filter) => filter.column !== 'status'),
+                ...e.target.value.map((value) => ({ column: 'status', op: 'Text is exactly', value }))
+              ])
+            )
+          }
+        />
         <Box sx={{ flexGrow: 1 }} />
         <GridToolbarQuickFilter />
       </GridToolbarContainer>
@@ -436,7 +451,7 @@ const OrderTable = memo(() => {
         }}
         initialState={{
           sorting: {
-            sortModel: [{ field: 'rating', sort: 'desc' }]
+            sortModel
           }
         }}
         loading={listIsLoading}

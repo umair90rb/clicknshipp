@@ -3,7 +3,7 @@ import { Link, Grid, Stack, Typography, Card, CardContent, Button, Chip, Modal, 
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import CenterCircularLoader from 'components/CenterCircularLoader';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { fetchCancelOrderBooking, fetchOrder } from 'store/slices/order/fetchOrder';
 import { setMessage } from 'store/slices/util/utilSlice';
 import OrderItemTable from './OrderItemTable';
@@ -14,9 +14,10 @@ import TrackingModal from './TrackingModal';
 import StatusModal from './StatusModal';
 import AddCityModal from './AddCityModal';
 import History from './History';
-import OldOrders from './OldOrders';
+// import OldOrders from './OldOrders';
 import DuplicateOrders from './DuplicateOrders';
 import OrderPayments from './PaymentsTable';
+import { authUserSelector } from 'store/slices/auth/authSelector';
 
 const OrderView = () => {
   const { orderId } = useParams();
@@ -59,24 +60,27 @@ const OrderView = () => {
     customer,
     createdAt,
     history,
-    delivery,
+    delivery: orderDelivery,
     duplicate: duplicateOrders
   } = order || {};
   const [orderStatus, setOrderStatus] = useState('');
-  const { email, first_name, last_name, id: customerId, shopify_id, name, note, phone } = customer || {};
-  const { city, zip, country, address1, address2, phone: address_phone } = address || {};
+  const [delivery, setDelivery] = useState(orderDelivery);
+  const { email, id: customerId, shopify_id, name, note, phone } = customer || {};
+  const { city, zip, address1, address2, phone: address_phone } = address || {};
+  const authUser = useSelector(authUserSelector);
+  const [canUpdate, setCanUpdate] = useState(order?.user?.id === authUser?.id);
 
   const getOrderDetails = () =>
     dispatch(fetchOrder({ id: orderId })).then((action) => {
       if (action.type === 'order/fetch/fulfilled') {
         setOrder(action.payload?.data?.order);
-        setLoading(false);
         setOrderStatus(action.payload?.data?.order?.status);
+        setCanUpdate(action.payload?.data?.order?.user?.id === authUser?.id);
       } else {
         setError(action.payload?.error || 'Something goes wrong!');
         dispatch(setMessage({ type: 'error', message: action.payload?.error || 'Something goes wrong!' }));
-        setLoading(false);
       }
+      setLoading(false);
     });
 
   useEffect(() => {
@@ -175,26 +179,30 @@ const OrderView = () => {
                 </Button>
               </Grid>
             )}
-            <Grid item>
-              <Button
-                variant="outlined"
-                disabled={orderStatus === 'Confirmed' || orderStatus === 'Deleted' || orderStatus === 'Booked'}
-                onClick={showOrderStatusModal}
-                color="success"
-              >
-                Update Order Status
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button
-                variant="contained"
-                disabled={orderStatus === 'Confirmed' || orderStatus === 'Booked'}
-                onClick={() => navigate(location.createOrder(), { state: { order } })}
-                color="primary"
-              >
-                Update
-              </Button>
-            </Grid>
+            {canUpdate && (
+              <Grid item>
+                <Button
+                  variant="outlined"
+                  disabled={orderStatus === 'Confirmed' || orderStatus === 'Deleted' || orderStatus === 'Booked'}
+                  onClick={showOrderStatusModal}
+                  color="success"
+                >
+                  Update Order Status
+                </Button>
+              </Grid>
+            )}
+            {canUpdate && (
+              <Grid item>
+                <Button
+                  variant="contained"
+                  disabled={orderStatus === 'Confirmed' || orderStatus === 'Booked'}
+                  onClick={() => navigate(location.createOrder(), { state: { order } })}
+                  color="primary"
+                >
+                  Update
+                </Button>
+              </Grid>
+            )}
           </Grid>
         </Grid>
       </Grid>
@@ -207,12 +215,14 @@ const OrderView = () => {
               <OrderItemTable orderItems={items} onDelete={() => {}} />
             </CardContent>
           </Card>
-          <Card sx={{ minWidth: 275, padding: 2, mt: 2 }}>
-            <CardContent sx={{ padding: 0 }}>
-              <Typography variant="h5">Order Payments</Typography>
-              <OrderPayments orderPayments={payments} onDelete={() => {}} />
-            </CardContent>
-          </Card>
+          {payments && Array.isArray(payments) && payments.length > 0 && (
+            <Card sx={{ minWidth: 275, padding: 2, mt: 2 }}>
+              <CardContent sx={{ padding: 0 }}>
+                <Typography variant="h5">Order Payments</Typography>
+                <OrderPayments orderPayments={payments} />
+              </CardContent>
+            </Card>
+          )}
           <OrderSummaryCard payments={payments} discount={total_discounts} subtotal={subtotal_price} tax={total_tax} total={total_price} />
           {duplicateOrders && duplicateOrders.length > 0 && <DuplicateOrders duplicateOrders={duplicateOrders} />}
           <History orderHistory={history} />
@@ -247,7 +257,13 @@ const OrderView = () => {
         </Grid>
       </Grid>
 
-      <CourierDropdownModal visible={showBookModal} onClose={hideBookingModal} updateOrderStatus={setOrderStatus} orderId={id} />
+      <CourierDropdownModal
+        visible={showBookModal}
+        onClose={hideBookingModal}
+        updateOrderStatus={setOrderStatus}
+        updateDeliveryData={setDelivery}
+        orderId={id}
+      />
       <StatusModal visible={showOrderStatusUpdateModal} onClose={hideOrderStatusModal} setOrderStatus={setOrderStatus} orderId={id} />
       <TrackingModal visible={showTrackModal} onClose={hideTrackingModal} orderId={id} />
       <AddCityModal city={city} visible={addCityModalVisible} onClose={hideAddCityModal} />

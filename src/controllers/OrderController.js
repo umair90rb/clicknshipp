@@ -145,13 +145,28 @@ export default {
         const _filters = {};
         for (let i = 0; i < filters.length; i++) {
           const { column, op, value } = filters[i];
-          _filters[FILTER_COLUMNS[column].column] = {
-            [FILTER_OP[op]]: value || null,
-          };
+          if (
+            FILTER_COLUMNS[column] in _filters &&
+            !Array.isArray(_filters[FILTER_COLUMNS[column]])
+          ) {
+            const filterValues = filters
+              .filter((filter) => filter.column === column)
+              .map((filter) => filter.value);
+            _filters[FILTER_COLUMNS[column]] = {
+              [Op.in]: filterValues,
+            };
+          } else if (!(FILTER_COLUMNS[column] in _filters)) {
+            _filters[FILTER_COLUMNS[column]] = {
+              [FILTER_OP[op]]: value,
+            };
+          }
         }
-        query.where = { ...query.where, ..._filters };
+        query.where = {
+          ...query.where,
+          ..._filters,
+        };
       }
-      console.log(JSON.stringify(query), "query");
+      // console.log(JSON.stringify(query), "query");
       const orders = await Order.findAndCountAll(query);
       return sendSuccessResponse(res, 200, {
         orders: { ...orders, ...req.body },

@@ -43,35 +43,39 @@ const OrderSummaryCard = ({ payments, discount, subtotal, tax, total }) => {
             <Divider />
           </Grid>
 
-          <Grid item xs={6}>
-            <Typography variant="body1">Received Payments:</Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="body1" align="right">
-              Rs.
-              {payments != undefined &&
-                Array.isArray(payments) &&
-                payments.reduce((prev, payment) => (payment.type === 'received' ? payment.amount + prev : prev), 0)}
-            </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <Divider />
-          </Grid>
+          {payments && Array.isArray(payments) && payments.length > 0 && (
+            <>
+              <Grid item xs={6}>
+                <Typography variant="body1">Received Payments:</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body1" align="right">
+                  Rs.
+                  {payments != undefined &&
+                    Array.isArray(payments) &&
+                    payments.reduce((prev, payment) => (payment.type === 'received' ? payment.amount + prev : prev), 0)}
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Divider />
+              </Grid>
 
-          <Grid item xs={6}>
-            <Typography variant="body1">Pending Payments:</Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="body1" align="right">
-              Rs.
-              {payments != undefined &&
-                Array.isArray(payments) &&
-                payments.reduce((prev, payment) => (payment.type === 'pending' ? payment.amount + prev : prev), 0)}
-            </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <Divider />
-          </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body1">Pending Payments:</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body1" align="right">
+                  Rs.
+                  {payments != undefined &&
+                    Array.isArray(payments) &&
+                    payments.reduce((prev, payment) => (payment.type === 'pending' ? payment.amount + prev : prev), 0)}
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Divider />
+              </Grid>
+            </>
+          )}
 
           <Grid item xs={6}>
             <Typography variant="body1" className="total-label">

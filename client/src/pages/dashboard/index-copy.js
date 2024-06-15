@@ -335,4 +335,39 @@ const DashboardDefault = () => {
   );
 };
 
+{
+  /* <Grid item xs={6}>
+            <Box display="flex" spacing={3} justifyContent="flex-end">
+              <TextField
+                sx={{ mx: 1 }}
+                type="datetime-local"
+                label="Start Period"
+                value={startPeriod}
+                onChange={(e) => dispatch(setDashboardStatPeriod({ period: 'startPeriod', value: e.target.value }))}
+                size="small"
+              />
+              <TextField
+                sx={{ mx: 1 }}
+                type="datetime-local"
+                label="End Period"
+                value={endPeriod}
+                onChange={(e) => dispatch(setDashboardStatPeriod({ period: 'endPeriod', value: e.target.value }))}
+                size="small"
+              />
+              <Button
+                sx={{ mx: 1 }}
+                startIcon={<ReplayIcon />}
+                variant="contained"
+                size="small"
+                disabled={statsIsLoading}
+                onClick={fetchStats}
+                aria-label="reload"
+                color="primary"
+              >
+                Refresh
+              </Button>
+            </Box>
+          </Grid> */
+}
+
 export default DashboardDefault;

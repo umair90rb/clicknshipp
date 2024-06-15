@@ -1,5 +1,5 @@
 import React from 'react';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { DataGrid } from '@mui/x-data-grid';
 import { Typography, LinearProgress } from '@mui/material';
 import styled from '@mui/system/styled';
 import { useSelector } from 'react-redux';

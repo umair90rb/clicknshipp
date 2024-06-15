@@ -94,7 +94,7 @@ function OperatorsWithInput({ column, index, addFilterInput, updateColumnFilter 
 
 const FilterModal = memo(({ visible, onClose, columns, onApplyFilters }) => {
   const [columnsWithFilters, setColumnsWithFilters] = useState(columns);
-  console.log(columns);
+  console.log('filter modal rendering need to refactor');
   const addFilterInput = (_column, index) => {
     let column = { ..._column };
     if ('filter' in column) {

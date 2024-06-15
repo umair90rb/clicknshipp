@@ -1,4 +1,4 @@
-import sequelize from "sequelize";
+import sequelize, { Sequelize } from "sequelize";
 import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 
@@ -9,22 +9,29 @@ export default {
   async stats(req, res) {
     try {
       const { startPeriod, endPeriod } = req.query;
-      console.log(startPeriod, endPeriod, "startPeriod, endPeriod");
-      const orders = await Order.findAll({
-        attributes: ["id", "status", "total_price"],
-        include: [
-          {
-            model: OrderItem,
-            as: "items",
-            attributes: {
-              exclude: ["OrderId", "createdAt", "updatedAt"],
-            },
-          },
-          {
-            model: Delivery,
-            as: "delivery",
-            attributes: { include: ["courier", "status", "order_id", "id"] },
-          },
+      const result = await Order.findAll({
+        attributes: [
+          [Sequelize.fn("COUNT", Sequelize.col("*")), "totalOrders"],
+          [
+            Sequelize.fn(
+              "SUM",
+              Sequelize.literal(
+                "CASE WHEN status = 'Confirmed' THEN 1 ELSE 0 END"
+              )
+            ),
+            "confirmedOrders",
+          ],
+          [
+            Sequelize.fn(
+              "SUM",
+              Sequelize.literal("CASE WHEN status = 'Booked' THEN 1 ELSE 0 END")
+            ),
+            "bookedOrders",
+          ],
+          [
+            Sequelize.fn("SUM", Sequelize.col("total_price")),
+            "totalSalesValue",
+          ],
         ],
         where: {
           createdAt: {
@@ -35,66 +42,9 @@ export default {
           },
         },
       });
-      const totalOrders = orders.length;
-      let confirmedOrders = 0,
-        bookedOrders = 0,
-        totalSalesValue = 0,
-        ordersGroupedByItem = {};
-      for (let index = 0; index < orders.length; index++) {
-        const order = orders[index];
-        const items = order.items;
-        for (let index = 0; index < items.length; index++) {
-          const item = items[index];
-          if (ordersGroupedByItem[item.name] === undefined) {
-            ordersGroupedByItem[item.name] = {
-              name: item.name + (item.sku ? ` (${item.sku})` : ""),
-              generated: item.quantity || 0,
-              confirmed: order.status === "Confirmed" || "Booked" ? 1 : 0,
-              tcs: 0,
-              callcourier: 0,
-              deawoo: 0,
-              trax: 0,
-              postex: 0,
-              leapard: 0,
-            };
-          } else {
-            ordersGroupedByItem[item.name] = {
-              ...ordersGroupedByItem[item.name],
-              generated:
-                ordersGroupedByItem[item.name].generated + item.quantity,
-              confirmed:
-                order.status === "Confirmed"
-                  ? ordersGroupedByItem[item.name].confirmed + 1
-                  : ordersGroupedByItem[item.name].confirmed,
-            };
-          }
-          if (order.status === "Booked" && order.delivery !== null) {
-            ordersGroupedByItem[item.name][order.delivery.courier] =
-              ordersGroupedByItem[item.name][order.delivery.courier] + 1;
-          }
-        }
-        totalSalesValue += order.total_price || 0;
-        if (order.status === "Confirmed") {
-          confirmedOrders += 1;
-        }
-        if (order.status === "Booked") {
-          confirmedOrders += 1;
-          bookedOrders += 1;
-        }
-      }
-      const response = {
-        totalOrders,
-        confirmedOrders,
-        bookedOrders,
-        totalSalesValue,
-        ordersByItem: Object.values(ordersGroupedByItem),
-      };
-      return sendSuccessResponse(
-        res,
-        201,
-        { stats: response },
-        "All registered users"
-      );
+
+      const stats = result[0].dataValues;
+      return sendSuccessResponse(res, 201, { stats }, "All registered users");
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
