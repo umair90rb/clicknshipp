@@ -430,12 +430,17 @@ const OrderTable = memo(() => {
     <div style={{ height: !orders || !orders.length ? 400 : '80vh', width: '100%' }}>
       <DataGrid
         apiRef={apiRef}
-        loading={listIsLoading}
-        checkboxSelection={checkboxSelection}
         slots={{
           toolbar: renderToolbar,
           noRowsOverlay: CustomNoRowsOverlay
         }}
+        initialState={{
+          sorting: {
+            sortModel: [{ field: 'rating', sort: 'desc' }]
+          }
+        }}
+        loading={listIsLoading}
+        checkboxSelection={checkboxSelection}
         rowSelectionModel={rowSelectionModel}
         onRowSelectionModelChange={(newRowSelectionModel) => setRowSelectionModel(newRowSelectionModel)}
         paginationMode="server"

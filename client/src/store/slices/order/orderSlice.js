@@ -11,7 +11,7 @@ const initialState = {
     pageSize: 50,
     total: 0,
     filters: [],
-    sort: []
+    sort: [{ field: 'createdAt', sort: 'desc' }]
   },
   create: {
     fetchStatus: fetchStatus.IDLE,
