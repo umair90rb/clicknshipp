@@ -59,10 +59,10 @@ const Reporting = () => {
         </Grid>
         <Grid item xs={6} md={6} lg={6}>
           <DateRangePicker
-            startDate={startPeriod}
-            endDate={endPeriod}
-            setStartDate={(date) => dispatch(setAgentReportStatPeriod({ period: 'startPeriod', value: date }))}
-            setEndDate={(date) => dispatch(setAgentReportStatPeriod({ period: 'endPeriod', value: date }))}
+            startPeriod={startPeriod}
+            endPeriod={endPeriod}
+            onStartDateSelect={(date) => dispatch(setAgentReportStatPeriod({ period: 'startPeriod', value: date }))}
+            onEndDateSelect={(date) => dispatch(setAgentReportStatPeriod({ period: 'endPeriod', value: date }))}
           />
         </Grid>
       </Grid>

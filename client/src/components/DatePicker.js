@@ -97,9 +97,9 @@ const Day = styled.div`
   }
 `;
 
-const DateRangePicker = ({ startDate, endDate, setStartDate, setEndDate }) => {
-  // const [startDate, setStartDate] = useState(null);
-  // const [endDate, setEndDate] = useState(null);
+const DateRangePicker = ({ startPeriod, endPeriod, onStartDateSelect, onEndDateSelect }) => {
+  const [startDate, setStartDate] = useState(startPeriod);
+  const [endDate, setEndDate] = useState(endPeriod);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedRange, setSelectedRange] = useState('Today');
@@ -115,20 +115,22 @@ const DateRangePicker = ({ startDate, endDate, setStartDate, setEndDate }) => {
 
   const handleRangeClick = (range) => {
     setStartDate(predefinedRanges[range][0]);
+    onStartDateSelect(predefinedRanges[range][0]);
     setEndDate(predefinedRanges[range][1]);
+    onEndDateSelect(predefinedRanges[range][1]);
     setSelectedRange(range);
     setIsPopupOpen(false);
   };
 
   const handleDateClick = (day) => {
+    setSelectedRange('');
     if (!startDate || endDate) {
       setStartDate(day);
       setEndDate(null);
-    } else if (day < startDate) {
-      setEndDate(startDate);
-      setStartDate(day);
+      onStartDateSelect(day);
     } else {
       setEndDate(day);
+      onEndDateSelect(day);
     }
   };
 

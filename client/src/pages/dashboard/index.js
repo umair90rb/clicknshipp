@@ -10,7 +10,7 @@ import {
   dashboardStatsSelector
 } from 'store/slices/dashboard/dashboardSelector';
 import { setDashboardStatPeriod } from 'store/slices/dashboard/dashboardSlice';
-import moment from 'moment';
+// import moment from 'moment';
 import DateRangePicker from 'components/DatePicker';
 // import MonthlyBarChart from './MonthlyBarChart';
 
@@ -21,27 +21,8 @@ const DashboardDefault = () => {
   const startPeriod = useSelector(dashboardStartPeriodSelector);
   const endPeriod = useSelector(dashboardEndPeriodSelector);
 
-  const fetchStats = () => dispatch(fetchDashboardStats({ startPeriod, endPeriod }));
-  const initialPeriod = () =>
-    batch(() => {
-      dispatch(
-        setDashboardStatPeriod({
-          period: 'startPeriod',
-          value: moment(new Date()).startOf('day').format('YYYY-MM-DDTHH:MM')
-        })
-      );
-      dispatch(
-        setDashboardStatPeriod({
-          period: 'endPeriod',
-          value: moment(new Date()).format('YYYY-MM-DDTHH:MM')
-        })
-      );
-    });
   useEffect(() => {
-    initialPeriod();
-  }, []);
-  useEffect(() => {
-    fetchStats();
+    dispatch(fetchDashboardStats({ startPeriod, endPeriod }));
   }, [startPeriod, endPeriod]);
 
   return (
@@ -54,10 +35,10 @@ const DashboardDefault = () => {
           </Grid>
           <Grid container item justifyContent="flex-end" xs={6}>
             <DateRangePicker
-              startDate={startPeriod}
-              endDate={endPeriod}
-              setStartDate={(date) => dispatch(setDashboardStatPeriod({ period: 'startPeriod', value: date }))}
-              setEndDate={(date) => dispatch(setDashboardStatPeriod({ period: 'endPeriod', value: date }))}
+              startPeriod={startPeriod}
+              endPeriod={endPeriod}
+              onStartDateSelect={(date) => dispatch(setDashboardStatPeriod({ period: 'startPeriod', value: date }))}
+              onEndDateSelect={(date) => dispatch(setDashboardStatPeriod({ period: 'endPeriod', value: date }))}
             />
           </Grid>
         </Grid>

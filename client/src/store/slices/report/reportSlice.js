@@ -19,7 +19,7 @@ const reportSlice = createSlice({
   reducers: {
     setAgentReportStatPeriod: (state, action) => {
       const { period, value } = action.payload;
-      state[period] = value;
+      state[period] = moment(value).startOf('day').format('YYYY-MM-DDTHH:MM');
     },
     clearReportState: () => initialState
   },
