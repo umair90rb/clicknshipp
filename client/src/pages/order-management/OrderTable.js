@@ -1,6 +1,6 @@
 import React, { useEffect, useState, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   DataGrid,
   GridActionsCellItem,
@@ -258,7 +258,6 @@ const OrderTable = memo(() => {
   const apiRef = useGridApiRef();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  let [searchParams] = useSearchParams();
   const listIsLoading = useSelector(orderListIsLoadingSelector);
   const orders = useSelector(orderListSelector);
   const page = useSelector(orderPageSelector);
@@ -369,14 +368,7 @@ const OrderTable = memo(() => {
   const fetchOrders = (filters) => dispatch(fetchAllOrder({ body: { sort: sortModel, page, pageSize, filters } }));
 
   useEffect(() => {
-    const entries = Array.from(searchParams.entries()).map(([column, value]) => ({ column, op: 'Text is exactly', value }));
-    if (entries.length) {
-      // dispatch(setOrderFilters(entries));
-      fetchOrders(entries);
-      // setSearchParams()
-    } else {
-      fetchOrders(filters);
-    }
+    fetchOrders(filters);
     if (citiesFetchStatus !== fetchStatus.SUCCESS) {
       dispatch(fetchAllCities());
     }
@@ -428,20 +420,23 @@ const OrderTable = memo(() => {
           </Button>
         )}
         {userPermissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) && <GridToolbarExport />}
-        <GridDropdownFilter
+        {/* <GridDropdownFilter
           multiple
           label="status"
           options={ORDER_STATUSES}
-          value={filters.filter((filter) => filter.column === 'status').map((filter) => filter.value)}
-          onChange={(e) =>
+          // value={filters && filters.length ? filters.find((filter) => filter.column === 'status').value : []}
+          value={[]}
+          onChange={(e) => {
+            console.log(e.target.value, 'e.target.value');
             dispatch(
               setOrderFilters([
                 ...filters.filter((filter) => filter.column !== 'status'),
-                ...e.target.value.map((value) => ({ column: 'status', op: 'Text is exactly', value }))
+                { column: 'status', op: 'Text is exactly', value: e.target.value }
+                // ...e.target.value.map((value) => ({ column: 'status', op: 'Text is exactly', value }))
               ])
-            )
-          }
-        />
+            );
+          }}
+        /> */}
         <Box sx={{ flexGrow: 1 }} />
         <GridToolbarQuickFilter />
       </GridToolbarContainer>

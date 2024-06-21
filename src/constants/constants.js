@@ -120,5 +120,6 @@ export const FILTER_COLUMNS = {
   total_tax: "total_tax",
   total_discounts: "total_discounts",
   createdAt: "createdAt",
+  assignedAt: "assignedAt",
   chanel: "$chanel.name$",
 };

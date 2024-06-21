@@ -8,7 +8,7 @@ export const orderFilterSchema = Joi.object({
       Joi.object({
         column: Joi.string().required(),
         op: Joi.string().required(),
-        value: Joi.alternatives(Joi.string(), Joi.number())
+        value: Joi.alternatives(Joi.string(), Joi.number(), Joi.array())
           .required()
           .allow(""),
       })

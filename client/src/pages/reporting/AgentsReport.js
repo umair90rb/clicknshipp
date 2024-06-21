@@ -1,12 +1,19 @@
 import React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import { Typography, Link, LinearProgress } from '@mui/material';
+import { Typography, Button, Link, LinearProgress } from '@mui/material';
 import styled from '@mui/system/styled';
-import { useSelector } from 'react-redux';
-import { reportAgentDataSelector, reportAgentIsLoadingSelector } from 'store/slices/report/reportSelector';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  reportAgentDataSelector,
+  reportAgentIsLoadingSelector,
+  reportEndPeriodSelector,
+  reportStartPeriodSelector
+} from 'store/slices/report/reportSelector';
 import GridToolbarWithHeading from 'components/GridToolbarWithHeading';
 import CustomNoRowsOverlay from 'components/GridNoRowCustomOverlay';
 import location from 'utils/location';
+import { setOrderFilters } from 'store/slices/order/orderSlice';
+import { useNavigate } from 'react-router-dom';
 
 const BorderLinearProgress = styled(LinearProgress)(() => ({
   height: '14px',
@@ -20,66 +27,103 @@ const BorderLinearProgress = styled(LinearProgress)(() => ({
   }
 }));
 
-const columns = [
-  {
-    field: 'user_id',
-    headerName: 'User ID',
-    flex: 0.5
-  },
-  {
-    field: 'name',
-    headerName: 'Name',
-    flex: 0.5,
-    valueGetter: (params) => params.row.user.name || ''
-  },
-  {
-    field: 'total',
-    headerName: 'Assigned',
-    flex: 0.5,
-    renderCell: (params) => <Link href={`${location.allOrders()}?agent=${params.row.user.id}&status=Assigned`}>{params.row.total}</Link>
-  },
-  {
-    field: 'confirmed',
-    headerName: 'Confirmed',
-    flex: 0.5,
-    renderCell: (params) => (
-      <Link href={`${location.allOrders()}?agent=${params.row.user.id}&status=Confirmed`}>{params.row.confirmed}</Link>
-    )
-  },
-  {
-    field: 'no_pick',
-    headerName: 'No Pick',
-    flex: 0.5,
-    renderCell: (params) => <Link href={`${location.allOrders()}?agent=${params.row.user.id}&status=No Pick`}>{params.row.no_pick}</Link>
-  },
-  {
-    field: 'cancel',
-    headerName: 'Cancel',
-    flex: 0.5,
-    renderCell: (params) => <Link href={`${location.allOrders()}?agent=${params.row.user.id}&status=Cancel`}>{params.row.cancel}</Link>
-  },
-  {
-    field: 'percentage',
-    headerName: 'Percentage%',
-    flex: 0.5,
-    valueGetter: (params) => `${(params.row.confirmed / params.row.total) * 100}%`,
-    renderCell: (params) => {
-      const percentage = ((params.row.confirmed / params.row.total) * 100).toFixed(2);
-      return (
-        <>
-          <BorderLinearProgress color="success" variant="determinate" value={percentage} />
-          <Typography variant="body2" color="text.secondary">{`${percentage}%`}</Typography>
-        </>
-      );
-    }
-  }
-];
-
 export default function AgentsReports() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const reportIsLoading = useSelector(reportAgentIsLoadingSelector);
+  const startPeriod = useSelector(reportStartPeriodSelector);
+  const endPeriod = useSelector(reportEndPeriodSelector);
   const data = useSelector(reportAgentDataSelector);
 
   const renderToolBar = () => <GridToolbarWithHeading heading="Agent Report" />;
+  const linkClicked = (id, status) => {
+    dispatch(
+      setOrderFilters([
+        { column: 'agent', op: 'Text is exactly', value: id },
+        { column: 'status', op: 'Text is exactly', value: status },
+        { column: 'assignedAt', op: 'Greater than or equal to', value: startPeriod },
+        { column: 'assignedAt', op: 'Less than or equal to', value: endPeriod }
+      ])
+    );
+    navigate('/order/all');
+  };
+
+  const columns = [
+    {
+      field: 'user_id',
+      headerName: 'User ID',
+      flex: 0.5
+    },
+    {
+      field: 'name',
+      headerName: 'Name',
+      flex: 0.5,
+      valueGetter: (params) => params.row.user.name || ''
+    },
+    {
+      field: 'total',
+      headerName: 'Assigned',
+      flex: 0.5,
+      renderCell: (params) => {
+        return (
+          <Button onClick={() => linkClicked(params.row.user.id, 'Assigned')} variant="text" size="small">
+            {params.row.total}
+          </Button>
+        );
+      }
+    },
+    {
+      field: 'confirmed',
+      headerName: 'Confirmed',
+      flex: 0.5,
+      renderCell: (params) => {
+        return (
+          <Button onClick={() => linkClicked(params.row.user.id, 'Confirmed')} variant="text" size="small">
+            {params.row.confirmed}
+          </Button>
+        );
+      }
+    },
+    {
+      field: 'no_pick',
+      headerName: 'No Pick',
+      flex: 0.5,
+      renderCell: (params) => {
+        return (
+          <Button onClick={() => linkClicked(params.row.user.id, 'No Pick')} variant="text" size="small">
+            {params.row.no_pick}
+          </Button>
+        );
+      }
+    },
+    {
+      field: 'cancel',
+      headerName: 'Cancel',
+      flex: 0.5,
+      renderCell: (params) => {
+        return (
+          <Button onClick={() => linkClicked(params.row.user.id, 'Cancel')} variant="text" size="small">
+            {params.row.cancel}
+          </Button>
+        );
+      }
+    },
+    {
+      field: 'percentage',
+      headerName: 'Percentage%',
+      flex: 0.5,
+      valueGetter: (params) => `${(params.row.confirmed / params.row.total) * 100}%`,
+      renderCell: (params) => {
+        const percentage = ((params.row.confirmed / params.row.total) * 100).toFixed(2);
+        return (
+          <>
+            <BorderLinearProgress color="success" variant="determinate" value={percentage} />
+            <Typography variant="body2" color="text.secondary">{`${percentage}%`}</Typography>
+          </>
+        );
+      }
+    }
+  ];
 
   if (reportIsLoading) {
     return null;

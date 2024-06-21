@@ -140,27 +140,31 @@ export default {
       }
 
       if (filters.length) {
-        const _filters = {};
+        let _filters = {};
         for (let i = 0; i < filters.length; i++) {
           const { column, op, value } = filters[i];
-          if (
-            FILTER_COLUMNS[column] in _filters &&
-            !Array.isArray(_filters[FILTER_COLUMNS[column]])
-          ) {
-            const filterValues = filters
-              .filter((filter) => filter.column === column)
-              .map((filter) => filter.value);
-            _filters[FILTER_COLUMNS[column]] = filterValues;
-          } else if (!(FILTER_COLUMNS[column] in _filters)) {
-            _filters[FILTER_COLUMNS[column]] = {
-              [FILTER_OP[op]]: value,
-            };
-          }
+          _filters = {
+            [FILTER_COLUMNS[column]]: { [FILTER_OP[op]]: value },
+            ..._filters,
+          };
+          // if (
+          //   FILTER_COLUMNS[column] in _filters &&
+          //   !Array.isArray(_filters[FILTER_COLUMNS[column]])
+          // ) {
+          //   const filterValues = filters
+          //     .filter((filter) => filter.column === column)
+          //     .map((filter) => filter.value);
+          //   _filters[FILTER_COLUMNS[column]] = filterValues;
+          // } else if (!(FILTER_COLUMNS[column] in _filters)) {
+          //   _filters[FILTER_COLUMNS[column]] = {
+          //     [FILTER_OP[op]]: value,
+          //   };
+          // }
         }
         const _query = { ...query, where: { ...query.where, ..._filters } };
         query = _query;
       }
-      console.log(query, "========query");
+      console.log(query, "=========query");
       const orders = await Order.findAndCountAll(query);
       return sendSuccessResponse(res, 200, {
         orders: { ...orders, ...req.body },
