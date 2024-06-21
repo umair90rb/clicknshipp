@@ -300,4 +300,3 @@ class OrderService {
 }
 
 export const _orderService = new OrderService();
-export default _orderService;

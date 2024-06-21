@@ -6,7 +6,7 @@ import StartIcon from '@mui/icons-material/Start';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import SyncIcon from '@mui/icons-material/Sync';
 import OrderTable from './OrderTable';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import location from 'utils/location';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllOrder } from 'store/slices/order/fetchOrder';
@@ -18,6 +18,7 @@ import AssignOrderModal from './AssignOrderModal';
 
 const OrderManagement = memo(() => {
   const navigate = useNavigate();
+  const [_, setSearchParams] = useSearchParams();
   const dispatch = useDispatch();
   const orderPaginationPage = useSelector(orderPageSelector);
   const orderPaginationPageSize = useSelector(orderPageSizeSelector);
@@ -53,13 +54,14 @@ const OrderManagement = memo(() => {
                 <Button
                   variant="contained"
                   startIcon={<SyncIcon />}
-                  onClick={() =>
+                  onClick={() => {
+                    setSearchParams({});
                     dispatch(
                       fetchAllOrder({
                         body: { sort: orderSort, page: orderPaginationPage, pageSize: orderPaginationPageSize, filters: orderFilters }
                       })
-                    )
-                  }
+                    );
+                  }}
                 >
                   Refresh
                 </Button>

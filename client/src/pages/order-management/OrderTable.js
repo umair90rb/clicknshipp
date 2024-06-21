@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useCallback, memo } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   DataGrid,
   GridActionsCellItem,
@@ -44,7 +44,7 @@ import { formatDateTime } from 'utils/format-date';
 import { useGridApiRef } from '../../../node_modules/@mui/x-data-grid/index';
 import GridEditTextarea from './GridEditTextarea';
 import ORDER_STATUSES from 'constants/orderStatuses';
-import { cityCitiesSelector, cityCreateFetchStatusSelector } from 'store/slices/city/citySelector';
+import { cityCreateFetchStatusSelector } from 'store/slices/city/citySelector';
 import fetchStatus from 'constants/fetchStatuses';
 import { fetchAllCities } from 'store/slices/city/fetchCity';
 import GridSearchSelect from './GridSearchSelect';
@@ -258,6 +258,7 @@ const OrderTable = memo(() => {
   const apiRef = useGridApiRef();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  let [searchParams] = useSearchParams();
   const listIsLoading = useSelector(orderListIsLoadingSelector);
   const orders = useSelector(orderListSelector);
   const page = useSelector(orderPageSelector);
@@ -267,7 +268,6 @@ const OrderTable = memo(() => {
   const total = useSelector(orderTotalSelector);
 
   const citiesFetchStatus = useSelector(cityCreateFetchStatusSelector);
-  const citiesList = useSelector(cityCitiesSelector);
   const userPermissions = useSelector(authPermissionsSelector);
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({
@@ -366,13 +366,20 @@ const OrderTable = memo(() => {
     return;
   };
 
-  const fetchOrders = () => dispatch(fetchAllOrder({ body: { sort: sortModel, page, pageSize, filters } }));
+  const fetchOrders = (filters) => dispatch(fetchAllOrder({ body: { sort: sortModel, page, pageSize, filters } }));
 
   useEffect(() => {
+    const entries = Array.from(searchParams.entries()).map(([column, value]) => ({ column, op: 'Text is exactly', value }));
+    if (entries.length) {
+      // dispatch(setOrderFilters(entries));
+      fetchOrders(entries);
+      // setSearchParams()
+    } else {
+      fetchOrders(filters);
+    }
     if (citiesFetchStatus !== fetchStatus.SUCCESS) {
       dispatch(fetchAllCities());
     }
-    fetchOrders();
   }, [page, pageSize, filters, sortModel]);
 
   const handleViewClick = (id) => () => navigate(location.viewOrder(id));
@@ -487,14 +494,19 @@ const OrderTable = memo(() => {
         onApplyFilters={handleApplyFilters}
         columns={columns()
           .slice(0, -1)
-          .map(({ field, headerName }) => {
-            const filterObj = { field, headerName };
-            const filterInState = filters.find((f) => f.column === field);
-            if (filterInState) {
-              filterObj.filter = filterInState;
+          .reduce((pv, cv) => {
+            const { field, headerName } = cv;
+            if (field !== 'agent') {
+              const filterObj = { field, headerName };
+              const filterInState = filters.find((f) => f.column === field);
+              if (filterInState) {
+                filterObj.filter = filterInState;
+              }
+              return [...pv, filterObj];
+            } else {
+              return pv;
             }
-            return filterObj;
-          })}
+          }, [])}
       />
     </div>
   );

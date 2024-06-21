@@ -5,11 +5,11 @@ import AgentsReports from './AgentsReport';
 import { useDispatch, useSelector } from 'react-redux';
 import { reportEndPeriodSelector, reportStartPeriodSelector } from 'store/slices/report/reportSelector';
 import { setAgentReportStatPeriod } from 'store/slices/report/reportSlice';
-// import ItemsByOrders from './ItemsByOrders';
+import ItemsByOrders from './ItemsByOrders';
 import DateRangePicker from 'components/DatePicker';
 import { fetchAgentReport } from 'store/slices/report/fetchReport';
 
-const REPORT_TYPES = ['Agent Report', 'Load Sheet'];
+const REPORT_TYPES = ['Agent Report', 'Unit Report'];
 
 const Reporting = () => {
   const dispatch = useDispatch();
@@ -18,15 +18,15 @@ const Reporting = () => {
   const [report, setReport] = useState('');
 
   useEffect(() => {
-    dispatch(fetchAgentReport({ body: { report, startPeriod, endPeriod } }));
-  }, [startPeriod, endPeriod]);
+    dispatch(fetchAgentReport({ body: { reportType: report, startPeriod, endPeriod } }));
+  }, [report, startPeriod, endPeriod]);
 
   const renderReport = () => {
     switch (report) {
       case 'Agent Report':
         return <AgentsReports />;
-      case 'Load Sheet':
-        return <></>;
+      case 'Unit Report':
+        return <ItemsByOrders />;
     }
   };
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
@@ -16,27 +16,27 @@ const columns = (handleView) => [
   {
     field: 'name',
     headerName: 'Name',
-    flex: 1.7
+    flex: 0.5
   },
   {
     field: 'email',
     headerName: 'Email',
-    flex: 1
+    flex: 0.5
   },
   {
     field: 'phone',
     headerName: 'Phone',
-    flex: 1
+    flex: 0.5
   },
   {
     field: 'note',
     headerName: 'Note',
-    flex: 1
+    flex: 0.5
   },
   {
     field: 'actions',
     headerName: 'Actions',
-    flex: 1,
+    flex: 0.5,
     type: 'actions',
     cellClassName: 'actions',
     getActions: ({ id }) => [

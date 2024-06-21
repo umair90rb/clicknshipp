@@ -113,7 +113,7 @@ export const FILTER_COLUMNS = {
   status: "status",
   customer: "$customer.first_name$",
   phone: "$customer.phone$",
-  agent: "$user.name$",
+  agent: "$user_id$",
   address: "$address.address1$",
   city: "$address.city$",
   total_price: "total_price",

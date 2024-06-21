@@ -17,9 +17,7 @@ import logger from "../middleware/logger";
 import getNameFromSubmissionLink, {
   getSizeAndPrice,
 } from "../helpers/getNameFromLink";
-import _orderService, {
-  _orderService as orderService,
-} from "../services/OrderService";
+import { _orderService } from "../services/OrderService";
 
 const {
   Order,
@@ -61,7 +59,7 @@ export default {
     try {
       const { page, pageSize, filters, sort } = req.body;
       const permissions = req.user.permissions;
-      const query = {
+      let query = {
         where: {
           user_id: req.user.id,
         },
@@ -152,21 +150,17 @@ export default {
             const filterValues = filters
               .filter((filter) => filter.column === column)
               .map((filter) => filter.value);
-            _filters[FILTER_COLUMNS[column]] = {
-              [Op.in]: filterValues,
-            };
+            _filters[FILTER_COLUMNS[column]] = filterValues;
           } else if (!(FILTER_COLUMNS[column] in _filters)) {
             _filters[FILTER_COLUMNS[column]] = {
               [FILTER_OP[op]]: value,
             };
           }
         }
-        query.where = {
-          ...query.where,
-          ..._filters,
-        };
+        const _query = { ...query, where: { ...query.where, ..._filters } };
+        query = _query;
       }
-      // console.log(JSON.stringify(query), "query");
+      console.log(query, "========query");
       const orders = await Order.findAndCountAll(query);
       return sendSuccessResponse(res, 200, {
         orders: { ...orders, ...req.body },
@@ -513,7 +507,7 @@ export default {
         );
         await Promise.all(
           orders.map((order) =>
-            orderService.createSubmissionOrder(order, req.user.id)
+            _orderService.createSubmissionOrder(order, req.user.id)
           )
         );
         return sendSuccessResponse(

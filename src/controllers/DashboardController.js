@@ -44,7 +44,7 @@ export default {
       });
 
       const stats = result[0].dataValues;
-      return sendSuccessResponse(res, 201, { stats }, "All registered users");
+      return sendSuccessResponse(res, 201, { stats }, "Dashboard stats.");
     } catch (e) {
       console.error(e);
       return sendErrorResponse(

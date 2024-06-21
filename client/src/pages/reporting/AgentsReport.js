@@ -1,11 +1,12 @@
 import React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import { Typography, LinearProgress } from '@mui/material';
+import { Typography, Link, LinearProgress } from '@mui/material';
 import styled from '@mui/system/styled';
 import { useSelector } from 'react-redux';
 import { reportAgentDataSelector, reportAgentIsLoadingSelector } from 'store/slices/report/reportSelector';
 import GridToolbarWithHeading from 'components/GridToolbarWithHeading';
 import CustomNoRowsOverlay from 'components/GridNoRowCustomOverlay';
+import location from 'utils/location';
 
 const BorderLinearProgress = styled(LinearProgress)(() => ({
   height: '14px',
@@ -34,17 +35,26 @@ const columns = [
   {
     field: 'total',
     headerName: 'Assigned',
-    flex: 0.5
+    flex: 0.5,
+    renderCell: (params) => <Link href={`${location.allOrders()}?agent=${params.row.user.id}&status=Assigned`}>{params.row.no_pick}</Link>
   },
   {
     field: 'confirmed',
     headerName: 'Confirmed',
-    flex: 0.5
+    flex: 0.5,
+    renderCell: (params) => <Link href={`${location.allOrders()}?agent=${params.row.user.id}&status=Confirmed`}>{params.row.no_pick}</Link>
   },
   {
     field: 'no_pick',
     headerName: 'No Pick',
-    flex: 0.5
+    flex: 0.5,
+    renderCell: (params) => <Link href={`${location.allOrders()}?agent=${params.row.user.id}&status=No Pick`}>{params.row.no_pick}</Link>
+  },
+  {
+    field: 'cancel',
+    headerName: 'Cancel',
+    flex: 0.5,
+    renderCell: (params) => <Link href={`${location.allOrders()}?agent=${params.row.user.id}&status=Cancel`}>{params.row.cancel}</Link>
   },
   {
     field: 'percentage',
@@ -69,8 +79,12 @@ export default function AgentsReports() {
 
   const renderToolBar = () => <GridToolbarWithHeading heading="Agent Report" />;
 
+  if (reportIsLoading) {
+    return null;
+  }
+
   return (
-    <div style={{ width: '100%', height: '40vh' }}>
+    <div style={{ width: '100%' }}>
       <DataGrid
         disableRowSelectionOnClick
         hideFooterPagination

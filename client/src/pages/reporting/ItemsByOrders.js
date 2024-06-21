@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { dashboardIsLoadingSelector, dashboardStatsSelector } from 'store/slices/dashboard/dashboardSelector';
 import GridToolbarWithHeading from 'components/GridToolbarWithHeading';
 import CustomNoRowsOverlay from 'components/GridNoRowCustomOverlay';
+import { reportAgentDataSelector, reportAgentIsLoadingSelector } from 'store/slices/report/reportSelector';
 
 const BorderLinearProgress = styled(LinearProgress)(() => ({
   height: '14px',
@@ -36,6 +37,16 @@ const columns = [
     flex: 0.5
   },
 
+  {
+    field: 'no_pick',
+    headerName: 'No Pick',
+    flex: 0.5
+  },
+  {
+    field: 'cancel',
+    headerName: 'Cancel',
+    flex: 0.5
+  },
   {
     field: 'percentage',
     headerName: 'Percentage%',
@@ -84,20 +95,24 @@ const columns = [
 ];
 
 export default function ItemsByOrders() {
-  const statsIsLoading = useSelector(dashboardIsLoadingSelector);
-  const stats = useSelector(dashboardStatsSelector);
+  const reportIsLoading = useSelector(reportAgentIsLoadingSelector);
+  const data = useSelector(reportAgentDataSelector);
 
   const renderToolbar = () => <GridToolbarWithHeading heading="Products in orders" />;
 
+  if (reportIsLoading) {
+    return null;
+  }
+
   return (
-    <div style={{ width: '100%', height: '40vh' }}>
+    <div style={{ width: '100%' }}>
       <DataGrid
         disableRowSelectionOnClick
-        loading={statsIsLoading}
+        loading={reportIsLoading}
         slots={{ toolbar: renderToolbar, noRowsOverlay: CustomNoRowsOverlay }}
         hideFooterPagination={true}
         getRowId={(row) => `${row.name}-${row.generated}-${row.confirmed}`}
-        rows={stats?.ordersByItem || []}
+        rows={data || []}
         columns={columns}
       />
     </div>
