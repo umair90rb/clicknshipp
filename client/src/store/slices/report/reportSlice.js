@@ -9,8 +9,8 @@ const initialState = {
     fetchStatus: fetchStatus.IDLE,
     error: null
   },
-  startPeriod: moment(new Date()).startOf('day').format('YYYY-MM-DDTHH:MM'),
-  endPeriod: moment(new Date()).format('YYYY-MM-DDTHH:MM')
+  startPeriod: moment(new Date()).startOf('day').format('YYYY-MM-DDThh:mm:ss'),
+  endPeriod: moment(new Date()).endOf('day').format('YYYY-MM-DDThh:mm:ss')
 };
 
 const reportSlice = createSlice({
@@ -19,7 +19,7 @@ const reportSlice = createSlice({
   reducers: {
     setAgentReportStatPeriod: (state, action) => {
       const { period, value } = action.payload;
-      state[period] = moment(value).startOf('day').format('YYYY-MM-DDTHH:MM');
+      state[period] = value;
     },
     clearReportState: () => initialState
   },

@@ -9,6 +9,7 @@ export default {
   async stats(req, res) {
     try {
       const { startPeriod, endPeriod } = req.query;
+      console.log(startPeriod, endPeriod, "startPeriod, endPeriod");
       const result = await Order.findAll({
         attributes: [
           [Sequelize.fn("COUNT", Sequelize.col("*")), "totalOrders"],
@@ -35,10 +36,8 @@ export default {
         ],
         where: {
           createdAt: {
-            [Op.and]: {
-              [Op.gte]: startPeriod,
-              [Op.lte]: endPeriod,
-            },
+            [Op.gte]: startPeriod,
+            [Op.lte]: endPeriod,
           },
         },
       });

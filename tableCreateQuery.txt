@@ -40,3 +40,4 @@ sequelize migration:generate --name add-city-code-column-in-city-name-mappings-t
 sequelize migration:generate --name add-ordered-at-column-in-orders-table
 
 sequelize migration:generate --name add-unit-price-column-in-order-item-table
+sequelize migration:generate --name add-assigned-at-column-in-order-table

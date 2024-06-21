@@ -8,6 +8,7 @@ module.exports = {
     port: process.env.DB_PORT,
     dialect: "postgres",
     seederStorage: "sequelize",
+    timezone: "+05:00",
     // dialectOptions: {
     //   ssl: {
     //     require: true,
@@ -24,6 +25,7 @@ module.exports = {
     logging: false,
     dialect: "postgres",
     seederStorage: "sequelize",
+    timezone: "+05:00",
     dialectOptions: {
       ssl: {
         require: true,
@@ -40,6 +42,7 @@ module.exports = {
     logging: false,
     dialect: "postgres",
     seederStorage: "sequelize",
+    timezone: "+05:00",
     dialectOptions: {
       ssl: {
         require: true,

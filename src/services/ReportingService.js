@@ -1,5 +1,6 @@
 import { Sequelize, Op, literal, fn } from "sequelize";
 import model from "../models";
+import moment from "moment";
 const { Order, OrderItem, Delivery, User } = model;
 
 class ReportingService {
@@ -46,7 +47,7 @@ class ReportingService {
         },
       ],
       where: {
-        createdAt: {
+        assignedAt: {
           [Op.gte]: startPeriod,
           [Op.lte]: endPeriod,
         },

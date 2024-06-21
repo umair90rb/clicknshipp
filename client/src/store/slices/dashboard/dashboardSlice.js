@@ -17,7 +17,7 @@ const dashboardSlice = createSlice({
   reducers: {
     setDashboardStatPeriod: (state, action) => {
       const { period, value } = action.payload;
-      state[period] = moment(value).startOf('day').format('YYYY-MM-DDTHH:MM');
+      state[period] = value;
     },
     clearDashboardState: () => initialState
   },

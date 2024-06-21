@@ -35,6 +35,7 @@ const DashboardDefault = () => {
           </Grid>
           <Grid container item justifyContent="flex-end" xs={6}>
             <DateRangePicker
+              requiredFormat="YYYY-MM-DDTHH:MM"
               startPeriod={startPeriod}
               endPeriod={endPeriod}
               onStartDateSelect={(date) => dispatch(setDashboardStatPeriod({ period: 'startPeriod', value: date }))}

@@ -12,6 +12,8 @@ import {
   addDays,
   isWithinInterval
 } from 'date-fns';
+import moment from 'moment';
+import { dateFormat } from 'constants/index';
 
 const Wrapper = styled.div`
   position: relative;
@@ -97,7 +99,7 @@ const Day = styled.div`
   }
 `;
 
-const DateRangePicker = ({ startPeriod, endPeriod, onStartDateSelect, onEndDateSelect }) => {
+const DateRangePicker = ({ requiredFormat = dateFormat, startPeriod, endPeriod, onStartDateSelect, onEndDateSelect }) => {
   const [startDate, setStartDate] = useState(startPeriod);
   const [endDate, setEndDate] = useState(endPeriod);
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -115,9 +117,9 @@ const DateRangePicker = ({ startPeriod, endPeriod, onStartDateSelect, onEndDateS
 
   const handleRangeClick = (range) => {
     setStartDate(predefinedRanges[range][0]);
-    onStartDateSelect(predefinedRanges[range][0]);
+    onStartDateSelect(moment(predefinedRanges[range][0]).startOf('day').format(requiredFormat));
     setEndDate(predefinedRanges[range][1]);
-    onEndDateSelect(predefinedRanges[range][1]);
+    onEndDateSelect(moment(predefinedRanges[range][1]).endOf('day').format(requiredFormat));
     setSelectedRange(range);
     setIsPopupOpen(false);
   };
@@ -127,10 +129,10 @@ const DateRangePicker = ({ startPeriod, endPeriod, onStartDateSelect, onEndDateS
     if (!startDate || endDate) {
       setStartDate(day);
       setEndDate(null);
-      onStartDateSelect(day);
+      onStartDateSelect(moment(day).startOf('day').format(requiredFormat));
     } else {
       setEndDate(day);
-      onEndDateSelect(day);
+      onEndDateSelect(moment(day).endOf('day').format(requiredFormat));
     }
   };
 

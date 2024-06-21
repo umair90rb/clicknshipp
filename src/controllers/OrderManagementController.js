@@ -20,8 +20,12 @@ export default {
           const end = start + numberOfOrderForAgents + 1;
           const orderIdsForThisAgent = orderIds.slice(start, end);
           const ordersIds = orderIdsForThisAgent.map((id) => id);
-          const updated = await Order.update(
-            { status: "Assigned", user_id: agentId, updatedAt: new Date() },
+          await Order.update(
+            {
+              status: "Assigned",
+              user_id: agentId,
+              assignedAt: new Date(),
+            },
             {
               where: {
                 id: { [Op.in]: ordersIds },

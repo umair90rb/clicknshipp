@@ -36,13 +36,15 @@ const columns = [
     field: 'total',
     headerName: 'Assigned',
     flex: 0.5,
-    renderCell: (params) => <Link href={`${location.allOrders()}?agent=${params.row.user.id}&status=Assigned`}>{params.row.no_pick}</Link>
+    renderCell: (params) => <Link href={`${location.allOrders()}?agent=${params.row.user.id}&status=Assigned`}>{params.row.total}</Link>
   },
   {
     field: 'confirmed',
     headerName: 'Confirmed',
     flex: 0.5,
-    renderCell: (params) => <Link href={`${location.allOrders()}?agent=${params.row.user.id}&status=Confirmed`}>{params.row.no_pick}</Link>
+    renderCell: (params) => (
+      <Link href={`${location.allOrders()}?agent=${params.row.user.id}&status=Confirmed`}>{params.row.confirmed}</Link>
+    )
   },
   {
     field: 'no_pick',
