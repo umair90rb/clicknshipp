@@ -144,10 +144,26 @@ export default {
         let _filters = {};
         for (let i = 0; i < filters.length; i++) {
           const { column, op, value } = filters[i];
-          _filters = {
-            [FILTER_COLUMNS[column]]: { [FILTER_OP[op]]: value },
-            ..._filters,
-          };
+          if (FILTER_COLUMNS[column] in _filters) {
+            const previousFilter = _filters[FILTER_COLUMNS[column]];
+            delete _filters[FILTER_COLUMNS[column]];
+            _filters = {
+              [Op.and]: [
+                {
+                  [FILTER_COLUMNS[column]]: previousFilter,
+                },
+                {
+                  [FILTER_COLUMNS[column]]: { [FILTER_OP[op]]: value },
+                },
+              ],
+              ..._filters,
+            };
+          } else {
+            _filters = {
+              [FILTER_COLUMNS[column]]: { [FILTER_OP[op]]: value },
+              ..._filters,
+            };
+          }
           // if (
           //   FILTER_COLUMNS[column] in _filters &&
           //   !Array.isArray(_filters[FILTER_COLUMNS[column]])

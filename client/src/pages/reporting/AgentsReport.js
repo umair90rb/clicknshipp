@@ -40,7 +40,7 @@ export default function AgentsReports() {
     dispatch(
       setOrderFilters([
         { column: 'agent', op: 'Text is exactly', value: id },
-        { column: 'status', op: 'Text is exactly', value: status },
+        { column: 'status', op: 'Text is any', value: [status] },
         { column: 'assignedAt', op: 'Greater than or equal to', value: startPeriod },
         { column: 'assignedAt', op: 'Less than or equal to', value: endPeriod }
       ])
