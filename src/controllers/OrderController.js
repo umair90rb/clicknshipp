@@ -52,6 +52,7 @@ const FILTER_OP = {
   "Is not equal to": Op.ne,
   "Is between": Op.between,
   "Is not between": Op.notBetween,
+  "Text is any": Op.in,
 };
 
 export default {

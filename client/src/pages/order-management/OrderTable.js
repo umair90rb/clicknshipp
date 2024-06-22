@@ -13,7 +13,8 @@ import {
   GridRowModes
 } from '@mui/x-data-grid';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import FilterListIcon from '@mui/icons-material/FilterList';
+// import FilterListIcon from '@mui/icons-material/FilterList';
+import FilterListOffIcon from '@mui/icons-material/FilterListOff';
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
@@ -32,7 +33,7 @@ import {
 } from 'store/slices/order/orderSelector';
 import { fetchAllOrder, fetchBulkOrdersDelete, fetchPartialUpdateOrder } from 'store/slices/order/fetchOrder';
 import location from 'utils/location';
-import { Button, Box } from '@mui/material';
+import { Button, Box, Badge } from '@mui/material';
 import AssignSelectedOrderModal from './AssignSelectedOrderModal';
 import CustomNoRowsOverlay from '../../components/GridNoRowCustomOverlay';
 import { setOrder, setOrderFilters, setOrderPagination, setOrderSort } from 'store/slices/order/orderSlice';
@@ -50,6 +51,9 @@ import { fetchAllCities } from 'store/slices/city/fetchCity';
 import GridSearchSelect from './GridSearchSelect';
 import GridAddItemModal from './GridAddItemModal/index';
 import { GridDropdownFilter } from './GridDropdownFilter';
+import { PREDEFINED_RANGES_FOR_ORDERS } from 'constants/index';
+import moment from 'moment';
+import DateRangePicker from 'components/DatePicker';
 const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handleCancelClick, handleAddItemClick) => [
   {
     field: 'id',
@@ -398,14 +402,29 @@ const OrderTable = memo(() => {
     dispatch(setOrderFilters(filters));
   };
 
+  const handleClearFilters = () => dispatch(setOrderFilters([]));
+
   function renderToolbar() {
     return (
       <GridToolbarContainer>
         <GridToolbarColumnsButton />
         <GridToolbarDensitySelector />
-        <Button onClick={displayFilterModal} size="small" startIcon={<FilterListIcon />}>
+        {/* <Button
+          onClick={displayFilterModal}
+          size="small"
+          startIcon={
+            <Badge badgeContent={filters.length || 0} color="primary">
+              <FilterListIcon />
+            </Badge>
+          }
+        >
           Filters
-        </Button>
+        </Button> */}
+        {filters.length > 0 && (
+          <Button onClick={handleClearFilters} size="small" startIcon={<FilterListOffIcon />}>
+            Clear Filters
+          </Button>
+        )}
         <Button onClick={() => setCheckboxSelection((pv) => !pv)} size="small" startIcon={<IndeterminateCheckBoxIcon />}>
           Toggle Selection
         </Button>
@@ -420,23 +439,24 @@ const OrderTable = memo(() => {
           </Button>
         )}
         {userPermissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) && <GridToolbarExport />}
-        {/* <GridDropdownFilter
+        <GridDropdownFilter
           multiple
           label="status"
           options={ORDER_STATUSES}
-          // value={filters && filters.length ? filters.find((filter) => filter.column === 'status').value : []}
-          value={[]}
+          value={filters && filters.length ? filters.find((filter) => filter.column === 'status').value : []}
           onChange={(e) => {
-            console.log(e.target.value, 'e.target.value');
+            if (e.target.value.length === 0) {
+              dispatch(setOrderFilters([...filters.filter((filter) => filter.column !== 'status')]));
+              return;
+            }
             dispatch(
               setOrderFilters([
                 ...filters.filter((filter) => filter.column !== 'status'),
-                { column: 'status', op: 'Text is exactly', value: e.target.value }
-                // ...e.target.value.map((value) => ({ column: 'status', op: 'Text is exactly', value }))
+                { column: 'status', op: 'Text is any', value: e.target.value }
               ])
             );
           }}
-        /> */}
+        />
         <Box sx={{ flexGrow: 1 }} />
         <GridToolbarQuickFilter />
       </GridToolbarContainer>
