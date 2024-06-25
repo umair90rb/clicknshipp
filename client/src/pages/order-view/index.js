@@ -18,6 +18,8 @@ import History from './History';
 import DuplicateOrders from './DuplicateOrders';
 import OrderPayments from './PaymentsTable';
 import { authUserSelector } from 'store/slices/auth/authSelector';
+import useAccess from 'hooks/useAccess';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
 
 const OrderView = () => {
   const { orderId } = useParams();
@@ -69,6 +71,7 @@ const OrderView = () => {
   const { city, zip, address1, address2, phone: address_phone } = address || {};
   const authUser = useSelector(authUserSelector);
   const [canUpdate, setCanUpdate] = useState(order?.user?.id === authUser?.id);
+  const { hasPermission } = useAccess();
 
   const getOrderDetails = () =>
     dispatch(fetchOrder({ id: orderId })).then((action) => {
@@ -179,7 +182,7 @@ const OrderView = () => {
                 </Button>
               </Grid>
             )}
-            {canUpdate && (
+            {(hasPermission(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) || canUpdate) && (
               <Grid item>
                 <Button
                   variant="outlined"
@@ -191,7 +194,7 @@ const OrderView = () => {
                 </Button>
               </Grid>
             )}
-            {canUpdate && (
+            {(hasPermission(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) || canUpdate) && (
               <Grid item>
                 <Button
                   variant="contained"

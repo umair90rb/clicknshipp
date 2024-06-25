@@ -443,7 +443,7 @@ const OrderTable = memo(() => {
           multiple
           label="status"
           options={ORDER_STATUSES}
-          value={filters && filters.length ? filters.find((filter) => filter.column === 'status').value : []}
+          value={filters.find((filter) => filter.column === 'status')?.value || []}
           onChange={(e) => {
             if (e.target.value.length === 0) {
               dispatch(setOrderFilters([...filters.filter((filter) => filter.column !== 'status')]));

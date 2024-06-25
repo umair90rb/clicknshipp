@@ -1,6 +1,6 @@
 import React from 'react';
-import { DataGrid } from '@mui/x-data-grid';
-import { Typography, Button, Link, LinearProgress } from '@mui/material';
+import { DataGrid, GridFooterContainer } from '@mui/x-data-grid';
+import { Typography, Button, TableRow, TableCell, LinearProgress } from '@mui/material';
 import styled from '@mui/system/styled';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -11,7 +11,6 @@ import {
 } from 'store/slices/report/reportSelector';
 import GridToolbarWithHeading from 'components/GridToolbarWithHeading';
 import CustomNoRowsOverlay from 'components/GridNoRowCustomOverlay';
-import location from 'utils/location';
 import { setOrderFilters } from 'store/slices/order/orderSlice';
 import { useNavigate } from 'react-router-dom';
 
@@ -34,17 +33,19 @@ export default function AgentsReports() {
   const startPeriod = useSelector(reportStartPeriodSelector);
   const endPeriod = useSelector(reportEndPeriodSelector);
   const data = useSelector(reportAgentDataSelector);
+  const _data = data;
 
   const renderToolBar = () => <GridToolbarWithHeading heading="Agent Report" />;
   const linkClicked = (id, status) => {
-    dispatch(
-      setOrderFilters([
-        { column: 'agent', op: 'Text is exactly', value: id },
-        { column: 'status', op: 'Text is any', value: [status] },
-        { column: 'assignedAt', op: 'Greater than or equal to', value: startPeriod },
-        { column: 'assignedAt', op: 'Less than or equal to', value: endPeriod }
-      ])
-    );
+    const _filters = [
+      { column: 'agent', op: 'Text is exactly', value: id },
+      { column: 'assignedAt', op: 'Greater than or equal to', value: startPeriod },
+      { column: 'assignedAt', op: 'Less than or equal to', value: endPeriod }
+    ];
+    if (status.length) {
+      _filters.push({ column: 'status', op: 'Text is any', value: status });
+    }
+    dispatch(setOrderFilters(_filters));
     navigate('/order/all');
   };
 
@@ -62,11 +63,11 @@ export default function AgentsReports() {
     },
     {
       field: 'total',
-      headerName: 'Assigned',
+      headerName: 'Total',
       flex: 0.5,
       renderCell: (params) => {
         return (
-          <Button onClick={() => linkClicked(params.row.user.id, 'Assigned')} variant="text" size="small">
+          <Button onClick={() => linkClicked(params.row.user.id, [])} variant="text" size="small">
             {params.row.total}
           </Button>
         );
@@ -78,7 +79,7 @@ export default function AgentsReports() {
       flex: 0.5,
       renderCell: (params) => {
         return (
-          <Button onClick={() => linkClicked(params.row.user.id, 'Confirmed')} variant="text" size="small">
+          <Button onClick={() => linkClicked(params.row.user.id, ['Confirmed'])} variant="text" size="small">
             {params.row.confirmed}
           </Button>
         );
@@ -90,7 +91,7 @@ export default function AgentsReports() {
       flex: 0.5,
       renderCell: (params) => {
         return (
-          <Button onClick={() => linkClicked(params.row.user.id, 'No Pick')} variant="text" size="small">
+          <Button onClick={() => linkClicked(params.row.user.id, ['No Pick'])} variant="text" size="small">
             {params.row.no_pick}
           </Button>
         );
@@ -102,7 +103,7 @@ export default function AgentsReports() {
       flex: 0.5,
       renderCell: (params) => {
         return (
-          <Button onClick={() => linkClicked(params.row.user.id, 'Cancel')} variant="text" size="small">
+          <Button onClick={() => linkClicked(params.row.user.id, ['Cancel'])} variant="text" size="small">
             {params.row.cancel}
           </Button>
         );
@@ -125,6 +126,10 @@ export default function AgentsReports() {
     }
   ];
 
+  // const calculateTotal = (field) => {
+  //   return data.reduce((acc, row) => acc + parseInt(row[field]), 0);
+  // };
+
   if (reportIsLoading) {
     return null;
   }
@@ -135,8 +140,12 @@ export default function AgentsReports() {
         disableRowSelectionOnClick
         hideFooterPagination
         loading={reportIsLoading}
-        slots={{ toolbar: renderToolBar, noRowsOverlay: CustomNoRowsOverlay }}
-        rows={data || []}
+        slots={{
+          toolbar: renderToolBar,
+          noRowsOverlay: CustomNoRowsOverlay
+          // footer: (props) => <CustomFooter {...props} columns={columns} />
+        }}
+        rows={_data || []}
         getRowId={(row) => `${row.user_id}-${row.confirmed}-${row.no_pick}`}
         columns={columns}
       />

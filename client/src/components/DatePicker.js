@@ -133,6 +133,7 @@ const DateRangePicker = ({ requiredFormat = dateFormat, startPeriod, endPeriod, 
     } else {
       setEndDate(day);
       onEndDateSelect(moment(day).endOf('day').format(requiredFormat));
+      setIsPopupOpen(false);
     }
   };
 

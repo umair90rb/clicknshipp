@@ -163,7 +163,14 @@ export default function GridAddItemModal({ visible, onClose, orderId }) {
                           </FormHelperText>
                         )} */}
                       </Grid>
+
                       <Grid item xs={2}>
+                        <FormControl fullWidth margin="normal">
+                          <TextField disabled value={item.price} type="number" variant="outlined" />
+                        </FormControl>
+                      </Grid>
+
+                      <Grid item xs={1}>
                         <FormControl fullWidth margin="normal">
                           <TextField
                             error={
@@ -193,7 +200,7 @@ export default function GridAddItemModal({ visible, onClose, orderId }) {
                         </FormControl>
                       </Grid>
 
-                      <Grid item alignItems="center" justifyContent="center" display="flex" xs={3}>
+                      <Grid item alignItems="center" justifyContent="center" display="flex" xs={2}>
                         <Button onClick={() => arrayHelper.push({ id: '', name: '', quantity: 1 })} color="primary" variant="contained">
                           Add more item
                         </Button>

@@ -343,7 +343,7 @@ export default {
 
       for (const item of itemsArray) {
         const {
-          id,
+          product_id,
           name,
           unit,
           price,
@@ -354,7 +354,7 @@ export default {
           reason,
         } = item || {};
         orderItems.push({
-          product_id: id,
+          product_id,
           name,
           price,
           unit_price: unit,
@@ -639,6 +639,10 @@ export default {
               event: "new item added in order!",
             });
           }
+          await Order.increment(["total_price", "subtotal_price"], {
+            by: price * quantity,
+            where: { id: orderId },
+          });
         })
       );
       const order = await _orderService.loadFullOrder(orderId);
@@ -729,9 +733,13 @@ export default {
         { where: { id: addressId } }
       );
       await Promise.all(
-        itemsArray.map((i) =>
-          OrderItem.update({ ...i }, { where: { id: i.id } })
-        )
+        itemsArray.map((i) => {
+          if ("id" in i) {
+            OrderItem.update({ ...i }, { where: { id: i.id } });
+          } else {
+            OrderItem.create({ ...i, order_id: order.id });
+          }
+        })
       );
       await order.createHistory({
         user_id: req.user.id,

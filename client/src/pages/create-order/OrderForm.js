@@ -133,7 +133,7 @@ const CreateOrderForm = () => {
   };
 
   const addItem = (id, name, quantity, unit, price, discount, sku, grams) => {
-    setItems((items) => [...items, { id, name, quantity, unit, price, discount, sku, grams }]);
+    setItems((items) => [...items, { product_id: id, name, quantity, unit, price, discount, sku, grams }]);
   };
 
   const searchCustomer = (phone) => {
@@ -215,16 +215,16 @@ const CreateOrderForm = () => {
           grams: ''
         }}
         validationSchema={Yup.object().shape({
-          first_name: Yup.string().max(255).required('First Name is required'),
-          last_name: Yup.string().max(255),
-          note: Yup.string(),
-          remarks: Yup.string(),
+          first_name: Yup.string().max(255).optional(),
+          last_name: Yup.string().max(255).optional(),
+          note: Yup.string().optional(),
+          remarks: Yup.string().optional(),
           chanel_id: Yup.string().required('Please select sale channel.'),
           phone: Yup.number().min(11).required('Phone is required'),
-          email: Yup.string().email('Must be a valid email').max(255),
-          address1: Yup.string().required('Address is required'),
-          address2: Yup.string(),
-          city: Yup.string().required('City is required'),
+          email: Yup.string().email('Must be a valid email').max(255).optional(),
+          address1: Yup.string().optional(),
+          address2: Yup.string().optional(),
+          city: Yup.string().optional(),
           zip: Yup.number().optional(),
           province: Yup.string().optional(),
           itemId: Yup.number().optional(),
