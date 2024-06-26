@@ -1,40 +1,49 @@
-import { Sequelize, Op, literal, fn } from "sequelize";
+import { Sequelize, Op, literal, fn, col } from "sequelize";
 import model from "../models";
-import moment from "moment";
-const { Order, OrderItem, Delivery, User } = model;
+const { Order, OrderItem, Delivery, User, Chanel } = model;
 
 class ReportingService {
   constructor() {}
 
-  async getAgentReport(startPeriod, endPeriod) {
+  async getAgentReport(startPeriod, endPeriod, reportBrand) {
+    let where = {
+      assignedAt: {
+        [Op.gte]: startPeriod,
+        [Op.lte]: endPeriod,
+      },
+      user_id: {
+        [Op.ne]: null,
+      },
+    };
+    if (reportBrand && reportBrand !== "All") {
+      where["brand_id"] = reportBrand;
+    }
     return Order.findAll({
       attributes: [
         "user_id",
-        [Sequelize.fn("COUNT", Sequelize.col("Order.id")), "total"],
+        [fn("COUNT", col("Order.id")), "total"],
         [
-          Sequelize.fn(
+          fn(
             "SUM",
-            Sequelize.literal(
+            literal(
               'CASE WHEN "Order"."status" = \'Confirmed\' THEN 1 ELSE 0 END'
             )
           ),
           "confirmed",
         ],
         [
-          Sequelize.fn(
+          fn(
             "SUM",
-            Sequelize.literal(
+            literal(
               'CASE WHEN "Order"."status" = \'No Pick\' THEN 1 ELSE 0 END'
             )
           ),
           "no_pick",
         ],
         [
-          Sequelize.fn(
+          fn(
             "SUM",
-            Sequelize.literal(
-              'CASE WHEN "Order"."status" = \'Cancel\' THEN 1 ELSE 0 END'
-            )
+            literal('CASE WHEN "Order"."status" = \'Cancel\' THEN 1 ELSE 0 END')
           ),
           "cancel",
         ],
@@ -46,24 +55,25 @@ class ReportingService {
           attributes: ["id", "name"],
         },
       ],
-      where: {
-        assignedAt: {
-          [Op.gte]: startPeriod,
-          [Op.lte]: endPeriod,
-        },
-        user_id: {
-          [Op.ne]: null,
-        },
-      },
+      where,
       group: ["Order.user_id", "user.id"],
     });
   }
 
-  async getUnitReport(startPeriod, endPeriod) {
+  async getUnitReport(startPeriod, endPeriod, reportBrand) {
+    let where = {
+      "$order.created_at$": {
+        [Op.gte]: startPeriod,
+        [Op.lte]: endPeriod,
+      },
+    };
+    if (reportBrand && reportBrand !== "All") {
+      where["$order.brand_id$"] = reportBrand;
+    }
     return OrderItem.findAll({
       attributes: [
         "name",
-        [Sequelize.fn("COUNT", Sequelize.col("OrderItem.id")), "generated"],
+        [fn("COUNT", col("OrderItem.id")), "generated"],
         [
           fn(
             "SUM",
@@ -146,13 +156,49 @@ class ReportingService {
           ],
         },
       ],
-      where: {
-        "$order.created_at$": {
-          [Op.gte]: startPeriod,
-          [Op.lte]: endPeriod,
-        },
-      },
+      where,
       group: ["name"],
+    });
+  }
+
+  async getChannelReport(startPeriod, endPeriod, reportBrand) {
+    let where = {
+      created_at: {
+        [Op.gte]: startPeriod,
+        [Op.lte]: endPeriod,
+      },
+    };
+    if (reportBrand && reportBrand !== "All") {
+      where["brand_id"] = reportBrand;
+    }
+
+    return Order.findAll({
+      attributes: [
+        [col("chanel.name"), "chanel"],
+        [col("user.name"), "agent"],
+        [fn("COUNT", col("Order.id")), "orders"],
+        [fn("SUM", col("items.quantity")), "units"],
+      ],
+      include: [
+        {
+          model: Chanel,
+          as: "chanel",
+          attributes: [],
+        },
+        {
+          model: OrderItem,
+          as: "items",
+          attributes: [],
+        },
+        {
+          model: User,
+          as: "user",
+          attributes: [],
+        },
+      ],
+      where,
+      group: ["Order.chanel_id", "chanel.name", "user.name"],
+      raw: true,
     });
   }
 }

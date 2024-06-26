@@ -1,12 +1,12 @@
 import React from 'react';
-import { DataGrid, GridFooterContainer } from '@mui/x-data-grid';
-import { Typography, Button, TableRow, TableCell, LinearProgress } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
+import { Typography, Button, LinearProgress } from '@mui/material';
 import styled from '@mui/system/styled';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  reportAgentDataSelector,
-  reportAgentIsLoadingSelector,
+  reportDataSelector,
   reportEndPeriodSelector,
+  reportIsLoadingSelector,
   reportStartPeriodSelector
 } from 'store/slices/report/reportSelector';
 import GridToolbarWithHeading from 'components/GridToolbarWithHeading';
@@ -29,11 +29,11 @@ const BorderLinearProgress = styled(LinearProgress)(() => ({
 export default function AgentsReports() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const reportIsLoading = useSelector(reportAgentIsLoadingSelector);
+  const reportIsLoading = useSelector(reportIsLoadingSelector);
   const startPeriod = useSelector(reportStartPeriodSelector);
   const endPeriod = useSelector(reportEndPeriodSelector);
-  const data = useSelector(reportAgentDataSelector);
-  const _data = data;
+  const data = useSelector(reportDataSelector);
+  // const _data = data;
 
   const renderToolBar = () => <GridToolbarWithHeading heading="Agent Report" />;
   const linkClicked = (id, status) => {
@@ -145,7 +145,7 @@ export default function AgentsReports() {
           noRowsOverlay: CustomNoRowsOverlay
           // footer: (props) => <CustomFooter {...props} columns={columns} />
         }}
-        rows={_data || []}
+        rows={data || []}
         getRowId={(row) => `${row.user_id}-${row.confirmed}-${row.no_pick}`}
         columns={columns}
       />

@@ -1,53 +1,70 @@
-import { useState, useEffect } from 'react';
 import { Grid, FormControl, Select, InputLabel, MenuItem, Typography } from '@mui/material';
 import MainCard from 'components/MainCard';
 import AgentsReports from './AgentsReport';
 import { useDispatch, useSelector } from 'react-redux';
-import { reportEndPeriodSelector, reportStartPeriodSelector } from 'store/slices/report/reportSelector';
-import { setAgentReportStatPeriod } from 'store/slices/report/reportSlice';
+import {
+  reportBrandSelector,
+  reportEndPeriodSelector,
+  reportStartPeriodSelector,
+  reportTypeSelector
+} from 'store/slices/report/reportSelector';
+import { setReportBrand, setReportPeriod, setReportType } from 'store/slices/report/reportSlice';
 import ItemsByOrders from './ItemsByOrders';
 import DateRangePicker from 'components/DatePicker';
 import { fetchAgentReport } from 'store/slices/report/fetchReport';
+import { Button } from '../../../node_modules/@mui/material/index';
+import { useEffect } from 'react';
+import { brandBrandsSelector, brandFetchStatusSelector } from 'store/slices/brand/brandSelector';
+import fetchStatus from 'constants/fetchStatuses';
+import { fetchAllBrand } from 'store/slices/brand/fetchBrand';
+import ChannelReport from './ChannelReport';
 
-const REPORT_TYPES = ['Agent Report', 'Unit Report'];
+const REPORT_TYPES = ['Agent Report', 'Unit Report', 'Channel Report'];
 
 const Reporting = () => {
   const dispatch = useDispatch();
   const startPeriod = useSelector(reportStartPeriodSelector);
   const endPeriod = useSelector(reportEndPeriodSelector);
-  const [report, setReport] = useState('');
+  const reportType = useSelector(reportTypeSelector);
+  const reportBrand = useSelector(reportBrandSelector);
+  const brands = useSelector(brandBrandsSelector);
+  const brandsFetchStatus = useSelector(brandFetchStatusSelector);
+
+  const fetchReport = () => dispatch(fetchAgentReport({ body: { reportBrand, reportType, startPeriod, endPeriod } }));
 
   useEffect(() => {
-    dispatch(fetchAgentReport({ body: { reportType: report, startPeriod, endPeriod } }));
-  }, [report, startPeriod, endPeriod]);
+    if (brandsFetchStatus !== fetchStatus.SUCCESS) {
+      dispatch(fetchAllBrand());
+    }
+  }, []);
 
   const renderReport = () => {
-    switch (report) {
+    switch (reportType) {
       case 'Agent Report':
         return <AgentsReports />;
       case 'Unit Report':
         return <ItemsByOrders />;
+      case 'Channel Report':
+        return <ChannelReport />;
     }
   };
 
   return (
     <Grid container>
-      <Grid item xs={12}>
-        <Grid item xs={12}>
-          <Typography variant="h5">Reporting</Typography>
-        </Grid>
+      <Grid item xs={12} sx={{ mb: 2 }}>
+        <Typography variant="h5">Reporting</Typography>
       </Grid>
 
-      <Grid container justifyContent="center" alignItems="center" xs={12} md={12} lg={12}>
-        <Grid item container justifyContent="flex-end" xs={6} md={6} lg={6}>
-          <FormControl sx={{ m: 1, minWidth: 250 }} size="small">
+      <Grid container justifyContent="center" spacing={2} alignItems="center" xs={12} md={12} lg={12}>
+        <Grid item xs={3} md={3} lg={3}>
+          <FormControl fullWidth size="small">
             <InputLabel id="demo-select-small-label">Select report</InputLabel>
             <Select
               labelId="demo-select-small-label"
               id="demo-select-small"
-              value={report}
+              value={reportType}
               label="Select report"
-              onChange={(e) => setReport(e.target.value)}
+              onChange={(e) => dispatch(setReportType(e.target.value))}
             >
               {REPORT_TYPES.map((rt, index) => (
                 <MenuItem key={index} value={rt}>
@@ -57,13 +74,37 @@ const Reporting = () => {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={6} md={6} lg={6}>
+        <Grid item xs={3} md={3} lg={3}>
+          <FormControl fullWidth size="small">
+            <InputLabel id="demo-select-small-label">Select brand</InputLabel>
+            <Select
+              labelId="demo-select-small-label"
+              id="demo-select-small"
+              value={reportBrand}
+              label="Select Brand"
+              onChange={(e) => dispatch(setReportBrand(e.target.value))}
+            >
+              <MenuItem value="All">All</MenuItem>
+              {brands.map((br, index) => (
+                <MenuItem key={index} value={br.id}>
+                  {br.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={3} md={3} lg={3}>
           <DateRangePicker
             startPeriod={startPeriod}
             endPeriod={endPeriod}
-            onStartDateSelect={(date) => dispatch(setAgentReportStatPeriod({ period: 'startPeriod', value: date }))}
-            onEndDateSelect={(date) => dispatch(setAgentReportStatPeriod({ period: 'endPeriod', value: date }))}
+            onStartDateSelect={(date) => dispatch(setReportPeriod({ period: 'startPeriod', value: date }))}
+            onEndDateSelect={(date) => dispatch(setReportPeriod({ period: 'endPeriod', value: date }))}
           />
+        </Grid>
+        <Grid item xs={3} md={3} lg={3}>
+          <Button variant="contained" color="primary" size="small" fullWidth onClick={fetchReport}>
+            Get Report
+          </Button>
         </Grid>
       </Grid>
 

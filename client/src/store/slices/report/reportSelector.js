@@ -1,8 +1,10 @@
 import fetchStatus from 'constants/fetchStatuses';
 
-export const reportAgentFetchStatusSelector = (state) => state.report.agent.fetchStatus;
-export const reportAgentIsLoadingSelector = (state) => state.report.agent.fetchStatus === fetchStatus.REQUEST;
-export const reportAgentErrorSelector = (state) => state.report.agent.error;
-export const reportAgentDataSelector = (state) => state.report.agent.data;
+export const reportFetchStatusSelector = (state) => state.report.fetchStatus;
+export const reportIsLoadingSelector = (state) => state.report.fetchStatus === fetchStatus.REQUEST;
+export const reportErrorSelector = (state) => state.report.error;
+export const reportDataSelector = (state) => state.report.data;
+export const reportTypeSelector = (state) => state.report.type;
+export const reportBrandSelector = (state) => state.report.brand;
 export const reportStartPeriodSelector = (state) => state.report.startPeriod;
 export const reportEndPeriodSelector = (state) => state.report.endPeriod;

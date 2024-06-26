@@ -1,12 +1,11 @@
 import React from 'react';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { DataGrid } from '@mui/x-data-grid';
 import { Typography, LinearProgress } from '@mui/material';
 import styled from '@mui/system/styled';
 import { useSelector } from 'react-redux';
-import { dashboardIsLoadingSelector, dashboardStatsSelector } from 'store/slices/dashboard/dashboardSelector';
 import GridToolbarWithHeading from 'components/GridToolbarWithHeading';
 import CustomNoRowsOverlay from 'components/GridNoRowCustomOverlay';
-import { reportAgentDataSelector, reportAgentIsLoadingSelector } from 'store/slices/report/reportSelector';
+import { reportDataSelector, reportIsLoadingSelector } from 'store/slices/report/reportSelector';
 
 const BorderLinearProgress = styled(LinearProgress)(() => ({
   height: '14px',
@@ -95,8 +94,8 @@ const columns = [
 ];
 
 export default function ItemsByOrders() {
-  const reportIsLoading = useSelector(reportAgentIsLoadingSelector);
-  const data = useSelector(reportAgentDataSelector);
+  const reportIsLoading = useSelector(reportIsLoadingSelector);
+  const data = useSelector(reportDataSelector);
 
   const renderToolbar = () => <GridToolbarWithHeading heading="Products in orders" />;
 
