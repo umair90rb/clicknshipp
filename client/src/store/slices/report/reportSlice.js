@@ -23,6 +23,7 @@ const reportSlice = createSlice({
       state[period] = value;
     },
     setReportType: (state, action) => {
+      state.data = [];
       state.type = action.payload;
     },
     setReportBrand: (state, action) => {
@@ -41,7 +42,7 @@ const reportSlice = createSlice({
       state.error = null;
     });
     builder.addCase(fetchAgentReport.rejected, (state, action) => {
-      state.data = {};
+      state.data = [];
       state.fetchStatus = fetchStatus.FAILURE;
       state.error = action.payload;
     });
