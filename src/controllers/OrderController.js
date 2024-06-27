@@ -469,7 +469,6 @@ export default {
       const chanel = await Chanel.findByPk(chanel_id);
       const brand_id = chanel.brand_id || null;
       if (submission && submission == "true") {
-        console.log(json);
         const orders = json.map(
           ({ ID, Page, Account, Name, Address, City, Quantity, ...rest }) => {
             const created_at = rest["created at"];
@@ -503,7 +502,7 @@ export default {
               chanel_id: parseInt(chanel_id),
               brand_id,
               user_id: null,
-              status: "Submission",
+              status: "Received",
               subtotal_price: price,
               total_price: price,
               total_tax: 0,

@@ -6,7 +6,10 @@ import _orderService from "../services/OrderService";
 const { Order } = model;
 
 const ORDER_TYPE = {
-  unassigned: { user_id: null },
+  // unassigned: { user_id: null },
+  unassigned: {
+    [Op.and]: [{ user_id: null }, { status: "Received" }],
+  },
   assigned_not_confirmed: {
     [Op.and]: [{ user_id: { [Op.ne]: null } }, { status: "Assigned" }],
   },
@@ -18,30 +21,29 @@ export default {
       const { chanel, brand, startPeriod, endPeriod, users, type } = req.body;
 
       let query = {
-          attributes: ["id"],
-        },
-        where = {};
+        attributes: ["id"],
+        where: {},
+      };
       if (chanel && chanel.length) {
-        where["chanel_id"] = { [Op.in]: chanel };
+        query.where["chanel_id"] = { [Op.in]: chanel };
       }
       if (users && users.length) {
-        where["user_id"] = { [Op.in]: users };
+        query.where["user_id"] = { [Op.in]: users };
       }
       if (brand && brand.length) {
-        where["brand_id"] = { [Op.in]: brand };
+        query.where["brand_id"] = { [Op.in]: brand };
       }
       if (startPeriod) {
-        where["createdAt"] = { [Op.gte]: startPeriod };
+        query.where["createdAt"] = { [Op.gte]: startPeriod };
       }
       if (endPeriod) {
-        where["createdAt"] = { ...where["createdAt"], [Op.lte]: endPeriod };
+        query.where["createdAt"] = {
+          ...query.where["createdAt"],
+          [Op.lte]: endPeriod,
+        };
       }
       if (type && type !== "All") {
-        let _where = { ...where, ...ORDER_TYPE[type] };
-        where = _where;
-      }
-      if (Object.keys(where).length) {
-        query["where"] = where;
+        query.where = { ...query.where, ...ORDER_TYPE[type] };
       }
       const orders = await Order.findAll(query);
       if (orders) {
