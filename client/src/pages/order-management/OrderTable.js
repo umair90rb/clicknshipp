@@ -351,7 +351,7 @@ const OrderTable = memo(() => {
       status: newRow?.status,
       customerId: newRow?.customer?.id,
       first_name: newRow?.first_name,
-      last_name: newRow?.first_name,
+      last_name: newRow?.last_name,
       phone: newRow?.phone,
       remarks: newRow?.remarks,
       addressId: newRow?.address?.id,
