@@ -104,6 +104,7 @@ export const item_data_keys = [
   "grams",
   "quantity",
   "product_id",
+  "variant_id",
   "sku",
   "total_discount",
 ];

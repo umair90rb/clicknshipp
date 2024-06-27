@@ -44,6 +44,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.FLOAT,
         allowNull: true,
       },
+      variant_id: {
+        type: DataTypes.FLOAT,
+        allowNull: true,
+      },
       total_discount: {
         type: DataTypes.FLOAT,
         allowNull: true,
