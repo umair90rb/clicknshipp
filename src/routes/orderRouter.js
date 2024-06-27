@@ -139,7 +139,7 @@ router.patch(
 );
 
 router.post(
-  "/bulk",
+  "/remove",
   Auth,
   can(PERMISSIONS.PERMISSION_CREATE_BULK_ORDER),
   schemaValidator(bulkOrderDeleteSchema),

@@ -23,7 +23,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Umair",
-  "license": "UNLICENSED",
+  "license": "LICENSED",
   "dependencies": {
     "axios": "^1.6.5",
     "bcrypt": "^5.1.1",

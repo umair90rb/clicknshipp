@@ -64,19 +64,29 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
   },
   {
     field: 'first_name',
-    headerName: 'Name',
+    headerName: 'First Name',
     flex: 0.5,
     sortable: false,
-    editable: false,
+    editable: true,
     type: 'string',
-    valueGetter: (param) => `${param.row.customer?.first_name} ${param.row.customer?.last_name}`
+    valueGetter: (param) => param.row.customer?.first_name || ''
+  },
+  {
+    field: 'last_name',
+    headerName: 'Last Name',
+    flex: 0.5,
+    sortable: false,
+    editable: true,
+    type: 'string',
+    valueGetter: (param) => param.row.customer?.last_name || ''
   },
   {
     field: 'phone',
     headerName: 'Phone',
     flex: 0.75,
     sortable: false,
-    valueGetter: (param) => param.row.customer?.phone || param.row.address?.phone || ''
+    editable: true,
+    valueGetter: (param) => param.row.customer?.phone || ''
   },
   {
     field: 'address1',
@@ -166,7 +176,7 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
     editable: true,
     type: 'string',
     renderEditCell: (params) => <GridEditTextarea {...params} />,
-    valueGetter: (param) => param.row.remarks || 'None',
+    valueGetter: (param) => param.row.remarks || '',
     valueParser: (value) => value.replace(/\n/g, ' ').replace(/\s\s+/g, ' ')
   },
   {
@@ -315,13 +325,13 @@ const OrderTable = memo(() => {
     }
   };
 
-  const handleRowEditStart = (params, event) => {
-    if (params?.row?.status === 'Confirmed') {
-      dispatch(setMessage({ type: 'warning', message: 'Confirmed order can not updated!' }));
-      event.defaultMuiPrevented = true;
-      return;
-    }
-  };
+  // const handleRowEditStart = (params, event) => {
+  //   if (params?.row?.status === 'Confirmed') {
+  //     dispatch(setMessage({ type: 'warning', message: 'Confirmed order can not updated!' }));
+  //     event.defaultMuiPrevented = true;
+  //     return;
+  //   }
+  // };
 
   const handleSaveClick = (id) => () => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
@@ -335,16 +345,18 @@ const OrderTable = memo(() => {
   };
 
   const processRowUpdate = async (newRow, oldRow) => {
-    dispatch(setOrder({ order: { ...newRow, address1: newRow.address1 || newRow?.address?.address1 } }));
+    // dispatch(setOrder({ order: { ...newRow, address1: newRow.address1 || newRow?.address?.address1 } }));
     const id = newRow.id;
     const body = {
-      status: newRow?.status || '',
-      customerId: newRow?.customer?.id || '',
-      first_name: newRow?.first_name || '',
-      last_name: newRow?.customer?.last_name || '',
+      status: newRow?.status,
+      customerId: newRow?.customer?.id,
+      first_name: newRow?.first_name,
+      last_name: newRow?.first_name,
+      phone: newRow?.phone,
+      remarks: newRow?.remarks,
       addressId: newRow?.address?.id,
-      address: newRow?.address1 || '',
-      city: newRow?.city || ''
+      address: newRow?.address1,
+      city: newRow?.city
     };
     setPartialUpdateOrderLoading(true);
     const { type, payload } = await dispatch(fetchPartialUpdateOrder({ id, body }));
@@ -492,7 +504,7 @@ const OrderTable = memo(() => {
         editMode="row"
         rowModesModel={rowModesModel}
         onRowModesModelChange={setRowModesModel}
-        onRowEditStart={handleRowEditStart}
+        // onRowEditStart={handleRowEditStart}
         onRowEditStop={handleRowEditStop}
         processRowUpdate={processRowUpdate}
         onProcessRowUpdateError={handleProcessRowUpdateError}

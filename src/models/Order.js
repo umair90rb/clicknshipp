@@ -100,11 +100,13 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     {
+      paranoid: true,
       sequelize,
       modelName: "Order",
       tableName: "Orders",
       timestamps: true,
       underscored: true,
+      deletedAt: "deleted_at",
     }
   );
   return Order;

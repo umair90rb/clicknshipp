@@ -167,6 +167,9 @@ class ReportingService {
         [Op.gte]: startPeriod,
         [Op.lte]: endPeriod,
       },
+      user_id: {
+        [Op.ne]: null,
+      },
     };
     if (reportBrand && reportBrand !== "All") {
       where["brand_id"] = reportBrand;

@@ -31,7 +31,7 @@ class OrderService extends Ajax {
 
   fetchDeleteOrder = (id) => this.delete(`${this.pathname}/${id}`);
 
-  fetchBulkOrdersDelete = (body) => this.post(`${this.pathname}/bulk`, body);
+  fetchBulkOrdersDelete = (body) => this.post(`${this.pathname}/remove`, body);
 }
 
 export const orderService = new OrderService();

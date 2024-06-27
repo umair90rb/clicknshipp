@@ -254,10 +254,9 @@ export default {
         data: JSON.stringify(body),
       });
       if (
-        (customer_data &&
-          "phone" in customer_data &&
-          customer_data.phone == null) ||
-        customer_data.phone == ""
+        customer_data &&
+        "phone" in customer_data &&
+        (customer_data.phone == null || customer_data.phone == "")
       ) {
         customer_data.phone = address_data.phone;
       }
@@ -773,6 +772,8 @@ export default {
         customerId,
         first_name,
         last_name,
+        phone,
+        remarks,
         addressId,
         address,
         city,
@@ -785,17 +786,21 @@ export default {
       if (!order) {
         return sendErrorResponse(res, 404, "Order not found!");
       }
+      let customer;
       if (customerId) {
-        let ud = { first_name };
-        if (last_name) ud.last_name = last_name;
-        await Customer.update(ud, {
-          where: {
-            id: customerId,
-          },
-        });
-      } else if (customerId == "" && first_name) {
-        await order.createCustomer({
+        await Customer.update(
+          { first_name, last_name, phone },
+          {
+            where: {
+              id: customerId,
+            },
+          }
+        );
+      } else {
+        customer = await Customer.create({
           first_name,
+          last_name,
+          phone,
         });
       }
       if (addressId) {
@@ -808,14 +813,18 @@ export default {
           }
         );
       } else {
-        await order.createAddress({
+        await Address.create({
           address1: address,
           city,
-          customer_id: customerId || order.customer.id,
+          order_id: orderId,
+          customer_id: customerId || customer.id || null,
         });
       }
-
-      await order.update({ status });
+      let orderUpdateData = { status, remarks };
+      if (customer) {
+        orderUpdateData["customer_id"] = customer.id;
+      }
+      await order.update(orderUpdateData);
       await order.createHistory({
         user_id: req.user.id,
         event: "order updated",
@@ -886,6 +895,14 @@ export default {
         },
         { transaction: t }
       );
+      await OrderItem.destroy(
+        {
+          where: {
+            order_id: orderIds,
+          },
+        },
+        { transaction: t }
+      );
       await Order.destroy(
         {
           where: {
@@ -895,15 +912,6 @@ export default {
         { transaction: t }
       );
       await t.commit();
-      await Promise.all(
-        orderIds.map((id) =>
-          OrderHistory.create({
-            user_id: req.user.id,
-            order_id: id,
-            event: "order deleted via bulk order delete",
-          })
-        )
-      );
       return sendSuccessResponse(res, 200, {}, "Orders deleted successful.");
     } catch (error) {
       await t.rollback();
