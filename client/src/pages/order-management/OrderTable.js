@@ -51,9 +51,6 @@ import { fetchAllCities } from 'store/slices/city/fetchCity';
 import GridSearchSelect from './GridSearchSelect';
 import GridAddItemModal from './GridAddItemModal/index';
 import { GridDropdownFilter } from './GridDropdownFilter';
-import { PREDEFINED_RANGES_FOR_ORDERS } from 'constants/index';
-import moment from 'moment';
-import DateRangePicker from 'components/DatePicker';
 const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handleCancelClick, handleAddItemClick) => [
   {
     field: 'id',
@@ -70,9 +67,9 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
     headerName: 'Name',
     flex: 0.5,
     sortable: false,
-    editable: true,
+    editable: false,
     type: 'string',
-    valueGetter: (param) => param.row.customer?.first_name || ''
+    valueGetter: (param) => `${param.row.customer?.first_name} ${param.row.customer?.last_name}`
   },
   {
     field: 'phone',
