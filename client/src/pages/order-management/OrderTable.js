@@ -33,7 +33,7 @@ import {
 } from 'store/slices/order/orderSelector';
 import { fetchAllOrder, fetchBulkOrdersDelete, fetchPartialUpdateOrder } from 'store/slices/order/fetchOrder';
 import location from 'utils/location';
-import { Button, Box, Badge } from '@mui/material';
+import { Button, Box } from '@mui/material';
 import AssignSelectedOrderModal from './AssignSelectedOrderModal';
 import CustomNoRowsOverlay from '../../components/GridNoRowCustomOverlay';
 import { setOrder, setOrderFilters, setOrderPagination, setOrderSort } from 'store/slices/order/orderSlice';

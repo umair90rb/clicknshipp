@@ -22,7 +22,7 @@ const style = {
   p: 4
 };
 
-const UserManagement = () => {
+const EmployeeManagement = () => {
   const users = useSelector(userUsersSelector);
 
   const [openAddUserModal, setOpenAddUserModal] = useState(false);
@@ -93,4 +93,4 @@ const UserManagement = () => {
   );
 };
 
-export default UserManagement;
+export default EmployeeManagement;

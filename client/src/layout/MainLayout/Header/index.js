@@ -1,17 +1,10 @@
 import PropTypes from 'prop-types';
-
-// material-ui
 import { useTheme } from '@mui/material/styles';
 import { AppBar, IconButton, Toolbar, useMediaQuery } from '@mui/material';
-
-// project import
 import AppBarStyled from './AppBarStyled';
 import HeaderContent from './HeaderContent';
-
-// assets
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
-
-// ==============================|| MAIN LAYOUT - HEADER ||============================== //
+import MenuOpenRoundedIcon from '@mui/icons-material/MenuOpenRounded';
+import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 
 const Header = ({ open, handleDrawerToggle }) => {
   const theme = useTheme();
@@ -31,7 +24,7 @@ const Header = ({ open, handleDrawerToggle }) => {
         color="secondary"
         sx={{ color: 'text.primary', bgcolor: open ? iconBackColorOpen : iconBackColor, ml: { xs: 0, lg: -2 } }}
       >
-        {!open ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+        {!open ? <MenuRoundedIcon /> : <MenuOpenRoundedIcon />}
       </IconButton>
       <HeaderContent />
     </Toolbar>

@@ -7,7 +7,6 @@ const initialState = {
   fetchStatus: fetchStatus.IDLE,
   error: null
 };
-//again deployed
 
 const brandSlice = createSlice({
   name: 'brand',

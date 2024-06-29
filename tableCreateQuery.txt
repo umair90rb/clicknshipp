@@ -3,7 +3,7 @@ npx sequelize-cli model:generate --name Address --attributes address:string,addr
 npx sequelize-cli model:generate --name Customer --attributes email:string,first_name:string,last_name:string,note:string,phone:string
 npx sequelize-cli model:generate --name OrderItem --attributes name:string,price:integer,grams:integer,quantity:integer,sku:string,product_id:integer,total_discount:integer
 npx sequelize-cli model:generate --name Order --attributes order_number:integer,total_price:integer,total_tax:integer,subtotal_price:integer,total_price:integer,total_discounts:integer
-//stock, category and brand
+//stock,category and brand
 npx sequelize-cli model:generate --name Item --attributes code:string,name:string,unit_price:integer,cost_price:integer
 npx sequelize-cli model:generate --name Category --attributes name:string
 npx sequelize-cli model:generate --name Brand --attributes name:string
@@ -43,3 +43,18 @@ sequelize migration:generate --name add-unit-price-column-in-order-item-table
 sequelize migration:generate --name add-assigned-at-column-in-order-table
 sequelize migration:generate --name add-deleted-at-column-in-order-table
 sequelize migration:generate --name add-variant-id-column-in-order-item-table
+
+
+
+
+sequelize model:generate --name Department --attributes name:string
+sequelize model:generate --name Designation --attributes name:string
+sequelize model:generate --name Allowance --attributes name:string
+sequelize model:generate --name Employee --attributes name:string,email:string,phone:string,hire_at:string,department_id:string,designation_id:string,salary:integer
+sequelize model:generate --name EmployeeAllowance --attributes type:string,amount:float,employee_id:integer
+sequelize model:generate --name EmployeeEducationHistory --attributes degree:string,started_at:string,ended_at:string,obtained:float,total:float,employee_id:integer
+sequelize model:generate --name EmployeeImmediateContact --attributes name:string,phone:string,address:string,relation:string,employee_id:integer
+sequelize model:generate --name EmployeeExperience --attributes company:string,started_at:string,ended_at:string,designation:string,employee_id:integer
+sequelize model:generate --name EmployeeIncrementHistory --attributes type:string,amount:float,employee_id:integer
+
+

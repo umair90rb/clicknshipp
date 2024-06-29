@@ -7,6 +7,10 @@ import customer from './slices/customer/customerSlice';
 import order from './slices/order/orderSlice';
 import util from './slices/util/utilSlice';
 import brand from './slices/brand/brandSlice';
+import department from './slices/department/departmentSlice';
+import designation from './slices/designation/designationSlice';
+import allowance from './slices/allowance/allowanceSlice';
+import employee from './slices/employee/employeeSlice';
 import category from './slices/category/categorySlice';
 import item from './slices/item/itemSlice';
 import supplier from './slices/supplier/supplierSlice';
@@ -36,7 +40,11 @@ const reducers = combineReducers(
     dashboard,
     deliveryServiceAccounts,
     search,
-    report
+    report,
+    department,
+    designation,
+    allowance,
+    employee
   },
   composeWithDevTools()
 );

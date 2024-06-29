@@ -5,6 +5,7 @@ import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 import { extract } from "../utils/extract";
 import excelToJson from "../helpers/excelToJson";
 import formatPhoneNumber from "../helpers/formatPhone";
+import { getStartOfDay, getEndOfDay } from "../helpers/pgDateFormat";
 import {
   PERMISSIONS,
   order_data_keys,
@@ -60,9 +61,16 @@ export default {
     try {
       const { page, pageSize, filters, sort } = req.body;
       const permissions = req.user.permissions;
+      const today = new Date();
       let query = {
         where: {
           user_id: req.user.id,
+          assigned_at: {
+            [Op.and]: [
+              { [Op.gte]: getStartOfDay(today) },
+              { [Op.lte]: getEndOfDay(today) },
+            ],
+          },
         },
         include: [
           {
@@ -131,6 +139,7 @@ export default {
       }
       if (permissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS)) {
         delete query.where.user_id;
+        delete query.where.assigned_at;
       } else if (
         "settings" in req.user &&
         req.user?.settings?.hasOwnProperty("default_brand_id")
@@ -271,7 +280,6 @@ export default {
           raw: true,
         });
       }
-      console.log(customer, "customer in shopify create order api");
       if (!customer) {
         const cus = { shopify_id: customer_data.id, ...customer_data };
         delete cus.id;

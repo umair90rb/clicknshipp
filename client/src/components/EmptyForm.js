@@ -4,7 +4,6 @@ import { Box, Button, FormControl, FormHelperText, Grid, InputLabel, OutlinedInp
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import AnimateButton from 'components/@extended/AnimateButton';
-import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 
 // ============================|| FIREBASE - REGISTER ||============================ //
 
