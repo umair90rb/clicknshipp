@@ -1,4 +1,4 @@
-export const toSentense = (string) => {
+export const toSentence = (string) => {
   console.log(string, 'string');
   const msg =
     Array.isArray(string) && string.length > 1 ? string.join(', ') : Array.isArray(string) && string.length === 1 ? string[0] : string;

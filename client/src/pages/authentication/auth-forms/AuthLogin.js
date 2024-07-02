@@ -33,7 +33,7 @@ import { fetchLogin } from 'store/index';
 import { authErrorSelector, authFetchStatusSelector, authTokenSelector } from 'store/slices/auth/authSelector';
 import fetchStatus from 'constants/fetchStatuses';
 import useAuth from 'hooks/useAuth';
-import { toSentense } from 'utils/string-utils';
+import { toSentence } from 'utils/string-utils';
 import location from 'utils/location';
 import { fetchProfile } from 'store/index';
 import useAccess from 'hooks/useAccess';
@@ -57,7 +57,7 @@ const AuthLogin = () => {
       navigate(hasPermission(PERMISSIONS.PERMISSION_VIEW_ADMIN_DASHBOARD) ? location.dashboardUrl() : location.allOrders());
     }
     if (authFetchStatus === fetchStatus.FAILURE) {
-      formRef.current.setFieldError('submit', toSentense(authError));
+      formRef.current.setFieldError('submit', toSentence(authError));
     }
   }, [authFetchStatus]);
 

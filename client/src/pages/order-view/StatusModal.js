@@ -6,7 +6,7 @@ import { Button, Modal, Box, MenuItem, Select, FormHelperText, Grid, ListItemTex
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import AnimateButton from 'components/@extended/AnimateButton';
-import { toSentense } from 'utils/string-utils';
+import { toSentence } from 'utils/string-utils';
 import ORDER_STATUSES from 'constants/orderStatuses';
 
 const style = {
@@ -35,7 +35,7 @@ export default function StatusModal({ visible, onClose, orderId, setOrderStatus 
         setOrderStatus(values.status);
         return dispatch(setMessage({ message: `Order status updated successfully`, type: 'success' }));
       }
-      setErrors({ submit: toSentense(payload.error) || `Error! Order status can't updated.` });
+      setErrors({ submit: toSentence(payload.error) || `Error! Order status can't updated.` });
       setStatus({ success: false });
     });
   };

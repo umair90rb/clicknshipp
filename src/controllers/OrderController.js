@@ -256,7 +256,7 @@ export default {
       const order_items_data = body["line_items"].map((item) =>
         extract(item, item_data_keys)
       );
-      const order = await Order.create({
+      let order = await Order.create({
         ...order_data,
         chanel_id: chanel?.id,
         brand_id: chanel?.brand_id,
@@ -291,7 +291,10 @@ export default {
       const items = await OrderItem.bulkCreate(order_items_data);
       await order.addItems(items);
       await order.createHistory({ event: "order create via shopify web hook" });
-      return sendSuccessResponse(res, 201, {}, "Order created successfully");
+      order = await _orderService.loadFullOrder(order.id);
+      sendSuccessResponse(res, 201, {}, "Order created successfully");
+      await _orderService.checkOrderDuplication(order);
+      return;
     } catch (error) {
       logger.error(error.message, {
         data: req.body,

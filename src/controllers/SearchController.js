@@ -1,5 +1,5 @@
+import { _orderService } from "../services/OrderService";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
-import _orderService from "../services/OrderService";
 
 export default {
   async search(req, res) {

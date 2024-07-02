@@ -1,3 +1,4 @@
+import { subtractDaysFromToday } from "../helpers/pgDateFormat";
 import model from "../models";
 import Sequelize, { Op } from "sequelize";
 const {
@@ -8,8 +9,6 @@ const {
   User,
   Chanel,
   Payments,
-  Brand,
-  DeliveryServiceAccounts,
   Delivery,
   OrderHistory,
 } = model;
@@ -144,41 +143,23 @@ class OrderService {
 
   async addDuplicateOrder(order) {
     try {
-      if (
-        order &&
-        order?.items?.length &&
-        (order?.customer?.phone || order?.address?.phone)
-      ) {
-        const duplicateOrderWhere = order.items.map((item) => ({
-          [Op.and]: [{ name: item?.name }, { quantity: item?.quantity }],
-        }));
-        const duplicate = await Order.findAll({
-          attributes: ["id", "order_number", "status"],
-          where: {
-            id: {
-              [Op.ne]: order.id,
-            },
-          },
-          include: [
-            {
-              attributes: [],
-              model: Customer,
-              as: "customer",
-              where: {
-                phone: order?.customer?.phone || order?.address?.phone,
-              },
-            },
-            {
-              attributes: [],
-              model: OrderItem,
-              as: "items",
-              where: {
-                [Op.and]: duplicateOrderWhere,
-              },
-            },
-          ],
-        });
+      if (order) {
+        const duplicate = await this.findDuplications(order);
         order.setDataValue("duplicate", duplicate);
+      }
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  async checkOrderDuplication(order) {
+    try {
+      if (order) {
+        const duplicate = await this.findDuplications(order);
+        if (duplicate && duplicate.length) {
+          await order.update({ status: "Duplicate" });
+        }
       }
     } catch (error) {
       console.log(error);
@@ -292,6 +273,54 @@ class OrderService {
       };
       const orders = await Order.findAll(sqlQuery);
       return orders;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  async findDuplications(order) {
+    try {
+      if (
+        order &&
+        order.items &&
+        order.items.length > 0 &&
+        order.customer.phone
+      ) {
+        const duplicateOrderItemWhere = order.items.map((item) => ({
+          [Op.and]: [
+            { product_id: item?.product_id },
+            { variant_id: item?.variant_id },
+          ],
+        }));
+        return Order.findAll({
+          attributes: ["id", "order_number", "status"],
+          where: {
+            id: {
+              [Op.ne]: order.id,
+            },
+            createdAt: {
+              [Op.gte]: subtractDaysFromToday(15),
+            },
+          },
+          include: [
+            {
+              attributes: [],
+              model: Customer,
+              as: "customer",
+              where: {
+                phone: order?.customer?.phone || order?.address?.phone,
+              },
+            },
+            {
+              attributes: [],
+              model: OrderItem,
+              as: "items",
+              where: duplicateOrderItemWhere,
+            },
+          ],
+        });
+      }
     } catch (error) {
       console.log(error);
       throw error;

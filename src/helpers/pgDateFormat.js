@@ -15,3 +15,9 @@ export function getEndOfDay(date) {
   const minutes = String(date.getMinutes()).padStart(2, "0");
   return `${year}-${month}-${day}T23:59`;
 }
+
+export function subtractDaysFromToday(days) {
+  const today = new Date();
+  today.setDate(today.getDate() - days);
+  return getEndOfDay(today);
+}
