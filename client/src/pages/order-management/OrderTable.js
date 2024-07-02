@@ -366,7 +366,7 @@ const OrderTable = memo(() => {
       setPartialUpdateOrderLoading(false);
       return payload?.data.order;
     } else {
-      dispatch(setMessage({ type: 'error', message: payload?.data?.message || 'Failed! Order not updated!' }));
+      dispatch(setMessage({ type: 'error', message: payload?.error?.join(',') || 'Failed! Order not updated!' }));
       setPartialUpdateOrderLoading(false);
       return oldRow;
     }

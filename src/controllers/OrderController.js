@@ -584,12 +584,16 @@ export default {
           `This order is already confirmed, you can't set its status to ${status}`
         );
       }
-
-      await order.update({
+      const ud = {
         status,
         remarks: remarks || order.remarks,
         cancel_reason: reason || order.cancel_reason,
-      });
+      };
+      if (status === "Duplicate") {
+        ud["assigned_at"] = null;
+        ud["user_id"] = null;
+      }
+      await order.update(ud);
       await order.createHistory({
         event: `order status updated to ${status}. ${
           remarks && "remarks:" + remarks
@@ -833,6 +837,10 @@ export default {
       let orderUpdateData = { status, remarks };
       if (customer) {
         orderUpdateData["customer_id"] = customer.id;
+      }
+      if (status === "Duplicate") {
+        orderUpdateData["assigned_at"] = null;
+        orderUpdateData["user_id"] = null;
       }
       await order.update(orderUpdateData);
       await order.createHistory({
