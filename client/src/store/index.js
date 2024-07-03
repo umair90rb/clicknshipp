@@ -1,13 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
 import reducers from './rootReducer';
-import tokenExpirationMiddleware from './middlewars/tokenExpirationMiddleware';
-import networkErrorCheckerMiddleware from './middlewars/networkErrorCheckerMiddleware';
-
-// ==============================|| REDUX TOOLKIT - MAIN STORE ||============================== //
-
+import networkAndTokenErrorCheckerMiddleware from './middlewars/networkAndTokenErrorCheckerMiddleware';
 const store = configureStore({
   reducer: reducers,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(networkErrorCheckerMiddleware, tokenExpirationMiddleware)
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(networkAndTokenErrorCheckerMiddleware)
 });
 
 const { dispatch } = store;

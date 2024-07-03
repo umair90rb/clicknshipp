@@ -43,6 +43,7 @@ sequelize migration:generate --name add-unit-price-column-in-order-item-table
 sequelize migration:generate --name add-assigned-at-column-in-order-table
 sequelize migration:generate --name add-deleted-at-column-in-order-table
 sequelize migration:generate --name add-variant-id-column-in-order-item-table
+sequelize migration:generate --name add-tags-column-in-order-table
 
 
 

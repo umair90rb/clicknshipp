@@ -3,13 +3,13 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.addColumn("OrderItems", "variant_id", {
-      type: Sequelize.BIGINT,
+    await queryInterface.addColumn("Orders", "tags", {
+      type: Sequelize.TEXT,
       allowNull: true,
     });
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.removeColumn("OrderItems", "variant_id");
+    await queryInterface.removeColumn("Orders", "tags");
   },
 };

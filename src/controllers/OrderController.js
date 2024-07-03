@@ -292,9 +292,8 @@ export default {
       await order.addItems(items);
       await order.createHistory({ event: "order create via shopify web hook" });
       order = await _orderService.loadFullOrder(order.id);
-      sendSuccessResponse(res, 201, {}, "Order created successfully");
       await _orderService.checkOrderDuplication(order);
-      return;
+      return sendSuccessResponse(res, 201, {}, "Order created successfully");
     } catch (error) {
       logger.error(error.message, {
         data: req.body,

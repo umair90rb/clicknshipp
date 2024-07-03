@@ -156,9 +156,19 @@ class OrderService {
   async checkOrderDuplication(order) {
     try {
       if (order) {
-        const duplicate = await this.findDuplications(order);
-        if (duplicate && duplicate.length) {
-          await order.update({ status: "Duplicate" });
+        const duplicates = await this.findDuplications(order);
+        if (duplicates && duplicates.length) {
+          await order.update({ status: "Duplicate", tags: "Duplicate" });
+          duplicates.map(async (duplicate) => {
+            const tags = (duplicate?.tags || "").split(",");
+            if (!tags.includes("Duplicate")) {
+              const tags =
+                duplicate.tags && duplicate.tags.length
+                  ? `Duplicate,${duplicate.tags}`
+                  : "Duplicate";
+              await duplicate.update({ tags });
+            }
+          });
         }
       }
     } catch (error) {

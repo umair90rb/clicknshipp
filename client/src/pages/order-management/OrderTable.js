@@ -33,7 +33,7 @@ import {
 } from 'store/slices/order/orderSelector';
 import { fetchAllOrder, fetchBulkOrdersDelete, fetchPartialUpdateOrder } from 'store/slices/order/fetchOrder';
 import location from 'utils/location';
-import { Button, Box } from '@mui/material';
+import { Button, Box, Chip } from '@mui/material';
 import AssignSelectedOrderModal from './AssignSelectedOrderModal';
 import CustomNoRowsOverlay from '../../components/GridNoRowCustomOverlay';
 import { setOrder, setOrderFilters, setOrderPagination, setOrderSort } from 'store/slices/order/orderSlice';
@@ -45,7 +45,7 @@ import { formatDateTime } from 'utils/format-date';
 import { useGridApiRef } from '../../../node_modules/@mui/x-data-grid/index';
 import GridEditTextarea from './GridEditTextarea';
 import ORDER_STATUSES from 'constants/orderStatuses';
-import { cityCreateFetchStatusSelector } from 'store/slices/city/citySelector';
+import { cityFetchStatusSelector } from 'store/slices/city/citySelector';
 import fetchStatus from 'constants/fetchStatuses';
 import { fetchAllCities } from 'store/slices/city/fetchCity';
 import GridSearchSelect from './GridSearchSelect';
@@ -262,6 +262,17 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
         />
       ];
     }
+  },
+  {
+    field: 'tags',
+    headerName: 'Tags',
+    width: 100,
+    sortable: false,
+    renderCell: (params) => (
+      <Box>
+        {(params.row.tags || '').split(',').map((tag, index) => tag && <Chip key={index} label={tag} size="small" variant="outlined" />)}
+      </Box>
+    )
   }
 ];
 
@@ -277,7 +288,7 @@ const OrderTable = memo(() => {
   const sortModel = useSelector(orderSortSelector);
   const total = useSelector(orderTotalSelector);
 
-  const citiesFetchStatus = useSelector(cityCreateFetchStatusSelector);
+  const citiesFetchStatus = useSelector(cityFetchStatusSelector);
   const userPermissions = useSelector(authPermissionsSelector);
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({
