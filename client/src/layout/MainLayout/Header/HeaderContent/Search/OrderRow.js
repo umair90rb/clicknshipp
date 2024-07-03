@@ -1,4 +1,4 @@
-import { Typography, Link, Stack, Box, Chip } from '@mui/material';
+import { Typography, Stack, Box, Chip } from '@mui/material';
 import moment from '../../../../../../node_modules/moment/moment';
 import { useNavigate } from 'react-router-dom';
 
@@ -28,7 +28,7 @@ const OrderRow = ({ order, onNavigate }) => {
         <Typography variant="body1">#{order_number}</Typography>
         <Chip key={status} label={status} sx={{ ml: 0.5, borderRadius: 5 }} size="small" variant="outlined" color="primary" />
         <Typography component="span" variant="h6" ml={1}>
-          | {customer?.name || ''} Placed on {moment(createdAt).format('MMM DD, hh:mm')}
+          | {customer?.name || ''} Placed at {moment(createdAt).format('MMM DD, hh:mm')}
         </Typography>
         <Typography component="span" variant="h6" ml={1}>
           | Assigned to {user?.name || ''}

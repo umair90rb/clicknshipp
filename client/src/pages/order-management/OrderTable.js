@@ -55,17 +55,17 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
   {
     field: 'id',
     headerName: 'ID',
-    flex: 0.25
+    width: 50
   },
   {
     field: 'order_number',
     headerName: 'Order#',
-    flex: 0.5
+    width: 125
   },
   {
     field: 'first_name',
     headerName: 'First Name',
-    flex: 0.5,
+    width: 100,
     sortable: false,
     editable: true,
     type: 'string',
@@ -74,7 +74,7 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
   {
     field: 'last_name',
     headerName: 'Last Name',
-    flex: 0.5,
+    width: 100,
     sortable: false,
     editable: true,
     type: 'string',
@@ -83,7 +83,7 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
   {
     field: 'phone',
     headerName: 'Phone',
-    flex: 0.75,
+    width: 125,
     sortable: false,
     editable: true,
     valueGetter: (param) => param.row.customer?.phone || ''
@@ -91,7 +91,7 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
   {
     field: 'address1',
     headerName: 'Address',
-    flex: 1,
+    width: 500,
     sortable: false,
     editable: true,
     type: 'string',
@@ -102,7 +102,7 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
   {
     field: 'city',
     headerName: 'City',
-    flex: 1,
+    width: 400,
     sortable: false,
     editable: true,
     type: 'string',
@@ -113,7 +113,7 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
   {
     field: 'item',
     headerName: 'Items',
-    flex: 1,
+    width: 500,
     sortable: false,
     editable: false,
     valueGetter: (param) => {
@@ -132,7 +132,7 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
     field: 'addItem',
     headerName: 'Add Item',
     sortable: false,
-    flex: 0.2,
+    width: 50,
     type: 'actions',
     cellClassName: 'actions',
     getActions: (params) => {
@@ -152,18 +152,18 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
   {
     field: 'total_price',
     headerName: 'Amount',
-    flex: 0.33
+    width: 100
   },
   {
     field: 'total_discounts',
     headerName: 'Discount',
-    flex: 0.33
+    width: 100
   },
   //advance payments will be here
   {
     field: 'status',
     headerName: 'Status',
-    flex: 0.5,
+    width: 300,
     editable: true,
     type: 'singleSelect',
     valueOptions: ORDER_STATUSES
@@ -171,7 +171,7 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
   {
     field: 'remarks',
     headerName: 'Remarks',
-    flex: 0.5,
+    width: 300,
     sortable: false,
     editable: true,
     type: 'string',
@@ -182,31 +182,31 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
   {
     field: 'total_tax',
     headerName: 'Tax Amount',
-    flex: 0.33
+    width: 80
   },
   {
     field: 'createdAt',
     headerName: 'Created At',
-    flex: 1,
+    width: 100,
     valueGetter: ({ value }) => formatDateTime(value, true)
   },
   {
     field: 'receivedAt',
     headerName: 'Received At',
-    flex: 1,
+    width: 100,
     valueGetter: ({ value }) => formatDateTime(value, true)
   },
   {
     field: 'agent',
     headerName: 'Agent',
-    flex: 1,
+    width: 150,
     sortable: false,
     valueGetter: (param) => param.row.user?.name || ''
   },
   {
     field: 'chanel',
     headerName: 'Channel',
-    flex: 1,
+    width: 150,
     sortable: false,
     valueGetter: ({ value }) => (value ? value.name : '')
   },
@@ -214,7 +214,7 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
     field: 'actions',
     headerName: 'Actions',
     sortable: false,
-    flex: 1,
+    width: 200,
     type: 'actions',
     cellClassName: 'actions',
     getActions: (params) => {
@@ -266,7 +266,7 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
   {
     field: 'tags',
     headerName: 'Tags',
-    width: 100,
+    width: 150,
     sortable: false,
     renderCell: (params) => (
       <Box>

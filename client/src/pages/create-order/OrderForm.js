@@ -44,6 +44,7 @@ import { cityCitiesSelector, cityFetchStatusSelector } from 'store/slices/city/c
 import { fetchAllCities } from 'store/slices/city/fetchCity';
 import TransactionModal from './TransactionModal';
 import UpdateItemPriceModal from './UpdateItemPriceModal';
+import PreviousOrderModal from './PreviousOrderModal';
 
 const style = {
   position: 'absolute',
@@ -73,6 +74,11 @@ const CreateOrderForm = () => {
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const showAddTranscationModal = () => setShowTransactionModal(true);
   const hideAddTranscationModal = () => setShowTransactionModal(false);
+
+  const [previousOrders, setPreviousOrders] = useState([]);
+  const [previousOrderModalVisible, setPreviousOrderModal] = useState(false);
+  const showPreviousOrderModal = () => setPreviousOrderModal(true);
+  const hidePreviousOrderModal = () => setPreviousOrderModal(false);
 
   const [updatePriceModal, setUpdatePriceModal] = useState(false);
   const showUpdatePriceModal = (index, item) => {
@@ -143,7 +149,7 @@ const CreateOrderForm = () => {
       if (type === 'customer/search/fetch/fulfilled') {
         const { data } = payload;
         if ('email' in data) {
-          const { first_name, last_name, email, note, id, address } = data;
+          const { first_name, last_name, email, note, id, address, orders } = data;
           const { id: addressId, address1, address2, city, zip, province } = address || {};
           orderForm.current.setFieldValue('first_name', first_name || '');
           orderForm.current.setFieldValue('last_name', last_name || '');
@@ -158,6 +164,8 @@ const CreateOrderForm = () => {
             orderForm.current.setFieldValue('zip', zip || '');
             orderForm.current.setFieldValue('province', province || '');
           }
+          setPreviousOrders(orders);
+          showPreviousOrderModal();
         } else {
           dispatch(setMessage({ message: 'Customer not found!', type: 'error' }));
         }
@@ -1003,6 +1011,7 @@ const CreateOrderForm = () => {
           <UpdateItemPriceModal itemForUpdate={itemForUpdate} updateItem={updateItemPrice} hideModal={hideUpdatePriceModal} />
         </Box>
       </Modal>
+      <PreviousOrderModal visible={previousOrderModalVisible} onClose={hidePreviousOrderModal} orders={previousOrders} />
     </>
   );
 };

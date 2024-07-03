@@ -58,4 +58,6 @@ sequelize model:generate --name EmployeeImmediateContact --attributes name:strin
 sequelize model:generate --name EmployeeExperience --attributes company:string,started_at:string,ended_at:string,designation:string,employee_id:integer
 sequelize model:generate --name EmployeeIncrementHistory --attributes type:string,amount:float,employee_id:integer
 
+sequelize migration:generate --name add-ex-column-in-employee-table
+
 

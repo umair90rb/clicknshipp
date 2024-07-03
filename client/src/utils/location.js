@@ -23,6 +23,9 @@ class Location {
   viewOrder = (id) => `${this.pathname}order/${id}`;
 
   users = () => `${this.pathname}users`;
+
+  employees = () => `${this.pathname}employees`;
+  newEmployee = () => `${this.pathname}employees/new`;
 }
 
 const location = new Location();

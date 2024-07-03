@@ -158,7 +158,7 @@ class OrderService {
       if (order) {
         const duplicates = await this.findDuplications(order);
         if (duplicates && duplicates.length) {
-          await order.update({ status: "Duplicate", tags: "Duplicate" });
+          await order.update({ tags: "Duplicate" });
           duplicates.map(async (duplicate) => {
             const tags = (duplicate?.tags || "").split(",");
             if (!tags.includes("Duplicate")) {

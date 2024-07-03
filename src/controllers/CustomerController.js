@@ -1,7 +1,8 @@
+import { Op } from "sequelize";
 import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
-
-const { Customer, Address, Order } = model;
+import { subtractDaysFromToday } from "../helpers/pgDateFormat";
+const { Customer, Address, Order, OrderItem } = model;
 
 export default {
   async customers(req, res) {
@@ -67,6 +68,27 @@ export default {
     try {
       let customer = await Customer.findOne({
         where: { ...query },
+        include: {
+          attributes: [
+            "id",
+            "order_number",
+            "status",
+            "createdAt",
+            "remarks",
+            "total_price",
+          ],
+          model: Order,
+          as: "orders",
+          where: {
+            createdAt: {
+              [Op.gte]: subtractDaysFromToday(15),
+            },
+          },
+          include: {
+            model: OrderItem,
+            as: "items",
+          },
+        },
       });
       if (!customer) {
         return sendErrorResponse(res, 404, "Customer not found!");
@@ -79,7 +101,7 @@ export default {
         res,
         200,
         {
-          ...customer.dataValues,
+          ...customer.get(),
           address,
         },
         "Customer found."
