@@ -164,8 +164,10 @@ const CreateOrderForm = () => {
             orderForm.current.setFieldValue('zip', zip || '');
             orderForm.current.setFieldValue('province', province || '');
           }
-          setPreviousOrders(orders);
-          showPreviousOrderModal();
+          if (orders && orders.length) {
+            setPreviousOrders(orders);
+            showPreviousOrderModal();
+          }
         } else {
           dispatch(setMessage({ message: 'Customer not found!', type: 'error' }));
         }
