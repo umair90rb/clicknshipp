@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { InputBase, Modal, Box, Grid, Button, TextField, FormControl, FormHelperText, InputLabel } from '@mui/material';
 import Autocomplete, { autocompleteClasses } from '@mui/material/Autocomplete';
-import { Field, Formik, FieldArray, ErrorMessage } from 'formik';
+import { Formik, FieldArray, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { itemFetchStatusSelector, itemIsLoadingSelector, itemItemsSelector } from 'store/slices/item/itemSelector';
 import fetchStatus from 'constants/fetchStatuses';
@@ -157,11 +157,6 @@ export default function GridAddItemModal({ visible, onClose, orderId }) {
                             </FormHelperText>
                           )}
                         />
-                        {/* {addItemForm.touched.items && !!addItemForm.errors.items && (
-                          <FormHelperText sx={{ m: 0 }} error id="helper-text-name">
-                            {JSON.stringify(addItemForm.errors.items)}
-                          </FormHelperText>
-                        )} */}
                       </Grid>
 
                       <Grid item xs={2}>

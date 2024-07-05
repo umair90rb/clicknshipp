@@ -59,5 +59,6 @@ sequelize model:generate --name EmployeeExperience --attributes company:string,s
 sequelize model:generate --name EmployeeIncrementHistory --attributes type:string,amount:float,employee_id:integer
 
 sequelize migration:generate --name add-ex-column-in-employee-table
+sequelize migration:generate --name change-type-column-to-allowance-id-in-employee-allowances-table
 
 

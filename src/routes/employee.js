@@ -4,7 +4,13 @@ import { PERMISSIONS } from "../constants/constants";
 
 import can from "../middleware/canAccess";
 import Auth from "../middleware/auth";
-import { createUpdateEmployeeSchema } from "../schemas/employeeSchema";
+import {
+  createUpdateEmployeeSchema,
+  createUpdateEmployeeEducationSchema,
+  createUpdateEmployeeExperienceSchema,
+  createUpdateEmployeeImmediateContactSchema,
+  createUpdateEmployeeAllowanceSchema,
+} from "../schemas/employeeSchema";
 import { idSchema } from "../schemas/commonSchema";
 import schemaValidator from "../middleware/schemaValidator";
 import { createValidator } from "express-joi-validation";
@@ -33,6 +39,38 @@ router.post(
   can(PERMISSIONS.PERMISSION_CREATE_BRAND),
   schemaValidator(createUpdateEmployeeSchema),
   EmployeeController.create
+);
+
+router.post(
+  "/education",
+  Auth,
+  can(PERMISSIONS.PERMISSION_CREATE_BRAND),
+  schemaValidator(createUpdateEmployeeEducationSchema),
+  EmployeeController.addEducation
+);
+
+router.post(
+  "/experience",
+  Auth,
+  can(PERMISSIONS.PERMISSION_CREATE_BRAND),
+  schemaValidator(createUpdateEmployeeExperienceSchema),
+  EmployeeController.addExperience
+);
+
+router.post(
+  "/immediate-contact",
+  Auth,
+  can(PERMISSIONS.PERMISSION_CREATE_BRAND),
+  schemaValidator(createUpdateEmployeeImmediateContactSchema),
+  EmployeeController.addImmediateContact
+);
+
+router.post(
+  "/allowance",
+  Auth,
+  can(PERMISSIONS.PERMISSION_CREATE_BRAND),
+  schemaValidator(createUpdateEmployeeAllowanceSchema),
+  EmployeeController.addAllowance
 );
 
 router.put(

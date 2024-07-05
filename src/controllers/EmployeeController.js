@@ -1,7 +1,13 @@
 import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 
-const { Employee } = model;
+const {
+  Employee,
+  EmployeeEducationHistory,
+  EmployeeExperience,
+  EmployeeImmediateContact,
+  EmployeeAllowance,
+} = model;
 
 export default {
   async employees(req, res) {
@@ -39,18 +45,94 @@ export default {
 
   async create(req, res) {
     try {
-      const { name } = req.body;
-      let [employee, created] = await Employee.findOrCreate({
-        where: { name },
-        defaults: {
-          name,
-        },
-      });
+      let employee = await Employee.create(req.body);
       return sendSuccessResponse(
         res,
         201,
         { employee },
-        created ? "Employee created successfully" : "Existed employee"
+        "Employee created successfully"
+      );
+    } catch (error) {
+      return sendErrorResponse(
+        res,
+        500,
+        "Could not perform operation at this time, kindly try again later.",
+        error
+      );
+    }
+  },
+
+  async addEducation(req, res) {
+    try {
+      let educations = await EmployeeEducationHistory.bulkCreate(
+        req.body.education
+      );
+      return sendSuccessResponse(
+        res,
+        201,
+        { educations },
+        "Employee educations added successfully"
+      );
+    } catch (error) {
+      return sendErrorResponse(
+        res,
+        500,
+        "Could not perform operation at this time, kindly try again later.",
+        error
+      );
+    }
+  },
+
+  async addExperience(req, res) {
+    try {
+      let experiences = await EmployeeExperience.bulkCreate(
+        req.body.experience
+      );
+      return sendSuccessResponse(
+        res,
+        201,
+        { experiences },
+        "Employee experiences added successfully"
+      );
+    } catch (error) {
+      return sendErrorResponse(
+        res,
+        500,
+        "Could not perform operation at this time, kindly try again later.",
+        error
+      );
+    }
+  },
+
+  async addImmediateContact(req, res) {
+    try {
+      let contacts = await EmployeeImmediateContact.bulkCreate(
+        req.body.contact
+      );
+      return sendSuccessResponse(
+        res,
+        201,
+        { contacts },
+        "Employee contacts added successfully"
+      );
+    } catch (error) {
+      return sendErrorResponse(
+        res,
+        500,
+        "Could not perform operation at this time, kindly try again later.",
+        error
+      );
+    }
+  },
+
+  async addAllowance(req, res) {
+    try {
+      let allowances = await EmployeeAllowance.bulkCreate(req.body.allowance);
+      return sendSuccessResponse(
+        res,
+        201,
+        { allowances },
+        "Employee allowances added successfully"
       );
     } catch (error) {
       return sendErrorResponse(

@@ -13,6 +13,22 @@ const fetchCreateEmployee = createAsyncThunk('employee/create/fetch', ({ body },
   employeeService.fetchCreateEmployee(body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
+const fetchCreateEmployeeEducation = createAsyncThunk('employee/education/create/fetch', ({ body }, { rejectWithValue }) =>
+  employeeService.fetchCreateEmployeeEducation(body).catch((error) => rejectWithValue(error.response.data || error.message))
+);
+
+const fetchCreateEmployeeExperience = createAsyncThunk('employee/experience/create/fetch', ({ body }, { rejectWithValue }) =>
+  employeeService.fetchCreateEmployeeExperience(body).catch((error) => rejectWithValue(error.response.data || error.message))
+);
+
+const fetchCreateEmployeeImmediateContact = createAsyncThunk('employee/immediateContact/create/fetch', ({ body }, { rejectWithValue }) =>
+  employeeService.fetchCreateEmployeeImmediateContact(body).catch((error) => rejectWithValue(error.response.data || error.message))
+);
+
+const fetchCreateEmployeeAllowance = createAsyncThunk('employee/allowance/create/fetch', ({ body }, { rejectWithValue }) =>
+  employeeService.fetchCreateEmployeeAllowance(body).catch((error) => rejectWithValue(error.response.data || error.message))
+);
+
 const fetchUpdateEmployee = createAsyncThunk('employee/update/fetch', ({ id, body }, { rejectWithValue }) =>
   employeeService.fetchUpdateEmployee(id, body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
@@ -21,4 +37,14 @@ const fetchDeleteEmployee = createAsyncThunk('employee/delete/fetch', ({ id }, {
   employeeService.fetchDeleteEmployee(id).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
-export { fetchAllEmployee, fetchEmployee, fetchCreateEmployee, fetchUpdateEmployee, fetchDeleteEmployee };
+export {
+  fetchAllEmployee,
+  fetchEmployee,
+  fetchCreateEmployee,
+  fetchCreateEmployeeEducation,
+  fetchCreateEmployeeExperience,
+  fetchCreateEmployeeImmediateContact,
+  fetchCreateEmployeeAllowance,
+  fetchUpdateEmployee,
+  fetchDeleteEmployee
+};
