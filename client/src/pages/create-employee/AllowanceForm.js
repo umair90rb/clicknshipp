@@ -205,13 +205,13 @@ const AllowanceForm = ({ employeeId }) => {
               </Grid>
             </Grid>
           )}
-          {addAllowanceForm.errors && (
+          {/* {addAllowanceForm.errors && (
             <Grid container item justifyContent="center" alignItems="center">
               <Grid item xs={12} container justifyContent="start" alignItems="center">
                 <FormHelperText error>{JSON.stringify(addAllowanceForm.errors)}</FormHelperText>
               </Grid>
             </Grid>
-          )}
+          )} */}
 
           <Grid container item justifyContent="space-between" alignItems="center">
             <Grid item xs={2}>

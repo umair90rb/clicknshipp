@@ -28,7 +28,7 @@ export function GridDropdownFilter({ label = '', options = [], value, multiple =
         renderValue={(selected) => {
           if (multiple) {
             if (selected.length === 0) {
-              return <Chip size="small" sx={{ borderRadius: 5 }} variant="outlined" key="All" label="All" />;
+              return <Chip size="small" sx={{ borderRadius: 5 }} variant="outlined" key="All" label={label} />;
             }
             return (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -39,7 +39,7 @@ export function GridDropdownFilter({ label = '', options = [], value, multiple =
             );
           }
           if (!selected) {
-            return <Chip size="small" sx={{ borderRadius: 5 }} variant="outlined" key="All" label="All" />;
+            return <Chip size="small" sx={{ borderRadius: 5 }} variant="outlined" key="All" label={label} />;
           }
           return <Chip size="small" sx={{ borderRadius: 5 }} variant="outlined" key="All" label={selected} />;
         }}

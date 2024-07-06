@@ -462,7 +462,7 @@ const OrderTable = memo(() => {
         {userPermissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) && <GridToolbarExport />}
         <GridDropdownFilter
           multiple
-          label="status"
+          label="filter by status"
           options={ORDER_STATUSES}
           value={filters.find((filter) => filter.column === 'status')?.value || []}
           onChange={(e) => {
@@ -479,7 +479,7 @@ const OrderTable = memo(() => {
           }}
         />
         <GridDropdownFilter
-          label="tags"
+          label="filter by tags"
           options={ORDER_TAGS}
           value={filters.find((filter) => filter.column === 'tags')?.value || ''}
           onChange={(e) => {
