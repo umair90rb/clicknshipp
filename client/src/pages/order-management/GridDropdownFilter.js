@@ -26,16 +26,22 @@ export function GridDropdownFilter({ label = '', options = [], value, multiple =
         onChange={onChange}
         input={<InputBase id="select-multiple-chip" label="Chip" />}
         renderValue={(selected) => {
-          if (selected.length === 0) {
+          if (multiple) {
+            if (selected.length === 0) {
+              return <Chip size="small" sx={{ borderRadius: 5 }} variant="outlined" key="All" label="All" />;
+            }
+            return (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                {selected.map((value) => (
+                  <Chip size="small" sx={{ borderRadius: 5 }} variant="outlined" key={value} label={value} />
+                ))}
+              </Box>
+            );
+          }
+          if (!selected) {
             return <Chip size="small" sx={{ borderRadius: 5 }} variant="outlined" key="All" label="All" />;
           }
-          return (
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-              {selected.map((value) => (
-                <Chip size="small" sx={{ borderRadius: 5 }} variant="outlined" key={value} label={value} />
-              ))}
-            </Box>
-          );
+          return <Chip size="small" sx={{ borderRadius: 5 }} variant="outlined" key="All" label={selected} />;
         }}
         // MenuProps={MenuProps}
       >

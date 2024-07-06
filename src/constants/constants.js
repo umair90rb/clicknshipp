@@ -112,6 +112,7 @@ export const item_data_keys = [
 export const FILTER_COLUMNS = {
   order_number: "order_number",
   status: "status",
+  tags: "tags",
   customer: "$customer.first_name$",
   phone: "$customer.phone$",
   agent: "$user_id$",

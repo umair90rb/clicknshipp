@@ -24,7 +24,7 @@ const ExperienceHistoryForm = ({ employeeId, setStep }) => {
   return (
     <Formik
       initialValues={{
-        experience: [{ company: '', started_at: '', ended_at: '', designation: '', employee_id: employeeId || 1 }]
+        experience: [{ company: '', started_at: '', ended_at: '', designation: '', employee_id: employeeId }]
       }}
       validationSchema={Yup.object().shape({
         experience: Yup.array()

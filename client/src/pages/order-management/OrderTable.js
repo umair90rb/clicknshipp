@@ -44,28 +44,29 @@ import { PERMISSIONS } from 'constants/permissions-and-roles';
 import { formatDateTime } from 'utils/format-date';
 import { useGridApiRef } from '../../../node_modules/@mui/x-data-grid/index';
 import GridEditTextarea from './GridEditTextarea';
-import ORDER_STATUSES from 'constants/orderStatuses';
+import ORDER_STATUSES, { ORDER_TAGS } from 'constants/orderStatuses';
 import { cityFetchStatusSelector } from 'store/slices/city/citySelector';
 import fetchStatus from 'constants/fetchStatuses';
 import { fetchAllCities } from 'store/slices/city/fetchCity';
 import GridSearchSelect from './GridSearchSelect';
 import GridAddItemModal from './GridAddItemModal/index';
 import { GridDropdownFilter } from './GridDropdownFilter';
+import { truncate } from 'lodash';
 const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handleCancelClick, handleAddItemClick) => [
   {
     field: 'id',
     headerName: 'ID',
-    width: 50
+    flex: 0.25
   },
   {
     field: 'order_number',
     headerName: 'Order#',
-    width: 125
+    flex: 0.5
   },
   {
     field: 'first_name',
     headerName: 'First Name',
-    width: 100,
+    flex: 0.5,
     sortable: false,
     editable: true,
     type: 'string',
@@ -74,7 +75,7 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
   {
     field: 'last_name',
     headerName: 'Last Name',
-    width: 100,
+    flex: 0.5,
     sortable: false,
     editable: true,
     type: 'string',
@@ -83,7 +84,7 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
   {
     field: 'phone',
     headerName: 'Phone',
-    width: 125,
+    flex: 0.75,
     sortable: false,
     editable: true,
     valueGetter: (param) => param.row.customer?.phone || ''
@@ -91,7 +92,7 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
   {
     field: 'address1',
     headerName: 'Address',
-    width: 500,
+    flex: 1,
     sortable: false,
     editable: true,
     type: 'string',
@@ -102,7 +103,7 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
   {
     field: 'city',
     headerName: 'City',
-    width: 400,
+    flex: 1,
     sortable: false,
     editable: true,
     type: 'string',
@@ -113,7 +114,7 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
   {
     field: 'item',
     headerName: 'Items',
-    width: 500,
+    flex: 1,
     sortable: false,
     editable: false,
     valueGetter: (param) => {
@@ -132,7 +133,7 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
     field: 'addItem',
     headerName: 'Add Item',
     sortable: false,
-    width: 50,
+    flex: 0.2,
     type: 'actions',
     cellClassName: 'actions',
     getActions: (params) => {
@@ -152,18 +153,18 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
   {
     field: 'total_price',
     headerName: 'Amount',
-    width: 100
+    flex: 0.33
   },
   {
     field: 'total_discounts',
     headerName: 'Discount',
-    width: 100
+    flex: 0.33
   },
   //advance payments will be here
   {
     field: 'status',
     headerName: 'Status',
-    width: 300,
+    flex: 0.5,
     editable: true,
     type: 'singleSelect',
     valueOptions: ORDER_STATUSES
@@ -171,7 +172,7 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
   {
     field: 'remarks',
     headerName: 'Remarks',
-    width: 300,
+    flex: 0.5,
     sortable: false,
     editable: true,
     type: 'string',
@@ -182,31 +183,31 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
   {
     field: 'total_tax',
     headerName: 'Tax Amount',
-    width: 80
+    flex: 0.33
   },
   {
     field: 'createdAt',
     headerName: 'Created At',
-    width: 100,
+    flex: 0.5,
     valueGetter: ({ value }) => formatDateTime(value, true)
   },
   {
     field: 'receivedAt',
     headerName: 'Received At',
-    width: 100,
+    flex: 0.5,
     valueGetter: ({ value }) => formatDateTime(value, true)
   },
   {
     field: 'agent',
     headerName: 'Agent',
-    width: 150,
+    flex: 0.5,
     sortable: false,
     valueGetter: (param) => param.row.user?.name || ''
   },
   {
     field: 'chanel',
     headerName: 'Channel',
-    width: 150,
+    flex: 1,
     sortable: false,
     valueGetter: ({ value }) => (value ? value.name : '')
   },
@@ -214,7 +215,7 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
     field: 'actions',
     headerName: 'Actions',
     sortable: false,
-    width: 200,
+    flex: 0.5,
     type: 'actions',
     cellClassName: 'actions',
     getActions: (params) => {
@@ -266,7 +267,7 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
   {
     field: 'tags',
     headerName: 'Tags',
-    width: 150,
+    flex: 0.5,
     sortable: false,
     renderCell: (params) => (
       <Box>
@@ -322,7 +323,7 @@ const OrderTable = memo(() => {
   const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false);
   const [partialUpdateOrderLoading, setPartialUpdateOrderLoading] = useState(false);
   const [rowModesModel, setRowModesModel] = useState({});
-  const [checkboxSelection, setCheckboxSelection] = useState(false);
+  const [checkboxSelection, setCheckboxSelection] = useState(truncate);
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -473,6 +474,23 @@ const OrderTable = memo(() => {
               setOrderFilters([
                 ...filters.filter((filter) => filter.column !== 'status'),
                 { column: 'status', op: 'Text is any', value: e.target.value }
+              ])
+            );
+          }}
+        />
+        <GridDropdownFilter
+          label="tags"
+          options={ORDER_TAGS}
+          value={filters.find((filter) => filter.column === 'tags')?.value || ''}
+          onChange={(e) => {
+            if (!e.target.value || e.target.value === 'All') {
+              dispatch(setOrderFilters([...filters.filter((filter) => filter.column !== 'tags')]));
+              return;
+            }
+            dispatch(
+              setOrderFilters([
+                ...filters.filter((filter) => filter.column !== 'tags'),
+                { column: 'tags', op: 'Text contains', value: e.target.value }
               ])
             );
           }}

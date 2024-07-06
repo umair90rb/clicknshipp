@@ -40,17 +40,6 @@ const columns = (handleEditAction, handleDeleteAction) => [
     headerName: 'Hired At',
     width: 200
   },
-  // {
-  //   field: 'brands',
-  //   headerName: 'Associated Brands',
-  //   flex: 1,
-  //   valueGetter: ({ value }) => value.map((brand) => brand.name)
-  // },
-  // {
-  //   field: 'roles',
-  //   headerName: 'Roles',
-  //   flex: 1
-  // },
   {
     field: 'actions',
     headerName: 'Actions',
@@ -90,6 +79,7 @@ const columns = (handleEditAction, handleDeleteAction) => [
 
 export default function EmployeeTable() {
   const dispatch = useDispatch();
+  const { hasPermission } = useAccess();
   const employeesIsLoading = useSelector(employeeIsLoadingSelector);
   const employees = useSelector(employeeListSelector);
 
@@ -97,24 +87,24 @@ export default function EmployeeTable() {
     dispatch(fetchAllEmployee());
   }, []);
 
-  // const handleDisableUser = async (id) => {
-  //   if (id === user.id) {
-  //     dispatch(setMessage({ message: "You can't disabled yourself!", type: 'error' }));
-  //     return;
-  //   }
-  //   try {
-  //     await userService.fetchUpdateUser(id, { status: 'inactive' });
-  //     dispatch(setMessage({ message: 'User disabled!', type: 'success' }));
-  //     dispatch(disableUser(id));
-  //   } catch (error) {
-  //     dispatch(setMessage({ message: 'User not disabled!', type: 'error' }));
-  //   }
-  // };
+  const handleDisableUser = async (id) => {
+    if (id === user.id) {
+      dispatch(setMessage({ message: "You can't disabled yourself!", type: 'error' }));
+      return;
+    }
+    try {
+      await userService.fetchUpdateUser(id, { status: 'inactive' });
+      dispatch(setMessage({ message: 'User disabled!', type: 'success' }));
+      dispatch(disableUser(id));
+    } catch (error) {
+      dispatch(setMessage({ message: 'User not disabled!', type: 'error' }));
+    }
+  };
 
-  // const handleUpdate = (data, index) => {
-  //   dispatch(setUserForUpdate({ data, index }));
-  //   openUpateForm(true);
-  // };
+  const handleUpdate = (data, index) => {
+    dispatch(setUserForUpdate({ data, index }));
+    openUpateForm(true);
+  };
 
   return (
     <div style={{ width: '100%' }}>
@@ -128,11 +118,10 @@ export default function EmployeeTable() {
         loading={employeesIsLoading}
         pageSizeOptions={[25, 50, 75, 100]}
         rows={employees}
-        columns={
-          columns()
-          // hasPermission(PERMISSIONS.PERMISSION_UPDATE_USER) ? handleUpdate : undefined,
-          // hasPermission(PERMISSIONS.PERMISSION_DELETE_USER) ? handleDisableUser : undefined
-        }
+        columns={columns(
+          hasPermission(PERMISSIONS.PERMISSION_UPDATE_USER) ? handleUpdate : undefined,
+          hasPermission(PERMISSIONS.PERMISSION_DELETE_USER) ? handleDisableUser : undefined
+        )}
       />
     </div>
   );

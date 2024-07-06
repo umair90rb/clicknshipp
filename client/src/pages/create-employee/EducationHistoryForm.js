@@ -24,7 +24,7 @@ const EducationHistoryForm = ({ employeeId, setStep }) => {
   return (
     <Formik
       initialValues={{
-        education: [{ degree: '', started_at: '', ended_at: '', obtained: 0, total: 0, employee_id: employeeId || 1 }]
+        education: [{ degree: '', started_at: '', ended_at: '', obtained: 0, total: 0, employee_id: employeeId }]
       }}
       validationSchema={Yup.object().shape({
         education: Yup.array()

@@ -16,7 +16,7 @@ const ImmediateContactForm = ({ employeeId, setStep }) => {
       setStep((step) => ++step);
     } else {
       setStatus({ success: false });
-      setErrors({ submit: payload.error.map((e) => toSentence(e)).join('. ') || 'Employee experience not added!' });
+      setErrors({ submit: payload.error.map((e) => toSentence(e)).join('. ') || 'Employee immediate contact not added!' });
       setSubmitting(false);
     }
   };
@@ -24,7 +24,7 @@ const ImmediateContactForm = ({ employeeId, setStep }) => {
   return (
     <Formik
       initialValues={{
-        contact: [{ name: '', phone: '', relation: '', address: '', employee_id: employeeId || 1 }]
+        contact: [{ name: '', phone: '', relation: '', address: '', employee_id: employeeId }]
       }}
       validationSchema={Yup.object().shape({
         contact: Yup.array()

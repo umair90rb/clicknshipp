@@ -2,7 +2,36 @@
 import { Model } from "sequelize";
 module.exports = (sequelize, DataTypes) => {
   class Employee extends Model {
-    static associate(models) {}
+    static associate(models) {
+      Employee.hasMany(models.EmployeeAllowance, {
+        as: "allowances",
+        foreignKey: "employee_id",
+      });
+      Employee.hasMany(models.EmployeeEducationHistory, {
+        as: "education",
+        foreignKey: "employee_id",
+      });
+      Employee.hasMany(models.EmployeeExperience, {
+        as: "experiences",
+        foreignKey: "employee_id",
+      });
+      Employee.hasMany(models.EmployeeImmediateContact, {
+        as: "contacts",
+        foreignKey: "employee_id",
+      });
+      Employee.hasMany(models.EmployeeIncrementHistory, {
+        as: "increments",
+        foreignKey: "employee_id",
+      });
+      Employee.hasOne(models.Designation, {
+        as: "designation",
+        foreignKey: "designation_id",
+      });
+      Employee.hasOne(models.Department, {
+        as: "department",
+        foreignKey: "department_id",
+      });
+    }
   }
   Employee.init(
     {

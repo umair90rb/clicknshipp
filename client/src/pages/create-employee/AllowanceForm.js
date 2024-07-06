@@ -1,22 +1,49 @@
-import { Button, Box, TextField, FormHelperText, Grid, FormControl, Divider } from '@mui/material';
+import { useEffect } from 'react';
+import { Button, Box, TextField, FormHelperText, Grid, FormControl, Divider, InputBase } from '@mui/material';
+import Autocomplete, { autocompleteClasses } from '@mui/material/Autocomplete';
 import * as Yup from 'yup';
 import { Formik, ErrorMessage, FieldArray } from 'formik';
-import { useDispatch } from 'react-redux';
-import { fetchCreateEmployeeImmediateContact } from 'store/slices/employee/fetchEmployee';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCreateEmployeeAllowance, fetchCreateEmployeeImmediateContact } from 'store/slices/employee/fetchEmployee';
 import { toSentence } from 'utils/string-utils';
+import { useNavigate } from 'react-router-dom';
+import { fetchAllAllowance } from 'store/slices/allowance/fetchAllowance';
+import {
+  allowanceErrorSelector,
+  allowanceFetchStatusSelector,
+  allowanceIsLoadingSelector,
+  allowanceListSelector
+} from 'store/slices/allowance/allowanceSelector';
+import fetchStatus from 'constants/fetchStatuses';
+import { setMessage } from 'store/slices/util/utilSlice';
 
-const AllowanceForm = ({ employeeId, setStep }) => {
+const AllowanceForm = ({ employeeId }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const allowanceList = useSelector(allowanceListSelector);
+  const allowanceFetchStatus = useSelector(allowanceFetchStatusSelector);
+  const allowanceIsLoading = useSelector(allowanceIsLoadingSelector);
+  const allowanceError = useSelector(allowanceErrorSelector);
+
+  const goToBack = () => navigate(-1);
+
+  useEffect(() => {
+    if (allowanceFetchStatus !== fetchStatus.SUCCESS) {
+      dispatch(fetchAllAllowance());
+    }
+  }, []);
 
   const handleSubmit = async (values, { setErrors, setStatus, setSubmitting }) => {
     setSubmitting(true);
-    const { type, payload } = await dispatch(fetchCreateEmployeeImmediateContact({ body: values }));
-    if (type === 'employee/immediateContact/create/fetch/fulfilled') {
+    const { type, payload } = await dispatch(fetchCreateEmployeeAllowance({ body: values }));
+    if (type === 'employee/allowance/create/fetch/fulfilled') {
       setSubmitting(false);
-      setStep((step) => ++step);
+      dispatch(setMessage({ type: 'success', message: 'Employee allowance added' }));
+      goToBack();
     } else {
       setStatus({ success: false });
-      setErrors({ submit: payload.error.map((e) => toSentence(e)).join('. ') || 'Employee experience not added!' });
+      setErrors({ submit: payload.error.map((e) => toSentence(e)).join('. ') || 'Employee allowance not added!' });
       setSubmitting(false);
     }
   };
@@ -24,57 +51,118 @@ const AllowanceForm = ({ employeeId, setStep }) => {
   return (
     <Formik
       initialValues={{
-        contact: [{ name: '', phone: '', relation: '', address: '', employee_id: employeeId || 1 }]
+        allowance: [
+          { allowance_id: null, amount: null, employee_id: employeeId },
+          { allowance_id: null, amount: null, employee_id: employeeId }
+        ]
       }}
       validationSchema={Yup.object().shape({
-        contact: Yup.array()
+        allowance: Yup.array()
           .of(
             Yup.object().shape({
               employee_id: Yup.number().required('Please add employee personal info in previous step first'),
-              name: Yup.string().required('Please enter name'),
-              address: Yup.string().required('Please add address'),
-              phone: Yup.string().required('Please enter phone'),
-              relation: Yup.string().required('Please enter relation')
+              allowance_id: Yup.number().nullable().required('Please select allowance'),
+              amount: Yup.number().nullable().required('Please add amount')
             })
           )
-          .min(1, 'Please add minimum 1 contact')
+          .min(1, 'Please add minimum 1 allowance')
       })}
       onSubmit={handleSubmit}
     >
-      {(addImmediateContactForm) => (
+      {(addAllowanceForm) => (
         <Grid container mt={5}>
           <FieldArray
             validateOnChange={false}
-            name="contact"
+            name="allowance"
             render={(arrayHelper) =>
-              addImmediateContactForm.values.contact &&
-              addImmediateContactForm.values.contact.length > 0 &&
-              addImmediateContactForm.values.contact.map((item, index) => (
+              addAllowanceForm.values.allowance &&
+              addAllowanceForm.values.allowance.length > 0 &&
+              addAllowanceForm.values.allowance.map((item, index) => (
                 <>
-                  <Grid item key={index} container margin={1} spacing={1}>
+                  <Grid item key={index} spacing={1} container>
+                    <Grid item xs={4} container alignItems="center" justifyContent="start">
+                      <Autocomplete
+                        name={`allowance.${index}.allowance_id`}
+                        value={
+                          addAllowanceForm.values.allowance_id
+                            ? allowanceList.find((allowance) => allowance.id === addAllowanceForm.values.allowance_id)?.name
+                            : ''
+                        }
+                        onChange={(e, value) => {
+                          if (value === '') {
+                            addAllowanceForm.setFieldValue(`allowance.${index}.allowance_id`, null);
+                          }
+                          addAllowanceForm.setFieldValue(`allowance.${index}.allowance_id`, value.id);
+                        }}
+                        options={allowanceList.map((allowance) => ({
+                          id: allowance.id,
+                          label: allowance.name
+                        }))}
+                        fullWidth
+                        freeSolo
+                        disableClearable
+                        renderInput={(params) => (
+                          <TextField
+                            error={
+                              addAllowanceForm.touched.allowance &&
+                              addAllowanceForm.touched.allowance[index] &&
+                              addAllowanceForm.touched.allowance[index].allowance_id &&
+                              !!addAllowanceForm.errors.allowance &&
+                              !!addAllowanceForm.errors.allowance[index] &&
+                              !!addAllowanceForm.errors.allowance[index].allowance_id
+                            }
+                            fullWidth
+                            size="small"
+                            id={params.id}
+                            inputProps={{
+                              ...params.inputProps,
+
+                              placeholder: 'House allowance',
+                              autoComplete: 'new-password' // disable autocomplete and autofill
+                            }}
+                            {...params.InputProps}
+                          />
+                        )}
+                      />
+                      {allowanceIsLoading && (
+                        <FormHelperText sx={{ m: 0 }} error id="helper-text-allowance_id">
+                          Loading...
+                        </FormHelperText>
+                      )}
+                      <ErrorMessage
+                        name={`allowance.${index}.allowance_id`}
+                        render={(msg) => (
+                          <FormHelperText error id="helper-text-allowance_id">
+                            {msg}
+                          </FormHelperText>
+                        )}
+                      />
+                    </Grid>
+
                     <Grid item xs={4}>
                       <FormControl fullWidth margin="normal">
                         <TextField
                           error={
-                            addImmediateContactForm.touched.contact &&
-                            addImmediateContactForm.touched.contact[index] &&
-                            addImmediateContactForm.touched.contact[index].name &&
-                            !!addImmediateContactForm.errors.contact &&
-                            !!addImmediateContactForm.errors.contact[index] &&
-                            !!addImmediateContactForm.errors.contact[index].name
+                            addAllowanceForm.touched.allowance &&
+                            addAllowanceForm.touched.allowance[index] &&
+                            addAllowanceForm.touched.allowance[index].amount &&
+                            !!addAllowanceForm.errors.allowance &&
+                            !!addAllowanceForm.errors.allowance[index] &&
+                            !!addAllowanceForm.errors.allowance[index].amount
                           }
-                          value={item.name}
-                          onChange={addImmediateContactForm.handleChange}
-                          type="text"
-                          id={`contact.${index}.name`}
-                          name={`contact.${index}.name`}
-                          label="Name"
+                          size="small"
+                          value={addAllowanceForm.values.amount}
+                          onChange={addAllowanceForm.handleChange}
+                          type="number"
+                          id={`allowance.${index}.amount`}
+                          name={`allowance.${index}.amount`}
+                          label="Amount"
                           variant="outlined"
                         />
                         <ErrorMessage
-                          name={`contact.${index}.name`}
+                          name={`allowance.${index}.amount`}
                           render={(msg) => (
-                            <FormHelperText sx={{ m: 0 }} error id="helper-text-name">
+                            <FormHelperText sx={{ m: 0 }} error id="helper-text-amount">
                               {msg}
                             </FormHelperText>
                           )}
@@ -82,112 +170,20 @@ const AllowanceForm = ({ employeeId, setStep }) => {
                       </FormControl>
                     </Grid>
 
-                    <Grid item xs={4}>
-                      <FormControl fullWidth margin="normal">
-                        <TextField
-                          error={
-                            addImmediateContactForm.touched.contact &&
-                            addImmediateContactForm.touched.contact[index] &&
-                            addImmediateContactForm.touched.contact[index].phone &&
-                            !!addImmediateContactForm.errors.contact &&
-                            !!addImmediateContactForm.errors.contact[index] &&
-                            !!addImmediateContactForm.errors.contact[index].phone
-                          }
-                          value={item.phone}
-                          onChange={addImmediateContactForm.handleChange}
-                          type="text"
-                          placeholder=""
-                          id={`contact.${index}.phone`}
-                          name={`contact.${index}.phone`}
-                          label="Phone"
-                          variant="outlined"
-                        />
-                        <ErrorMessage
-                          name={`contact.${index}.phone`}
-                          render={(msg) => (
-                            <FormHelperText sx={{ m: 0 }} error id="helper-text-phone">
-                              {msg}
-                            </FormHelperText>
-                          )}
-                        />
-                      </FormControl>
-                    </Grid>
-
-                    <Grid item xs={4}>
-                      <FormControl fullWidth margin="normal">
-                        <TextField
-                          error={
-                            addImmediateContactForm.touched.contact &&
-                            addImmediateContactForm.touched.contact[index] &&
-                            addImmediateContactForm.touched.contact[index].relation &&
-                            !!addImmediateContactForm.errors.contact &&
-                            !!addImmediateContactForm.errors.contact[index] &&
-                            !!addImmediateContactForm.errors.contact[index].relation
-                          }
-                          value={item.relation}
-                          onChange={addImmediateContactForm.handleChange}
-                          type="text"
-                          id={`contact.${index}.relation`}
-                          name={`contact.${index}.relation`}
-                          label="Relation"
-                          variant="outlined"
-                        />
-                        <ErrorMessage
-                          name={`contact.${index}.relation`}
-                          render={(msg) => (
-                            <FormHelperText sx={{ m: 0 }} error id="helper-text-relation">
-                              {msg}
-                            </FormHelperText>
-                          )}
-                        />
-                      </FormControl>
-                    </Grid>
-                  </Grid>
-                  <Grid item key={index} container margin={1} spacing={1}>
-                    <Grid item xs={6}>
-                      <FormControl fullWidth margin="normal">
-                        <TextField
-                          error={
-                            addImmediateContactForm.touched.contact &&
-                            addImmediateContactForm.touched.contact[index] &&
-                            addImmediateContactForm.touched.contact[index].address &&
-                            !!addImmediateContactForm.errors.contact &&
-                            !!addImmediateContactForm.errors.contact[index] &&
-                            !!addImmediateContactForm.errors.contact[index].address
-                          }
-                          value={item.address}
-                          onChange={addImmediateContactForm.handleChange}
-                          type="text"
-                          id={`contact.${index}.address`}
-                          name={`contact.${index}.address`}
-                          label="Address"
-                          variant="outlined"
-                        />
-                        <ErrorMessage
-                          name={`contact.${index}.address`}
-                          render={(msg) => (
-                            <FormHelperText sx={{ m: 0 }} error id="helper-text-address">
-                              {msg}
-                            </FormHelperText>
-                          )}
-                        />
-                      </FormControl>
-                    </Grid>
-
-                    <Grid item container alignItems="center" justifyContent="center" display="flex" xs={3}>
+                    <Grid item container alignItems="center" justifyContent="center" display="flex" xs={2}>
                       <Button
                         size="small"
-                        onClick={() => arrayHelper.push({ employee_id: employeeId, degree: '', started_at: '', ended_at: '' })}
+                        onClick={() => arrayHelper.push({ employee_id: employeeId, allowance_id: null, amount: null })}
                         color="primary"
                         variant="contained"
                       >
                         Add
                       </Button>
                     </Grid>
-                    <Grid item container alignItems="center" justifyContent="center" display="flex" xs={3}>
+                    <Grid item container alignItems="center" justifyContent="center" display="flex" xs={2}>
                       <Button
                         size="small"
-                        onClick={() => addImmediateContactForm.values.contact.length > 1 && arrayHelper.remove(index)}
+                        onClick={() => addAllowanceForm.values.allowance.length > 1 && arrayHelper.remove(index)}
                         color="error"
                         variant="outlined"
                       >
@@ -202,24 +198,31 @@ const AllowanceForm = ({ employeeId, setStep }) => {
               ))
             }
           />
-          {addImmediateContactForm.errors.submit && (
+          {addAllowanceForm.errors.submit && (
             <Grid container item justifyContent="center" alignItems="center">
               <Grid item xs={12} container justifyContent="start" alignItems="center">
-                <FormHelperText error>{addImmediateContactForm.errors.submit}</FormHelperText>
+                <FormHelperText error>{addAllowanceForm.errors.submit}</FormHelperText>
+              </Grid>
+            </Grid>
+          )}
+          {addAllowanceForm.errors && (
+            <Grid container item justifyContent="center" alignItems="center">
+              <Grid item xs={12} container justifyContent="start" alignItems="center">
+                <FormHelperText error>{JSON.stringify(addAllowanceForm.errors)}</FormHelperText>
               </Grid>
             </Grid>
           )}
 
           <Grid container item justifyContent="space-between" alignItems="center">
             <Grid item xs={2}>
-              <Button onClick={() => setStep((step) => --step)} fullWidth variant="contained">
+              <Button onClick={goToBack} fullWidth variant="contained">
                 Finish
               </Button>
             </Grid>
             <Grid item mt={1} xs={4}>
               <Button
-                onClick={addImmediateContactForm.handleSubmit}
-                // onClick={() => console.log(addImmediateContactForm.errors)}
+                onClick={addAllowanceForm.handleSubmit}
+                // onClick={() => console.log(addAllowanceForm.errors)}
                 fullWidth
                 variant="contained"
               >

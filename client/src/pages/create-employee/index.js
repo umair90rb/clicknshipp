@@ -14,8 +14,8 @@ import AllowanceForm from './AllowanceForm';
 const steps = ['Add personal info', 'Add education history', 'Add experiences', 'Add immediate contacts', 'Add allowances'];
 
 const CreateEmployee = () => {
-  const [activeStep, setActiveStep] = useState(1);
-  const [employeeId, setEmployeeId] = useState(null);
+  const [activeStep, setActiveStep] = useState(4);
+  const [employeeId, setEmployeeId] = useState(1);
 
   const renderStep = () => {
     switch (activeStep) {
@@ -28,7 +28,7 @@ const CreateEmployee = () => {
       case 3:
         return <ImmediateContactForm setStep={setActiveStep} employeeId={employeeId} />;
       case 4:
-        return <AllowanceForm setStep={setActiveStep} employeeId={employeeId} />;
+        return <AllowanceForm employeeId={employeeId} />;
       default:
         break;
     }
