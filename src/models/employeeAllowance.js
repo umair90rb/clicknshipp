@@ -2,18 +2,15 @@
 import { Model } from "sequelize";
 module.exports = (sequelize, DataTypes) => {
   class EmployeeAllowance extends Model {
-    static associate(models) {
-      EmployeeAllowance.hasOne(models.Allowance, {
-        as: "allowance",
-        foreignKey: "allowance_id",
-      });
-    }
+    static associate(models) {}
   }
   EmployeeAllowance.init(
     {
-      allowance_id: { type: DataTypes.INTEGER, allowNull: false },
+      type: { type: DataTypes.TEXT, allowNull: true },
       amount: { type: DataTypes.FLOAT, allowNull: false },
       employee_id: { type: DataTypes.INTEGER, allowNull: false },
+      created_at: DataTypes.DATE,
+      updated_at: DataTypes.DATE,
     },
     {
       sequelize,

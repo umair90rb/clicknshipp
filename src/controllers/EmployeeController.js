@@ -27,7 +27,7 @@ export default {
   async employee(req, res) {
     try {
       const { id } = req.params;
-      const employee = await Employee.findByPk(id);
+      const employee = await Employee.findByPk(id, {});
       if (employee) {
         return sendSuccessResponse(res, 200, { employee }, "Employee with id");
       }
@@ -45,7 +45,42 @@ export default {
 
   async create(req, res) {
     try {
-      let employee = await Employee.create(req.body);
+      const salary = req.body.salary;
+      let basic,
+        house,
+        conveyance,
+        food,
+        employeeData = { ...req.body };
+      if (salary && salary > 0) {
+        //gross salary 100000
+        //66% basic
+        //20% house allowance
+        //4% conveyance allowance
+        //10% food allowance
+        basic = (salary * 66) / 100;
+        house = (salary * 20) / 100;
+        conveyance = (salary * 4) / 100;
+        food = (salary * 10) / 100;
+        employeeData = {
+          ...req.body,
+          salary: basic,
+          allowances: [
+            { amount: house, type: "House Allowance" },
+            { amount: conveyance, type: "Conveyance Allowance" },
+            { amount: food, type: "Food Allowance" },
+          ],
+        };
+        let employee = await Employee.create(employeeData, {
+          include: [{ model: EmployeeAllowance, as: "allowances" }],
+        });
+        return sendSuccessResponse(
+          res,
+          201,
+          { employee },
+          "Employee created successfully with allowances"
+        );
+      }
+      let employee = await Employee.create(employeeData);
       return sendSuccessResponse(
         res,
         201,

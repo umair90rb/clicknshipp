@@ -60,5 +60,6 @@ sequelize model:generate --name EmployeeIncrementHistory --attributes type:strin
 
 sequelize migration:generate --name add-ex-column-in-employee-table
 sequelize migration:generate --name change-type-column-to-allowance-id-in-employee-allowances-table
+sequelize migration:generate --name change-allowance-id-column-to-type-in-employee-allowances-table
 
 

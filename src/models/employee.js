@@ -23,14 +23,8 @@ module.exports = (sequelize, DataTypes) => {
         as: "increments",
         foreignKey: "employee_id",
       });
-      Employee.hasOne(models.Designation, {
-        as: "designation",
-        foreignKey: "designation_id",
-      });
-      Employee.hasOne(models.Department, {
-        as: "department",
-        foreignKey: "department_id",
-      });
+      Employee.belongsTo(models.Designation);
+      Employee.belongsTo(models.Department);
     }
   }
   Employee.init(

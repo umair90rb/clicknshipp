@@ -2,7 +2,12 @@
 import { Model } from "sequelize";
 module.exports = (sequelize, DataTypes) => {
   class Department extends Model {
-    static associate(models) {}
+    static associate(models) {
+      Department.hasOne(models.Employee, {
+        as: "employee",
+        foreignKey: "department_id",
+      });
+    }
   }
   Department.init(
     {
