@@ -252,7 +252,7 @@ const PersonalInfoForm = ({ setStep, setEmployeeId }) => {
                     name="salary"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="03001234567"
+                    placeholder="10,000"
                     fullWidth
                     error={Boolean(touched.salary && errors.salary)}
                   />
