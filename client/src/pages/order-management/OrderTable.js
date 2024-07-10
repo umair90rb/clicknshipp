@@ -14,6 +14,7 @@ import {
 } from '@mui/x-data-grid';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 // import FilterListIcon from '@mui/icons-material/FilterList';
+import VerifiedIcon from '@mui/icons-material/Verified';
 import FilterListOffIcon from '@mui/icons-material/FilterListOff';
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
@@ -441,14 +442,17 @@ const OrderTable = memo(() => {
         >
           Filters
         </Button> */}
+        <Button onClick={() => setCheckboxSelection((pv) => !pv)} size="small" startIcon={<IndeterminateCheckBoxIcon />}>
+          Toggle Selection
+        </Button>
+        {userPermissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) && <GridToolbarExport />}
+
         {filters.length > 0 && (
           <Button onClick={handleClearFilters} size="small" startIcon={<FilterListOffIcon />}>
             Clear Filters
           </Button>
         )}
-        <Button onClick={() => setCheckboxSelection((pv) => !pv)} size="small" startIcon={<IndeterminateCheckBoxIcon />}>
-          Toggle Selection
-        </Button>
+
         {rowSelectionModel.length > 0 && (
           <Button onClick={displayShowAssignSelectedModal} size="small" startIcon={<AssignmentIndIcon />}>
             Assign
@@ -459,12 +463,29 @@ const OrderTable = memo(() => {
             Delete All
           </Button>
         )}
-        {userPermissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) && <GridToolbarExport />}
+        {userPermissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) && (
+          <Button
+            onClick={() => {
+              dispatch(setOrderFilters([...filters.filter((filter) => filter.column !== 'status')]));
+              dispatch(
+                setOrderFilters([
+                  ...filters.filter((filter) => filter.column !== 'status'),
+                  { column: 'status', op: 'Text not in', value: ['Received', 'Assigned'] }
+                ])
+              );
+            }}
+            size="small"
+            startIcon={<VerifiedIcon />}
+          >
+            Processed
+          </Button>
+        )}
+
         <GridDropdownFilter
           multiple
           label="filter by status"
           options={ORDER_STATUSES}
-          value={filters.find((filter) => filter.column === 'status')?.value || []}
+          value={filters.find((filter) => filter.column === 'status' && filter.op !== 'Text not in')?.value || []}
           onChange={(e) => {
             if (e.target.value.length === 0) {
               dispatch(setOrderFilters([...filters.filter((filter) => filter.column !== 'status')]));
@@ -495,6 +516,7 @@ const OrderTable = memo(() => {
             );
           }}
         />
+
         <Box sx={{ flexGrow: 1 }} />
         <GridToolbarQuickFilter />
       </GridToolbarContainer>

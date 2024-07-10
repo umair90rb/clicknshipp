@@ -54,6 +54,7 @@ const FILTER_OP = {
   "Is between": Op.between,
   "Is not between": Op.notBetween,
   "Text is any": Op.in,
+  "Text not in": Op.notIn,
 };
 
 export default {
