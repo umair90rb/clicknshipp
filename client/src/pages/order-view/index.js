@@ -1,5 +1,7 @@
 import formatDate from 'utils/format-date';
-import { Link, Grid, Stack, Typography, Card, CardContent, Button, Chip, Modal, Box } from '@mui/material';
+import { Link, Grid, Stack, Typography, Card, CardContent, Button, Chip, ButtonGroup } from '@mui/material';
+import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
+import ArrowBackIosNewOutlinedIcon from '@mui/icons-material/ArrowBackIosNewOutlined';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import CenterCircularLoader from 'components/CenterCircularLoader';
@@ -20,6 +22,8 @@ import OrderPayments from './PaymentsTable';
 import { authUserSelector } from 'store/slices/auth/authSelector';
 import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
+import { setNextPreOrder } from 'store/slices/order/orderSlice';
+import { orderNextOrderSelector, orderPreOrderSelector } from 'store/slices/order/orderSelector';
 
 const OrderView = () => {
   const { orderId } = useParams();
@@ -70,6 +74,8 @@ const OrderView = () => {
   const { email, id: customerId, shopify_id, name, note, phone } = customer || {};
   const { city, zip, address1, address2, phone: address_phone } = address || {};
   const authUser = useSelector(authUserSelector);
+  const nextOrder = useSelector(orderNextOrderSelector);
+  const preOrder = useSelector(orderPreOrderSelector);
   const [canUpdate, setCanUpdate] = useState(order?.user?.id === authUser?.id);
   const { hasPermission } = useAccess();
 
@@ -88,14 +94,19 @@ const OrderView = () => {
 
   useEffect(() => {
     getOrderDetails();
+    dispatch(setNextPreOrder(orderId));
   }, [orderId]);
+
+  useEffect(() => {
+    console.log(nextOrder, preOrder, 'nextOrder, preOrder');
+  }, [nextOrder, preOrder]);
 
   const trackOrder = async () => {
     if (delivery) {
       switch (delivery?.courier) {
         case 'leopard':
           await navigator.clipboard.writeText(delivery?.cn);
-          window.open(` https://www.leopardscourier.com/leopards-tracking`, '_blank');
+          window.open(`https://www.leopardscourier.com/leopards-tracking`, '_blank');
           break;
         case 'deawoo':
           await navigator.clipboard.writeText(delivery?.cn);
@@ -206,6 +217,24 @@ const OrderView = () => {
                 </Button>
               </Grid>
             )}
+            <Grid item>
+              <ButtonGroup disableElevation variant="contained" aria-label="Previous next order button">
+                <Button
+                  onClick={() => navigate(`/order/${preOrder}`)}
+                  disabled={preOrder === null}
+                  startIcon={<ArrowBackIosNewOutlinedIcon />}
+                >
+                  Previous
+                </Button>
+                <Button
+                  onClick={() => navigate(`/order/${nextOrder}`)}
+                  disabled={nextOrder === null}
+                  endIcon={<ArrowForwardIosOutlinedIcon />}
+                >
+                  Next
+                </Button>
+              </ButtonGroup>
+            </Grid>
           </Grid>
         </Grid>
       </Grid>

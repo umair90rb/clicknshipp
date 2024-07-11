@@ -11,7 +11,9 @@ const initialState = {
     pageSize: 50,
     total: 0,
     filters: [],
-    sort: [{ field: 'createdAt', sort: 'desc' }]
+    sort: [{ field: 'createdAt', sort: 'desc' }],
+    nextOrder: null,
+    preOrder: null
   },
   create: {
     fetchStatus: fetchStatus.IDLE,
@@ -43,6 +45,23 @@ const orderSlice = createSlice({
       const index = state.list.orders.findIndex((order) => order.id === updatedOrder.id);
       if (index > -1) {
         state.list.orders[index] = updatedOrder;
+      }
+    },
+    setNextPreOrder: (state, action) => {
+      if (state.list.orders.length) {
+        const currentOrderIndex = state.list.orders.findIndex((order) => order.id == action.payload);
+        if (currentOrderIndex > -1) {
+          if (currentOrderIndex + 1 < state.list.orders.length) {
+            state.list.nextOrder = state.list.orders[currentOrderIndex + 1].id;
+          } else {
+            state.list.nextOrder = null;
+          }
+          if (currentOrderIndex > 0) {
+            state.list.preOrder = state.list.orders[currentOrderIndex - 1].id;
+          } else {
+            state.list.preOrder = null;
+          }
+        }
       }
     },
     clearOrderState: (_state, _action) => initialState
@@ -96,5 +115,5 @@ const orderSlice = createSlice({
     });
   }
 });
-export const { setOrderPagination, setOrderFilters, setOrderSort, setOrder, clearOrderState } = orderSlice.actions;
+export const { setOrderPagination, setOrderFilters, setOrderSort, setOrder, setNextPreOrder, clearOrderState } = orderSlice.actions;
 export default orderSlice.reducer;

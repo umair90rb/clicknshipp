@@ -14,6 +14,7 @@ import {
 } from '@mui/x-data-grid';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 // import FilterListIcon from '@mui/icons-material/FilterList';
+import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import FilterListOffIcon from '@mui/icons-material/FilterListOff';
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
@@ -53,6 +54,7 @@ import GridSearchSelect from './GridSearchSelect';
 import GridAddItemModal from './GridAddItemModal/index';
 import { GridDropdownFilter } from './GridDropdownFilter';
 import { truncate } from 'lodash';
+import moment from 'moment';
 const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handleCancelClick, handleAddItemClick) => [
   {
     field: 'id',
@@ -470,7 +472,7 @@ const OrderTable = memo(() => {
               dispatch(
                 setOrderFilters([
                   ...filters.filter((filter) => filter.column !== 'status'),
-                  { column: 'status', op: 'Text not in', value: ['Received', 'Assigned'] }
+                  { column: 'status', op: 'Text is any', value: ['Confirmed'] }
                 ])
               );
             }}
@@ -481,6 +483,24 @@ const OrderTable = memo(() => {
           </Button>
         )}
 
+        <Button
+          onClick={() => {
+            dispatch(
+              setOrderFilters([
+                { column: 'status', op: 'Text is any', value: ['No Pick'] },
+                {
+                  column: 'createdAt',
+                  op: 'Date is before',
+                  value: moment().subtract(1, 'days').endOf('day').format('YYYY-MM-DDThh:mm:ss')
+                }
+              ])
+            );
+          }}
+          size="small"
+          startIcon={<CallMissedOutgoingIcon />}
+        >
+          No Pick
+        </Button>
         <GridDropdownFilter
           multiple
           label="filter by status"
