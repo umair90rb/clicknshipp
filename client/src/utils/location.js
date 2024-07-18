@@ -24,8 +24,9 @@ class Location {
 
   users = () => `${this.pathname}users`;
 
-  employees = () => `${this.pathname}employees`;
-  newEmployee = () => `${this.pathname}employees/new`;
+  employees = () => `${this.pathname}employee/all`;
+  viewEmployee = (id) => `${this.pathname}employee/${id}`;
+  newEmployee = () => `${this.pathname}employee/new`;
 }
 
 const location = new Location();

@@ -27,7 +27,7 @@ export default {
   async employee(req, res) {
     try {
       const { id } = req.params;
-      const employee = await Employee.findByPk(id, {});
+      const employee = await Employee.findByPk(id, { include: { all: true } });
       if (employee) {
         return sendSuccessResponse(res, 200, { employee }, "Employee with id");
       }

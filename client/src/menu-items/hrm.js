@@ -10,7 +10,7 @@ const user = {
       id: 'employee',
       title: 'Employees',
       type: 'item',
-      url: '/employees',
+      url: '/employee/all',
       permission: PERMISSIONS.PERMISSION_VIEW_USERS,
       icon: BadgeOutlinedIcon,
       breadcrumbs: false
