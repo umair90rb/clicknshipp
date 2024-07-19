@@ -11,11 +11,12 @@ export default function SalaryCard({ salary, allowances }) {
         <Typography variant="h5" color="text.primary">
           Allowances:
         </Typography>
-        {allowances.map((allowance, index) => (
-          <Typography key={index} variant="h5" color="text.primary">
-            {allowance.type}: {allowance.amount}
-          </Typography>
-        ))}
+        {allowances.length > 0 &&
+          allowances.map((allowance, index) => (
+            <Typography key={index} variant="h5" color="text.primary">
+              {allowance.type}: {allowance.amount}
+            </Typography>
+          ))}
       </CardContent>
     </Card>
   );

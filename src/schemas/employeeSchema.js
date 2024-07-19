@@ -10,6 +10,10 @@ const createUpdateEmployeeSchema = Joi.object({
   salary: Joi.number().required(),
 });
 
+const addUpdateEmployeePicture = Joi.object({
+  employee_id: Joi.number().required(),
+});
+
 const createUpdateEmployeeEducationSchema = Joi.object({
   education: Joi.array()
     .min(1)
@@ -67,6 +71,7 @@ const createUpdateEmployeeAllowanceSchema = Joi.object({
 
 export {
   createUpdateEmployeeSchema,
+  addUpdateEmployeePicture,
   createUpdateEmployeeEducationSchema,
   createUpdateEmployeeExperienceSchema,
   createUpdateEmployeeImmediateContactSchema,

@@ -10,8 +10,9 @@ import EducationHistoryForm from './EducationHistoryForm';
 import ExperienceHistoryForm from './ExperienceHistoryForm';
 import ImmediateContactForm from './ImmediateContactForm';
 import AllowanceForm from './AllowanceForm';
+import PictureForm from './PictureForm';
 
-const steps = ['Add personal info', 'Add education history', 'Add experiences', 'Add immediate contacts', 'Add allowances'];
+const steps = ['Add personal info', 'Add picture', 'Add education history', 'Add experiences', 'Add immediate contacts', 'Add allowances'];
 
 const CreateEmployee = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -22,12 +23,14 @@ const CreateEmployee = () => {
       case 0:
         return <PersonalInfoForm setStep={setActiveStep} setEmployeeId={setEmployeeId} />;
       case 1:
-        return <EducationHistoryForm setStep={setActiveStep} employeeId={employeeId} />;
+        return <PictureForm setStep={setActiveStep} employeeId={employeeId} />;
       case 2:
-        return <ExperienceHistoryForm setStep={setActiveStep} employeeId={employeeId} />;
+        return <EducationHistoryForm setStep={setActiveStep} employeeId={employeeId} />;
       case 3:
-        return <ImmediateContactForm setStep={setActiveStep} employeeId={employeeId} />;
+        return <ExperienceHistoryForm setStep={setActiveStep} employeeId={employeeId} />;
       case 4:
+        return <ImmediateContactForm setStep={setActiveStep} employeeId={employeeId} />;
+      case 5:
         return <AllowanceForm employeeId={employeeId} />;
       default:
         break;

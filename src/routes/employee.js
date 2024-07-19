@@ -6,6 +6,7 @@ import can from "../middleware/canAccess";
 import Auth from "../middleware/auth";
 import {
   createUpdateEmployeeSchema,
+  addUpdateEmployeePicture,
   createUpdateEmployeeEducationSchema,
   createUpdateEmployeeExperienceSchema,
   createUpdateEmployeeImmediateContactSchema,
@@ -14,6 +15,7 @@ import {
 import { idSchema } from "../schemas/commonSchema";
 import schemaValidator from "../middleware/schemaValidator";
 import { createValidator } from "express-joi-validation";
+import uploadToS3 from "../middleware/uploadToS3";
 
 const router = express.Router();
 const validator = createValidator();
@@ -39,6 +41,15 @@ router.post(
   can(PERMISSIONS.PERMISSION_CREATE_BRAND),
   schemaValidator(createUpdateEmployeeSchema),
   EmployeeController.create
+);
+
+router.post(
+  "/picture",
+  Auth,
+  can(PERMISSIONS.PERMISSION_CREATE_BRAND),
+  uploadToS3.single("picture"),
+  schemaValidator(addUpdateEmployeePicture),
+  EmployeeController.addPicture
 );
 
 router.post(

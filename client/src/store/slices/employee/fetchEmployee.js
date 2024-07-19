@@ -13,6 +13,10 @@ const fetchCreateEmployee = createAsyncThunk('employee/create/fetch', ({ body },
   employeeService.fetchCreateEmployee(body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
+const fetchAddEmployeePicture = createAsyncThunk('employee/picture/add/fetch', ({ body }, { rejectWithValue }) =>
+  employeeService.fetchAddEmployeePicture(body).catch((error) => rejectWithValue(error.response.data || error.message))
+);
+
 const fetchCreateEmployeeEducation = createAsyncThunk('employee/education/create/fetch', ({ body }, { rejectWithValue }) =>
   employeeService.fetchCreateEmployeeEducation(body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
@@ -41,6 +45,7 @@ export {
   fetchAllEmployee,
   fetchEmployee,
   fetchCreateEmployee,
+  fetchAddEmployeePicture,
   fetchCreateEmployeeEducation,
   fetchCreateEmployeeExperience,
   fetchCreateEmployeeImmediateContact,

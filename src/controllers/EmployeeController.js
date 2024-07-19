@@ -2,11 +2,14 @@ import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 
 const {
+  Department,
+  Designation,
   Employee,
   EmployeeEducationHistory,
   EmployeeExperience,
   EmployeeImmediateContact,
   EmployeeAllowance,
+  EmployeeIncrementHistory,
 } = model;
 
 export default {
@@ -27,7 +30,18 @@ export default {
   async employee(req, res) {
     try {
       const { id } = req.params;
-      const employee = await Employee.findByPk(id, { include: { all: true } });
+      const employee = await Employee.findByPk(id, {
+        attributes: ["name", "phone", "email", "hire_at", "picture"],
+        include: [
+          { model: Department, as: "department", attributes: ["name"] },
+          { model: Designation, as: "designation", attributes: ["name"] },
+          { model: EmployeeEducationHistory, as: "education" },
+          { model: EmployeeExperience, as: "experiences" },
+          { model: EmployeeImmediateContact, as: "contacts" },
+          { model: EmployeeAllowance, as: "allowances" },
+          { model: EmployeeIncrementHistory, as: "increments" },
+        ],
+      });
       if (employee) {
         return sendSuccessResponse(res, 200, { employee }, "Employee with id");
       }
@@ -86,6 +100,30 @@ export default {
         201,
         { employee },
         "Employee created successfully"
+      );
+    } catch (error) {
+      return sendErrorResponse(
+        res,
+        500,
+        "Could not perform operation at this time, kindly try again later.",
+        error
+      );
+    }
+  },
+
+  async addPicture(req, res) {
+    try {
+      await Employee.update(
+        {
+          picture: req.file.location,
+        },
+        { where: { id: req.body.employee_id } }
+      );
+      return sendSuccessResponse(
+        res,
+        201,
+        { picture: req.file.location },
+        "Employee picture added successfully"
       );
     } catch (error) {
       return sendErrorResponse(

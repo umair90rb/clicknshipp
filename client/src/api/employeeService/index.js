@@ -9,6 +9,8 @@ class EmployeeService extends Ajax {
 
   fetchCreateEmployee = (data) => this.post(`${this.pathname}`, data);
 
+  fetchAddEmployeePicture = (data) => this.post(`${this.pathname}/picture`, data, { 'Content-Type': 'multipart/form-data' });
+
   fetchCreateEmployeeEducation = (data) => this.post(`${this.pathname}/education`, data);
 
   fetchCreateEmployeeExperience = (data) => this.post(`${this.pathname}/experience`, data);

@@ -23,8 +23,10 @@ module.exports = (sequelize, DataTypes) => {
         as: "increments",
         foreignKey: "employee_id",
       });
-      Employee.belongsTo(models.Designation);
-      Employee.belongsTo(models.Department);
+      Employee.belongsTo(models.Designation, {
+        as: "designation",
+      });
+      Employee.belongsTo(models.Department, { as: "department" });
     }
   }
   Employee.init(
@@ -32,6 +34,7 @@ module.exports = (sequelize, DataTypes) => {
       name: { type: DataTypes.STRING, allowNull: false },
       email: { type: DataTypes.STRING, allowNull: true },
       phone: { type: DataTypes.STRING, allowNull: true },
+      picture: { type: DataTypes.TEXT, allowNull: true },
       hire_at: {
         type: DataTypes.DATEONLY,
         allowNull: true,
