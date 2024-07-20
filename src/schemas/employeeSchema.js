@@ -63,7 +63,7 @@ const createUpdateEmployeeAllowanceSchema = Joi.object({
     .items(
       Joi.object({
         employee_id: Joi.number().required(),
-        allowance_id: Joi.number().required(),
+        type: Joi.string().required(),
         amount: Joi.number().required(),
       })
     ),

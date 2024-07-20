@@ -51,17 +51,14 @@ const AllowanceForm = ({ employeeId }) => {
   return (
     <Formik
       initialValues={{
-        allowance: [
-          { allowance_id: null, amount: null, employee_id: employeeId },
-          { allowance_id: null, amount: null, employee_id: employeeId }
-        ]
+        allowance: [{ type: '', amount: null, employee_id: employeeId }]
       }}
       validationSchema={Yup.object().shape({
         allowance: Yup.array()
           .of(
             Yup.object().shape({
               employee_id: Yup.number().required('Please add employee personal info in previous step first'),
-              allowance_id: Yup.number().nullable().required('Please select allowance'),
+              type: Yup.string().nullable().required('Please select allowance'),
               amount: Yup.number().nullable().required('Please add amount')
             })
           )
@@ -82,17 +79,13 @@ const AllowanceForm = ({ employeeId }) => {
                   <Grid item key={index} spacing={1} container>
                     <Grid item xs={4} container alignItems="center" justifyContent="start">
                       <Autocomplete
-                        name={`allowance.${index}.allowance_id`}
-                        value={
-                          addAllowanceForm.values.allowance_id
-                            ? allowanceList.find((allowance) => allowance.id === addAllowanceForm.values.allowance_id)?.name
-                            : ''
-                        }
+                        name={`allowance.${index}.type`}
+                        value={addAllowanceForm.values.type}
                         onChange={(e, value) => {
                           if (value === '') {
-                            addAllowanceForm.setFieldValue(`allowance.${index}.allowance_id`, null);
+                            addAllowanceForm.setFieldValue(`allowance.${index}.type`, null);
                           }
-                          addAllowanceForm.setFieldValue(`allowance.${index}.allowance_id`, value.id);
+                          addAllowanceForm.setFieldValue(`allowance.${index}.type`, value.label);
                         }}
                         options={allowanceList.map((allowance) => ({
                           id: allowance.id,
@@ -106,10 +99,10 @@ const AllowanceForm = ({ employeeId }) => {
                             error={
                               addAllowanceForm.touched.allowance &&
                               addAllowanceForm.touched.allowance[index] &&
-                              addAllowanceForm.touched.allowance[index].allowance_id &&
+                              addAllowanceForm.touched.allowance[index].type &&
                               !!addAllowanceForm.errors.allowance &&
                               !!addAllowanceForm.errors.allowance[index] &&
-                              !!addAllowanceForm.errors.allowance[index].allowance_id
+                              !!addAllowanceForm.errors.allowance[index].type
                             }
                             fullWidth
                             size="small"
@@ -125,14 +118,14 @@ const AllowanceForm = ({ employeeId }) => {
                         )}
                       />
                       {allowanceIsLoading && (
-                        <FormHelperText sx={{ m: 0 }} error id="helper-text-allowance_id">
+                        <FormHelperText sx={{ m: 0 }} error id="helper-text-type">
                           Loading...
                         </FormHelperText>
                       )}
                       <ErrorMessage
-                        name={`allowance.${index}.allowance_id`}
+                        name={`allowance.${index}.type`}
                         render={(msg) => (
-                          <FormHelperText error id="helper-text-allowance_id">
+                          <FormHelperText error id="helper-text-type">
                             {msg}
                           </FormHelperText>
                         )}
