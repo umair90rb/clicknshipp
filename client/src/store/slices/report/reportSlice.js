@@ -10,8 +10,8 @@ const initialState = {
   error: null,
   type: '',
   brand: null,
-  startPeriod: moment(new Date()).startOf('day').format('YYYY-MM-DDThh:mm:ss'),
-  endPeriod: moment(new Date()).endOf('day').format('YYYY-MM-DDThh:mm:ss')
+  startPeriod: moment(new Date()).startOf('day').format('YYYY-MM-DDTHH:mm:ss'),
+  endPeriod: moment(new Date()).endOf('day').format('YYYY-MM-DDTHH:mm:ss')
 };
 
 const reportSlice = createSlice({

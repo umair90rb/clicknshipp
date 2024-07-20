@@ -14,35 +14,35 @@ const customerOrderColumns = [
     headerName: 'ID.'
   },
   {
-    field: 'order_number',
-    flex: 1,
-    headerName: 'Order#'
-  },
-  {
-    field: 'total_tax',
-    flex: 1,
-    headerName: 'Tax Amount'
-  },
-  {
-    field: 'total_discounts',
-    flex: 1,
-    headerName: 'Discount'
-  },
-  {
-    field: 'subtotal_price',
-    flex: 1,
-    headerName: 'Subtotal'
+    field: 'createdAt',
+    flex: 0.5,
+    headerName: 'Received At',
+    valueGetter: ({ value }) => formatDateTime(value, true)
   },
   {
     field: 'total_price',
-    flex: 1,
+    flex: 0.5,
     headerName: 'Total Amount'
   },
   {
-    field: 'createdAt',
+    field: 'items',
     flex: 2,
-    headerName: 'Received At',
-    valueGetter: ({ value }) => formatDateTime(value, true)
+    headerName: 'Items',
+    valueGetter: (param) => {
+      const items = param.row.items;
+      if (!items || !items.length) {
+        return 'None';
+      }
+      if (items && items.length === 1) {
+        return `${items[0].name}/${items[0].quantity}`;
+      }
+      return items.reduce((pv, cv) => `${cv.name}/${cv.quantity}, ${pv}`, '');
+    }
+  },
+  {
+    field: 'total_discounts',
+    flex: 0.5,
+    headerName: 'Discount'
   }
 ];
 
@@ -54,33 +54,18 @@ const customerAddressColumns = [
   },
   {
     field: 'address1',
-    flex: 1,
+    flex: 2,
     headerName: 'Address'
   },
   {
-    field: 'address2',
-    flex: 1,
-    headerName: 'Address 2'
-  },
-  {
     field: 'city',
-    flex: 1,
+    flex: 0.5,
     headerName: 'City'
   },
   {
     field: 'province',
-    flex: 1,
+    flex: 0.5,
     headerName: 'Province'
-  },
-  {
-    field: 'country',
-    flex: 1,
-    headerName: 'Country'
-  },
-  {
-    field: 'zip',
-    flex: 1,
-    headerName: 'Zip'
   }
 ];
 
@@ -105,19 +90,19 @@ const CustomerDetail = ({ id }) => {
       <Divider />
       <Grid container spacing={3}>
         <Grid item xs={4}>
-          <Typography variant="body1">Name: {name || 'None'}</Typography>
+          <Typography variant="h5">Name: {name || 'None'}</Typography>
         </Grid>
         <Grid item xs={4}>
-          <Typography variant="body1">Email: {email || 'None'}</Typography>
+          <Typography variant="h5">Email: {email || 'None'}</Typography>
         </Grid>
         <Grid item xs={4}>
-          <Typography variant="body1">Phone: {phone || 'None'}</Typography>
+          <Typography variant="h5">Phone: {phone || 'None'}</Typography>
         </Grid>
       </Grid>
       <Divider />
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Typography variant="body1" size={20}>
+          <Typography variant="h5" size={20}>
             Note: {note || 'None'}
           </Typography>
         </Grid>
@@ -133,6 +118,7 @@ const CustomerDetail = ({ id }) => {
                   showQuickFilter: true
                 }
               }}
+              getRowHeight={() => 'auto'}
               rows={addresses || []}
               columns={customerAddressColumns}
             />
@@ -154,6 +140,7 @@ const CustomerDetail = ({ id }) => {
                   showQuickFilter: true
                 }
               }}
+              getRowHeight={() => 'auto'}
               rows={orders || []}
               columns={customerOrderColumns}
             />

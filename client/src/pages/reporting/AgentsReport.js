@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   reportDataSelector,
   reportEndPeriodSelector,
+  reportFetchStatusSelector,
   reportIsLoadingSelector,
   reportStartPeriodSelector
 } from 'store/slices/report/reportSelector';
@@ -13,6 +14,7 @@ import GridToolbarWithHeading from 'components/GridToolbarWithHeading';
 import CustomNoRowsOverlay from 'components/GridNoRowCustomOverlay';
 import { setOrderFilters } from 'store/slices/order/orderSlice';
 import { useNavigate } from 'react-router-dom';
+import fetchStatus from 'constants/fetchStatuses';
 
 const BorderLinearProgress = styled(LinearProgress)(() => ({
   height: '14px',
@@ -30,6 +32,7 @@ export default function AgentsReports() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const reportIsLoading = useSelector(reportIsLoadingSelector);
+  const reportFetchStatus = useSelector(reportFetchStatusSelector);
   const startPeriod = useSelector(reportStartPeriodSelector);
   const endPeriod = useSelector(reportEndPeriodSelector);
   const data = useSelector(reportDataSelector);
@@ -53,19 +56,44 @@ export default function AgentsReports() {
     {
       field: 'user_id',
       headerName: 'User ID',
-      flex: 0.5
+      flex: 0.5,
+      colSpan: (params) => {
+        if (params.row.id === 'TOTAL') {
+          return 2;
+        }
+        return undefined;
+      },
+      valueGetter: (params) => {
+        if (params.row.id === 'TOTAL') {
+          return params.row.label;
+        }
+        return params.value;
+      }
     },
     {
       field: 'name',
       headerName: 'Name',
       flex: 0.5,
-      valueGetter: (params) => params.row.user.name || ''
+      valueGetter: (params) => params.row?.user?.name || ''
     },
     {
       field: 'total',
       headerName: 'Total',
       flex: 0.5,
+      valueGetter: (params) => {
+        if (params.row.id === 'TOTAL') {
+          return params.row.grandTotal;
+        }
+        return params.value;
+      },
       renderCell: (params) => {
+        if (params.row.id === 'TOTAL') {
+          return (
+            <Button variant="text" size="small">
+              {params.row.grandTotal}
+            </Button>
+          );
+        }
         return (
           <Button onClick={() => linkClicked(params.row.user.id, [])} variant="text" size="small">
             {params.row.total}
@@ -77,7 +105,20 @@ export default function AgentsReports() {
       field: 'confirmed',
       headerName: 'Confirmed',
       flex: 0.5,
+      valueGetter: (params) => {
+        if (params.row.id === 'TOTAL') {
+          return params.row.totalConfirmed;
+        }
+        return params.value;
+      },
       renderCell: (params) => {
+        if (params.row.id === 'TOTAL') {
+          return (
+            <Button variant="text" size="small">
+              {params.row.totalConfirmed}
+            </Button>
+          );
+        }
         return (
           <Button onClick={() => linkClicked(params.row.user.id, ['Confirmed'])} variant="text" size="small">
             {params.row.confirmed}
@@ -89,7 +130,20 @@ export default function AgentsReports() {
       field: 'no_pick',
       headerName: 'No Pick',
       flex: 0.5,
+      valueGetter: (params) => {
+        if (params.row.id === 'TOTAL') {
+          return params.row.totalNoPick;
+        }
+        return params.value;
+      },
       renderCell: (params) => {
+        if (params.row.id === 'TOTAL') {
+          return (
+            <Button variant="text" size="small">
+              {params.row.totalNoPick}
+            </Button>
+          );
+        }
         return (
           <Button onClick={() => linkClicked(params.row.user.id, ['No Pick'])} variant="text" size="small">
             {params.row.no_pick}
@@ -101,7 +155,20 @@ export default function AgentsReports() {
       field: 'cancel',
       headerName: 'Cancel',
       flex: 0.5,
+      valueGetter: (params) => {
+        if (params.row.id === 'TOTAL') {
+          return params.row.totalCancel;
+        }
+        return params.value;
+      },
       renderCell: (params) => {
+        if (params.row.id === 'TOTAL') {
+          return (
+            <Button variant="text" size="small">
+              {params.row.totalCancel}
+            </Button>
+          );
+        }
         return (
           <Button onClick={() => linkClicked(params.row.user.id, ['Cancel'])} variant="text" size="small">
             {params.row.cancel}
@@ -115,6 +182,15 @@ export default function AgentsReports() {
       flex: 0.5,
       valueGetter: (params) => `${(params.row.confirmed / params.row.total) * 100}%`,
       renderCell: (params) => {
+        if (params.row.id === 'TOTAL') {
+          const percentage = ((params.row.totalConfirmed / params.row.grandTotal) * 100).toFixed(2);
+          return (
+            <>
+              <BorderLinearProgress color="success" variant="determinate" value={percentage} />
+              <Typography variant="body2" color="text.secondary">{`${percentage}%`}</Typography>
+            </>
+          );
+        }
         const percentage = ((params.row.confirmed / params.row.total) * 100).toFixed(2);
         return (
           <>
@@ -130,13 +206,14 @@ export default function AgentsReports() {
   //   return data.reduce((acc, row) => acc + parseInt(row[field]), 0);
   // };
 
-  if (reportIsLoading) {
+  if (reportIsLoading || reportFetchStatus === fetchStatus.IDLE) {
     return null;
   }
 
   return (
     <div style={{ width: '100%' }}>
       <DataGrid
+        autoHeight
         disableRowSelectionOnClick
         hideFooterPagination
         loading={reportIsLoading}

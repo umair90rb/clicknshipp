@@ -15,6 +15,7 @@ import {
 import VisibilityIcon from '@mui/icons-material/Visibility';
 // import FilterListIcon from '@mui/icons-material/FilterList';
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import FilterListOffIcon from '@mui/icons-material/FilterListOff';
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
@@ -491,7 +492,7 @@ const OrderTable = memo(() => {
                 {
                   column: 'createdAt',
                   op: 'Date is before',
-                  value: moment().subtract(1, 'days').endOf('day').format('YYYY-MM-DDThh:mm:ss')
+                  value: moment().subtract(1, 'days').endOf('day').format('YYYY-MM-DDTHH:mm:ss')
                 }
               ])
             );
@@ -500,6 +501,28 @@ const OrderTable = memo(() => {
           startIcon={<CallMissedOutgoingIcon />}
         >
           No Pick
+        </Button>
+        <Button
+          onClick={() => {
+            dispatch(
+              setOrderFilters([
+                {
+                  column: 'assignedAt',
+                  op: 'Date is after',
+                  value: moment().subtract(1, 'days').startOf('day').format('YYYY-MM-DDTHH:mm:ss')
+                },
+                {
+                  column: 'assignedAt',
+                  op: 'Date is before',
+                  value: moment().subtract(1, 'days').endOf('day').format('YYYY-MM-DDTHH:mm:ss')
+                }
+              ])
+            );
+          }}
+          size="small"
+          startIcon={<ArrowBackIcon />}
+        >
+          Last Day Order
         </Button>
         <GridDropdownFilter
           multiple

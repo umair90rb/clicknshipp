@@ -55,8 +55,8 @@ const Reporting = () => {
         <Typography variant="h5">Reporting</Typography>
       </Grid>
 
-      <Grid container justifyContent="center" spacing={2} alignItems="center" xs={12} md={12} lg={12}>
-        <Grid item xs={3} md={3} lg={3}>
+      <Grid container gap={3} justifyContent="center" alignItems="center">
+        <Grid item xs={2} md={2} lg={2}>
           <FormControl fullWidth size="small">
             <InputLabel id="demo-select-small-label">Select report</InputLabel>
             <Select
@@ -74,7 +74,7 @@ const Reporting = () => {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={3} md={3} lg={3}>
+        <Grid item xs={2} md={2} lg={2}>
           <FormControl fullWidth size="small">
             <InputLabel id="demo-select-small-label">Select brand</InputLabel>
             <Select
@@ -93,7 +93,7 @@ const Reporting = () => {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={3} md={3} lg={3}>
+        <Grid item xs={2} md={2} lg={2}>
           <DateRangePicker
             startPeriod={startPeriod}
             endPeriod={endPeriod}
@@ -102,7 +102,7 @@ const Reporting = () => {
           />
         </Grid>
         <Grid item xs={3} md={3} lg={3}>
-          <Button variant="contained" color="primary" size="small" fullWidth onClick={fetchReport}>
+          <Button sx={{ ml: 10 }} variant="contained" color="primary" size="small" onClick={fetchReport}>
             Get Report
           </Button>
         </Grid>

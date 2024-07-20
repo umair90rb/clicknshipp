@@ -58,10 +58,10 @@ export default function ChannelReport() {
 
   const renderToolbar = () => <GridToolbarWithHeading heading="Channel Report" />;
 
-  console.log(data, 'report data in channel report');
   return (
     <div style={{ width: '100%' }}>
       <DataGrid
+        autoHeight
         hideFooterPagination
         loading={reportIsLoading}
         slots={{ toolbar: renderToolbar, noRowsOverlay: CustomNoRowsOverlay }}

@@ -180,6 +180,7 @@ export default function ItemsByOrders() {
   return (
     <div style={{ width: '100%' }}>
       <DataGrid
+        autoHeight
         hideFooterPagination
         loading={reportIsLoading}
         slots={{ toolbar: renderToolbar, noRowsOverlay: CustomNoRowsOverlay }}

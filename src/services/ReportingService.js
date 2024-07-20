@@ -62,7 +62,7 @@ class ReportingService {
 
   async getUnitReport(startPeriod, endPeriod, reportBrand) {
     let where = {
-      "$order.created_at$": {
+      "$order.assigned_at$": {
         [Op.gte]: startPeriod,
         [Op.lte]: endPeriod,
       },
@@ -163,7 +163,7 @@ class ReportingService {
 
   async getChannelReport(startPeriod, endPeriod, reportBrand) {
     let where = {
-      created_at: {
+      assigned_at: {
         [Op.gte]: startPeriod,
         [Op.lte]: endPeriod,
       },

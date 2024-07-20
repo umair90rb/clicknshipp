@@ -34,15 +34,14 @@ export default {
           {
             model: Order,
             as: "orders",
-            attributes: [
-              "id",
-              "order_number",
-              "total_price",
-              "total_discounts",
-              "createdAt",
-              "total_tax",
-              "subtotal_price",
+            include: [
+              {
+                model: OrderItem,
+                as: "items",
+                attributes: ["name", "quantity"],
+              },
             ],
+            attributes: ["id", "total_price", "total_discounts", "createdAt"],
           },
         ],
       });

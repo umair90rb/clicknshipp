@@ -10,6 +10,18 @@ export function addTotalRow(report, data) {
           totalUnits: data.reduce((acc, row) => acc + (parseInt(row.units) || 0), 0)
         }
       ];
+    case 'Agent Report':
+      return [
+        ...data.map((row) => ({ ...row, id: `${row.user_id}-${row.cancel}-${row.total}-${row.confirmed}` })),
+        {
+          id: 'TOTAL',
+          label: 'Total',
+          totalCancel: data.reduce((acc, row) => acc + (parseInt(row.cancel) || 0), 0),
+          totalConfirmed: data.reduce((acc, row) => acc + (parseInt(row.confirmed) || 0), 0),
+          totalNoPick: data.reduce((acc, row) => acc + (parseInt(row.no_pick) || 0), 0),
+          grandTotal: data.reduce((acc, row) => acc + (parseInt(row.total) || 0), 0)
+        }
+      ];
     case 'Unit Report':
       return [
         ...data.map((row) => ({ ...row, id: `${row.name}-${row.generated}-${row.confirmed}` })),
