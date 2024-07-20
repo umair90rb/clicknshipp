@@ -6,10 +6,7 @@ export default function SalaryCard({ salary, allowances }) {
     <Card sx={{ maxWidth: 345, padding: 2 }}>
       <CardContent>
         <Typography variant="h5" color="text.primary">
-          Salary: {salary}
-        </Typography>
-        <Typography variant="h5" color="text.primary">
-          Allowances:
+          Base Salary: {salary}
         </Typography>
         {allowances.length > 0 &&
           allowances.map((allowance, index) => (
@@ -17,6 +14,9 @@ export default function SalaryCard({ salary, allowances }) {
               {allowance.type}: {allowance.amount}
             </Typography>
           ))}
+        <Typography variant="h5" color="text.primary">
+          Gross Salary: {salary + allowances.reduce((total, all) => all.amount + total, 0)}
+        </Typography>
       </CardContent>
     </Card>
   );

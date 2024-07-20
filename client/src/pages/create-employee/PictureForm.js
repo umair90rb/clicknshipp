@@ -51,7 +51,7 @@ const PictureForm = ({ employeeId, setStep }) => {
           <Grid container justifyContent="center">
             <Stack spacing={1}>
               <Button component="label" variant="contained">
-                {(addPictureForm.values.picture && addPictureForm.values.picture.name) || 'Select picture (Not Selected)'}
+                {(addPictureForm.values.picture && addPictureForm.values.picture.name) || 'Select picture (Not Selected) (4mb)'}
                 <VisuallyHiddenInput
                   type="file"
                   name="picture"

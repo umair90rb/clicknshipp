@@ -31,7 +31,7 @@ export default {
     try {
       const { id } = req.params;
       const employee = await Employee.findByPk(id, {
-        attributes: ["name", "phone", "email", "hire_at", "picture"],
+        attributes: ["name", "phone", "email", "hire_at", "picture", "salary"],
         include: [
           { model: Department, as: "department", attributes: ["name"] },
           { model: Designation, as: "designation", attributes: ["name"] },
@@ -66,15 +66,15 @@ export default {
         food,
         employeeData = { ...req.body };
       if (salary && salary > 0) {
-        //gross salary 100000
+        //gross salary 10000
         //66% basic
         //20% house allowance
         //4% conveyance allowance
         //10% food allowance
-        basic = (salary * 66) / 100;
-        house = (salary * 20) / 100;
-        conveyance = (salary * 4) / 100;
-        food = (salary * 10) / 100;
+        house = (salary * (20 / 100)).toFixed(2);
+        conveyance = (salary * (4 / 100)).toFixed(2);
+        food = (salary * (10 / 100)).toFixed(2);
+        basic = (salary * (66 / 100)).toFixed(2);
         employeeData = {
           ...req.body,
           salary: basic,

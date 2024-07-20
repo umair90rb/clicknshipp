@@ -4,18 +4,18 @@ import { S3Client } from "@aws-sdk/client-s3";
 import path from "path";
 
 const s3 = new S3Client({
-  endpoint: process.env.AWS_END_POINT,
+  // endpoint: process.env.AWS_END_POINT,
   credentials: {
     accessKeyId: process.env.AWS_KEY_ID,
     secretAccessKey: process.env.AWS_KEY,
   },
   region: process.env.AWS_REGION,
-  forcePathStyle: true,
+  // forcePathStyle: true,
 });
 
 const s3Storage = multerS3({
   s3: s3,
-  bucket: "pictures",
+  bucket: process.env.AWS_BUCKET,
   acl: "public-read",
   metadata: (req, file, cb) => {
     cb(null, { fieldname: file.fieldname });

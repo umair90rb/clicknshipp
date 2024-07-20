@@ -15,7 +15,7 @@ const EmployeeView = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const [employeeData, setEmployeeData] = useState({});
-  const { contacts, experiences, education, allowances, increments, ...employee } = employeeData || {};
+  const { contacts, experiences, education, allowances, increments, salary, ...employee } = employeeData || {};
   const [error, setError] = useState('');
 
   const getEmployeeDetails = async (employeeId) => {
@@ -51,7 +51,7 @@ const EmployeeView = () => {
       <Grid item xs={3} md={3} lg={3} sx={{ border: '0px solid black' }}>
         <EmployeeCard employee={employee} />
         <Box component="section" sx={{ p: 1 }}></Box>
-        <SalaryCard salary={1000} allowances={allowances} />
+        <SalaryCard salary={salary || ''} allowances={allowances || []} />
       </Grid>
       <Grid item xs={9} md={9} lg={9}>
         {contacts?.length > 0 && <ImmediateContactsCard contacts={contacts} />}
