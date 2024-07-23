@@ -191,7 +191,6 @@ export default {
         const _query = { ...query, where: { ...query.where, ..._filters } };
         query = _query;
       }
-      console.log(query, "=========query");
       const orders = await Order.findAndCountAll(query);
       return sendSuccessResponse(res, 200, {
         orders: { ...orders, ...req.body },
@@ -472,86 +471,77 @@ export default {
 
   async importOrders(req, res) {
     try {
-      const { submission, chanel_id } = req.body;
+      const { chanel_id } = req.body;
       const json = await excelToJson(req.file.buffer);
+      console.log(json.length, "json.length");
       if (!json.length) {
         return sendErrorResponse(res, 500, "File is empty.");
       }
       const chanel = await Chanel.findByPk(chanel_id);
       const brand_id = chanel.brand_id || null;
-      if (submission && submission == "true") {
-        const orders = json.map(
-          ({ ID, Page, Account, Name, Address, City, Quantity, ...rest }) => {
-            const created_at = rest["created at"];
-            const sizeText = rest["Size: "];
-            const phone = rest["Phone Number"];
-            const { name, abri } = getNameFromSubmissionLink(Page.result);
-            const { price, size } = getSizeAndPrice(sizeText);
-            const items = [
-              {
-                product_id: null,
-                name: name || abri,
-                price,
-                total_discount: 0,
-                quantity: parseInt(Quantity),
-                sku: `${abri}-${size}`,
-                grams: null,
-                reason: null,
-              },
-            ];
-            const address = {
-              address1: Address,
-              address2: null,
-              city: City,
-              zip: null,
-              province: null,
-              country: "Pakistan",
-              country_code: "PK",
-            };
-            const customer = { phone: formatPhoneNumber(phone), name: Name };
-            const order = {
-              chanel_id: parseInt(chanel_id),
-              brand_id,
-              user_id: null,
-              status: "Received",
-              subtotal_price: price,
-              total_price: price,
-              total_tax: 0,
-              total_discounts: 0,
-              order_number: ID,
-              created_at,
-              updated_at: created_at,
-              data: JSON.stringify({
-                ID,
-                Page,
-                Account,
-                Name,
-                Address,
-                City,
-                Quantity,
-                ...rest,
-              }),
-            };
-            return { order, items, address, customer };
-          }
-        );
-        await Promise.all(
-          orders.map((order) =>
-            _orderService.createSubmissionOrder(order, req.user.id)
-          )
-        );
-        return sendSuccessResponse(
-          res,
-          200,
-          {},
-          "Orders imported successfully!"
-        );
-      }
-      return sendErrorResponse(
-        res,
-        500,
-        "Only bulk order can create via submission files."
+
+      console.log(json, "json");
+      const orders = json.map(
+        ({ ID, Page, Account, Name, Address, City, Quantity, ...rest }) => {
+          const created_at = rest["created at"];
+          const sizeText = rest["Size: "];
+          const phone = rest["Phone Number"];
+          const { name, abri } = getNameFromSubmissionLink(Page.result);
+          const { price, size } = getSizeAndPrice(sizeText);
+          const items = [
+            {
+              product_id: null,
+              name: name || abri,
+              price,
+              total_discount: 0,
+              quantity: parseInt(Quantity),
+              sku: `${abri}-${size}`,
+              grams: null,
+              reason: null,
+            },
+          ];
+          const address = {
+            address1: Address,
+            address2: null,
+            city: City,
+            zip: null,
+            province: null,
+            country: "Pakistan",
+            country_code: "PK",
+          };
+          const customer = { phone: formatPhoneNumber(phone), name: Name };
+          const order = {
+            chanel_id: parseInt(chanel_id),
+            brand_id,
+            user_id: null,
+            status: "Received",
+            subtotal_price: price,
+            total_price: price,
+            total_tax: 0,
+            total_discounts: 0,
+            order_number: ID,
+            created_at,
+            updated_at: created_at,
+            data: JSON.stringify({
+              ID,
+              Page,
+              Account,
+              Name,
+              Address,
+              City,
+              Quantity,
+              ...rest,
+            }),
+          };
+          return { order, items, address, customer };
+        }
       );
+      await Promise.all(
+        orders.map((order) =>
+          _orderService.createSubmissionOrder(order, req.user.id)
+        )
+      );
+      return sendSuccessResponse(res, 200, {}, "Orders imported successfully!");
     } catch (error) {
       console.error(error);
       return sendErrorResponse(

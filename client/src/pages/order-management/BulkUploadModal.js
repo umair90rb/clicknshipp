@@ -71,13 +71,12 @@ export default function BulkUploadModal({ visible, onClose }) {
     let formData = new FormData();
     formData.append('file', values.file);
     formData.append('chanel_id', values.chanel_id);
-    formData.append('submission', values.submission);
     dispatch(fetchImportOrder({ body: formData })).then(({ _, payload }) => {
       if (orderImportFetchStatus === fetchStatus.SUCCESS) {
         dispatch(
           fetchAllOrder({ body: { sort: sortModel, page: filters.length ? 0 : page, pageSize: filters.length ? 100 : pageSize, filters } })
         );
-        dispatch(setMessage({ message: payload?.error || 'Error! Something goes wrong!', type: 'error' }));
+        dispatch(setMessage({ message: payload?.data?.message || 'Order uploaded.', type: 'success' }));
         onClose();
         bulkOrderUploadForm.handleReset();
       } else if (orderImportFetchStatus === fetchStatus.FAILURE) {
@@ -89,13 +88,11 @@ export default function BulkUploadModal({ visible, onClose }) {
   const bulkOrderUploadForm = useFormik({
     initialValues: {
       file: '',
-      chanel_id: '',
-      submission: true
+      chanel_id: ''
     },
     validationSchema: Yup.object({
       file: Yup.mixed().required('Please select file to upload'),
-      chanel_id: Yup.number().required('Please select channel!'),
-      submission: Yup.boolean().required('Please specify if file is submission or not!')
+      chanel_id: Yup.number().required('Please select channel!')
     }),
     onSubmit: createBulkOrders
   });
@@ -159,23 +156,9 @@ export default function BulkUploadModal({ visible, onClose }) {
             </Stack>
           </Grid>
         )}
-
-        <FormGroup sx={{ my: 2 }}>
-          <FormControlLabel
-            control={
-              <Checkbox checked={bulkOrderUploadForm.values.submission} onChange={bulkOrderUploadForm.handleChange} name="submission" />
-            }
-            label={'Submission'}
-          />
-          {bulkOrderUploadForm.touched.submission && bulkOrderUploadForm.errors.submission && (
-            <FormHelperText error id="helper-text-submission-signup">
-              {bulkOrderUploadForm.errors.submission}
-            </FormHelperText>
-          )}
-        </FormGroup>
-        <Grid container sx={{ flexGrow: 1 }}>
+        <Grid container sx={{ flexGrow: 1, mt: 5 }}>
           <Grid xs display="flex" justifyContent="center" alignItems="center">
-            <Button onClick={bulkOrderUploadForm.handleSubmit} sx={{ flexGrow: 1 }} variant="contained">
+            <Button onClick={bulkOrderUploadForm.handleSubmit} sx={{ flexGrow: 1 }} disable={orderImportIsLoading} variant="contained">
               Upload
             </Button>
           </Grid>
