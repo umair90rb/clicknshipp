@@ -480,7 +480,6 @@ export default {
       const chanel = await Chanel.findByPk(chanel_id);
       const brand_id = chanel.brand_id || null;
 
-      console.log(json, "json");
       const orders = json.map(
         ({ ID, Page, Account, Name, Address, City, Quantity, ...rest }) => {
           const created_at = rest["created at"];

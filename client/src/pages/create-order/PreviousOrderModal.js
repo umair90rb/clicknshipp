@@ -15,7 +15,7 @@ const PreviousOrderModal = ({ onClose, visible, orders }) => {
   return (
     <Modal open={visible} onClose={onClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
       <Box sx={style}>
-        <Typography variant="body1">Last 15 days orders</Typography>
+        <Typography variant="body1">Last 30 days orders</Typography>
         {orders.map((order, index) => (
           <OrderRow key={index} order={order} />
         ))}

@@ -80,7 +80,7 @@ export default {
           as: "orders",
           where: {
             createdAt: {
-              [Op.gte]: subtractDaysFromToday(15),
+              [Op.gte]: subtractDaysFromToday(30),
             },
           },
           include: {
