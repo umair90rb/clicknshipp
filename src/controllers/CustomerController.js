@@ -2,7 +2,8 @@ import { Op } from "sequelize";
 import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 import { subtractDaysFromToday } from "../helpers/pgDateFormat";
-const { Customer, Address, Order, OrderItem } = model;
+import formatPhone from "../helpers/formatPhone";
+const { Customer, Address, Order, OrderItem, User } = model;
 
 export default {
   async customers(req, res) {
@@ -65,6 +66,9 @@ export default {
   async search(req, res) {
     const query = req.body;
     try {
+      if ("phone" in query) {
+        query.phone = formatPhone(query.phone);
+      }
       let customer = await Customer.findOne({
         where: { ...query },
         include: {
@@ -83,10 +87,17 @@ export default {
               [Op.gte]: subtractDaysFromToday(30),
             },
           },
-          include: {
-            model: OrderItem,
-            as: "items",
-          },
+          include: [
+            {
+              model: OrderItem,
+              as: "items",
+            },
+            {
+              model: User,
+              as: "user",
+              attributes: ["name"],
+            },
+          ],
         },
       });
       if (!customer) {

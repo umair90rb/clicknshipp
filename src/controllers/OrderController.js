@@ -141,14 +141,15 @@ export default {
       if (permissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS)) {
         delete query.where.user_id;
         delete query.where.assigned_at;
-      } else if (
-        "settings" in req.user &&
-        req.user?.settings?.hasOwnProperty("default_brand_id")
-      ) {
-        query.where.brand_id = req.user.settings.default_brand_id;
-      } else if ("brands" in req.user) {
-        query.where.brand_id = req.user?.brands[0]?.id;
       }
+      // else if (
+      //   "settings" in req.user &&
+      //   req.user?.settings?.hasOwnProperty("default_brand_id")
+      // ) {
+      //   query.where.brand_id = req.user.settings.default_brand_id;
+      // } else if ("brands" in req.user) {
+      //   query.where.brand_id = req.user?.brands[0]?.id;
+      // }
 
       if (filters.length) {
         let _filters = {};
@@ -399,6 +400,7 @@ export default {
         brand_id,
         user_id: req.user.id,
         status: "Assigned",
+        assignedAt: new Date().toISOString(),
         subtotal_price: withoutDiscount.toFixed(2),
         total_price: total_price.toFixed(2),
         total_tax,
@@ -480,8 +482,21 @@ export default {
       const chanel = await Chanel.findByPk(chanel_id);
       const brand_id = chanel.brand_id || null;
 
+      console.log(json);
+      return;
+
       const orders = json.map(
-        ({ ID, Page, Account, Name, Address, City, Quantity, ...rest }) => {
+        ({
+          ID,
+          Page,
+          Account,
+          Name,
+          Address,
+          City,
+          Quantity,
+          Product,
+          ...rest
+        }) => {
           const created_at = rest["created at"];
           const sizeText = rest["Size: "];
           const phone = rest["Phone Number"];
