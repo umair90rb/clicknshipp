@@ -482,8 +482,8 @@ export default {
       const chanel = await Chanel.findByPk(chanel_id);
       const brand_id = chanel.brand_id || null;
 
-      console.log(json);
-      return;
+      // console.log(json);
+      // return;
 
       const orders = json.map(
         ({
@@ -495,21 +495,20 @@ export default {
           City,
           Quantity,
           Product,
+          Price,
+          SKU,
           ...rest
         }) => {
           const created_at = rest["created at"];
-          const sizeText = rest["Size: "];
           const phone = rest["Phone Number"];
-          const { name, abri } = getNameFromSubmissionLink(Page.result);
-          const { price, size } = getSizeAndPrice(sizeText);
           const items = [
             {
               product_id: null,
-              name: name || abri,
-              price,
+              name: Product,
+              price: Price,
               total_discount: 0,
               quantity: parseInt(Quantity),
-              sku: `${abri}-${size}`,
+              sku: SKU,
               grams: null,
               reason: null,
             },
@@ -529,8 +528,8 @@ export default {
             brand_id,
             user_id: null,
             status: "Received",
-            subtotal_price: price,
-            total_price: price,
+            subtotal_price: Price,
+            total_price: Price,
             total_tax: 0,
             total_discounts: 0,
             order_number: ID,

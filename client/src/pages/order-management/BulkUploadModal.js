@@ -63,26 +63,24 @@ export default function BulkUploadModal({ visible, onClose }) {
   const filters = useSelector(orderFiltersSelector);
   const sortModel = useSelector(orderSortSelector);
   const orderImportIsLoading = useSelector(orderImportIsLoadingSelector);
-  const orderImportFetchStatus = useSelector(orderImportFetchStatusSelector);
   const chanels = useSelector(chanelChanelsSelector);
   const chanelsIsLoading = useSelector(chanelIsLoadingSelector);
 
-  const createBulkOrders = (values) => {
+  const createBulkOrders = async (values) => {
     let formData = new FormData();
     formData.append('file', values.file);
     formData.append('chanel_id', values.chanel_id);
-    dispatch(fetchImportOrder({ body: formData })).then(({ _, payload }) => {
-      if (orderImportFetchStatus === fetchStatus.SUCCESS) {
-        dispatch(
-          fetchAllOrder({ body: { sort: sortModel, page: filters.length ? 0 : page, pageSize: filters.length ? 100 : pageSize, filters } })
-        );
-        dispatch(setMessage({ message: payload?.data?.message || 'Order uploaded.', type: 'success' }));
-        onClose();
-        bulkOrderUploadForm.handleReset();
-      } else if (orderImportFetchStatus === fetchStatus.FAILURE) {
-        dispatch(setMessage({ message: payload?.error || 'Error! Something goes wrong!', type: 'error' }));
-      }
-    });
+    const { type, payload } = await dispatch(fetchImportOrder({ body: formData }));
+    if (type === 'order/import/fetch/fulfilled') {
+      dispatch(
+        fetchAllOrder({ body: { sort: sortModel, page: filters.length ? 0 : page, pageSize: filters.length ? 100 : pageSize, filters } })
+      );
+      dispatch(setMessage({ message: payload?.data?.message || 'Order created successfully.', type: 'success' }));
+      onClose();
+      bulkOrderUploadForm.handleReset();
+    } else if (type === 'order/import/fetch/failed') {
+      dispatch(setMessage({ message: payload?.error || 'Error! Something goes wrong!', type: 'error' }));
+    }
   };
 
   const bulkOrderUploadForm = useFormik({

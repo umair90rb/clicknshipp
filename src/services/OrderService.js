@@ -1,5 +1,6 @@
 import formatPhone from "../helpers/formatPhone";
 import { subtractDaysFromToday } from "../helpers/pgDateFormat";
+import splitName from "../helpers/splitName";
 import model from "../models";
 import Sequelize, { Op } from "sequelize";
 const {
@@ -15,8 +16,6 @@ const {
 } = model;
 
 class OrderService {
-  constructor() {}
-
   async createSubmissionOrder(_order, userId) {
     try {
       const {
@@ -25,18 +24,18 @@ class OrderService {
         address: addressData,
         customer: customerData,
       } = _order;
-      console.log(customerData);
       const order = await Order.create(orderData);
       const address = await order.createAddress(addressData);
+      const nameObj = splitName(customerData.name);
       let [customer, created] = await Customer.findOrCreate({
         where: { phone: customerData.phone },
         defaults: {
           phone: customerData.phone,
-          first_name: customerData.name,
+          ...nameObj,
         },
       });
-      if (!created && customer?.first_name === null) {
-        await customer.update({ first_name: customerData.name });
+      if (!created) {
+        await customer.update(nameObj);
       }
       await order.setCustomer(customer.id);
       await address.setCustomer(customer.id);
