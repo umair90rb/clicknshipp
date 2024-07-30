@@ -98,8 +98,8 @@ export default {
               attributes: ["name"],
             },
           ],
-          // order: [[{ model: Order, as: "orders" }, "createdAt", "ASC"]], not working
         },
+        order: [[{ model: Order, as: "orders" }, "createdAt", "DESC"]],
       });
       if (!customer) {
         return sendErrorResponse(res, 404, "Customer not found!");
