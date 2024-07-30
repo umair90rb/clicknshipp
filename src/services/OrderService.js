@@ -1,3 +1,4 @@
+import formatPhone from "../helpers/formatPhone";
 import { subtractDaysFromToday } from "../helpers/pgDateFormat";
 import model from "../models";
 import Sequelize, { Op } from "sequelize";
@@ -262,7 +263,7 @@ class OrderService {
             where:
               tag === "Phone"
                 ? {
-                    phone: query,
+                    phone: formatPhone(query),
                   }
                 : undefined,
           },

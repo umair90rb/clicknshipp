@@ -894,7 +894,10 @@ const CreateOrderForm = () => {
                             <IconButton onClick={() => showUpdatePriceModal(index, row)} aria-label="update price">
                               <PriceChangeIcon />
                             </IconButton>
-                            <IconButton onClick={() => setItems((items) => items.filter((item) => item.id !== row.id))} aria-label="delete">
+                            <IconButton
+                              onClick={() => setItems((i) => i.filter((item) => item.product_id !== row.product_id))}
+                              aria-label="delete"
+                            >
                               <CloseOutlined />
                             </IconButton>
                           </TableCell>
