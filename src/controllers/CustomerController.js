@@ -98,6 +98,7 @@ export default {
               attributes: ["name"],
             },
           ],
+          // order: [[{ model: Order, as: "orders" }, "createdAt", "ASC"]], not working
         },
       });
       if (!customer) {

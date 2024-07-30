@@ -1,6 +1,6 @@
 import { Typography, Stack, Box, Chip } from '@mui/material';
-import moment from '../../../../../../node_modules/moment/moment';
 import { useNavigate } from 'react-router-dom';
+import { isToday, format, formatDistanceToNow } from 'date-fns';
 
 const OrderRow = ({ order, onNavigate }) => {
   const navigate = useNavigate();
@@ -17,6 +17,7 @@ const OrderRow = ({ order, onNavigate }) => {
         ':hover': {
           background: '#ECECEC'
         },
+        background: isToday(createdAt) ? '#FFD580' : undefined,
         width: '100%',
         my: 0.5,
         p: 0.5,
@@ -24,18 +25,16 @@ const OrderRow = ({ order, onNavigate }) => {
         border: '0px solid black'
       }}
     >
-      <Box display="flex">
-        <Typography variant="body1">#{order_number}</Typography>
-        <Chip key={status} label={status} sx={{ ml: 0.5, borderRadius: 5 }} size="small" variant="outlined" color="primary" />
-        <Typography component="span" variant="h6" ml={1}>
-          | {customer?.name || ''} Placed at {moment(createdAt).format('MMM DD, hh:mm')}
-        </Typography>
-        <Typography component="span" variant="h6" ml={1}>
-          | Assigned to {user?.name || ''}
-        </Typography>
-      </Box>
-      <Typography component="section" variant="h6" ml={1}>
-        {items?.reduce((pv, cv) => `${cv.name}/${cv.quantity} ${pv}`, '')}
+      <Typography component="p" variant="h6" ml={1}>
+        #{order_number} | Status:{' '}
+        <Typography component="span" variant="h5">
+          {status}
+        </Typography>{' '}
+        | {customer?.name || ''} Placed at {format(createdAt, 'MMM dd')}, {formatDistanceToNow(createdAt)} ago | Assigned to{' '}
+        <Typography component="span" variant="h5">
+          {user?.name || ''}
+        </Typography>{' '}
+        Items: {items?.reduce((pv, cv) => `${cv.name}/${cv.quantity} ${pv}`, '')}
       </Typography>
     </Stack>
   );

@@ -326,6 +326,7 @@ export default {
         brand_id,
         zip,
         province,
+        status,
         items: itemsArray,
         payments: paymentsArray,
       } = req.body || {};
@@ -399,7 +400,7 @@ export default {
         chanel_id,
         brand_id,
         user_id: req.user.id,
-        status: "Assigned",
+        status,
         assignedAt: new Date().toISOString(),
         subtotal_price: withoutDiscount.toFixed(2),
         total_price: total_price.toFixed(2),
@@ -441,7 +442,6 @@ export default {
             });
           }
         }
-        console.log(customer);
         await order.setCustomer(customer.id);
         await address.setCustomer(customer.id);
       }

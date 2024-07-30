@@ -63,7 +63,7 @@ const CreateOrderForm = () => {
   const orderForm = useRef();
   const { state } = useLocation();
   const { order } = state || {};
-  const { items: orderItems, customer, address, id, chanel, brand_id, remarks } = order || {};
+  const { items: orderItems, customer, address, id, chanel, brand_id, remarks, status } = order || {};
   const { first_name, last_name, email, phone, note, id: customerId } = customer || {};
   const { address1, address2, city, zip, province, id: addressId } = address || {};
   const { id: chanel_id } = chanel || {};
@@ -207,6 +207,7 @@ const CreateOrderForm = () => {
           email: email || '',
           phone: phone || '',
           note: note || '',
+          status: 'Assigned',
           remarks: remarks || '',
           chanel_id: chanel_id || '',
           brand_id: brand_id || '',
@@ -977,20 +978,32 @@ const CreateOrderForm = () => {
                 </Grid>
               )}
               {/* Items end */}
-              <Grid item xs={12}>
-                <AnimateButton>
-                  <Button
-                    disableElevation
-                    disabled={orderCreateIsLoading}
-                    fullWidth
-                    size="large"
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                  >
-                    {order ? 'Update Order' : 'Create new order'}
-                  </Button>
-                </AnimateButton>
+              <Grid container gap={1} justifyContent="center" alignItems="center" item xs={12}>
+                <Grid item xs={5}>
+                  <AnimateButton>
+                    <Button disabled={orderCreateIsLoading} fullWidth size="large" type="submit" variant="contained" color="primary">
+                      {order ? 'Update Order' : 'Create new order'}
+                    </Button>
+                  </AnimateButton>
+                </Grid>
+                <Grid item xs={5}>
+                  <AnimateButton>
+                    <Button
+                      disabled={orderCreateIsLoading}
+                      fullWidth
+                      size="large"
+                      onClick={() => {
+                        'clicked';
+                        setFieldValue('status', 'Confirmed');
+                        handleSubmit();
+                      }}
+                      variant="contained"
+                      color="success"
+                    >
+                      Create and confirm order
+                    </Button>
+                  </AnimateButton>
+                </Grid>
               </Grid>
             </Grid>
           </form>

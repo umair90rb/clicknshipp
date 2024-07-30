@@ -1,5 +1,5 @@
 import formatPhone from "../helpers/formatPhone";
-import { subtractDaysFromToday } from "../helpers/pgDateFormat";
+import { getStartOfDay, subtractDaysFromToday } from "../helpers/pgDateFormat";
 import splitName from "../helpers/splitName";
 import model from "../models";
 import Sequelize, { Op } from "sequelize";
@@ -310,7 +310,7 @@ class OrderService {
               [Op.ne]: order.id,
             },
             createdAt: {
-              [Op.gte]: subtractDaysFromToday(15),
+              [Op.gte]: subtractDaysFromToday(30),
             },
           },
           include: [
