@@ -352,6 +352,21 @@ export default {
       //   });
       // }
 
+      const orderExistFromCustomer =
+        await _orderService.findSameDayOrderByPhone(phone);
+      if (orderExistFromCustomer) {
+        const { status } = orderExistFromCustomer;
+        if (status === "Confirmed") {
+          return sendErrorResponse(
+            res,
+            500,
+            "Order from this customer already confirmed!",
+            null,
+            orderExistFromCustomer.get()
+          );
+        }
+      }
+
       for (const item of itemsArray) {
         const {
           product_id,
@@ -452,6 +467,21 @@ export default {
         event: "order created",
         user_id: req.user.id,
       });
+      if (orderExistFromCustomer) {
+        const { status } = orderExistFromCustomer;
+        let existedOrderUpdateData = {
+          tags: "Duplicate,",
+          status: "Duplicate",
+        };
+        if (status === "Assigned") {
+          existedOrderUpdateData = {
+            ...existedOrderUpdateData,
+            user_id: null,
+            assignedAt: null,
+          };
+        }
+        await orderExistFromCustomer.update(existedOrderUpdateData);
+      }
       let orderWithoutData = order.dataValues;
       delete orderWithoutData.data;
       return sendSuccessResponse(

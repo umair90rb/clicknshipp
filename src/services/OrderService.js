@@ -1,5 +1,9 @@
 import formatPhone from "../helpers/formatPhone";
-import { getStartOfDay, subtractDaysFromToday } from "../helpers/pgDateFormat";
+import {
+  getEndOfDay,
+  getStartOfDay,
+  subtractDaysFromToday,
+} from "../helpers/pgDateFormat";
 import splitName from "../helpers/splitName";
 import model from "../models";
 import Sequelize, { Op } from "sequelize";
@@ -235,7 +239,7 @@ class OrderService {
     }
   }
 
-  async findOrdersBy(
+  findOrdersBy(
     tag,
     query,
     orderFields = ["id", "order_number", "status", "createdAt"]
@@ -281,8 +285,45 @@ class OrderService {
           },
         ],
       };
-      const orders = await Order.findAll(sqlQuery);
-      return orders;
+      return Order.findAll(sqlQuery);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  findSameDayOrderByPhone(phone) {
+    try {
+      const sqlQuery = {
+        attributes: ["id", "status", "createdAt"],
+        where: {
+          createdAt: {
+            [Op.gt]: getStartOfDay(new Date()),
+            [Op.lt]: getEndOfDay(new Date()),
+          },
+        },
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "name"],
+          },
+          {
+            model: Customer,
+            as: "customer",
+            attributes: ["first_name", "last_name", "name", "phone"],
+            where: {
+              phone: formatPhone(phone),
+            },
+          },
+          {
+            model: OrderItem,
+            as: "items",
+            attributes: ["id", "name", "quantity"],
+          },
+        ],
+      };
+      return Order.findOne(sqlQuery);
     } catch (error) {
       console.log(error);
       throw error;

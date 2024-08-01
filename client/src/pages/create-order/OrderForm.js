@@ -103,14 +103,12 @@ const CreateOrderForm = () => {
   };
 
   const updateItemPrice = (index, item) => {
-    console.log(index, item, 'index, item');
     const itemsCopy = [...items];
     itemsCopy[index] = item;
     setItems(itemsCopy);
   };
 
   const handleSubmit = async (values, { setErrors }) => {
-    console.log(values, 'order fields');
     if (!items.length) {
       setErrors({ submit: 'Please add atleast one item' });
       return;
@@ -133,6 +131,16 @@ const CreateOrderForm = () => {
       return dispatch(fetchCreateOrder({ body: { ...values, payments } })).then((action) => {
         if (action.type === 'order/create/fetch/fulfilled') {
           navigate(location.allOrders());
+        }
+        if (action.type === 'order/create/fetch/rejected') {
+          const { items, customer, user, status } = action.payload.data || {};
+          let error = '';
+          if (items && items.length && customer && user && status) {
+            error = `Order with item ${items.reduce((pv, cv) => cv.name + '/' + cv.quantity + pv, '')} from ${
+              customer.name
+            } already ${status} by agent ${user.name}`;
+          }
+          return alert(error || action.payload.error || 'Something goes wrong, please try again!');
         }
       });
     }

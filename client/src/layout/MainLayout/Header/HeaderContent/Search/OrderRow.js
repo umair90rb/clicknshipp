@@ -32,7 +32,7 @@ const OrderRow = ({ order, onNavigate }) => {
         </Typography>{' '}
         | {customer?.name || ''} Placed at {format(createdAt, 'MMM dd')}, {formatDistanceToNow(createdAt)} ago | Assigned to{' '}
         <Typography component="span" variant="h5">
-          {user?.name || ''}
+          {user?.name || 'None'}
         </Typography>{' '}
         Items: {items?.reduce((pv, cv) => `${cv.name}/${cv.quantity} ${pv}`, '')}
       </Typography>
