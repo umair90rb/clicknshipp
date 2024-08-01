@@ -1,4 +1,5 @@
-import { Sequelize, Op, literal, fn, col } from "sequelize";
+import { Op, QueryTypes, literal, fn, col } from "sequelize";
+import { sequelize } from "../models";
 import model from "../models";
 const { Order, OrderItem, Delivery, User, Chanel } = model;
 
@@ -61,103 +62,60 @@ class ReportingService {
   }
 
   async getUnitReport(startPeriod, endPeriod, reportBrand) {
-    let where = {
-      "$order.assigned_at$": {
-        [Op.gte]: startPeriod,
-        [Op.lte]: endPeriod,
-      },
-    };
+    let query = `select
+      "OrderItem"."name", "order"."status", "order->delivery"."courier",
+      COUNT("OrderItem"."id") as "generated",
+      SUM(case when  	"order"."status" = 'Confirmed' or "order"."status" = 'Booked' then 1 else 0 end) as "confirmed",
+      SUM(case when 	"order"."status" = 'Cancel' then 1 else 0 end) as "cancel",
+      SUM(case when 	"order"."status" = 'No Pick' then 1 else 0 end) as "no_pick",
+      SUM(case when "order->delivery"."courier" = 'postex' then 1 else 0 end) as "postex",
+      SUM(case when "order->delivery"."courier" = 'tcs' then 1 else 0 end) as "tcs",
+      SUM(case when "order->delivery"."courier" = 'deawoo' then 1 else 0 end) as "deawoo",
+      SUM(case when "order->delivery"."courier" = 'trax' then 1 else 0 end) as "trax",
+      SUM(case when "order->delivery"."courier" = 'leapard' then 1 else 0 end) as "leapard",
+      SUM(case when "order->delivery"."courier" = 'callcourier' then 1 else 0 end) as "callcourier"
+    from
+      "OrderItems" as "OrderItem"
+    left outer join "Orders" as "order" on
+      "OrderItem"."order_id" = "order"."id"
+      and ("order"."deleted_at" is null)
+    left outer join "Deliveries" as "order->delivery" on
+      "order"."id" = "order->delivery"."order_id"
+    where
+      ("order"."assigned_at" >= :start
+        and "order"."assigned_at" <= :end)
+    group by
+      "name", "order"."status", "order->delivery"."courier"`;
     if (reportBrand && reportBrand !== "All") {
-      where["$order.brand_id$"] = reportBrand;
+      query = `select
+      "OrderItem"."name", "order"."status", "order->delivery"."courier",
+      COUNT("OrderItem"."id") as "generated",
+      SUM(case when  	"order"."status" = 'Confirmed' or "order"."status" = 'Booked' then 1 else 0 end) as "confirmed",
+      SUM(case when 	"order"."status" = 'Cancel' then 1 else 0 end) as "cancel",
+      SUM(case when 	"order"."status" = 'No Pick' then 1 else 0 end) as "no_pick",
+      SUM(case when "order->delivery"."courier" = 'postex' then 1 else 0 end) as "postex",
+      SUM(case when "order->delivery"."courier" = 'tcs' then 1 else 0 end) as "tcs",
+      SUM(case when "order->delivery"."courier" = 'deawoo' then 1 else 0 end) as "deawoo",
+      SUM(case when "order->delivery"."courier" = 'trax' then 1 else 0 end) as "trax",
+      SUM(case when "order->delivery"."courier" = 'leapard' then 1 else 0 end) as "leapard",
+      SUM(case when "order->delivery"."courier" = 'callcourier' then 1 else 0 end) as "callcourier"
+    from
+      "OrderItems" as "OrderItem"
+    left outer join "Orders" as "order" on
+      "OrderItem"."order_id" = "order"."id"
+      and ("order"."deleted_at" is null)
+    left outer join "Deliveries" as "order->delivery" on
+      "order"."id" = "order->delivery"."order_id"
+    where
+      ("order"."assigned_at" >= :start
+        and "order"."assigned_at" <= :end
+        and "order"."brand_id" = :brand)
+    group by
+      "name", "order"."status", "order->delivery"."courier"`;
     }
-    return OrderItem.findAll({
-      attributes: [
-        "name",
-        [fn("COUNT", col("OrderItem.id")), "generated"],
-        [
-          fn(
-            "SUM",
-            literal("CASE WHEN 'Order.status' = 'Confirmed' THEN 1 ELSE 0 END")
-          ),
-          "confirmed",
-        ],
-        [
-          fn(
-            "SUM",
-            literal("CASE WHEN 'Order.status' = 'Cancel' THEN 1 ELSE 0 END")
-          ),
-          "cancel",
-        ],
-        [
-          fn(
-            "SUM",
-            literal("CASE WHEN 'Order.status' = 'No Pick' THEN 1 ELSE 0 END")
-          ),
-          "no_pick",
-        ],
-        [
-          fn(
-            "SUM",
-            literal("CASE WHEN 'Delivery.courier' = 'postex' THEN 1 ELSE 0 END")
-          ),
-          "postex",
-        ],
-        [
-          fn(
-            "SUM",
-            literal("CASE WHEN 'Delivery.courier' = 'tcs' THEN 1 ELSE 0 END")
-          ),
-          "tcs",
-        ],
-        [
-          fn(
-            "SUM",
-            literal("CASE WHEN 'Delivery.courier' = 'deawoo' THEN 1 ELSE 0 END")
-          ),
-          "deawoo",
-        ],
-        [
-          fn(
-            "SUM",
-            literal("CASE WHEN 'Delivery.courier' = 'trax' THEN 1 ELSE 0 END")
-          ),
-          "trax",
-        ],
-        [
-          fn(
-            "SUM",
-            literal(
-              "CASE WHEN 'Delivery.courier' = 'leapard' THEN 1 ELSE 0 END"
-            )
-          ),
-          "leapard",
-        ],
-        [
-          fn(
-            "SUM",
-            literal(
-              "CASE WHEN 'Delivery.courier' = 'callcourier' THEN 1 ELSE 0 END"
-            )
-          ),
-          "callcourier",
-        ],
-      ],
-      include: [
-        {
-          model: Order,
-          as: "order",
-          attributes: [],
-          include: [
-            {
-              model: Delivery,
-              as: "delivery",
-              attributes: [],
-            },
-          ],
-        },
-      ],
-      where,
-      group: ["name"],
+    return sequelize.query(query, {
+      replacements: { start: startPeriod, end: endPeriod, brand: reportBrand },
+      type: QueryTypes.SELECT,
     });
   }
 
