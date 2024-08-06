@@ -7,6 +7,9 @@ export function addTotalRow(report, data) {
           id: 'TOTAL',
           label: 'Total',
           totalOrders: data.reduce((acc, row) => acc + (parseInt(row.orders) || 0), 0),
+          totalCancelOrders: data.reduce((acc, row) => acc + (parseInt(row.cancel) || 0), 0),
+          totalNoPickOrders: data.reduce((acc, row) => acc + (parseInt(row.no_pick) || 0), 0),
+          totalConfirmedOrders: data.reduce((acc, row) => acc + (parseInt(row.confirmed) || 0), 0),
           totalUnits: data.reduce((acc, row) => acc + (parseInt(row.units) || 0), 0)
         }
       ];

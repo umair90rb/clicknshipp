@@ -45,6 +45,15 @@ export default {
           "Service key already exists, add different key!"
         );
       }
+      let createData = {
+        name,
+        service,
+        key,
+        client_id,
+        username,
+        password,
+        active: true,
+      };
       if (service === "tcs") {
         const tcsService = new TCSCourier("tcs");
         const headerToken = await tcsService.getHeaderToken(client_id, key);
@@ -53,36 +62,28 @@ export default {
           username,
           password
         );
-        account = await DeliveryServiceAccounts.create(
-          {
-            name,
-            service,
-            key,
-            client_id,
-            username,
-            password,
-            active: true,
-            tokens: [
-              {
-                type: "header",
-                ...headerToken,
-              },
-              { type: "body", ...bodyToken },
-            ],
-          },
-          {
-            include: {
-              as: "tokens",
-              model: Tokens,
+        createData = {
+          ...createData,
+          tokens: [
+            {
+              type: "header",
+              ...headerToken,
             },
-          }
-        );
+            { type: "body", ...bodyToken },
+          ],
+        };
       }
+      account = await DeliveryServiceAccounts.create(createData, {
+        include: {
+          as: "tokens",
+          model: Tokens,
+        },
+      });
       return sendSuccessResponse(
         res,
         201,
         {
-          account: account.get(),
+          account: account?.get(),
         },
         "Service created successfully"
       );

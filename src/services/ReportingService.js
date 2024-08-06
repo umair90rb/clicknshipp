@@ -27,7 +27,7 @@ class ReportingService {
           fn(
             "SUM",
             literal(
-              'CASE WHEN "Order"."status" = \'Confirmed\' THEN 1 ELSE 0 END'
+              'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'Booked\' THEN 1 ELSE 0 END'
             )
           ),
           "confirmed",
@@ -138,6 +138,31 @@ class ReportingService {
         [col("chanel.name"), "chanel"],
         [col("user.name"), "agent"],
         [fn("COUNT", col("Order.id")), "orders"],
+        [
+          fn(
+            "SUM",
+            literal(
+              'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'Booked\' THEN 1 ELSE 0 END'
+            )
+          ),
+          "confirmed",
+        ],
+        [
+          fn(
+            "SUM",
+            literal(
+              'CASE WHEN "Order"."status" = \'No Pick\' THEN 1 ELSE 0 END'
+            )
+          ),
+          "no_pick",
+        ],
+        [
+          fn(
+            "SUM",
+            literal('CASE WHEN "Order"."status" = \'Cancel\' THEN 1 ELSE 0 END')
+          ),
+          "cancel",
+        ],
         [fn("SUM", col("items.quantity")), "units"],
       ],
       include: [

@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { Paper, Box, InputAdornment, OutlinedInput, Chip, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import CloseIcon from '@mui/icons-material/Close';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSearch } from 'store/slices/search/fetchSearch';
 import { searchErrorSelector, searchIsLoadingSelector, searchResultSelector } from 'store/slices/search/searchSelector';
@@ -38,25 +39,32 @@ const Search = () => {
       dispatch(fetchSearch({ body: { query, tag } }));
     }
   };
+  const handleKeyDown = (event) => {
+    const inputElement = document.getElementById('header-search');
+    if (event.ctrlKey && (event.key === 'f' || event.key === 'F')) {
+      event.preventDefault();
+      handleFocus();
+      inputElement.focus();
+    } else if (event.key === 'Escape' && document.activeElement === inputElement) {
+      handleBlur();
+      inputElement.value = '';
+      inputElement.blur();
+    }
+  };
+  const handleMouseOutsideClick = (event) => {
+    if (searchComponentRef.current && !searchComponentRef.current.contains(event.target) && isFocus) {
+      handleBlur();
+    }
+  };
+
+  const clearSearchHandle = () => {
+    const inputElement = document.getElementById('header-search');
+    handleBlur();
+    inputElement.value = '';
+    inputElement.blur();
+  };
 
   useEffect(() => {
-    const handleKeyDown = (event) => {
-      const inputElement = document.getElementById('header-search');
-      if (event.ctrlKey && (event.key === 'f' || event.key === 'F')) {
-        event.preventDefault();
-        handleFocus();
-        inputElement.focus();
-      } else if (event.key === 'Escape' && document.activeElement === inputElement) {
-        handleBlur();
-        inputElement.value = '';
-        inputElement.blur();
-      }
-    };
-    const handleMouseOutsideClick = (event) => {
-      if (searchComponentRef.current && !searchComponentRef.current.contains(event.target) && isFocus) {
-        handleBlur();
-      }
-    };
     window.addEventListener('keydown', handleKeyDown);
     document.addEventListener('mousedown', handleMouseOutsideClick);
     return () => {
@@ -98,6 +106,15 @@ const Search = () => {
               <SearchIcon fontSize="small" />
               {tag && (
                 <Chip onDelete={handleTagDelete} key={tag} label={tag} sx={{ ml: 0.5, borderRadius: 5 }} size="small" variant="outlined" />
+              )}
+            </InputAdornment>
+          }
+          endAdornment={
+            <InputAdornment position="end">
+              {isFocus && (
+                <IconButton onClick={clearSearchHandle} aria-label="esc">
+                  <CloseIcon />
+                </IconButton>
               )}
             </InputAdornment>
           }

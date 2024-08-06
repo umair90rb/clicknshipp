@@ -40,6 +40,39 @@ const columns = [
     }
   },
   {
+    field: 'confirmed',
+    headerName: 'Confirmed',
+    flex: 0.5,
+    valueGetter: (params) => {
+      if (params.row.id === 'TOTAL') {
+        return params.row.totalConfirmedOrders;
+      }
+      return params.value;
+    }
+  },
+  {
+    field: 'cancel',
+    headerName: 'Cancel',
+    flex: 0.5,
+    valueGetter: (params) => {
+      if (params.row.id === 'TOTAL') {
+        return params.row.totalCancelOrders;
+      }
+      return params.value;
+    }
+  },
+  {
+    field: 'no_pick',
+    headerName: 'No Pick',
+    flex: 0.5,
+    valueGetter: (params) => {
+      if (params.row.id === 'TOTAL') {
+        return params.row.totalNoPick;
+      }
+      return params.value;
+    }
+  },
+  {
     field: 'units',
     headerName: 'Units',
     flex: 0.5,
