@@ -570,6 +570,11 @@ const OrderTable = memo(() => {
     <div style={{ height: !orders || !orders.length ? 400 : '80vh', width: '100%' }}>
       <DataGrid
         apiRef={apiRef}
+        sx={{
+          '& .MuiDataGrid-cellContent': {
+            fontSize: 18
+          }
+        }}
         slots={{
           toolbar: renderToolbar,
           noRowsOverlay: CustomNoRowsOverlay

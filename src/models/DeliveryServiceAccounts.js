@@ -2,7 +2,12 @@
 import { Model } from "sequelize";
 module.exports = (sequelize, DataTypes) => {
   class DeliveryServiceAccounts extends Model {
-    static associate(models) {}
+    static associate(models) {
+      DeliveryServiceAccounts.hasMany(models.Tokens, {
+        foreignKey: "account_id",
+        as: "tokens",
+      });
+    }
   }
   DeliveryServiceAccounts.init(
     {

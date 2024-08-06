@@ -1,8 +1,10 @@
 import { Op, Sequelize } from "sequelize";
 import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
+import BookingService from "../services/BookingService";
+import TCSCourier from "../services/couriers/tcsCourier";
 
-const { DeliveryServiceAccounts } = model;
+const { DeliveryServiceAccounts, Tokens } = model;
 
 export default {
   async accounts(req, res) {
@@ -43,30 +45,44 @@ export default {
           "Service key already exists, add different key!"
         );
       }
-      account = await DeliveryServiceAccounts.create({
-        name,
-        service,
-        key,
-        client_id,
-        username,
-        password,
-        active: true,
-      });
+      if (service === "tcs") {
+        const tcsService = new TCSCourier("tcs");
+        const headerToken = await tcsService.getHeaderToken(client_id, key);
+        const bodyToken = await tcsService.getBodyToken(
+          headerToken.token,
+          username,
+          password
+        );
+        account = await DeliveryServiceAccounts.create(
+          {
+            name,
+            service,
+            key,
+            client_id,
+            username,
+            password,
+            active: true,
+            tokens: [
+              {
+                type: "header",
+                ...headerToken,
+              },
+              { type: "body", ...bodyToken },
+            ],
+          },
+          {
+            include: {
+              as: "tokens",
+              model: Tokens,
+            },
+          }
+        );
+      }
       return sendSuccessResponse(
         res,
         201,
         {
-          account: {
-            id: account.id,
-            name: account.name,
-            service: account.service,
-            active: account.active,
-            key: account.key,
-            client_id: account.client_id,
-            halfKey: account.halfKey,
-            username: account.username,
-            password: account.password,
-          },
+          account: account.get(),
         },
         "Service created successfully"
       );

@@ -11,6 +11,7 @@ const {
   Brand,
   DeliveryServiceAccounts,
   Delivery,
+  Tokens,
 } = model;
 
 export default {
@@ -19,7 +20,13 @@ export default {
       const { orderId, accountId } = req.body;
       const deliveryAccount = await DeliveryServiceAccounts.findByPk(
         accountId,
-        { raw: true }
+        {
+          include: {
+            model: Tokens,
+            as: "tokens",
+            attributes: ["token", "expiry", "type"],
+          },
+        }
       );
       if (!deliveryAccount) {
         return sendErrorResponse(res, 404, "No account found with this id");
@@ -81,7 +88,7 @@ export default {
       const bookingService = new BookingService();
       const bookingResponse = await bookingService.bookParcelWithCourier(
         order,
-        deliveryAccount
+        deliveryAccount.get()
       );
       const { cn, slip, isSuccess, error, response } = bookingResponse || {};
       console.log(bookingResponse, "bookingResponse");
