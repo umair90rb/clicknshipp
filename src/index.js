@@ -8,6 +8,7 @@ import logErrors from "./middleware/logError";
 import clientErrorHandler from "./middleware/clientErrorHandler";
 import errorHandler from "./middleware/errorHandler";
 import "./jobs/assignOrders";
+import "./jobs/trackOrders";
 import { dirname } from "node:path";
 const rootDir = dirname(process.argv[1]);
 

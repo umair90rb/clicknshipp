@@ -67,7 +67,7 @@ const columns = [
     flex: 0.5,
     valueGetter: (params) => {
       if (params.row.id === 'TOTAL') {
-        return params.row.totalNoPick;
+        return params.row.totalNoPickOrders;
       }
       return params.value;
     }

@@ -344,7 +344,7 @@ class TCSCourier extends CourierInterface {
       };
     } catch (error) {
       logger.log("error", "tcs booking status api response", {
-        res: response.data,
+        res: response?.data,
       });
       return {
         isSuccess: false,

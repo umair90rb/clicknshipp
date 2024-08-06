@@ -24,6 +24,8 @@ module.exports = (sequelize, DataTypes) => {
       cn: DataTypes.STRING,
       slip_link: DataTypes.STRING,
       status: DataTypes.STRING,
+      tracking_status: DataTypes.STRING,
+      tracking: DataTypes.TEXT,
       order_id: {
         type: DataTypes.INTEGER,
       },
