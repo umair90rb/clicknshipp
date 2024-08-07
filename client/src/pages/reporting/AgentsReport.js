@@ -145,7 +145,7 @@ export default function AgentsReports() {
           );
         }
         return (
-          <Button onClick={() => linkClicked(params.row.user.id, ['No Pick'])} variant="text" size="small">
+          <Button onClick={() => linkClicked(params.row.user.id, ['No Pick', 'Payment Pending'])} variant="text" size="small">
             {params.row.no_pick}
           </Button>
         );

@@ -316,9 +316,9 @@ const OrderTable = memo(() => {
   const displayShowAssignSelectedModal = () => setShowAssignSelectedModal(true);
   const hideAssignSelectedModal = () => setShowAssignSelectedModal(false);
 
-  const [showFilterModal, setShowFilterModal] = useState(false);
-  const displayFilterModal = () => setShowFilterModal(true);
-  const hideFilterModal = () => setShowFilterModal(false);
+  // const [showFilterModal, setShowFilterModal] = useState(false);
+  // const displayFilterModal = () => setShowFilterModal(true);
+  // const hideFilterModal = () => setShowFilterModal(false);
 
   const [addItemInOrderVisible, setAddItemInOrderVisible] = useState(false);
   const [addItemInOrderOrderId, setAddItemInOrderOrderId] = useState(null);
