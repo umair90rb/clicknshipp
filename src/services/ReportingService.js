@@ -8,7 +8,7 @@ class ReportingService {
 
   async getAgentReport(startPeriod, endPeriod, reportBrand) {
     let where = {
-      assignedAt: {
+      assigned_at: {
         [Op.gte]: startPeriod,
         [Op.lte]: endPeriod,
       },
@@ -22,7 +22,16 @@ class ReportingService {
     return Order.findAll({
       attributes: [
         "user_id",
-        [fn("COUNT", col("Order.id")), "total"],
+        // [fn("COUNT", col("Order.id")), "total"],
+        [
+          fn(
+            "SUM",
+            literal(
+              'CASE WHEN "Order"."status" != \'Duplicate\' THEN 1 ELSE 0 END'
+            )
+          ),
+          "total",
+        ],
         [
           fn(
             "SUM",
@@ -36,7 +45,7 @@ class ReportingService {
           fn(
             "SUM",
             literal(
-              'CASE WHEN "Order"."status" = \'No Pick\' THEN 1 ELSE 0 END'
+              'CASE WHEN "Order"."status" = \'No Pick\' OR "Order"."status" = \'Payment Pending\' THEN 1 ELSE 0 END'
             )
           ),
           "no_pick",

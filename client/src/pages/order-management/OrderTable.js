@@ -196,6 +196,12 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
     valueGetter: ({ value }) => formatDateTime(value, true)
   },
   {
+    field: 'assignedAt',
+    headerName: 'Assigned At',
+    flex: 0.5,
+    valueGetter: ({ value }) => formatDateTime(value, true)
+  },
+  {
     field: 'receivedAt',
     headerName: 'Received At',
     flex: 0.5,
@@ -302,7 +308,8 @@ const OrderTable = memo(() => {
     agent: false,
     total_tax: false,
     total_discounts: false,
-    receivedAt: false
+    receivedAt: false,
+    createdAt: false
   });
 
   const [showAssignSelectedModal, setShowAssignSelectedModal] = useState(false);
@@ -611,7 +618,7 @@ const OrderTable = memo(() => {
       />
       <GridAddItemModal orderId={addItemInOrderOrderId} visible={addItemInOrderVisible} onClose={hideAddItemInOrderVisible} />
       <AssignSelectedOrderModal visible={showAssignSelectedModal} onClose={hideAssignSelectedModal} selectedRows={rowSelectionModel} />
-      <FilterModal
+      {/* <FilterModal
         visible={showFilterModal}
         onClose={hideFilterModal}
         onApplyFilters={handleApplyFilters}
@@ -630,7 +637,7 @@ const OrderTable = memo(() => {
               return pv;
             }
           }, [])}
-      />
+      /> */}
     </div>
   );
 });

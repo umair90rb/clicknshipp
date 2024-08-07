@@ -8,7 +8,7 @@ const initialState = {
     fetchStatus: fetchStatus.IDLE,
     error: null,
     page: 0,
-    pageSize: 50,
+    pageSize: 100,
     total: 0,
     filters: [],
     sort: [{ field: 'createdAt', sort: 'desc' }],

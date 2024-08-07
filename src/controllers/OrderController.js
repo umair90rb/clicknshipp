@@ -15,9 +15,6 @@ import {
   FILTER_COLUMNS,
 } from "../constants/constants";
 import logger from "../middleware/logger";
-import getNameFromSubmissionLink, {
-  getSizeAndPrice,
-} from "../helpers/getNameFromLink";
 import { _orderService } from "../services/OrderService";
 
 const {
@@ -28,8 +25,6 @@ const {
   User,
   Chanel,
   Payments,
-  Brand,
-  DeliveryServiceAccounts,
   Delivery,
   OrderHistory,
 } = model;
@@ -126,7 +121,7 @@ export default {
             "updatedAt",
           ],
         },
-        order: [["receivedAt", "ASC"]],
+        order: [["assignedAt", "ASC"]],
       };
       if (pageSize > -1) {
         query.limit = pageSize;
