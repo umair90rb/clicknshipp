@@ -72,17 +72,17 @@ class ReportingService {
 
   async getUnitReport(startPeriod, endPeriod, reportBrand) {
     let query = `select
-      "OrderItem"."name", "order"."status", "order->delivery"."courier",
-      COUNT("OrderItem"."id") as "generated",
-      SUM(case when  	"order"."status" = 'Confirmed' or "order"."status" = 'Booked' then 1 else 0 end) as "confirmed",
-      SUM(case when 	"order"."status" = 'Cancel' then 1 else 0 end) as "cancel",
-      SUM(case when 	"order"."status" = 'No Pick' then 1 else 0 end) as "no_pick",
-      SUM(case when "order->delivery"."courier" = 'postex' then 1 else 0 end) as "postex",
-      SUM(case when "order->delivery"."courier" = 'tcs' then 1 else 0 end) as "tcs",
-      SUM(case when "order->delivery"."courier" = 'deawoo' then 1 else 0 end) as "deawoo",
-      SUM(case when "order->delivery"."courier" = 'trax' then 1 else 0 end) as "trax",
-      SUM(case when "order->delivery"."courier" = 'leapard' then 1 else 0 end) as "leapard",
-      SUM(case when "order->delivery"."courier" = 'callcourier' then 1 else 0 end) as "callcourier"
+      "OrderItem"."name", "OrderItem"."quantity", "order"."status", "order->delivery"."courier",
+      SUM("OrderItem"."quantity") as "generated",
+      SUM(case when  	"order"."status" = 'Confirmed' or "order"."status" = 'Booked' then "OrderItem"."quantity" else 0 end) as "confirmed",
+      SUM(case when 	"order"."status" = 'Cancel' then "OrderItem"."quantity" else 0 end) as "cancel",
+      SUM(case when 	"order"."status" = 'No Pick' then "OrderItem"."quantity" else 0 end) as "no_pick",
+      SUM(case when "order->delivery"."courier" = 'postex' then "OrderItem"."quantity" else 0 end) as "postex",
+      SUM(case when "order->delivery"."courier" = 'tcs' then "OrderItem"."quantity" else 0 end) as "tcs",
+      SUM(case when "order->delivery"."courier" = 'deawoo' then "OrderItem"."quantity" else 0 end) as "deawoo",
+      SUM(case when "order->delivery"."courier" = 'trax' then "OrderItem"."quantity" else 0 end) as "trax",
+      SUM(case when "order->delivery"."courier" = 'leapard' then "OrderItem"."quantity" else 0 end) as "leapard",
+      SUM(case when "order->delivery"."courier" = 'callcourier' then "OrderItem"."quantity" else 0 end) as "callcourier"
     from
       "OrderItems" as "OrderItem"
     left outer join "Orders" as "order" on
@@ -94,20 +94,20 @@ class ReportingService {
       ("order"."assigned_at" >= :start
         and "order"."assigned_at" <= :end)
     group by
-      "name", "order"."status", "order->delivery"."courier"`;
+      "name", "quantity", "order"."status", "order->delivery"."courier"`;
     if (reportBrand && reportBrand !== "All") {
       query = `select
-      "OrderItem"."name", "order"."status", "order->delivery"."courier",
-      COUNT("OrderItem"."id") as "generated",
-      SUM(case when  	"order"."status" = 'Confirmed' or "order"."status" = 'Booked' then 1 else 0 end) as "confirmed",
-      SUM(case when 	"order"."status" = 'Cancel' then 1 else 0 end) as "cancel",
-      SUM(case when 	"order"."status" = 'No Pick' then 1 else 0 end) as "no_pick",
-      SUM(case when "order->delivery"."courier" = 'postex' then 1 else 0 end) as "postex",
-      SUM(case when "order->delivery"."courier" = 'tcs' then 1 else 0 end) as "tcs",
-      SUM(case when "order->delivery"."courier" = 'deawoo' then 1 else 0 end) as "deawoo",
-      SUM(case when "order->delivery"."courier" = 'trax' then 1 else 0 end) as "trax",
-      SUM(case when "order->delivery"."courier" = 'leapard' then 1 else 0 end) as "leapard",
-      SUM(case when "order->delivery"."courier" = 'callcourier' then 1 else 0 end) as "callcourier"
+      "OrderItem"."name", "OrderItem"."quantity", "order"."status", "order->delivery"."courier",
+      SUM("OrderItem"."quantity") as "generated",
+      SUM(case when  	"order"."status" = 'Confirmed' or "order"."status" = 'Booked' then "OrderItem"."quantity" else 0 end) as "confirmed",
+      SUM(case when 	"order"."status" = 'Cancel' then "OrderItem"."quantity" else 0 end) as "cancel",
+      SUM(case when 	"order"."status" = 'No Pick' then "OrderItem"."quantity" else 0 end) as "no_pick",
+      SUM(case when "order->delivery"."courier" = 'postex' then "OrderItem"."quantity" else 0 end) as "postex",
+      SUM(case when "order->delivery"."courier" = 'tcs' then "OrderItem"."quantity" else 0 end) as "tcs",
+      SUM(case when "order->delivery"."courier" = 'deawoo' then "OrderItem"."quantity" else 0 end) as "deawoo",
+      SUM(case when "order->delivery"."courier" = 'trax' then "OrderItem"."quantity" else 0 end) as "trax",
+      SUM(case when "order->delivery"."courier" = 'leapard' then "OrderItem"."quantity" else 0 end) as "leapard",
+      SUM(case when "order->delivery"."courier" = 'callcourier' then "OrderItem"."quantity" else 0 end) as "callcourier"
     from
       "OrderItems" as "OrderItem"
     left outer join "Orders" as "order" on
@@ -120,7 +120,7 @@ class ReportingService {
         and "order"."assigned_at" <= :end
         and "order"."brand_id" = :brand)
     group by
-      "name", "order"."status", "order->delivery"."courier"`;
+      "name", "quantity", "order"."status", "order->delivery"."courier"`;
     }
     return sequelize.query(query, {
       replacements: { start: startPeriod, end: endPeriod, brand: reportBrand },
