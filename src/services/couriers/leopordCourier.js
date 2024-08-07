@@ -52,13 +52,13 @@ class LeapordCourier extends CourierInterface {
         // shipment_id: 1504100,
         shipment_name_eng: "self",
         shipment_email: "umekalsoom011@gmail.com",
-        shipment_phone: "3094446319_",
+        shipment_phone: "03094446319",
         shipment_address: "SIE MILLAT ROAD FAISALABAD",
         consignment_name_eng: `${order.customer.first_name} ${
           order.customer.last_name || ""
         }`,
         // consignment_email: order.customer.email || "",
-        consignment_phone: order.customer.phone,
+        consignment_phone: `0${order.customer.phone}`,
         // consignment_phone_two: "",
         // consignment_phone_three: "",
         consignment_address: `${order.address.address1} ${order.address.city}`,

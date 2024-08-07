@@ -40,7 +40,7 @@ class PostexCourier extends CourierInterface {
       body = {
         cityName: destinationCity.maped,
         customerName: order.customer.name,
-        customerPhone: order.customer.phone,
+        customerPhone: `0${order.customer.phone}`,
         customerEmail: order.customer.email || "customer@mail.com",
         deliveryAddress: `${order.address.address1}, ${order.address.city}`,
         invoiceDivision: 0,

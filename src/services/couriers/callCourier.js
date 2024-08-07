@@ -40,7 +40,7 @@ class CallCourier extends CourierInterface {
         order.customer.first_name
       } ${order.customer.last_name || ""}"&ConsigneeRefNo="${
         order.brand.name
-      }x${order.brand.shipment_series}"&ConsigneeCellNo=${
+      }x${order.brand.shipment_series}"&ConsigneeCellNo=0${
         order.customer.phone
       }&Address=${order.address.address1}&Origin=FAISALABAD&DestCityId=${
         destinationCity.assigned_id

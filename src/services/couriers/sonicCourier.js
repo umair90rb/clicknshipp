@@ -40,7 +40,7 @@ class SonicCourier extends CourierInterface {
           order.customer.last_name || ""
         }`,
         consignee_address: order.address.address1,
-        consignee_phone_number_1: order.customer.phone,
+        consignee_phone_number_1: `0${order.customer.phone}`,
         // consignee_phone_number_2: "",
         // consignee_email_address: order.customer.email || "",
         order_id: `${order.brand.name}x${order.brand.shipment_series}`,
