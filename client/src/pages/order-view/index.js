@@ -24,6 +24,9 @@ import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 import { setNextPreOrder } from 'store/slices/order/orderSlice';
 import { orderNextOrderSelector, orderPreOrderSelector } from 'store/slices/order/orderSelector';
+import Customer from './Customer';
+import Note from './Note';
+import Delivery from './Delivery';
 
 const OrderView = () => {
   const { orderId } = useParams();
@@ -260,32 +263,19 @@ const OrderView = () => {
           <History orderHistory={history} />
         </Grid>
         <Grid item xs={4}>
-          <Card sx={{ minWidth: 275 }}>
-            <CardContent>
-              <Typography sx={{ fontSize: 14 }}>Note: {note || 'None'}</Typography>
-              <Typography sx={{ fontSize: 14 }}>Remarks: {remarks || 'None'}</Typography>
-              <Typography sx={{ fontSize: 14 }}>Chanel/Store: {(chanel && 'name' in chanel && chanel.name) || ''}</Typography>
-              <Typography sx={{ fontSize: 14 }}>Agent: {(user && 'name' in user && user.name) || ''}</Typography>
-            </CardContent>
-          </Card>
-          <Card sx={{ minWidth: 275, mt: 1 }}>
-            <CardContent>
-              <Typography variant="h5">Customer</Typography>
-              <Link href={`/customer/all?id=${customerId}`} underline="hover">
-                Name: {name}
-              </Link>
-              <Typography>Customer Shopify Id: {shopify_id || 'None'}</Typography>
-              <Typography>{`Email: ${email || 'None'}`}</Typography>
-              <Typography>{`Phone: ${phone || 'None'}`}</Typography>
-
-              <Typography variant="h5">Shipping Address</Typography>
-              <Typography>
-                Address: {address1} <br /> City:{city} <br /> Zip:{zip || 'None'}
-                <br /> Phone: {address_phone} <br /> Special Instruction: {address2}
-              </Typography>
-            </CardContent>
-          </Card>
-          {/* <OldOrders oldOrders={oldOrders} /> */}
+          <Note note={note} remarks={remarks} chanel={chanel} user={user} />
+          <Customer
+            customerId={customerId}
+            shopify_id={shopify_id}
+            name={name}
+            email={email}
+            phone={phone}
+            city={city}
+            zip={zip}
+            address_phone={address_phone}
+            address2={address2}
+          />
+          {(delivery || orderDelivery) && <Delivery delivery={delivery || orderDelivery} />}
         </Grid>
       </Grid>
 
