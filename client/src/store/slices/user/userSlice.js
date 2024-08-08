@@ -7,7 +7,6 @@ const initialState = {
   fetchStatus: fetchStatus.IDLE,
   error: null,
   update: {
-    index: null,
     data: null
   }
 };
@@ -20,9 +19,7 @@ const userSlice = createSlice({
       state.users = [...state.users, action.payload];
     },
     setUserForUpdate: (state, action) => {
-      const { data, index } = action.payload;
-      state.update.data = data;
-      state.update.index = index;
+      state.update.data = action.payload;
     },
     updateUser: (state, action) => {
       const { data } = action.payload;

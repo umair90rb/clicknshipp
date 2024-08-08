@@ -64,7 +64,7 @@ const columns = (handleEditAction, handleDeleteAction) => [
             icon={<EditIcon />}
             label="View"
             className="textPrimary"
-            onClick={() => handleEditAction(row, null)}
+            onClick={() => handleEditAction(row)}
             color="inherit"
           />
         );
@@ -111,9 +111,9 @@ export default function UserTable({ openUpateForm }) {
     }
   };
 
-  const handleUpdate = (data, index) => {
-    dispatch(setUserForUpdate({ data, index }));
-    openUpateForm(true);
+  const handleUpdate = (data) => {
+    dispatch(setUserForUpdate(data));
+    setTimeout(() => openUpateForm(true), 500);
   };
 
   return (
