@@ -140,7 +140,7 @@ const OrderView = () => {
         getOrderDetails();
       } else {
         // setError(action.payload?.error || 'Something goes wrong!');
-        dispatch(setMessage({ type: 'error', message: action.payload?.error || 'Something goes wrong!' }));
+        dispatch(setMessage({ type: 'error', message: action.payload?.error?.message || 'Something goes wrong!' }));
         // setLoading(false);
       }
     });

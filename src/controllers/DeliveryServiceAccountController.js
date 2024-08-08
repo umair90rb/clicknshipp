@@ -1,7 +1,5 @@
-import { Op, Sequelize } from "sequelize";
 import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
-import BookingService from "../services/BookingService";
 import TCSCourier from "../services/couriers/tcsCourier";
 
 const { DeliveryServiceAccounts, Tokens } = model;
@@ -34,7 +32,8 @@ export default {
   async account(req, res) {},
 
   async create(req, res) {
-    const { name, service, client_id, key, username, password } = req.body;
+    const { name, service, client_id, cost_center, key, username, password } =
+      req.body;
     try {
       let account = await DeliveryServiceAccounts.findOne({
         where: { key },
@@ -51,6 +50,7 @@ export default {
         service,
         key,
         client_id,
+        cost_center,
         username,
         password,
         active: true,
@@ -101,15 +101,24 @@ export default {
   async update(req, res) {
     try {
       const id = req.params.id;
-      const { name, service, key, client_key, active, username, password } =
-        req.body;
+      const {
+        name,
+        service,
+        key,
+        client_id,
+        cost_center,
+        active,
+        username,
+        password,
+      } = req.body;
       const account = await DeliveryServiceAccounts.findByPk(id);
       if (account) {
         account.set({
           name: name,
           service: service,
           key: key,
-          client_key: client_key,
+          client_id: client_id,
+          cost_center: cost_center,
           username: username,
           password: password,
           active: active,
@@ -120,17 +129,7 @@ export default {
           res,
           200,
           {
-            account: {
-              id: account.id,
-              name: account.name,
-              service: account.service,
-              active: account.active,
-              key: account.key,
-              client_key: account.client_key,
-              halfKey: account.halfKey,
-              username: account.username,
-              password: account.password,
-            },
+            account: account.get() || null,
           },
           "Operation successful"
         );

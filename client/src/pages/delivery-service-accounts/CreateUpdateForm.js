@@ -51,6 +51,7 @@ const CreateUpdateForm = ({ account }) => {
           service: account?.service || '',
           key: account?.key || '',
           client_id: account?.client_id || '',
+          cost_center: account?.cost_center || '',
           username: account?.username || '',
           password: account?.password || '',
           active: account?.active || true
@@ -60,6 +61,7 @@ const CreateUpdateForm = ({ account }) => {
           service: Yup.string().max(255).required('Service type is required'),
           key: Yup.string().max(255).required('Key is required'),
           client_id: Yup.string().max(255),
+          cost_center: Yup.string().max(255),
           username: Yup.string().max(255),
           password: Yup.string().max(255)
         })}
@@ -155,6 +157,28 @@ const CreateUpdateForm = ({ account }) => {
                   {touched.client_id && errors.client_id && (
                     <FormHelperText error id="helper-text-client_id-signup">
                       {errors.client_id}
+                    </FormHelperText>
+                  )}
+                </Stack>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="cost_center">Cost Center (if any)</InputLabel>
+                  <OutlinedInput
+                    fullWidth
+                    error={Boolean(touched.cost_center && errors.cost_center)}
+                    id="cost_center"
+                    type="text"
+                    value={values.cost_center}
+                    name="cost_center"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="SUKOOON.COM"
+                  />
+                  {touched.cost_center && errors.cost_center && (
+                    <FormHelperText error id="helper-text-cost_center">
+                      {errors.cost_center}
                     </FormHelperText>
                   )}
                 </Stack>

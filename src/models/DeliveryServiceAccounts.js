@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       password: DataTypes.STRING,
       key: DataTypes.STRING,
       client_id: DataTypes.STRING,
+      cost_center: DataTypes.STRING,
       halfKey: {
         type: DataTypes.VIRTUAL,
         get() {

@@ -177,7 +177,7 @@ class TCSCourier extends CourierInterface {
           mobile: "03227276200",
         },
         shipmentinfo: {
-          costcentercode: "1",
+          costcentercode: deliveryAccount.cost_center,
           referenceno: `${order.brand.name}x${order.brand.shipment_series}`,
           contentdesc: order.items.reduce(
             (p, c, i) =>

@@ -67,5 +67,6 @@ npx sequelize-cli migration:generate --name add-avatar-column-in-employee-table
 npx sequelize-cli migration:generate --name add-token-and-token-expiry-column-in-delivery-service-account-table
 
 npx sequelize-cli migration:generate --name add-tracking-column-in-delivery--table
+npx sequelize-cli migration:generate --name add-cost-center-column-in-delivery-service-account-table
 
 

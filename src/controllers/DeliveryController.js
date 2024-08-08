@@ -163,6 +163,11 @@ export default {
         include: {
           model: DeliveryServiceAccounts,
           as: "account",
+          include: {
+            model: Tokens,
+            as: "tokens",
+            attributes: ["token", "expiry", "type"],
+          },
         },
       });
       if (!delivery) {
@@ -215,6 +220,11 @@ export default {
         include: {
           model: DeliveryServiceAccounts,
           as: "account",
+          include: {
+            model: Tokens,
+            as: "tokens",
+            attributes: ["token", "expiry", "type"],
+          },
         },
       });
       console.log(delivery.get());
