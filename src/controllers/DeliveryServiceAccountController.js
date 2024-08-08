@@ -8,6 +8,7 @@ export default {
   async accounts(req, res) {
     try {
       const accounts = await DeliveryServiceAccounts.findAll({
+        where: { active: true },
         attributes: {
           exclude: ["createdAt", "updatedAt"],
         },

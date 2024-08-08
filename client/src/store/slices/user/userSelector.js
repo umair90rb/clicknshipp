@@ -5,4 +5,4 @@ export const userIsLoadingSelector = (state) => state.user.fetchStatus === fetch
 export const userErrorSelector = (state) => state.user.error;
 export const userUsersSelector = (state) => state.user.users;
 
-export const userUpdateUserData = (state) => state.user.update;
+export const userUpdateUserData = (state) => state.user.update.data;

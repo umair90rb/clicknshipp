@@ -283,14 +283,14 @@ export default {
       }
       const user = await User.findByPk(id);
       if (user) {
-        const hashedPassword = await bcrypt.hash(password, 10);
+        // const hashedPassword = await bcrypt.hash(password, 10);
         user.set({
           email: email || user.email,
           name: name || user.name,
           phone: phone || user.phone,
           status: status || user.status,
           settings: settings || user.settings,
-          password: password ? hashedPassword : user.password,
+          password: password ? await bcrypt.hash(password, 10) : user.password,
           updatedAt: new Date().toISOString(),
         });
         let assignedRoles, permissions;

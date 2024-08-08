@@ -102,11 +102,11 @@ const AuthRegister = () => {
     const body = { ...values, roles: roleIds, brands: brandIds };
     let response;
     try {
-      if (userUpdateData.data === null) {
+      if (userUpdateData === null) {
         response = await userService.fetchAddUser(body);
         dispatch(addUser(response.data.user));
       } else {
-        response = await userService.fetchUpdateUser(userUpdateData.data.id, body);
+        response = await userService.fetchUpdateUser(userUpdateData.id, body);
         dispatch(updateUser({ data: response.data.user }));
       }
       setStatus({ success: false });
@@ -123,17 +123,19 @@ const AuthRegister = () => {
     changePassword('');
     fetchRoles();
     fetchBrands();
+  }, []);
 
-    if (userUpdateData.data !== null) {
-      console.log(userUpdateData.data, 'userUpdateData.data');
-      const { email, name, phone, roles, brands } = userUpdateData.data;
+  useEffect(() => {
+    if (userUpdateData !== null) {
+      console.log(userUpdateData, 'userUpdateData');
+      const { email, name, phone, roles, brands } = userUpdateData;
       formRef.current.initialValues.email = email;
       formRef.current.initialValues.name = name;
       formRef.current.initialValues.phone = phone;
       formRef.current.initialValues.roles = roles;
       formRef.current.initialValues.brands = brands.map((brand) => brand.name);
     }
-  }, []);
+  }, [userUpdateData]);
 
   return (
     <>
@@ -370,7 +372,7 @@ const AuthRegister = () => {
               <Grid item xs={12}>
                 <AnimateButton>
                   <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
-                    {userUpdateData.data === null ? 'Create Account' : 'Update Account'}
+                    {userUpdateData === null ? 'Create Account' : 'Update Account'}
                   </Button>
                 </AnimateButton>
               </Grid>

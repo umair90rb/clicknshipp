@@ -20,7 +20,9 @@ export default {
           400,
           "No user with this email. Kindly check credentials and try again"
         );
+
       const passwordMatch = await bcrypt.compare(password, user.password);
+      console.log(passwordMatch, password, user.password);
       if (!passwordMatch) {
         return sendErrorResponse(
           res,
