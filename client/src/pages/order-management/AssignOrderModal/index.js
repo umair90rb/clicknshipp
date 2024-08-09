@@ -94,12 +94,17 @@ export default function AssignOrderModal({ visible, onClose }) {
 
   const getAssignee = async (brand) => {
     setAssigneelsLoading(true);
+    const body = {
+      permissions: [PERMISSIONS.PERMISSION_ASSIGN_ORDERS]
+    };
+
+    if (brand && brand !== 'All') {
+      body['brand'] = [brand];
+    }
+
     const { type, payload } = await dispatch(
       fetchFilteredUsers({
-        body: {
-          permissions: [PERMISSIONS.PERMISSION_ASSIGN_ORDERS],
-          brand: brand && brand !== 'All' ? [brand] : []
-        }
+        body
       })
     );
     if (type === 'users/filtered/fetch/fulfilled') {

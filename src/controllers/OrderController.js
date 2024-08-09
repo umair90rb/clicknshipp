@@ -725,6 +725,7 @@ export default {
         chanel_id,
         brand_id,
         remarks,
+        payments,
         items: itemsArray,
       } = req.body || {};
       const orderItems = [];
@@ -753,6 +754,10 @@ export default {
         },
         { where: { id } }
       );
+      if (payments && payments.length) {
+        const payments = await Payments.bulkCreate(paymentsArray);
+        await order.addPayments(payments);
+      }
       await Customer.update(
         {
           first_name,
@@ -867,8 +872,15 @@ export default {
         orderUpdateData["customer_id"] = customer.id;
       }
       if (status === "Duplicate") {
-        orderUpdateData["assigned_at"] = null;
+        orderUpdateData["assignedAt"] = null;
         orderUpdateData["user_id"] = null;
+      }
+      if ((order.status = "No Pick" && status === "Confirmed")) {
+        orderUpdateData = {
+          ...orderUpdateData,
+          assignedAt: new Date().toISOString(),
+          user_id: req.user.id,
+        };
       }
       await order.update(orderUpdateData);
       await order.createHistory({
