@@ -70,3 +70,28 @@ npx sequelize-cli migration:generate --name add-tracking-column-in-delivery--tab
 npx sequelize-cli migration:generate --name add-cost-center-column-in-delivery-service-account-table
 
 
+
+
+
+
+INSERT INTO "Users" (name, email, phone, password, status, "createdAt", "updatedAt") VALUES ('Farhan', 'farhan@sukooon.com', '03001234567', '$2b$12$h3uld4LkbZbFvQyUoG1gXu4tXQIXby6mTTWxD.7IbpyWs0N7cKUku', 'active', CURRENT_DATE, CURRENT_DATE);
+INSERT INTO "Users" (name, email, phone, password, status, "createdAt", "updatedAt") VALUES ('Shumaila', 'shumaila@sukooon.com', '03001234567', '$2b$12$3CXsPIl62lfzIhc3jWAfw.z2.s1KrFBltZCcPK78mIDpX6.yTq7cC', 'active', CURRENT_DATE, CURRENT_DATE);
+INSERT INTO "Users" (name, email, phone, password, status, "createdAt", "updatedAt") VALUES ('Farwa', 'farwa@sukooon.com', '03001234567', '$2b$12$w2vhQF/l7XFC8ppUvEE95.yy3ed2EQBXxwfjjQFZC346pTz.baLLC', 'active', CURRENT_DATE, CURRENT_DATE);
+INSERT INTO "Users" (name, email, phone, password, status, "createdAt", "updatedAt") VALUES ('Moiz', 'moiz@sukooon.com', '03001234567', '$2b$12$k8DuxVDXSRqwRVK7ovZy8OOBayEYRo8eemcUMkE6P0Bim84Kdv0te', 'active', CURRENT_DATE, CURRENT_DATE);
+INSERT INTO "Users" (name, email, phone, password, status, "createdAt", "updatedAt") VALUES ('Talha', 'talha@sukooon.com', '03001234567', '$2b$12$0uwvISoOYWJZpe1dDiS0l.y0zS5QYEjFYrjtsGvoi1HsqkteRsmRi', 'active', CURRENT_DATE, CURRENT_DATE);
+INSERT INTO "Users" (name, email, phone, password, status, "createdAt", "updatedAt") VALUES ('Usman', 'usman@sukooon.com', '03001234567', '$2b$12$xTSCWyL/cXS/4I92bVeTIepDDMNEQXlWy9QXHGNg0p59HLfzScTbe', 'active', CURRENT_DATE, CURRENT_DATE);
+INSERT INTO "Users" (name, email, phone, password, status, "createdAt", "updatedAt") VALUES ('Ali', 'ali@sukooon.com', '03001234567', '$2b$12$4S2BgJ7qq83KaEHIdepE3OO5Zp0BXb18YjMYfCpc0Khcxhx/aT5Ny', 'active', CURRENT_DATE, CURRENT_DATE);
+INSERT INTO "Users" (name, email, phone, password, status, "createdAt", "updatedAt") VALUES ('Kashif', 'kashif@sukooon.com', '03001234567', '$2b$12$1Y4aYSPsVLrvK1bg/WUXWu.pLBMvLfJH0LtHtxDImHws1zM3LESyu', 'active', CURRENT_DATE, CURRENT_DATE);
+INSERT INTO "Users" (name, email, phone, password, status, "createdAt", "updatedAt") VALUES ('Naeem', 'naeem@sukooon.com', '03001234567', '$2b$12$cW3TWKCQxsLaiUJyW5i4x.xmjf8bAoHXfpmDsk/.QjXZqU96hEOeK', 'active', CURRENT_DATE, CURRENT_DATE);
+INSERT INTO "Users" (name, email, phone, password, status, "createdAt", "updatedAt") VALUES ('Ijaz', 'ijaz@sukooon.com', '03001234567', '$2b$12$IX.8fqISu.aoZMnFXIWrLegEXF.qRXAOSgLW1/FjO.HN4PQoakTAS', 'active', CURRENT_DATE, CURRENT_DATE);
+INSERT INTO "Users" (name, email, phone, password, status, "createdAt", "updatedAt") VALUES ('Hanzala', 'hanzala@sukooon.com', '03001234567', '$2b$12$sjJQaoY4/DSJeW96kUQ.We05nM1HrJs4miTy0Tj0fM6bhbOlmtuMa', 'active', CURRENT_DATE, CURRENT_DATE);
+INSERT INTO "Users" (name, email, phone, password, status, "createdAt", "updatedAt") VALUES ('Aoun', 'aoun@sukooon.com', '03001234567', '$2b$12$VLBcBIE.5DAK97Ua1pHlZOs2yBNt.rURcY4eAjTr.t7QtHmhbM6d.', 'active', CURRENT_DATE, CURRENT_DATE);
+INSERT INTO "Users" (name, email, phone, password, status, "createdAt", "updatedAt") VALUES ('Miss Aqsa', 'missaqsa@sukooon.com', '03001234567', '$2b$12$9hEdVI0aXLKxj8ZOOgBAbuMT/ZNtij8B8NfSllgQqVzaFRgUE7oXW', 'active', CURRENT_DATE, CURRENT_DATE);
+INSERT INTO "Users" (name, email, phone, password, status, "createdAt", "updatedAt") VALUES ('Miss Sonia', 'misssonia@sukooon.com', '03001234567', '$2b$12$vLRx/UEm.wfzvPx7QEhC9uDvXgj1Qy/8/jMNiTb3Lb1ztyM8YpvTq', 'active', CURRENT_DATE, CURRENT_DATE);
+INSERT INTO "Users" (name, email, phone, password, status, "createdAt", "updatedAt") VALUES ('Miss Nida', 'missnida@sukooon.com', '03001234567', '$2b$12$gH7PCxmG3k3WGOuS5q61oOkhxEZQTibnZmfu4i8Ppc9nz5l7x7646', 'active', CURRENT_DATE, CURRENT_DATE);
+INSERT INTO "Users" (name, email, phone, password, status, "createdAt", "updatedAt") VALUES ('Eeqan', 'eeqan@sukooon.com', '03001234567', '$2b$12$3l1cbcn9MpK4M6yCBJ0kieW4lZnRZdGbRfFVFddJ9CVMUBbyJg69G', 'active', CURRENT_DATE, CURRENT_DATE);
+INSERT INTO "Users" (name, email, phone, password, status, "createdAt", "updatedAt") VALUES ('Usama Ajmal', 'usamaajmal@sukooon.com', '03001234567', '$2b$12$Ld795fE5il1svZmd0A.0R.D2Dv7HjBXQhC57xqCj9kzCrZYiwTqHW', 'active', CURRENT_DATE, CURRENT_DATE);
+INSERT INTO "Users" (name, email, phone, password, status, "createdAt", "updatedAt") VALUES ('Awais', 'awais@sukooon.com', '03001234567', '$2b$12$M9o8WxxAWhnMgfhI/mX6Se5Fn6vrN9nqbO4Lf.KBEYBRzFOkyRU4u', 'active', CURRENT_DATE, CURRENT_DATE);
+
+
+

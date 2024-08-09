@@ -44,6 +44,14 @@ import { fetchAllBrand } from 'store/slices/brand/fetchBrand';
 const AuthRegister = () => {
   const dispatch = useDispatch();
   const formRef = useRef();
+  const [initialValues, setInitialValues] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    password: '',
+    roles: [],
+    brands: []
+  });
   const userUpdateData = useSelector(userUpdateUserData);
   const [level, setLevel] = useState();
   const [showPassword, setShowPassword] = useState(false);
@@ -123,17 +131,16 @@ const AuthRegister = () => {
     changePassword('');
     fetchRoles();
     fetchBrands();
+    return () => {
+      dispatch(setUserForUpdate(null));
+    };
   }, []);
 
   useEffect(() => {
-    if (userUpdateData !== null) {
+    if (userUpdateData) {
       console.log(userUpdateData, 'userUpdateData');
       const { email, name, phone, roles, brands } = userUpdateData;
-      formRef.current.initialValues.email = email;
-      formRef.current.initialValues.name = name;
-      formRef.current.initialValues.phone = phone;
-      formRef.current.initialValues.roles = roles;
-      formRef.current.initialValues.brands = brands.map((brand) => brand.name);
+      setInitialValues({ name, email, phone, roles, brands: brands.map((b) => b.name) });
     }
   }, [userUpdateData]);
 
@@ -141,17 +148,10 @@ const AuthRegister = () => {
     <>
       <Formik
         innerRef={formRef}
-        initialValues={{
-          name: '',
-          email: '',
-          phone: '',
-          password: '',
-          roles: [],
-          brands: []
-        }}
+        initialValues={initialValues}
         validationSchema={Yup.object().shape({
           name: Yup.string().max(255).required('First Name is required'),
-          phone: Yup.number().min(11).required('Phone is required'),
+          phone: Yup.number().min(11),
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
           password: Yup.string().max(255).required('Password is required'),
           roles: Yup.array().of(Yup.string()).min(1).required('Minimum 1 role is required'),
@@ -352,18 +352,6 @@ const AuthRegister = () => {
                   </Grid>
                 </FormControl>
               </Grid>
-              {/* <Grid item xs={12}>
-                <Typography variant="body2">
-                  By Signing up, you agree to our &nbsp;
-                  <Link variant="subtitle2" component={RouterLink} to="#">
-                    Terms of Service
-                  </Link>
-                  &nbsp; and &nbsp;
-                  <Link variant="subtitle2" component={RouterLink} to="#">
-                    Privacy Policy
-                  </Link>
-                </Typography>
-              </Grid> */}
               {errors.submit && (
                 <Grid item xs={12}>
                   <FormHelperText error>{errors.submit}</FormHelperText>
@@ -376,14 +364,6 @@ const AuthRegister = () => {
                   </Button>
                 </AnimateButton>
               </Grid>
-              {/* <Grid item xs={12}>
-                <Divider>
-                  <Typography variant="caption">Sign up with</Typography>
-                </Divider>
-              </Grid>
-              <Grid item xs={12}>
-                <FirebaseSocial />
-              </Grid> */}
             </Grid>
           </form>
         )}

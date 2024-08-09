@@ -68,27 +68,36 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
     flex: 0.5
   },
   {
-    field: 'first_name',
-    headerName: 'First Name',
-    flex: 0.5,
+    field: 'name',
+    headerName: 'Name',
+    flex: 1,
     sortable: false,
     editable: true,
     type: 'string',
-    valueGetter: (param) => param.row.customer?.first_name || ''
+    valueGetter: (param) => `${param.row.customer?.first_name || ''} ${param.row.customer?.last_name || ''}`
   },
-  {
-    field: 'last_name',
-    headerName: 'Last Name',
-    flex: 0.5,
-    sortable: false,
-    editable: true,
-    type: 'string',
-    valueGetter: (param) => param.row.customer?.last_name || ''
-  },
+  // {
+  //   field: 'first_name',
+  //   headerName: 'First Name',
+  //   flex: 0.5,
+  //   sortable: false,
+  //   editable: true,
+  //   type: 'string',
+  //   valueGetter: (param) => param.row.customer?.first_name || ''
+  // },
+  // {
+  //   field: 'last_name',
+  //   headerName: 'Last Name',
+  //   flex: 0.5,
+  //   sortable: false,
+  //   editable: true,
+  //   type: 'string',
+  //   valueGetter: (param) => param.row.customer?.last_name || ''
+  // },
   {
     field: 'phone',
     headerName: 'Phone',
-    flex: 0.75,
+    flex: 1,
     sortable: false,
     editable: true,
     valueGetter: (param) => param.row.customer?.phone || ''
@@ -370,11 +379,13 @@ const OrderTable = memo(() => {
   const processRowUpdate = async (newRow, oldRow) => {
     // dispatch(setOrder({ order: { ...newRow, address1: newRow.address1 || newRow?.address?.address1 } }));
     const id = newRow.id;
+    const [first, second, ...rest] = newRow.name.split(' ');
+    console.log(rest);
     const body = {
       status: newRow?.status,
       customerId: newRow?.customer?.id,
-      first_name: newRow?.first_name,
-      last_name: newRow?.last_name,
+      first_name: `${first}${second ? ' ' + second : ''}`,
+      last_name: `${rest.join(' ') || ''}`,
       phone: newRow?.phone,
       remarks: newRow?.remarks,
       addressId: newRow?.address?.id,
