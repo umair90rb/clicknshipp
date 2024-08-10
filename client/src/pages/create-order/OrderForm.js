@@ -755,7 +755,6 @@ const CreateOrderForm = () => {
                       <InputLabel htmlFor="price">Price</InputLabel>
                       <OutlinedInput
                         fullWidth
-                        disabled
                         error={Boolean(touched.price && errors.price)}
                         id="price"
                         type="text"
@@ -994,24 +993,26 @@ const CreateOrderForm = () => {
                     </Button>
                   </AnimateButton>
                 </Grid>
-                <Grid item xs={5}>
-                  <AnimateButton>
-                    <Button
-                      disabled={orderCreateIsLoading}
-                      fullWidth
-                      size="large"
-                      onClick={() => {
-                        'clicked';
-                        setFieldValue('status', 'Confirmed');
-                        handleSubmit();
-                      }}
-                      variant="contained"
-                      color="success"
-                    >
-                      Create and confirm order
-                    </Button>
-                  </AnimateButton>
-                </Grid>
+                {!order && (
+                  <Grid item xs={5}>
+                    <AnimateButton>
+                      <Button
+                        disabled={orderCreateIsLoading}
+                        fullWidth
+                        size="large"
+                        onClick={() => {
+                          'clicked';
+                          setFieldValue('status', 'Confirmed');
+                          handleSubmit();
+                        }}
+                        variant="contained"
+                        color="success"
+                      >
+                        Create and confirm order
+                      </Button>
+                    </AnimateButton>
+                  </Grid>
+                )}
               </Grid>
             </Grid>
           </form>

@@ -28,8 +28,8 @@ const style = {
 export default function AssignOrderModal({ visible, onClose }) {
   const dispatch = useDispatch();
   // const assignOrderForm = useAssignOrderForm();
-  const brands = useSelector(brandBrandsSelector);
-  const brandsIsLoading = useSelector(brandIsLoadingSelector);
+  // const brands = useSelector(brandBrandsSelector);
+  // const brandsIsLoading = useSelector(brandIsLoadingSelector);
 
   const [chanelsLoading, setChanelsLoading] = useState(false);
   const [chanelError, setChaneError] = useState(null);
@@ -45,7 +45,7 @@ export default function AssignOrderModal({ visible, onClose }) {
 
   const assignOrderForm = useFormik({
     initialValues: {
-      brand: null,
+      // brand: null,
       chanel: null,
       users: [],
       type: '',
@@ -98,9 +98,9 @@ export default function AssignOrderModal({ visible, onClose }) {
       permissions: [PERMISSIONS.PERMISSION_ASSIGN_ORDERS]
     };
 
-    if (brand && brand !== 'All') {
-      body['brand'] = [brand];
-    }
+    // if (brand && brand !== 'All') {
+    //   body['brand'] = [brand];
+    // }
 
     const { type, payload } = await dispatch(
       fetchFilteredUsers({
@@ -188,7 +188,7 @@ export default function AssignOrderModal({ visible, onClose }) {
   return (
     <Modal open={visible} onClose={onClose} aria-labelledby="assign-order-modal" aria-describedby="modal-modal-description">
       <Box sx={style}>
-        <FormControl fullWidth margin="normal">
+        {/* <FormControl fullWidth margin="normal">
           <InputLabel id="brand-label">Select Brand</InputLabel>
           <Select
             labelId="brand-label"
@@ -215,7 +215,7 @@ export default function AssignOrderModal({ visible, onClose }) {
               {assignOrderForm.errors.brand}
             </FormHelperText>
           )}
-        </FormControl>
+        </FormControl> */}
 
         <FormControl fullWidth margin="normal">
           <InputLabel id="chanel-label">Select Chanel</InputLabel>

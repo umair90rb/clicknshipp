@@ -76,6 +76,27 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
     type: 'string',
     valueGetter: (param) => `${param.row.customer?.first_name || ''} ${param.row.customer?.last_name || ''}`
   },
+  {
+    field: 'address1',
+    headerName: 'Address',
+    flex: 1,
+    sortable: false,
+    editable: true,
+    type: 'string',
+    renderEditCell: (params) => <GridEditTextarea {...params} />,
+    valueGetter: (param) => param.row.address?.address1 || '',
+    valueParser: (value) => value.replace(/\n/g, ' ').replace(/\s\s+/g, ' ')
+  },
+  {
+    field: 'city',
+    headerName: 'City',
+    flex: 1,
+    sortable: false,
+    editable: true,
+    type: 'string',
+    valueGetter: (param) => param.row.address?.city || '',
+    renderEditCell: (params) => <GridSearchSelect multiple={true} {...params} />
+  },
   // {
   //   field: 'first_name',
   //   headerName: 'First Name',
@@ -102,28 +123,6 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
     editable: true,
     valueGetter: (param) => param.row.customer?.phone || ''
   },
-  {
-    field: 'address1',
-    headerName: 'Address',
-    flex: 1,
-    sortable: false,
-    editable: true,
-    type: 'string',
-    renderEditCell: (params) => <GridEditTextarea {...params} />,
-    valueGetter: (param) => param.row.address?.address1 || '',
-    valueParser: (value) => value.replace(/\n/g, ' ').replace(/\s\s+/g, ' ')
-  },
-  {
-    field: 'city',
-    headerName: 'City',
-    flex: 1,
-    sortable: false,
-    editable: true,
-    type: 'string',
-    valueGetter: (param) => param.row.address?.city || '',
-    renderEditCell: (params) => <GridSearchSelect multiple={true} {...params} />
-  },
-
   {
     field: 'item',
     headerName: 'Items',
@@ -169,6 +168,24 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
     flex: 0.33
   },
   {
+    field: 'payments',
+    headerName: 'Payments',
+    flex: 1,
+    sortable: false,
+    editable: false,
+    valueGetter: (param) => {
+      const payments = param.row.payments;
+      if (!payments || !payments.length) {
+        return 'None';
+      }
+      if (payments && payments.length === 1) {
+        return `${payments[0].amount}/${payments[0].type}/${payments[0].note}`;
+      }
+      return payments.reduce((pv, cv) => `${cv.amount}/${cv.type}/${cv.note}, ${pv}`, '');
+    },
+    type: 'string'
+  },
+  {
     field: 'total_discounts',
     headerName: 'Discount',
     flex: 0.33
@@ -182,6 +199,7 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
     type: 'singleSelect',
     valueOptions: ORDER_STATUSES
   },
+  // courier remarks
   {
     field: 'remarks',
     headerName: 'Remarks',
@@ -194,42 +212,17 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
     valueParser: (value) => value.replace(/\n/g, ' ').replace(/\s\s+/g, ' ')
   },
   {
-    field: 'total_tax',
-    headerName: 'Tax Amount',
-    flex: 0.33
-  },
-  {
-    field: 'createdAt',
-    headerName: 'Created At',
-    flex: 0.5,
-    valueGetter: ({ value }) => formatDateTime(value, true)
-  },
-  {
-    field: 'assignedAt',
-    headerName: 'Assigned At',
-    flex: 0.5,
-    valueGetter: ({ value }) => formatDateTime(value, true)
-  },
-  {
-    field: 'receivedAt',
-    headerName: 'Received At',
-    flex: 0.5,
-    valueGetter: ({ value }) => formatDateTime(value, true)
-  },
-  {
-    field: 'agent',
-    headerName: 'Agent',
+    field: 'tags',
+    headerName: 'Tags',
     flex: 0.5,
     sortable: false,
-    valueGetter: (param) => param.row.user?.name || ''
+    renderCell: (params) => (
+      <Box>
+        {(params.row.tags || '').split(',').map((tag, index) => tag && <Chip key={index} label={tag} size="small" variant="outlined" />)}
+      </Box>
+    )
   },
-  {
-    field: 'chanel',
-    headerName: 'Channel',
-    flex: 1,
-    sortable: false,
-    valueGetter: ({ value }) => (value ? value.name : '')
-  },
+
   {
     field: 'actions',
     headerName: 'Actions',
@@ -284,15 +277,41 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
     }
   },
   {
-    field: 'tags',
-    headerName: 'Tags',
+    field: 'chanel',
+    headerName: 'Channel',
+    flex: 1,
+    sortable: false,
+    valueGetter: ({ value }) => (value ? value.name : '')
+  },
+  {
+    field: 'agent',
+    headerName: 'Agent',
     flex: 0.5,
     sortable: false,
-    renderCell: (params) => (
-      <Box>
-        {(params.row.tags || '').split(',').map((tag, index) => tag && <Chip key={index} label={tag} size="small" variant="outlined" />)}
-      </Box>
-    )
+    valueGetter: (param) => param.row.user?.name || ''
+  },
+  {
+    field: 'total_tax',
+    headerName: 'Tax Amount',
+    flex: 0.33
+  },
+  {
+    field: 'createdAt',
+    headerName: 'Created At',
+    flex: 0.5,
+    valueGetter: ({ value }) => formatDateTime(value, true)
+  },
+  {
+    field: 'assignedAt',
+    headerName: 'Assigned At',
+    flex: 0.5,
+    valueGetter: ({ value }) => formatDateTime(value, true)
+  },
+  {
+    field: 'receivedAt',
+    headerName: 'Received At',
+    flex: 0.5,
+    valueGetter: ({ value }) => formatDateTime(value, true)
   }
 ];
 
@@ -312,13 +331,16 @@ const OrderTable = memo(() => {
   const userPermissions = useSelector(authPermissionsSelector);
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({
+    id: false,
     order_number: false,
     chanel: false,
     agent: false,
     total_tax: false,
     total_discounts: false,
     receivedAt: false,
-    createdAt: false
+    createdAt: false,
+    assignedAt: false,
+    payments: false
   });
 
   const [showAssignSelectedModal, setShowAssignSelectedModal] = useState(false);

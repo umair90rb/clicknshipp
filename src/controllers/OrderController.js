@@ -419,8 +419,9 @@ export default {
         order_number: Math.random().toString().split(".")[1].slice(0, 4),
       });
       if (paymentsArray && paymentsArray.length) {
-        const payments = await Payments.bulkCreate(paymentsArray);
-        await order.addPayments(payments);
+        await Payments.bulkCreate(
+          paymentsArray.map((payment) => ({ ...payment, order_id: order.id }))
+        );
       }
       const address = await order.createAddress({
         address1,
@@ -728,6 +729,10 @@ export default {
         payments,
         items: itemsArray,
       } = req.body || {};
+      const order = await Order.findByPk(id);
+      if (!order) {
+        return sendErrorResponse(res, 404, "No data found with this id.");
+      }
       const orderItems = [];
       let subtotal_price = 0;
       for (const item of itemsArray) {
@@ -738,26 +743,37 @@ export default {
       const total_tax = 0,
         total_discounts = 0;
       const total_price = subtotal_price + total_tax;
-      const order = await Order.findByPk(id);
-      if (!order) {
-        return sendErrorResponse(res, 404, "No data found with this id.");
+      let pendingPayments = 0,
+        receivedPayments = 0;
+      if (payments && payments.length) {
+        payments.forEach(({ type, amount }) => {
+          switch (type) {
+            case "received":
+              receivedPayments += amount;
+              break;
+            case "pending":
+              pendingPayments += amount;
+              break;
+          }
+        });
+      }
+      if (payments && payments.length) {
+        await Payments.bulkCreate(
+          payments.map((payment) => ({ ...payment, order_id: order.id }))
+        );
       }
       await order.update(
         {
           chanel_id: chanel_id || order.chanel_id,
           brand_id: brand_id || order.brand_id,
-          subtotal_price: subtotal_price,
-          total_price: total_price || order.total_price,
+          subtotal_price: subtotal_price - receivedPayments + pendingPayments,
+          total_price: total_price - receivedPayments + pendingPayments,
           total_tax: total_tax || order.total_tax,
           total_discounts: total_discounts || order.total_discounts,
           remarks: remarks || order.remarks,
         },
         { where: { id } }
       );
-      if (payments && payments.length) {
-        const payments = await Payments.bulkCreate(paymentsArray);
-        await order.addPayments(payments);
-      }
       await Customer.update(
         {
           first_name,
@@ -778,13 +794,12 @@ export default {
         },
         { where: { id: addressId } }
       );
-      await Promise.all(
-        itemsArray.map((i) => {
-          if ("id" in i) {
-            OrderItem.update({ ...i }, { where: { id: i.id } });
-          } else {
-            OrderItem.create({ ...i, order_id: order.id });
-          }
+      await order.setItems([]);
+      await OrderItem.destroy({ where: { order_id: order.id } });
+      await OrderItem.bulkCreate(
+        itemsArray.map((item) => {
+          delete item.id;
+          return { ...item, order_id: order.id };
         })
       );
       await order.createHistory({
