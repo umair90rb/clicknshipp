@@ -115,7 +115,7 @@ export const FILTER_COLUMNS = {
   tags: "tags",
   customer: "$customer.first_name$",
   phone: "$customer.phone$",
-  agent: "$user_id$",
+  agent: "user_id",
   address: "$address.address1$",
   city: "$address.city$",
   total_price: "total_price",

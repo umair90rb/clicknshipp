@@ -137,6 +137,7 @@ export default {
         delete query.where.user_id;
         delete query.where.assigned_at;
       }
+
       // else if (
       //   "settings" in req.user &&
       //   req.user?.settings?.hasOwnProperty("default_brand_id")
@@ -169,6 +170,9 @@ export default {
               [FILTER_COLUMNS[column]]: { [FILTER_OP[op]]: value },
               ..._filters,
             };
+          }
+          if (column === FILTER_COLUMNS.status && value[0] === "No Pick") {
+            delete query.where.user_id;
           }
           // if (
           //   FILTER_COLUMNS[column] in _filters &&
@@ -619,8 +623,15 @@ export default {
         cancel_reason: reason || order.cancel_reason,
       };
       if (status === "Duplicate") {
-        ud["assigned_at"] = null;
+        ud["assignedAt"] = null;
         ud["user_id"] = null;
+      }
+      if ((order.status = "No Pick" && status === "Confirmed")) {
+        ud = {
+          ...ud,
+          assignedAt: new Date().toISOString(),
+          user_id: req.user.id,
+        };
       }
       await order.update(ud);
       await order.createHistory({

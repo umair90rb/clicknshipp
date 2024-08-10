@@ -530,7 +530,7 @@ const OrderTable = memo(() => {
               setOrderFilters([
                 { column: 'status', op: 'Text is any', value: ['No Pick'] },
                 {
-                  column: 'createdAt',
+                  column: 'assignedAt',
                   op: 'Date is before',
                   value: moment().subtract(1, 'days').endOf('day').format('YYYY-MM-DDTHH:mm:ss')
                 }
