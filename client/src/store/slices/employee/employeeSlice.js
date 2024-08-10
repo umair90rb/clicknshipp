@@ -21,7 +21,7 @@ const employeeSlice = createSlice({
       }
     },
     deleteEmployee: (state, action) => {
-      state.list = state.list.filter((employee) => employee.id !== action.payload.id);
+      state.list = state.list.filter((employee) => employee.id !== action.payload);
     },
     clearEmployeeState: () => initialState
   },

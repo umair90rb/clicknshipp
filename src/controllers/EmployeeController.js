@@ -254,6 +254,21 @@ export default {
       const id = req.params.id;
       const employee = await Employee.findByPk(id);
       if (employee) {
+        await EmployeeEducationHistory.destroy({
+          where: { employee_id: employee.id },
+        });
+        await EmployeeExperience.destroy({
+          where: { employee_id: employee.id },
+        });
+        await EmployeeImmediateContact.destroy({
+          where: { employee_id: employee.id },
+        });
+        await EmployeeAllowance.destroy({
+          where: { employee_id: employee.id },
+        });
+        await EmployeeIncrementHistory.destroy({
+          where: { employee_id: employee.id },
+        });
         await employee.destroy();
         return sendSuccessResponse(res, 200, {}, "Operation successful");
       }

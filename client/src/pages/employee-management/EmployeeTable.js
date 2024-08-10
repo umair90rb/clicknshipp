@@ -5,18 +5,20 @@ import { fetchAllUser } from 'store/slices/user/fetchUser';
 import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
 import { authUserSelector } from 'store/slices/auth/authSelector';
 import { setMessage } from 'store/slices/util/utilSlice';
 import { setUserForUpdate, disableUser } from 'store/slices/user/userSlice';
 import { employeeService } from 'api/index';
 import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
-import { fetchAllEmployee } from 'store/slices/employee/fetchEmployee';
+import { fetchAllEmployee, fetchDeleteEmployee } from 'store/slices/employee/fetchEmployee';
 import { employeeIsLoadingSelector, employeeListSelector } from 'store/slices/employee/employeeSelector';
 import { useNavigate } from 'react-router-dom';
 import location from 'utils/location';
+import { deleteEmployee } from 'store/slices/employee/employeeSlice';
 
-const columns = (handleViewAction) => [
+const columns = (handleViewAction, handleDeleteAction) => [
   {
     field: 'id',
     headerName: 'ID.',
@@ -62,6 +64,18 @@ const columns = (handleViewAction) => [
           />
         );
       }
+      if (handleDeleteAction) {
+        actions.push(
+          <GridActionsCellItem
+            key={id}
+            icon={<DeleteForeverOutlinedIcon color="error" />}
+            label="View"
+            className="textPrimary"
+            onClick={() => handleDeleteAction(id)}
+            color="inherit"
+          />
+        );
+      }
       return actions;
     }
   }
@@ -80,6 +94,18 @@ export default function EmployeeTable() {
 
   const handleViewEmployee = (id) => navigate(location.viewEmployee(id));
 
+  const handleDeleteEmployee = async (id) => {
+    const { payload, type } = await dispatch(fetchDeleteEmployee({ id }));
+    if (type === 'employee/delete/fetch/fulfilled') {
+      dispatch(deleteEmployee(id));
+      dispatch(setMessage({ type: 'success', message: payload.data.message }));
+    } else {
+      if (type === 'employee/delete/fetch/rejected') {
+        dispatch(setMessage({ type: 'error', message: payload.error.message || 'Something goes wrong, try again!' }));
+      }
+    }
+  };
+
   return (
     <div style={{ width: '100%' }}>
       <DataGrid
@@ -92,7 +118,7 @@ export default function EmployeeTable() {
         loading={employeesIsLoading}
         pageSizeOptions={[25, 50, 75, 100]}
         rows={employees}
-        columns={columns(hasPermission(PERMISSIONS.PERMISSION_DELETE_USER) ? handleViewEmployee : undefined)}
+        columns={columns(handleViewEmployee, hasPermission(PERMISSIONS.PERMISSION_DELETE_USER) ? handleDeleteEmployee : undefined)}
       />
     </div>
   );
