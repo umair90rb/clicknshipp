@@ -6,33 +6,52 @@ import * as Yup from 'yup';
 import { Formik } from 'formik';
 import AnimateButton from 'components/@extended/AnimateButton';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCreateEmployee } from 'store/slices/employee/fetchEmployee';
+import { fetchCreateEmployee, fetchUpdateEmployee } from 'store/slices/employee/fetchEmployee';
 import { fetchAllDepartment } from 'store/slices/department/fetchDepartment';
 import { fetchAllDesignation } from 'store/slices/designation/fetchDesignation';
 import { departmentIsLoadingSelector, departmentListSelector } from 'store/slices/department/departmentSelector';
 import { designationIsLoadingSelector, designationListSelector } from 'store/slices/designation/designationSelector';
 import { toSentence } from 'utils/string-utils';
 
-const PersonalInfoForm = ({ setStep, setEmployeeId }) => {
+const PersonalInfoForm = ({ setStep, setEmployeeId, employeeDataToUpdate }) => {
   const dispatch = useDispatch();
+
   const formRef = useRef();
   const departmentsList = useSelector(departmentListSelector);
   const departmentsListIsLoading = useSelector(departmentIsLoadingSelector);
   const designationList = useSelector(designationListSelector);
   const designationListIsLoading = useSelector(designationIsLoadingSelector);
 
-  const handleSubmit = async (values, { setErrors, setStatus, setSubmitting }) => {
-    setSubmitting(true);
+  const createEmployee = async (values, setErrors, setStatus) => {
     const { type, payload } = await dispatch(fetchCreateEmployee({ body: values }));
     if (type === 'employee/create/fetch/fulfilled') {
-      setSubmitting(false);
       setEmployeeId(payload.data.employee.id);
       setStep((step) => ++step);
     } else {
       setStatus({ success: false });
       setErrors({ submit: payload.error.map((e) => toSentence(e)).join('. ') || 'Employee creation failed!' });
-      setSubmitting(false);
     }
+  };
+
+  const updatedEmployee = async (values, setErrors, setStatus) => {
+    const { type, payload } = await dispatch(fetchUpdateEmployee({ id: employeeDataToUpdate.id, body: values }));
+    if (type === 'employee/update/fetch/fulfilled') {
+      setEmployeeId(payload.data.employee.id);
+      setStep((step) => ++step);
+    } else {
+      setStatus({ success: false });
+      setErrors({ submit: payload.error.map((e) => toSentence(e)).join('. ') || 'Employee update failed!' });
+    }
+  };
+
+  const handleSubmit = (values, { setErrors, setStatus, setSubmitting }) => {
+    setSubmitting(true);
+    if (employeeDataToUpdate) {
+      updatedEmployee(values, setErrors, setStatus);
+    } else {
+      createEmployee(values, setErrors, setStatus);
+    }
+    setSubmitting(true);
   };
 
   useEffect(() => {
@@ -41,12 +60,25 @@ const PersonalInfoForm = ({ setStep, setEmployeeId }) => {
   }, []);
 
   useEffect(() => {
-    console.log(departmentsList, designationList);
-  }, [departmentsList, designationList]);
+    if (employeeDataToUpdate) {
+      console.log(employeeDataToUpdate);
+      const {
+        name,
+        email,
+        phone,
+        hire_at,
+        department: { id: department_id },
+        designation: { id: designation_id },
+        salary
+      } = employeeDataToUpdate;
+      formRef.current.setValues({ name, email, phone, hire_at, department_id, designation_id, salary });
+    }
+  }, [employeeDataToUpdate]);
 
   return (
     <Formik
       innerRef={formRef}
+      enableReinitialize={true}
       initialValues={{
         name: '',
         email: '',

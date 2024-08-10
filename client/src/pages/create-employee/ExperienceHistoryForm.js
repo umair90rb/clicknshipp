@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Button, Box, TextField, FormHelperText, Grid, FormControl, Divider } from '@mui/material';
 import * as Yup from 'yup';
 import { Formik, ErrorMessage, FieldArray } from 'formik';
@@ -5,9 +6,9 @@ import { useDispatch } from 'react-redux';
 import { fetchCreateEmployeeExperience } from 'store/slices/employee/fetchEmployee';
 import { toSentence } from 'utils/string-utils';
 
-const ExperienceHistoryForm = ({ employeeId, setStep }) => {
+const ExperienceHistoryForm = ({ employeeId, setStep, employeeDataToUpdate }) => {
   const dispatch = useDispatch();
-
+  const formRef = useRef();
   const handleSubmit = async (values, { setErrors, setStatus, setSubmitting }) => {
     setSubmitting(true);
     const { type, payload } = await dispatch(fetchCreateEmployeeExperience({ body: values }));
@@ -21,8 +22,19 @@ const ExperienceHistoryForm = ({ employeeId, setStep }) => {
     }
   };
 
+  useEffect(() => {
+    if (employeeDataToUpdate) {
+      console.log(employeeDataToUpdate);
+      const { experiences } = employeeDataToUpdate;
+      if (experiences.length) {
+        formRef.current.setValues({ experience: experiences });
+      }
+    }
+  }, [employeeDataToUpdate]);
+
   return (
     <Formik
+      innerRef={formRef}
       initialValues={{
         experience: [{ company: '', started_at: '', ended_at: '', designation: '', employee_id: employeeId }]
       }}

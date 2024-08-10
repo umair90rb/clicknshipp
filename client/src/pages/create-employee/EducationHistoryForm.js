@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Button, Box, TextField, FormHelperText, Grid, FormControl, Divider } from '@mui/material';
 import * as Yup from 'yup';
 import { Formik, ErrorMessage, FieldArray } from 'formik';
@@ -5,9 +6,9 @@ import { useDispatch } from 'react-redux';
 import { fetchCreateEmployeeEducation } from 'store/slices/employee/fetchEmployee';
 import { toSentence } from 'utils/string-utils';
 
-const EducationHistoryForm = ({ employeeId, setStep }) => {
+const EducationHistoryForm = ({ employeeId, setStep, employeeDataToUpdate }) => {
   const dispatch = useDispatch();
-
+  const formRef = useRef();
   const handleSubmit = async (values, { setErrors, setStatus, setSubmitting }) => {
     setSubmitting(true);
     const { type, payload } = await dispatch(fetchCreateEmployeeEducation({ body: values }));
@@ -21,8 +22,19 @@ const EducationHistoryForm = ({ employeeId, setStep }) => {
     }
   };
 
+  useEffect(() => {
+    if (employeeDataToUpdate) {
+      console.log(employeeDataToUpdate);
+      const { education } = employeeDataToUpdate;
+      if (education.length) {
+        formRef.current.setValues({ education });
+      }
+    }
+  }, [employeeDataToUpdate]);
+
   return (
     <Formik
+      innerRef={formRef}
       initialValues={{
         education: [{ degree: '', started_at: '', ended_at: '', obtained: 0, total: 0, employee_id: employeeId }]
       }}

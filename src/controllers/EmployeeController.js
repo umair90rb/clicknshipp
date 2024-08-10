@@ -31,15 +31,53 @@ export default {
     try {
       const { id } = req.params;
       const employee = await Employee.findByPk(id, {
-        attributes: ["name", "phone", "email", "hire_at", "picture", "salary"],
+        attributes: [
+          "id",
+          "name",
+          "phone",
+          "email",
+          "hire_at",
+          "picture",
+          "salary",
+        ],
         include: [
-          { model: Department, as: "department", attributes: ["name"] },
-          { model: Designation, as: "designation", attributes: ["name"] },
-          { model: EmployeeEducationHistory, as: "education" },
-          { model: EmployeeExperience, as: "experiences" },
-          { model: EmployeeImmediateContact, as: "contacts" },
-          { model: EmployeeAllowance, as: "allowances" },
-          { model: EmployeeIncrementHistory, as: "increments" },
+          { model: Department, as: "department", attributes: ["id", "name"] },
+          { model: Designation, as: "designation", attributes: ["id", "name"] },
+          {
+            model: EmployeeEducationHistory,
+            as: "education",
+            attributes: {
+              exclude: ["id", "createdAt", "updatedAt"],
+            },
+          },
+          {
+            model: EmployeeExperience,
+            as: "experiences",
+            attributes: {
+              exclude: ["id", "createdAt", "updatedAt"],
+            },
+          },
+          {
+            model: EmployeeImmediateContact,
+            as: "contacts",
+            attributes: {
+              exclude: ["id", "createdAt", "updatedAt"],
+            },
+          },
+          {
+            model: EmployeeAllowance,
+            as: "allowances",
+            attributes: {
+              exclude: ["id", "created_at", "updated_at"],
+            },
+          },
+          {
+            model: EmployeeIncrementHistory,
+            as: "increments",
+            attributes: {
+              exclude: ["id", "createdAt", "updatedAt"],
+            },
+          },
         ],
       });
       if (employee) {
@@ -113,6 +151,13 @@ export default {
 
   async addPicture(req, res) {
     try {
+      const employee = await Employee.findByPk(req.body.employee_id, {
+        attributes: ["id", "picture"],
+      });
+      if (employee.picture !== null) {
+        console.log("====================", employee.picture);
+      }
+
       await Employee.update(
         {
           picture: req.file.location,
@@ -137,6 +182,11 @@ export default {
 
   async addEducation(req, res) {
     try {
+      await EmployeeEducationHistory.destroy({
+        where: {
+          employee_id: req.body.education[0].employee_id,
+        },
+      });
       let educations = await EmployeeEducationHistory.bulkCreate(
         req.body.education
       );
@@ -158,6 +208,9 @@ export default {
 
   async addExperience(req, res) {
     try {
+      await EmployeeExperience.destroy({
+        where: { employee_id: req.body.experience[0].employee_id },
+      });
       let experiences = await EmployeeExperience.bulkCreate(
         req.body.experience
       );
@@ -179,6 +232,9 @@ export default {
 
   async addImmediateContact(req, res) {
     try {
+      await EmployeeImmediateContact.destroy({
+        where: { employee_id: req.body.contact[0].employee_id },
+      });
       let contacts = await EmployeeImmediateContact.bulkCreate(
         req.body.contact
       );
@@ -200,6 +256,9 @@ export default {
 
   async addAllowance(req, res) {
     try {
+      await EmployeeAllowance.destroy({
+        where: { employee_id: req.body.allowance[0].employee_id },
+      });
       let allowances = await EmployeeAllowance.bulkCreate(req.body.allowance);
       return sendSuccessResponse(
         res,

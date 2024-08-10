@@ -1,10 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Button, Box, TextField, FormHelperText, Grid, FormControl, Divider, InputBase } from '@mui/material';
-import Autocomplete, { autocompleteClasses } from '@mui/material/Autocomplete';
+import Autocomplete from '@mui/material/Autocomplete';
 import * as Yup from 'yup';
 import { Formik, ErrorMessage, FieldArray } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCreateEmployeeAllowance, fetchCreateEmployeeImmediateContact } from 'store/slices/employee/fetchEmployee';
+import { fetchCreateEmployeeAllowance } from 'store/slices/employee/fetchEmployee';
 import { toSentence } from 'utils/string-utils';
 import { useNavigate } from 'react-router-dom';
 import { fetchAllAllowance } from 'store/slices/allowance/fetchAllowance';
@@ -17,10 +17,10 @@ import {
 import fetchStatus from 'constants/fetchStatuses';
 import { setMessage } from 'store/slices/util/utilSlice';
 
-const AllowanceForm = ({ employeeId }) => {
+const AllowanceForm = ({ employeeId, employeeDataToUpdate }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const formRef = useRef();
   const allowanceList = useSelector(allowanceListSelector);
   const allowanceFetchStatus = useSelector(allowanceFetchStatusSelector);
   const allowanceIsLoading = useSelector(allowanceIsLoadingSelector);
@@ -33,6 +33,16 @@ const AllowanceForm = ({ employeeId }) => {
       dispatch(fetchAllAllowance());
     }
   }, []);
+
+  useEffect(() => {
+    if (employeeDataToUpdate) {
+      console.log(employeeDataToUpdate);
+      const { allowances } = employeeDataToUpdate;
+      if (allowances.length) {
+        formRef.current.setValues({ allowance: allowances });
+      }
+    }
+  }, [employeeDataToUpdate, allowanceIsLoading]);
 
   const handleSubmit = async (values, { setErrors, setStatus, setSubmitting }) => {
     setSubmitting(true);
@@ -50,6 +60,7 @@ const AllowanceForm = ({ employeeId }) => {
 
   return (
     <Formik
+      innerRef={formRef}
       initialValues={{
         allowance: [{ type: '', amount: null, employee_id: employeeId }]
       }}

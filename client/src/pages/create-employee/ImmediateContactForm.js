@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Button, Box, TextField, FormHelperText, Grid, FormControl, Divider } from '@mui/material';
 import * as Yup from 'yup';
 import { Formik, ErrorMessage, FieldArray } from 'formik';
@@ -5,9 +6,9 @@ import { useDispatch } from 'react-redux';
 import { fetchCreateEmployeeImmediateContact } from 'store/slices/employee/fetchEmployee';
 import { toSentence } from 'utils/string-utils';
 
-const ImmediateContactForm = ({ employeeId, setStep }) => {
+const ImmediateContactForm = ({ employeeId, setStep, employeeDataToUpdate }) => {
   const dispatch = useDispatch();
-
+  const formRef = useRef();
   const handleSubmit = async (values, { setErrors, setStatus, setSubmitting }) => {
     setSubmitting(true);
     const { type, payload } = await dispatch(fetchCreateEmployeeImmediateContact({ body: values }));
@@ -21,8 +22,17 @@ const ImmediateContactForm = ({ employeeId, setStep }) => {
     }
   };
 
+  useEffect(() => {
+    if (employeeDataToUpdate) {
+      console.log(employeeDataToUpdate);
+      const { contacts } = employeeDataToUpdate;
+      formRef.current.setValues({ contact: contacts });
+    }
+  }, [employeeDataToUpdate]);
+
   return (
     <Formik
+      innerRef={formRef}
       initialValues={{
         contact: [{ name: '', phone: '', relation: '', address: '', employee_id: employeeId }]
       }}

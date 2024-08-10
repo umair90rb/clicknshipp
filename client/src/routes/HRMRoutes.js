@@ -21,7 +21,7 @@ const HRMRoutes = {
       )
     },
     {
-      path: 'new',
+      path: 'add',
       element: (
         <PrivateRoute permission={PERMISSIONS.PERMISSION_VIEW_USERS}>
           <CreateEmployee />
@@ -33,6 +33,14 @@ const HRMRoutes = {
       element: (
         <PrivateRoute permission={PERMISSIONS.PERMISSION_VIEW_USERS}>
           <EmployeeView />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'update/:employeeId',
+      element: (
+        <PrivateRoute permission={PERMISSIONS.PERMISSION_VIEW_USERS}>
+          <CreateEmployee />
         </PrivateRoute>
       )
     }

@@ -1,9 +1,10 @@
+import { useEffect, useRef } from 'react';
 import { Button, Stack, FormHelperText, Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import { useDispatch } from 'react-redux';
-import { fetchAddEmployeePicture, fetchCreateEmployeeImmediateContact } from 'store/slices/employee/fetchEmployee';
+import { fetchAddEmployeePicture } from 'store/slices/employee/fetchEmployee';
 import { toSentence } from 'utils/string-utils';
 
 const VisuallyHiddenInput = styled('input')({
@@ -18,9 +19,9 @@ const VisuallyHiddenInput = styled('input')({
   width: 1
 });
 
-const PictureForm = ({ employeeId, setStep }) => {
+const PictureForm = ({ employeeId, setStep, employeeDataToUpdate }) => {
   const dispatch = useDispatch();
-
+  const formRef = useRef();
   const handleSubmit = async (values, { setErrors, setStatus, setSubmitting }) => {
     setSubmitting(true);
     const { type, payload } = await dispatch(fetchAddEmployeePicture({ body: values }));
@@ -34,8 +35,16 @@ const PictureForm = ({ employeeId, setStep }) => {
     }
   };
 
+  useEffect(() => {
+    if (employeeDataToUpdate) {
+      const { picture, id } = employeeDataToUpdate;
+      formRef.current.setValues({ picture, employee_id: id });
+    }
+  }, [employeeDataToUpdate]);
+
   return (
     <Formik
+      innerRef={formRef}
       initialValues={{
         employee_id: employeeId,
         picture: null

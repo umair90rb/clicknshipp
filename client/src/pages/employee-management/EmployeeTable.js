@@ -5,7 +5,8 @@ import { fetchAllUser } from 'store/slices/user/fetchUser';
 import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { authUserSelector } from 'store/slices/auth/authSelector';
 import { setMessage } from 'store/slices/util/utilSlice';
 import { setUserForUpdate, disableUser } from 'store/slices/user/userSlice';
@@ -18,7 +19,7 @@ import { useNavigate } from 'react-router-dom';
 import location from 'utils/location';
 import { deleteEmployee } from 'store/slices/employee/employeeSlice';
 
-const columns = (handleViewAction, handleDeleteAction) => [
+const columns = (handleViewAction, handleUpdateAction, handleDeleteAction) => [
   {
     field: 'id',
     headerName: 'ID.',
@@ -64,11 +65,23 @@ const columns = (handleViewAction, handleDeleteAction) => [
           />
         );
       }
+      if (handleUpdateAction) {
+        actions.push(
+          <GridActionsCellItem
+            key={id}
+            icon={<ModeEditIcon color="primary" />}
+            label="View"
+            className="textPrimary"
+            onClick={() => handleUpdateAction(id)}
+            color="inherit"
+          />
+        );
+      }
       if (handleDeleteAction) {
         actions.push(
           <GridActionsCellItem
             key={id}
-            icon={<DeleteForeverOutlinedIcon color="error" />}
+            icon={<DeleteIcon color="error" />}
             label="View"
             className="textPrimary"
             onClick={() => handleDeleteAction(id)}
@@ -93,6 +106,7 @@ export default function EmployeeTable() {
   }, []);
 
   const handleViewEmployee = (id) => navigate(location.viewEmployee(id));
+  const handleUpdateEmployee = (id) => navigate(location.updatedEmployee(id));
 
   const handleDeleteEmployee = async (id) => {
     const { payload, type } = await dispatch(fetchDeleteEmployee({ id }));
@@ -118,7 +132,11 @@ export default function EmployeeTable() {
         loading={employeesIsLoading}
         pageSizeOptions={[25, 50, 75, 100]}
         rows={employees}
-        columns={columns(handleViewEmployee, hasPermission(PERMISSIONS.PERMISSION_DELETE_USER) ? handleDeleteEmployee : undefined)}
+        columns={columns(
+          handleViewEmployee,
+          hasPermission(PERMISSIONS.PERMISSION_DELETE_USER) ? handleUpdateEmployee : undefined,
+          hasPermission(PERMISSIONS.PERMISSION_DELETE_USER) ? handleDeleteEmployee : undefined
+        )}
       />
     </div>
   );
