@@ -19,6 +19,9 @@ const createUpdateEmployeeEducationSchema = Joi.object({
     .min(1)
     .items(
       Joi.object({
+        id: Joi.number(),
+        createdAt: Joi.string(),
+        updatedAt: Joi.string(),
         employee_id: Joi.number().required(),
         degree: Joi.string().required(),
         started_at: Joi.string().required(),
@@ -39,6 +42,9 @@ const createUpdateEmployeeExperienceSchema = Joi.object({
         started_at: Joi.string().required(),
         ended_at: Joi.string().required(),
         designation: Joi.string().required(),
+        id: Joi.number(),
+        createdAt: Joi.string(),
+        updatedAt: Joi.string(),
       })
     ),
 });
@@ -53,6 +59,9 @@ const createUpdateEmployeeImmediateContactSchema = Joi.object({
         phone: Joi.string().required(),
         address: Joi.string().required(),
         relation: Joi.string().required(),
+        id: Joi.number(),
+        createdAt: Joi.string(),
+        updatedAt: Joi.string(),
       })
     ),
 });
@@ -65,6 +74,9 @@ const createUpdateEmployeeAllowanceSchema = Joi.object({
         employee_id: Joi.number().required(),
         type: Joi.string().required(),
         amount: Joi.number().required(),
+        id: Joi.number(),
+        createdAt: Joi.string(),
+        updatedAt: Joi.string(),
       })
     ),
 });

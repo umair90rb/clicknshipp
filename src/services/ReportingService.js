@@ -1,12 +1,13 @@
 import { Op, QueryTypes, literal, fn, col } from "sequelize";
 import { sequelize } from "../models";
 import model from "../models";
-const { Order, OrderItem, Delivery, User, Chanel } = model;
+import { PERMISSIONS } from "../constants/constants";
+const { Order, OrderItem, Delivery, User, Chanel, Role, Permission } = model;
 
 class ReportingService {
   constructor() {}
 
-  async getAgentReport(startPeriod, endPeriod, reportBrand) {
+  getAgentReport(startPeriod, endPeriod, reportBrand) {
     let where = {
       assigned_at: {
         [Op.gte]: startPeriod,
@@ -67,27 +68,6 @@ class ReportingService {
       ],
       where,
       group: ["Order.user_id", "user.id"],
-    });
-  }
-
-  getUnitReport(startPeriod, endPeriod, reportBrand) {
-    return OrderItem.findAll({
-      attributes: [
-        "name",
-        [sequelize.fn("SUM", sequelize.col("quantity")), "generated"],
-      ],
-      include: [
-        {
-          model: Order,
-          as: "order",
-          // where: {
-          //   order_date: {
-          //     [Op.eq]: new Date().toISOString().split("T")[0], // Today's date
-          //   },
-          // },
-        },
-      ],
-      group: ["name", "order.id"],
     });
   }
 
@@ -210,7 +190,7 @@ class ReportingService {
     });
   }
 
-  async getChannelReport(startPeriod, endPeriod, reportBrand) {
+  getChannelReport(startPeriod, endPeriod, reportBrand) {
     let where = {
       assigned_at: {
         [Op.gte]: startPeriod,
@@ -276,6 +256,92 @@ class ReportingService {
       where,
       group: ["Order.chanel_id", "chanel.name", "user.name"],
       raw: true,
+    });
+  }
+
+  async getIncentiveReport(startPeriod, endPeriod, reportBrand) {
+    let where = {
+      assigned_at: {
+        [Op.gte]: startPeriod,
+        [Op.lte]: endPeriod,
+      },
+      user_id: {
+        [Op.ne]: null,
+      },
+    };
+    if (reportBrand && reportBrand !== "All") {
+      where["brand_id"] = reportBrand;
+    }
+
+    const users = await User.findAll({
+      attributes: ["id", "name"],
+      include: {
+        model: Role,
+        as: "roles",
+        through: {
+          attributes: [],
+        },
+        required: true,
+        include: [
+          {
+            as: "permissions",
+            model: Permission,
+            required: true,
+            where: { name: PERMISSIONS.PERMISSION_ASSIGN_ORDERS },
+            through: {
+              attributes: [],
+            },
+          },
+        ],
+      },
+    });
+
+    const columns = [
+      [col(`"items"."name"`), "item"],
+      ...users.map((user) => {
+        return [
+          fn(
+            "SUM",
+            literal(
+              `CASE WHEN "Order"."user_id" = ${user.id} THEN "items"."quantity" ELSE 0 END`
+            )
+          ),
+          user.name,
+        ];
+      }),
+    ];
+
+    return Order.findAll({
+      attributes: columns,
+      include: [
+        {
+          model: Chanel,
+          as: "chanel",
+          attributes: [],
+          required: false,
+        },
+        {
+          model: OrderItem,
+          as: "items",
+          attributes: [],
+          required: true,
+        },
+        {
+          model: User,
+          as: "user",
+          attributes: [],
+          required: false,
+        },
+        {
+          model: Delivery,
+          as: "delivery",
+          attributes: [],
+          required: false,
+        },
+      ],
+      where,
+      group: ["chanel.name", "items.name", "Order.id"],
+      // order: [["chanel.name", "ASC"]],
     });
   }
 }

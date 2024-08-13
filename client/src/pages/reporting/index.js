@@ -1,7 +1,8 @@
-import { Grid, FormControl, Select, InputLabel, MenuItem, Typography } from '@mui/material';
-import MainCard from 'components/MainCard';
-import AgentsReports from './AgentsReport';
+import { useEffect } from 'react';
+import { Grid, FormControl, Select, InputLabel, MenuItem, Typography, Button } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
+import MainCard from 'components/MainCard';
+import DateRangePicker from 'components/DatePicker';
 import {
   reportBrandSelector,
   reportEndPeriodSelector,
@@ -9,17 +10,16 @@ import {
   reportTypeSelector
 } from 'store/slices/report/reportSelector';
 import { setReportBrand, setReportPeriod, setReportType } from 'store/slices/report/reportSlice';
-import ItemsByOrders from './ItemsByOrders';
-import DateRangePicker from 'components/DatePicker';
 import { fetchAgentReport } from 'store/slices/report/fetchReport';
-import { Button } from '../../../node_modules/@mui/material/index';
-import { useEffect } from 'react';
 import { brandBrandsSelector, brandFetchStatusSelector } from 'store/slices/brand/brandSelector';
-import fetchStatus from 'constants/fetchStatuses';
 import { fetchAllBrand } from 'store/slices/brand/fetchBrand';
+import fetchStatus from 'constants/fetchStatuses';
+import UnitReport from './UnitReport';
 import ChannelReport from './ChannelReport';
+import AgentsReports from './AgentsReport';
+import IncentiveReport from './IncentiveReport';
 
-const REPORT_TYPES = ['Agent Report', 'Unit Report', 'Channel Report'];
+const REPORT_TYPES = ['Agent Report', 'Unit Report', 'Channel Report', 'Incentive Report'];
 
 const Reporting = () => {
   const dispatch = useDispatch();
@@ -43,9 +43,11 @@ const Reporting = () => {
       case 'Agent Report':
         return <AgentsReports />;
       case 'Unit Report':
-        return <ItemsByOrders />;
+        return <UnitReport />;
       case 'Channel Report':
         return <ChannelReport />;
+      case 'Incentive Report':
+        return <IncentiveReport />;
     }
   };
 

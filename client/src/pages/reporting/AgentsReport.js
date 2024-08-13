@@ -201,11 +201,6 @@ export default function AgentsReports() {
       }
     }
   ];
-
-  // const calculateTotal = (field) => {
-  //   return data.reduce((acc, row) => acc + parseInt(row[field]), 0);
-  // };
-
   if (reportIsLoading || reportFetchStatus === fetchStatus.IDLE) {
     return null;
   }
@@ -220,7 +215,6 @@ export default function AgentsReports() {
         slots={{
           toolbar: renderToolBar,
           noRowsOverlay: CustomNoRowsOverlay
-          // footer: (props) => <CustomFooter {...props} columns={columns} />
         }}
         rows={data || []}
         getRowId={(row) => `${row.user_id}-${row.confirmed}-${row.no_pick}`}

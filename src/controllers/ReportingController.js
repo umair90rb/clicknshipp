@@ -3,7 +3,7 @@ import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 import { _reportingService as reportingService } from "../services/ReportingService";
 
 export default {
-  async agentReport(req, res) {
+  async getReport(req, res) {
     try {
       const { reportBrand, reportType, startPeriod, endPeriod } = req.body;
       let report;
@@ -24,6 +24,13 @@ export default {
           break;
         case "Channel Report":
           report = await reportingService.getChannelReport(
+            startPeriod,
+            endPeriod,
+            reportBrand
+          );
+          break;
+        case "Incentive Report":
+          report = await reportingService.getIncentiveReport(
             startPeriod,
             endPeriod,
             reportBrand

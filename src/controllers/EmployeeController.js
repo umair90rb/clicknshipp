@@ -46,37 +46,22 @@ export default {
           {
             model: EmployeeEducationHistory,
             as: "education",
-            attributes: {
-              exclude: ["id", "createdAt", "updatedAt"],
-            },
           },
           {
             model: EmployeeExperience,
             as: "experiences",
-            attributes: {
-              exclude: ["id", "createdAt", "updatedAt"],
-            },
           },
           {
             model: EmployeeImmediateContact,
             as: "contacts",
-            attributes: {
-              exclude: ["id", "createdAt", "updatedAt"],
-            },
           },
           {
             model: EmployeeAllowance,
             as: "allowances",
-            attributes: {
-              exclude: ["id", "created_at", "updated_at"],
-            },
           },
           {
             model: EmployeeIncrementHistory,
             as: "increments",
-            attributes: {
-              exclude: ["id", "createdAt", "updatedAt"],
-            },
           },
         ],
       });
