@@ -40,7 +40,7 @@ import { Button, Box, Chip } from '@mui/material';
 import AssignSelectedOrderModal from './AssignSelectedOrderModal';
 import CustomNoRowsOverlay from '../../components/GridNoRowCustomOverlay';
 import { setOrder, setOrderFilters, setOrderPagination, setOrderSort } from 'store/slices/order/orderSlice';
-import FilterModal from './FilterModal';
+// import FilterModal from './FilterModal';
 import { setMessage } from 'store/slices/util/utilSlice';
 import { authPermissionsSelector } from 'store/slices/auth/authSelector';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
@@ -56,7 +56,12 @@ import GridAddItemModal from './GridAddItemModal/index';
 import { GridDropdownFilter } from './GridDropdownFilter';
 import { truncate } from 'lodash';
 import moment from 'moment';
-const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handleCancelClick, handleAddItemClick) => [
+import { fetchDeliveryServiceAccounts } from 'store/slices/deliveryServicesAccounts/fetchDeliveryServicesAccounts';
+import {
+  deliveryServiceAccountsFetchStatusSelector,
+  deliveryServiceAccountsListSelector
+} from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSelector';
+const columns = (apiRef, rowModesModel, couriersList, handleViewClick, handleSaveClick, handleCancelClick, handleAddItemClick) => [
   {
     field: 'id',
     headerName: 'ID',
@@ -199,7 +204,15 @@ const columns = (apiRef, rowModesModel, handleViewClick, handleSaveClick, handle
     type: 'singleSelect',
     valueOptions: ORDER_STATUSES
   },
-  // courier remarks
+  // courier remarks index 12
+  {
+    field: 'courier',
+    headerName: 'Courier',
+    flex: 0.5,
+    editable: true,
+    type: 'singleSelect',
+    valueOptions: couriersList
+  },
   {
     field: 'remarks',
     headerName: 'Remarks',
@@ -328,6 +341,8 @@ const OrderTable = memo(() => {
   const total = useSelector(orderTotalSelector);
 
   const citiesFetchStatus = useSelector(cityFetchStatusSelector);
+  const deliveryServiceAccountsList = useSelector(deliveryServiceAccountsListSelector);
+  const deliveryServiceAccountsFetchStatus = useSelector(deliveryServiceAccountsFetchStatusSelector);
   const userPermissions = useSelector(authPermissionsSelector);
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({
@@ -434,13 +449,19 @@ const OrderTable = memo(() => {
     return;
   };
 
+  useEffect(() => {
+    if (citiesFetchStatus !== fetchStatus.SUCCESS) {
+      dispatch(fetchAllCities());
+    }
+    if (deliveryServiceAccountsFetchStatus !== fetchStatus.SUCCESS) {
+      dispatch(fetchDeliveryServiceAccounts());
+    }
+  }, []);
+
   const fetchOrders = (filters) => dispatch(fetchAllOrder({ body: { sort: sortModel, page, pageSize, filters } }));
 
   useEffect(() => {
     fetchOrders(filters);
-    if (citiesFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllCities());
-    }
   }, [page, pageSize, filters, sortModel]);
 
   const handleViewClick = (id) => () => navigate(location.viewOrder(id));
@@ -457,15 +478,15 @@ const OrderTable = memo(() => {
     setBulkDeleteLoading(false);
   };
 
-  const handleApplyFilters = (columnsWithFilter) => {
-    const filters = [];
-    columnsWithFilter.forEach((column) => {
-      if ('filter' in column) {
-        filters.push({ column: column.field, op: column.filter.op, value: column.filter.value });
-      }
-    });
-    dispatch(setOrderFilters(filters));
-  };
+  // const handleApplyFilters = (columnsWithFilter) => {
+  //   const filters = [];
+  //   columnsWithFilter.forEach((column) => {
+  //     if ('filter' in column) {
+  //       filters.push({ column: column.field, op: column.filter.op, value: column.filter.value });
+  //     }
+  //   });
+  //   dispatch(setOrderFilters(filters));
+  // };
 
   const handleClearFilters = () => dispatch(setOrderFilters([]));
 
@@ -647,7 +668,15 @@ const OrderTable = memo(() => {
         onRowEditStop={handleRowEditStop}
         processRowUpdate={processRowUpdate}
         onProcessRowUpdateError={handleProcessRowUpdateError}
-        columns={columns(apiRef, rowModesModel, handleViewClick, handleSaveClick, handleCancelClick, handleAddItemClick)}
+        columns={columns(
+          apiRef,
+          rowModesModel,
+          deliveryServiceAccountsList.map((s) => ({ value: s.id, label: s.name })),
+          handleViewClick,
+          handleSaveClick,
+          handleCancelClick,
+          handleAddItemClick
+        )}
       />
       <GridAddItemModal orderId={addItemInOrderOrderId} visible={addItemInOrderVisible} onClose={hideAddItemInOrderVisible} />
       <AssignSelectedOrderModal visible={showAssignSelectedModal} onClose={hideAssignSelectedModal} selectedRows={rowSelectionModel} />

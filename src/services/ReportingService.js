@@ -261,16 +261,16 @@ class ReportingService {
 
   async getIncentiveReport(startPeriod, endPeriod, reportBrand) {
     let where = {
-      assigned_at: {
+      "$order.assigned_at$": {
         [Op.gte]: startPeriod,
         [Op.lte]: endPeriod,
       },
-      user_id: {
+      "$order.user_id$": {
         [Op.ne]: null,
       },
     };
     if (reportBrand && reportBrand !== "All") {
-      where["brand_id"] = reportBrand;
+      where["$order.brand_id$"] = reportBrand;
     }
 
     const users = await User.findAll({
@@ -295,53 +295,51 @@ class ReportingService {
         ],
       },
     });
-
-    const columns = [
-      [col(`"items"."name"`), "item"],
-      ...users.map((user) => {
-        return [
+    const columns = ["name", "quantity"];
+    for (let index = 0; index < users.length; index++) {
+      const user = users[index];
+      columns.push(
+        [
           fn(
             "SUM",
             literal(
-              `CASE WHEN "Order"."user_id" = ${user.id} THEN "items"."quantity" ELSE 0 END`
+              `CASE WHEN "order"."user_id" = ${user.id} THEN "quantity" ELSE 0 END`
             )
           ),
-          user.name,
-        ];
-      }),
-    ];
+          user.name.toLowerCase().split(" ").join("_"),
+        ],
+        [
+          fn(
+            "SUM",
+            literal(
+              `CASE WHEN "order"."status" = 'Confirmed' OR "order"."status" = 'Booked' THEN "quantity" ELSE 0 END`
+            )
+          ),
+          `${user.name.toLowerCase().split(" ").join("_")}_confirmed`,
+        ],
+        [
+          fn(
+            "SUM",
+            literal(
+              `CASE WHEN "order"."status" = 'Delivered' THEN "quantity" ELSE 0 END`
+            )
+          ),
+          `${user.name.toLowerCase().split(" ").join("_")}_delivered`,
+        ]
+      );
+    }
 
-    return Order.findAll({
+    return OrderItem.findAll({
       attributes: columns,
       include: [
         {
-          model: Chanel,
-          as: "chanel",
+          model: Order,
+          as: "order",
           attributes: [],
-          required: false,
-        },
-        {
-          model: OrderItem,
-          as: "items",
-          attributes: [],
-          required: true,
-        },
-        {
-          model: User,
-          as: "user",
-          attributes: [],
-          required: false,
-        },
-        {
-          model: Delivery,
-          as: "delivery",
-          attributes: [],
-          required: false,
         },
       ],
       where,
-      group: ["chanel.name", "items.name", "Order.id"],
-      // order: [["chanel.name", "ASC"]],
+      group: ["name", "quantity"],
     });
   }
 }

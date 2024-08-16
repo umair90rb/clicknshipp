@@ -44,6 +44,38 @@ export function addTotalRow(report, data) {
           totalCallCourier: data.reduce((acc, row) => acc + (parseInt(row.callcourier) || 0), 0)
         }
       ];
+    case 'Incentive Report':
+      if (!data.length) return data;
+      // eslint-disable-next-line no-case-declarations
+      const { name, ...fields } = data[0];
+      // eslint-disable-next-line no-case-declarations
+      const fieldsArr = Object.keys(fields);
+      // eslint-disable-next-line no-case-declarations
+      const total = {};
+      for (let i = 0; i < data.length; i++) {
+        const row = data[i];
+        for (let j = 0; j < fieldsArr.length; j++) {
+          const field = fieldsArr[j];
+          if (!/confirmed|delivered/g.test(field)) {
+            continue;
+          }
+          const key = `${field}_total`;
+          if (key in total) {
+            total[key] += row[field];
+          } else {
+            total[key] = row[field];
+          }
+        }
+      }
+      console.log(total);
+      return [
+        ...data,
+        {
+          id: 'TOTAL',
+          label: 'Total',
+          ...total
+        }
+      ];
     default:
       return data;
   }

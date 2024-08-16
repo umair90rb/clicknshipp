@@ -3,11 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
-import { itemIsLoadingSelector, itemItemsSelector } from 'store/slices/item/itemSelector';
-import { fetchAllItem, fetchDeleteItem } from 'store/slices/item/fetchItem';
-import { deleteItem } from 'store/slices/item/itemSlice';
 import {
-  deliveryServiceAccountsFetchStatusSelector,
   deliveryServiceAccountsIsLoadingSelector,
   deliveryServiceAccountsListSelector
 } from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSelector';
