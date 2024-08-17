@@ -260,6 +260,11 @@ class OrderService {
             attributes: ["id", "name"],
           },
           {
+            model: Address,
+            as: "address",
+            attributes: ["address1", "city"],
+          },
+          {
             model: Customer,
             as: "customer",
             attributes: ["first_name", "last_name", "name"],

@@ -6,12 +6,14 @@ import _orderService from "../services/OrderService";
 const { Order } = model;
 
 const ORDER_TYPE = {
-  // unassigned: { user_id: null },
   unassigned: {
     [Op.and]: [{ user_id: null }, { status: "Received" }],
   },
   assigned_not_confirmed: {
     [Op.and]: [{ user_id: { [Op.ne]: null } }, { status: "Assigned" }],
+  },
+  previous_no_pick: {
+    [Op.and]: [{ user_id: { [Op.ne]: null } }, { status: "No Pick" }],
   },
 };
 

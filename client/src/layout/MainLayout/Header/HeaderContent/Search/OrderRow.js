@@ -8,7 +8,7 @@ const OrderRow = ({ order, onNavigate }) => {
     navigate(`/order/${id}`);
     onNavigate && onNavigate();
   };
-  const { id, order_number, status, items, customer, user, createdAt } = order || {};
+  const { id, order_number, status, items, address, customer, user, createdAt } = order || {};
   return (
     <Stack
       component="div"
@@ -34,7 +34,10 @@ const OrderRow = ({ order, onNavigate }) => {
         <Typography component="span" variant="h5">
           {user?.name || 'None'}
         </Typography>{' '}
-        Items: {items?.reduce((pv, cv) => `${cv.name}/${cv.quantity} ${pv}`, '')}
+        Items: {items?.reduce((pv, cv) => `${cv.name}/${cv.quantity} ${pv}`, '')}, Address: {address.address1}, City:{' '}
+        <Typography component="span" variant="h5">
+          {address.city},
+        </Typography>
       </Typography>
     </Stack>
   );

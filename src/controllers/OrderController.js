@@ -267,7 +267,7 @@ export default {
         "phone" in customer_data &&
         (customer_data.phone == null || customer_data.phone == "")
       ) {
-        customer_data.phone = address_data.phone;
+        customer_data.phone = formatPhoneNumber(address_data.phone);
       }
       let customer;
       if (
