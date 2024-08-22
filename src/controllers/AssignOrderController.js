@@ -2,6 +2,7 @@ import { Op, Sequelize } from "sequelize";
 import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 import _orderService from "../services/OrderService";
+import { getStartOfDay } from "../helpers/pgDateFormat";
 
 const { Order } = model;
 
@@ -12,8 +13,12 @@ const ORDER_TYPE = {
   assigned_not_confirmed: {
     [Op.and]: [{ user_id: { [Op.ne]: null } }, { status: "Assigned" }],
   },
-  previous_no_pick: {
-    [Op.and]: [{ user_id: { [Op.ne]: null } }, { status: "No Pick" }],
+  today_no_pick: {
+    [Op.and]: [
+      { user_id: { [Op.ne]: null } },
+      { status: "No Pick" },
+      { assignedAt: { [Op.gte]: getStartOfDay() } },
+    ],
   },
 };
 
@@ -36,11 +41,11 @@ export default {
         query.where["brand_id"] = { [Op.in]: brand };
       }
       if (startPeriod) {
-        query.where["createdAt"] = { [Op.gte]: startPeriod };
+        query.where["assignedAt"] = { [Op.gte]: startPeriod };
       }
       if (endPeriod) {
-        query.where["createdAt"] = {
-          ...query.where["createdAt"],
+        query.where["assignedAt"] = {
+          ...query.where["assignedAt"],
           [Op.lte]: endPeriod,
         };
       }

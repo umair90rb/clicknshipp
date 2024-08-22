@@ -54,7 +54,6 @@ import { fetchAllCities } from 'store/slices/city/fetchCity';
 import GridSearchSelect from './GridSearchSelect';
 import GridAddItemModal from './GridAddItemModal/index';
 import { GridDropdownFilter } from './GridDropdownFilter';
-import { truncate } from 'lodash';
 import moment from 'moment';
 import { fetchDeliveryServiceAccounts } from 'store/slices/deliveryServicesAccounts/fetchDeliveryServicesAccounts';
 import {
@@ -380,7 +379,6 @@ const OrderTable = memo(() => {
   const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false);
   const [partialUpdateOrderLoading, setPartialUpdateOrderLoading] = useState(false);
   const [rowModesModel, setRowModesModel] = useState({});
-  const [checkboxSelection, setCheckboxSelection] = useState(truncate);
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -423,6 +421,7 @@ const OrderTable = memo(() => {
       customerId: newRow?.customer?.id,
       first_name: `${first}${second ? ' ' + second : ''}`,
       last_name: `${rest.join(' ') || ''}`,
+      delivery_account_id: newRow?.courier,
       phone: newRow?.phone,
       remarks: newRow?.remarks,
       addressId: newRow?.address?.id,
@@ -506,9 +505,6 @@ const OrderTable = memo(() => {
         >
           Filters
         </Button> */}
-        <Button onClick={() => setCheckboxSelection((pv) => !pv)} size="small" startIcon={<IndeterminateCheckBoxIcon />}>
-          Toggle Selection
-        </Button>
         {userPermissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) && <GridToolbarExport />}
 
         {filters.length > 0 && (
@@ -646,7 +642,7 @@ const OrderTable = memo(() => {
           }
         }}
         loading={listIsLoading}
-        checkboxSelection={checkboxSelection}
+        checkboxSelection={true}
         rowSelectionModel={rowSelectionModel}
         onRowSelectionModelChange={(newRowSelectionModel) => setRowSelectionModel(newRowSelectionModel)}
         paginationMode="server"

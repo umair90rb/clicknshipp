@@ -299,33 +299,33 @@ class ReportingService {
     for (let index = 0; index < users.length; index++) {
       const user = users[index];
       columns.push(
+        // [
+        //   fn(
+        //     "SUM",
+        //     literal(
+        //       `CASE WHEN "order"."user_id" = ${user.id} THEN "quantity" ELSE 0 END`
+        //     )
+        //   ),
+        //   user.name.toLowerCase().split(" ").join("_"),
+        // ],
         [
           fn(
             "SUM",
             literal(
-              `CASE WHEN "order"."user_id" = ${user.id} THEN "quantity" ELSE 0 END`
-            )
-          ),
-          user.name.toLowerCase().split(" ").join("_"),
-        ],
-        [
-          fn(
-            "SUM",
-            literal(
-              `CASE WHEN "order"."status" = 'Confirmed' OR "order"."status" = 'Booked' THEN "quantity" ELSE 0 END`
+              `CASE WHEN "order"."user_id" = ${user.id} AND "order"."status" = 'Confirmed' OR "order"."status" = 'Booked' THEN "quantity" ELSE 0 END`
             )
           ),
           `${user.name.toLowerCase().split(" ").join("_")}_confirmed`,
-        ],
-        [
-          fn(
-            "SUM",
-            literal(
-              `CASE WHEN "order"."status" = 'Delivered' THEN "quantity" ELSE 0 END`
-            )
-          ),
-          `${user.name.toLowerCase().split(" ").join("_")}_delivered`,
         ]
+        // [
+        //   fn(
+        //     "SUM",
+        //     literal(
+        //       `CASE WHEN "order"."status" = 'Delivered' THEN "quantity" ELSE 0 END`
+        //     )
+        //   ),
+        //   `${user.name.toLowerCase().split(" ").join("_")}_delivered`,
+        // ]
       );
     }
 

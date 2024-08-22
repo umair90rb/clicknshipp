@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
         as: "chanel",
         foreignKey: "chanel_id",
       });
+      Order.belongsTo(models.DeliveryServiceAccounts, {
+        as: "courier",
+        foreignKey: "delivery_account_id",
+      });
       Order.belongsTo(models.Brand, {
         as: "brand",
         foreignKey: "brand_id",
@@ -83,6 +87,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       brand_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      delivery_account_id: {
         type: DataTypes.INTEGER,
         allowNull: true,
       },

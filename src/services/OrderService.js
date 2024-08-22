@@ -16,6 +16,7 @@ const {
   Chanel,
   Payments,
   Delivery,
+  DeliveryServiceAccount,
   OrderHistory,
 } = model;
 
@@ -61,6 +62,7 @@ class OrderService {
     try {
       const order = await Order.findByPk(id, {
         attributes: {
+          include: [["delivery_account_id", "courier"]],
           exclude: ["data", "CustomerId", "user_id", "chanel_id", "brand_id"],
         },
         include: [
@@ -303,7 +305,7 @@ class OrderService {
         attributes: ["id", "status", "createdAt"],
         where: {
           createdAt: {
-            [Op.gt]: getStartOfDay(new Date()),
+            [Op.gt]: getStartOfDay(),
             [Op.lt]: getEndOfDay(new Date()),
           },
         },

@@ -67,6 +67,7 @@ export const orderPatchUpdateSchema = Joi.object({
   addressId: Joi.number().allow(""),
   first_name: Joi.string().required(),
   last_name: Joi.string().allow(""),
+  delivery_account_id: Joi.number().allow(null),
   phone: Joi.string().required(),
   remarks: Joi.string().allow(""),
   address: Joi.string().required(),

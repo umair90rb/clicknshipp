@@ -19,7 +19,7 @@ const columns = [
     }
   }
 ];
-let columnGroupingModel = [{ groupId: 'Item Info', children: [{ field: 'name' }, { field: 'quantity' }] }];
+// let columnGroupingModel = [{ groupId: 'Item Info', children: [{ field: 'name' }, { field: 'quantity' }] }];
 
 export default function IncentiveReport() {
   const reportIsLoading = useSelector(reportIsLoadingSelector);
@@ -37,7 +37,7 @@ export default function IncentiveReport() {
         continue;
       }
       const confirmKey = `${k}_confirmed`;
-      const deliverKey = `${k}_delivered`;
+      // const deliverKey = `${k}_delivered`;
       withAgentColumns.push(
         {
           field: confirmKey,
@@ -49,21 +49,21 @@ export default function IncentiveReport() {
             }
             return params.value;
           }
-        },
-        {
-          field: deliverKey,
-          headerName: `${toSentence(k.split('_').join(' '))} Delivered`,
-          flex: 0.5,
-          valueGetter: (params) => {
-            if (params.row.id === 'TOTAL') {
-              console.log(params);
-              return params.row[`${deliverKey}_total`];
-            }
-            return params.value;
-          }
         }
+        // {
+        //   field: deliverKey,
+        //   headerName: `${toSentence(k.split('_').join(' '))} Delivered`,
+        //   flex: 0.5,
+        //   valueGetter: (params) => {
+        //     if (params.row.id === 'TOTAL') {
+        //       console.log(params);
+        //       return params.row[`${deliverKey}_total`];
+        //     }
+        //     return params.value;
+        //   }
+        // }
       );
-      columnGroupingModel.push({ groupId: k.toUpperCase(), children: [{ field: confirmKey }, { field: deliverKey }] });
+      // columnGroupingModel.push({ groupId: k.toUpperCase(), children: [{ field: confirmKey }, { field: deliverKey }] });
     }
   }
 
@@ -77,7 +77,7 @@ export default function IncentiveReport() {
         getRowId={(row) => `${Math.random().toString().split('.')[1]}`}
         rows={data}
         columns={withAgentColumns}
-        columnGroupingModel={columnGroupingModel}
+        // columnGroupingModel={columnGroupingModel}
       />
     </div>
   );

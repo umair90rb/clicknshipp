@@ -63,7 +63,7 @@ export default {
           user_id: req.user.id,
           assigned_at: {
             [Op.and]: [
-              { [Op.gte]: getStartOfDay(today) },
+              { [Op.gte]: getStartOfDay() },
               { [Op.lte]: getEndOfDay(today) },
             ],
           },
@@ -845,6 +845,7 @@ export default {
         customerId,
         first_name,
         last_name,
+        delivery_account_id,
         phone,
         remarks,
         addressId,
@@ -896,6 +897,9 @@ export default {
       let orderUpdateData = { status, remarks };
       if (customer) {
         orderUpdateData["customer_id"] = customer.id;
+      }
+      if (delivery_account_id) {
+        orderUpdateData["delivery_account_id"] = delivery_account_id;
       }
       if (status === "Duplicate") {
         orderUpdateData["assignedAt"] = null;

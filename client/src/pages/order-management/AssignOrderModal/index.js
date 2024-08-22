@@ -313,8 +313,8 @@ export default function AssignOrderModal({ visible, onClose }) {
                 <MenuItem key={2} value="assigned_not_confirmed">
                   Assigned not confirmed yet!
                 </MenuItem>,
-                <MenuItem key={3} value="previous_no_pick">
-                  Previous No Pick!
+                <MenuItem key={3} value="today_no_pick">
+                  Today No Pick!
                 </MenuItem>
               ]}
           </Select>

@@ -35,7 +35,6 @@ export function addTotalRow(report, data) {
           totalConfirmed: data.reduce((acc, row) => acc + (parseInt(row.confirmed) || 0), 0),
           totalNoPick: data.reduce((acc, row) => acc + (parseInt(row.no_pick) || 0), 0),
           totalCancel: data.reduce((acc, row) => acc + (parseInt(row.cancel) || 0), 0),
-          totalPercentage: data.reduce((acc, row) => acc + (row.confirmed / row.generated) * 100, 0) / data.length,
           totalPostex: data.reduce((acc, row) => acc + (parseInt(row.postex) || 0), 0),
           totalTCS: data.reduce((acc, row) => acc + (parseInt(row.tcs) || 0), 0),
           totalDeawoo: data.reduce((acc, row) => acc + (parseInt(row.deawoo) || 0), 0),
@@ -47,7 +46,7 @@ export function addTotalRow(report, data) {
     case 'Incentive Report':
       if (!data.length) return data;
       // eslint-disable-next-line no-case-declarations
-      const { name, ...fields } = data[0];
+      const { name, quantity, ...fields } = data[0];
       // eslint-disable-next-line no-case-declarations
       const fieldsArr = Object.keys(fields);
       // eslint-disable-next-line no-case-declarations

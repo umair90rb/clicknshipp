@@ -84,12 +84,12 @@ const columns = [
       if (params.row.id === 'TOTAL') {
         return params.row.totalPercentage;
       }
-      return `${(params.row.confirmed / params.row.generated) * 100}%`;
+      return `${((params.row.confirmed / params.row.generated) * 100).toFixed(2)}%`;
     },
     renderCell: (params) => {
       let percentage = ((params.row.confirmed / params.row.generated) * 100).toFixed(0);
       if (params.row.id === 'TOTAL') {
-        percentage = params.row.totalPercentage;
+        percentage = ((params.row.totalConfirmed / params.row.totalGenerated) * 100).toFixed(0);
       }
       return (
         <>

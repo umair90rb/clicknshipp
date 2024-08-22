@@ -30,7 +30,12 @@ const Reporting = () => {
   const brands = useSelector(brandBrandsSelector);
   const brandsFetchStatus = useSelector(brandFetchStatusSelector);
 
-  const fetchReport = () => dispatch(fetchAgentReport({ body: { reportBrand, reportType, startPeriod, endPeriod } }));
+  const fetchReport = () => {
+    if (!reportBrand || !reportType) {
+      return;
+    }
+    dispatch(fetchAgentReport({ body: { reportBrand, reportType, startPeriod, endPeriod } }));
+  };
 
   useEffect(() => {
     if (brandsFetchStatus !== fetchStatus.SUCCESS) {
