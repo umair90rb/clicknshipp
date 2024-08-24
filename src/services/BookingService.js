@@ -29,6 +29,7 @@ class BookingService {
       throw new Error("Courier service not available");
     }
   }
+
   cancelBookingWithCourier(cn, deliveryAccount) {
     if (deliveryAccount.service in this.availableCouriers) {
       const courier = this.availableCouriers[deliveryAccount.service];

@@ -21,6 +21,7 @@ export function addTotalRow(report, data) {
           label: 'Total',
           totalCancel: data.reduce((acc, row) => acc + (parseInt(row.cancel) || 0), 0),
           totalConfirmed: data.reduce((acc, row) => acc + (parseInt(row.confirmed) || 0), 0),
+          totalAssigned: data.reduce((acc, row) => acc + (parseInt(row.assigned) || 0), 0),
           totalNoPick: data.reduce((acc, row) => acc + (parseInt(row.no_pick) || 0), 0),
           grandTotal: data.reduce((acc, row) => acc + (parseInt(row.total) || 0), 0)
         }

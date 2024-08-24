@@ -15,6 +15,31 @@ class CallCourier extends CourierInterface {
     );
   }
 
+  // async bookParcelDev(order, deliveryAccount, error) {
+  //   try {
+  //     const wait = new Promise((resolve, reject) => {
+  //       setTimeout(resolve, 1000);
+  //     });
+  //     await wait;
+  //     if (error) throw new Error("throwing error");
+  //     return {
+  //       cn: "234234234324",
+  //       slip: JSON.stringify({}),
+  //       isSuccess: true,
+  //       error: null,
+  //       response: {},
+  //     };
+  //   } catch (error) {
+  //     return {
+  //       cn: null,
+  //       slip: JSON.stringify({}),
+  //       isSuccess: false,
+  //       error: "Simulated an error",
+  //       response: null,
+  //     };
+  //   }
+  // }
+
   async bookParcel(order, deliveryAccount) {
     let response, url;
     try {

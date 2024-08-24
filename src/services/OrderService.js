@@ -16,8 +16,9 @@ const {
   Chanel,
   Payments,
   Delivery,
-  DeliveryServiceAccount,
+  DeliveryServiceAccounts,
   OrderHistory,
+  Tokens,
 } = model;
 
 class OrderService {
@@ -141,6 +142,103 @@ class OrderService {
         ],
       });
       return order;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  loadTodayReadyForBookingOrders() {
+    try {
+      return Order.findAll({
+        attributes: {
+          exclude: ["data", "CustomerId", "user_id", "chanel_id", "brand_id"],
+        },
+        where: {
+          status: "Confirmed",
+          delivery_account_id: { [Op.ne]: null },
+          assignedAt: {
+            [Op.and]: [
+              { [Op.lte]: getStartOfDay() },
+              { [Op.gte]: getEndOfDay() },
+            ],
+          },
+        },
+        include: [
+          {
+            model: Chanel,
+            as: "chanel",
+            attributes: ["id", "name"],
+          },
+          {
+            model: User,
+            as: "user",
+            attributes: {
+              exclude: [
+                "password",
+                "status",
+                "settings",
+                "createdAt",
+                "updatedAt",
+              ],
+            },
+          },
+          {
+            model: Customer,
+            as: "customer",
+          },
+          {
+            model: Payments,
+            as: "payments",
+            attributes: {
+              exclude: ["order_id", "updatedAt"],
+            },
+          },
+          {
+            model: Address,
+            as: "address",
+            attributes: {
+              exclude: [
+                "order_id",
+                "customer_id",
+                "CustomerId",
+                "OrderId",
+                "company",
+                "longitude",
+                "latitude",
+                "country_code",
+                "province_code",
+              ],
+            },
+          },
+          {
+            model: OrderItem,
+            as: "items",
+            attributes: {
+              exclude: ["OrderId", "createdAt", "updatedAt"],
+            },
+          },
+          {
+            model: Delivery,
+            as: "delivery",
+            attributes: {
+              exclude: ["slip_link", "createdAt", "updatedAt", "order_id"],
+            },
+          },
+          {
+            model: DeliveryServiceAccounts,
+            as: "courier",
+            include: {
+              model: Tokens,
+              as: "tokens",
+              attributes: ["token", "expiry", "type"],
+            },
+            attributes: {
+              exclude: ["createdAt", "updatedAt", "order_id"],
+            },
+          },
+        ],
+      });
     } catch (error) {
       console.log(error);
       throw error;

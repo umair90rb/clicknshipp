@@ -41,7 +41,7 @@ export default function AgentsReports() {
   const renderToolBar = () => <GridToolbarWithHeading heading="Agent Report" />;
   const linkClicked = (id, status) => {
     const _filters = [
-      { column: 'agent', op: 'Text is exactly', value: id },
+      { column: 'agent', op: 'Text is any', value: id },
       { column: 'assignedAt', op: 'Greater than or equal to', value: startPeriod },
       { column: 'assignedAt', op: 'Less than or equal to', value: endPeriod }
     ];
@@ -89,13 +89,22 @@ export default function AgentsReports() {
       renderCell: (params) => {
         if (params.row.id === 'TOTAL') {
           return (
-            <Button variant="text" size="small">
+            <Button
+              onClick={() =>
+                linkClicked(
+                  data.map((row) => row.user_id),
+                  []
+                )
+              }
+              variant="text"
+              size="small"
+            >
               {params.row.grandTotal}
             </Button>
           );
         }
         return (
-          <Button onClick={() => linkClicked(params.row.user.id, [])} variant="text" size="small">
+          <Button onClick={() => linkClicked([params.row.user.id], [])} variant="text" size="small">
             {params.row.total}
           </Button>
         );
@@ -114,14 +123,57 @@ export default function AgentsReports() {
       renderCell: (params) => {
         if (params.row.id === 'TOTAL') {
           return (
-            <Button variant="text" size="small">
+            <Button
+              onClick={() =>
+                linkClicked(
+                  data.map((row) => row.user_id),
+                  ['Confirmed']
+                )
+              }
+              variant="text"
+              size="small"
+            >
               {params.row.totalConfirmed}
             </Button>
           );
         }
         return (
-          <Button onClick={() => linkClicked(params.row.user.id, ['Confirmed'])} variant="text" size="small">
+          <Button onClick={() => linkClicked([params.row.user.id], ['Confirmed'])} variant="text" size="small">
             {params.row.confirmed}
+          </Button>
+        );
+      }
+    },
+    {
+      field: 'assigned',
+      headerName: 'Assigned',
+      flex: 0.5,
+      valueGetter: (params) => {
+        if (params.row.id === 'TOTAL') {
+          return params.row.totalAssigned;
+        }
+        return params.value;
+      },
+      renderCell: (params) => {
+        if (params.row.id === 'TOTAL') {
+          return (
+            <Button
+              onClick={() =>
+                linkClicked(
+                  data.map((row) => row.user_id),
+                  ['Assigned']
+                )
+              }
+              variant="text"
+              size="small"
+            >
+              {params.row.totalAssigned}
+            </Button>
+          );
+        }
+        return (
+          <Button onClick={() => linkClicked([params.row.user.id], ['Assigned'])} variant="text" size="small">
+            {params.row.no_pick}
           </Button>
         );
       }
@@ -139,13 +191,22 @@ export default function AgentsReports() {
       renderCell: (params) => {
         if (params.row.id === 'TOTAL') {
           return (
-            <Button variant="text" size="small">
+            <Button
+              onClick={() =>
+                linkClicked(
+                  data.map((row) => row.user_id),
+                  ['No Pick', 'Payment Pending']
+                )
+              }
+              variant="text"
+              size="small"
+            >
               {params.row.totalNoPick}
             </Button>
           );
         }
         return (
-          <Button onClick={() => linkClicked(params.row.user.id, ['No Pick', 'Payment Pending'])} variant="text" size="small">
+          <Button onClick={() => linkClicked([params.row.user.id], ['No Pick', 'Payment Pending'])} variant="text" size="small">
             {params.row.no_pick}
           </Button>
         );
@@ -164,13 +225,22 @@ export default function AgentsReports() {
       renderCell: (params) => {
         if (params.row.id === 'TOTAL') {
           return (
-            <Button variant="text" size="small">
+            <Button
+              onClick={() =>
+                linkClicked(
+                  data.map((row) => row.user_id),
+                  ['Cancel']
+                )
+              }
+              variant="text"
+              size="small"
+            >
               {params.row.totalCancel}
             </Button>
           );
         }
         return (
-          <Button onClick={() => linkClicked(params.row.user.id, ['Cancel'])} variant="text" size="small">
+          <Button onClick={() => linkClicked([params.row.user.id], ['Cancel'])} variant="text" size="small">
             {params.row.cancel}
           </Button>
         );

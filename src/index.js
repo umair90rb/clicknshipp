@@ -10,6 +10,8 @@ import errorHandler from "./middleware/errorHandler";
 import "./jobs/assignOrders";
 // import "./jobs/trackOrders";
 import { dirname } from "node:path";
+import { Server } from "socket.io";
+import DeliveryController from "./controllers/DeliveryController";
 const rootDir = dirname(process.argv[1]);
 
 dotenv.config();
@@ -26,6 +28,23 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT;
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log("App is now running at port ", PORT);
+});
+
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
+
+io.of("booking").on("connection", (socket) => {
+  console.log("user connected for bulk booking");
+  socket.on("booking", (data) => {
+    DeliveryController.bulkBooking(socket);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
 });

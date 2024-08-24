@@ -60,6 +60,7 @@ import {
   deliveryServiceAccountsFetchStatusSelector,
   deliveryServiceAccountsListSelector
 } from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSelector';
+import useAccess from 'hooks/useAccess';
 const columns = (apiRef, rowModesModel, couriersList, handleViewClick, handleSaveClick, handleCancelClick, handleAddItemClick) => [
   {
     field: 'id',
@@ -331,6 +332,7 @@ const OrderTable = memo(() => {
   const apiRef = useGridApiRef();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { hasPermission } = useAccess();
   const listIsLoading = useSelector(orderListIsLoadingSelector);
   const orders = useSelector(orderListSelector);
   const page = useSelector(orderPageSelector);
@@ -642,7 +644,7 @@ const OrderTable = memo(() => {
           }
         }}
         loading={listIsLoading}
-        checkboxSelection={true}
+        checkboxSelection={hasPermission(PERMISSIONS.PERMISSION_CREATE_BULK_ORDER)}
         rowSelectionModel={rowSelectionModel}
         onRowSelectionModelChange={(newRowSelectionModel) => setRowSelectionModel(newRowSelectionModel)}
         paginationMode="server"

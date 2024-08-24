@@ -46,6 +46,15 @@ class ReportingService {
           fn(
             "SUM",
             literal(
+              'CASE WHEN "Order"."status" = \'Assigned\' THEN 1 ELSE 0 END'
+            )
+          ),
+          "assigned",
+        ],
+        [
+          fn(
+            "SUM",
+            literal(
               'CASE WHEN "Order"."status" = \'No Pick\' OR "Order"."status" = \'Payment Pending\' THEN 1 ELSE 0 END'
             )
           ),

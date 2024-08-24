@@ -1,7 +1,10 @@
 import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 import BookingService from "../services/BookingService";
+
 import logger from "../middleware/logger";
+import { _orderService } from "../services/OrderService";
+import { Server } from "socket.io";
 
 const {
   Order,
@@ -144,6 +147,73 @@ export default {
         "Could not perform operation at this time, kindly try again later.",
         error
       );
+    }
+  },
+
+  async bulkBooking(socket) {
+    try {
+      const orders = await _orderService.loadTodayReadyForBookingOrders();
+      socket.emit("booking:count", orders.length);
+      const bookingService = new BookingService();
+      for (const order of orders) {
+        const bookingResponse = await bookingService.bookParcelWithCourier(
+          order,
+          order.courier.get()
+        );
+        const { cn, slip, isSuccess, error, response } = bookingResponse || {};
+        console.log(bookingResponse, "bookingResponse");
+        if (isSuccess) {
+          let delivery = await Delivery.findOne({
+            where: { order_id: order.id },
+          });
+          console.log(delivery?.get(), "delivery found for order");
+          if (delivery) {
+            await delivery.update({
+              courier: deliveryAccount.service,
+              account_id: deliveryAccount.id,
+              cn,
+              slip_link: slip,
+              status: "Booked",
+            });
+          } else {
+            delivery = await Delivery.create({
+              courier: deliveryAccount.service,
+              account_id: deliveryAccount.id,
+              cn,
+              slip_link: slip,
+              status: "Booked",
+              order_id: order.id,
+            });
+          }
+          await order.update({ status: "Booked" });
+          await order.createHistory({
+            user_id: req.user.id,
+            event: `order booked with ${deliveryAccount?.service}, tracking number: ${cn}, brand no: ${order?.brand?.shipment_series}`,
+          });
+          await Brand.update(
+            { shipment_series: order.brand.shipment_series + 1 },
+            {
+              where: {
+                id: order.brand.id,
+              },
+            }
+          );
+          socket.emit("booking:single:success", {
+            courier: order.courier.service,
+          });
+        } else {
+          await order.update({ status: `${order.status}/ErrorInBooking` });
+          await order.createHistory({
+            user_id: req.user.id,
+            event: `Error while booking order, not booked with ${deliveryAccount?.service}. error ${error}`,
+          });
+          socket.emit("booking:single:error", {
+            courier: order.courier.service,
+          });
+        }
+      }
+    } catch (error) {
+      console.error(error);
     }
   },
 
