@@ -18,7 +18,7 @@ const style = {
 export default function BulkBookingModal({ visible, onClose }) {
   const { socket, connect } = useSocket();
   const [count, setCount] = useState('loading...');
-  const [courierWiseOrders, serCourierWiseOrders] = useState({ tcs: { success: 1, failed: 1 }, trax: { success: 1, failed: 1 } });
+  const [courierWiseOrders, serCourierWiseOrders] = useState({});
 
   useEffect(() => {
     if (visible) {

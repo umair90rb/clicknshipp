@@ -173,7 +173,7 @@ export default function AgentsReports() {
         }
         return (
           <Button onClick={() => linkClicked([params.row.user.id], ['Assigned'])} variant="text" size="small">
-            {params.row.no_pick}
+            {params.row.assigned}
           </Button>
         );
       }
@@ -287,7 +287,7 @@ export default function AgentsReports() {
           noRowsOverlay: CustomNoRowsOverlay
         }}
         rows={data || []}
-        getRowId={(row) => `${row.user_id}-${row.confirmed}-${row.no_pick}`}
+        getRowId={(row) => `${row.user_id}-${row.confirmed}-${row.no_pick}-${row.assigned}`}
         columns={columns}
       />
     </div>
