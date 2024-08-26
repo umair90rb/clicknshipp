@@ -111,6 +111,7 @@ export default {
           },
         ],
         attributes: {
+          include: [["delivery_account_id", "courier"]],
           exclude: [
             "data",
             "customer_id",
