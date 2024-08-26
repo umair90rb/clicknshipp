@@ -1,4 +1,4 @@
-import { _orderService } from "../services/OrderService";
+import _orderService from "../services/OrderService";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 
 export default {

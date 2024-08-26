@@ -15,7 +15,8 @@ import {
   FILTER_COLUMNS,
 } from "../constants/constants";
 import logger from "../middleware/logger";
-import { _orderService } from "../services/OrderService";
+import _orderService from "../services/OrderService";
+import bookingQueue from "../queues/bookingQueue";
 
 const {
   Order,
@@ -900,6 +901,12 @@ export default {
       }
       if (delivery_account_id) {
         orderUpdateData["delivery_account_id"] = delivery_account_id;
+        if (status === "Confirmed") {
+          await bookingQueue.add("bookingJob", {
+            orderId,
+            deliveryAccountId: delivery_account_id,
+          });
+        }
       }
       if (status === "Duplicate") {
         orderUpdateData["assignedAt"] = null;

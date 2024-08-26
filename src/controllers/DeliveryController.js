@@ -1,10 +1,11 @@
 import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
-import BookingService from "../services/BookingService";
+import bookingService from "../services/BookingService";
 
 import logger from "../middleware/logger";
-import { _orderService } from "../services/OrderService";
+import _orderService from "../services/OrderService";
 import { Server } from "socket.io";
+import deliveryServiceAccountService from "../services/DeliveryServiceAccountService";
 
 const {
   Order,
@@ -21,116 +22,28 @@ export default {
   async book(req, res) {
     try {
       const { orderId, accountId } = req.body;
-      const deliveryAccount = await DeliveryServiceAccounts.findByPk(
-        accountId,
-        {
-          include: {
-            model: Tokens,
-            as: "tokens",
-            attributes: ["token", "expiry", "type"],
-          },
-        }
-      );
+      const deliveryAccount =
+        await deliveryServiceAccountService.getAccountWithToken(accountId);
       if (!deliveryAccount) {
         return sendErrorResponse(res, 404, "No account found with this id");
       }
-      const order = await Order.findByPk(orderId, {
-        attributes: {
-          exclude: [
-            "data",
-            "CustomerId",
-            "updatedAt",
-            "customer_id",
-            "user_id",
-          ],
-        },
-        include: [
-          {
-            model: Customer,
-            as: "customer",
-          },
-          {
-            model: Brand,
-            as: "brand",
-            attributes: {
-              exclude: ["createdAt", "updatedAt"],
-            },
-          },
-          {
-            model: Address,
-            as: "address",
-            attributes: {
-              exclude: [
-                "order_id",
-                "customer_id",
-                "CustomerId",
-                "OrderId",
-                "company",
-                "longitude",
-                "latitude",
-                "country_code",
-                "province_code",
-              ],
-            },
-          },
-          {
-            model: OrderItem,
-            as: "items",
-            attributes: {
-              exclude: ["OrderId", "createdAt", "updatedAt"],
-            },
-          },
-        ],
-      });
+      const order = await _orderService.loadOrderForBooking(orderId);
       if (!order) {
         return sendErrorResponse(res, 404, "No data found with this id.");
       }
       if (order.status === "Booked") {
         return sendErrorResponse(res, 400, "Order already booked!");
       }
-      const bookingService = new BookingService();
       const bookingResponse = await bookingService.bookParcelWithCourier(
         order,
         deliveryAccount.get()
       );
-      const { cn, slip, isSuccess, error, response } = bookingResponse || {};
-      console.log(bookingResponse, "bookingResponse");
-      if (isSuccess) {
-        let delivery = await Delivery.findOne({
-          where: { order_id: order.id },
-        });
-        console.log(delivery?.get(), "delivery found for order");
-        if (delivery) {
-          await delivery.update({
-            courier: deliveryAccount.service,
-            account_id: deliveryAccount.id,
-            cn,
-            slip_link: slip,
-            status: "Booked",
-          });
-        } else {
-          delivery = await Delivery.create({
-            courier: deliveryAccount.service,
-            account_id: deliveryAccount.id,
-            cn,
-            slip_link: slip,
-            status: "Booked",
-            order_id: order.id,
-          });
-        }
-        await order.update({ status: "Booked" });
-        await order.createHistory({
-          user_id: req.user.id,
-          event: `order booked with ${deliveryAccount?.service}, tracking number: ${cn}, brand no: ${order?.brand?.shipment_series}`,
-        });
-        await Brand.update(
-          { shipment_series: order.brand.shipment_series + 1 },
-          {
-            where: {
-              id: order.brand.id,
-            },
-          }
-        );
+      const delivery = await _orderService.updateOrderAfterBooking(
+        bookingResponse,
+        order,
+        deliveryAccount
+      );
+      if (delivery) {
         return sendSuccessResponse(
           res,
           200,
@@ -154,7 +67,6 @@ export default {
     try {
       const orders = await _orderService.loadTodayReadyForBookingOrders();
       socket.emit("booking:count", orders.length);
-      const bookingService = new BookingService();
       for (const order of orders) {
         const bookingResponse = await bookingService.bookParcelWithCourier(
           order,
@@ -247,7 +159,6 @@ export default {
           "Delivery not found for this order!"
         );
       }
-      const bookingService = new BookingService();
       const cancelBookingResponse =
         await bookingService.cancelBookingWithCourier(
           delivery.cn,
@@ -305,7 +216,6 @@ export default {
           "Delivery not found for this order!"
         );
       }
-      const bookingService = new BookingService();
       const bookingStatusResponse =
         await bookingService.checkParcelStatusWithCourier(
           delivery?.cn,

@@ -308,15 +308,6 @@ class ReportingService {
     for (let index = 0; index < users.length; index++) {
       const user = users[index];
       columns.push(
-        // [
-        //   fn(
-        //     "SUM",
-        //     literal(
-        //       `CASE WHEN "order"."user_id" = ${user.id} THEN "quantity" ELSE 0 END`
-        //     )
-        //   ),
-        //   user.name.toLowerCase().split(" ").join("_"),
-        // ],
         [
           fn(
             "SUM",
@@ -325,16 +316,16 @@ class ReportingService {
             )
           ),
           `${user.name.toLowerCase().split(" ").join("_")}_confirmed`,
+        ],
+        [
+          fn(
+            "SUM",
+            literal(
+              `CASE WHEN "order"."status" = 'Delivered' THEN "quantity" ELSE 0 END`
+            )
+          ),
+          `${user.name.toLowerCase().split(" ").join("_")}_delivered`,
         ]
-        // [
-        //   fn(
-        //     "SUM",
-        //     literal(
-        //       `CASE WHEN "order"."status" = 'Delivered' THEN "quantity" ELSE 0 END`
-        //     )
-        //   ),
-        //   `${user.name.toLowerCase().split(" ").join("_")}_delivered`,
-        // ]
       );
     }
 
@@ -345,10 +336,15 @@ class ReportingService {
           model: Order,
           as: "order",
           attributes: [],
+          include: {
+            model: Chanel,
+            as: "chanel",
+            attributes: [["name", "chanel_name`"]],
+          },
         },
       ],
       where,
-      group: ["name", "quantity"],
+      group: ["OrderItem.name", "quantity", "order.id", "order->chanel.id"],
     });
   }
 }

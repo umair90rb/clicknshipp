@@ -12,6 +12,7 @@ const {
   OrderItem,
   Customer,
   Address,
+  Brand,
   User,
   Chanel,
   Payments,
@@ -148,101 +149,93 @@ class OrderService {
     }
   }
 
-  loadTodayReadyForBookingOrders() {
-    try {
-      return Order.findAll({
-        attributes: {
-          exclude: ["data", "CustomerId", "user_id", "chanel_id", "brand_id"],
+  loadOrderForBooking(id) {
+    return Order.findByPk(id, {
+      attributes: {
+        exclude: ["data", "CustomerId", "updatedAt", "customer_id", "user_id"],
+      },
+      include: [
+        {
+          model: Customer,
+          as: "customer",
         },
-        where: {
-          status: "Confirmed",
-          delivery_account_id: { [Op.ne]: null },
-          assignedAt: {
-            [Op.and]: [
-              { [Op.lte]: getStartOfDay() },
-              { [Op.gte]: getEndOfDay() },
+        {
+          model: Brand,
+          as: "brand",
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+        },
+        {
+          model: Address,
+          as: "address",
+          attributes: {
+            exclude: [
+              "order_id",
+              "customer_id",
+              "CustomerId",
+              "OrderId",
+              "company",
+              "longitude",
+              "latitude",
+              "country_code",
+              "province_code",
             ],
           },
         },
-        include: [
-          {
-            model: Chanel,
-            as: "chanel",
-            attributes: ["id", "name"],
+        {
+          model: OrderItem,
+          as: "items",
+          attributes: {
+            exclude: ["OrderId", "createdAt", "updatedAt"],
           },
-          {
-            model: User,
-            as: "user",
-            attributes: {
-              exclude: [
-                "password",
-                "status",
-                "settings",
-                "createdAt",
-                "updatedAt",
-              ],
-            },
-          },
-          {
-            model: Customer,
-            as: "customer",
-          },
-          {
-            model: Payments,
-            as: "payments",
-            attributes: {
-              exclude: ["order_id", "updatedAt"],
-            },
-          },
-          {
-            model: Address,
-            as: "address",
-            attributes: {
-              exclude: [
-                "order_id",
-                "customer_id",
-                "CustomerId",
-                "OrderId",
-                "company",
-                "longitude",
-                "latitude",
-                "country_code",
-                "province_code",
-              ],
-            },
-          },
-          {
-            model: OrderItem,
-            as: "items",
-            attributes: {
-              exclude: ["OrderId", "createdAt", "updatedAt"],
-            },
-          },
-          {
-            model: Delivery,
-            as: "delivery",
-            attributes: {
-              exclude: ["slip_link", "createdAt", "updatedAt", "order_id"],
-            },
-          },
-          {
-            model: DeliveryServiceAccounts,
-            as: "courier",
-            include: {
-              model: Tokens,
-              as: "tokens",
-              attributes: ["token", "expiry", "type"],
-            },
-            attributes: {
-              exclude: ["createdAt", "updatedAt", "order_id"],
-            },
-          },
-        ],
+        },
+      ],
+    });
+  }
+
+  async updateOrderAfterBooking(bookingResponse, order, deliveryAccount) {
+    const { cn, slip, isSuccess, error, response } = bookingResponse || {};
+    console.log(bookingResponse, "bookingResponse");
+    if (isSuccess) {
+      let delivery = await Delivery.findOne({
+        where: { order_id: order.id },
       });
-    } catch (error) {
-      console.log(error);
-      throw error;
+      console.log(delivery?.get(), "delivery found for order");
+      if (delivery) {
+        await delivery.update({
+          courier: deliveryAccount.service,
+          account_id: deliveryAccount.id,
+          cn,
+          slip_link: slip,
+          status: "Booked",
+        });
+      } else {
+        delivery = await Delivery.create({
+          courier: deliveryAccount.service,
+          account_id: deliveryAccount.id,
+          cn,
+          slip_link: slip,
+          status: "Booked",
+          order_id: order.id,
+        });
+      }
+      await order.update({ status: "Booked" });
+      await order.createHistory({
+        user_id: req.user.id,
+        event: `order booked with ${deliveryAccount?.service}, tracking number: ${cn}, brand no: ${order?.brand?.shipment_series}`,
+      });
+      await Brand.update(
+        { shipment_series: order.brand.shipment_series + 1 },
+        {
+          where: {
+            id: order.brand.id,
+          },
+        }
+      );
+      return delivery;
     }
+    return null;
   }
 
   async addDuplicateOrder(order) {
@@ -484,4 +477,5 @@ class OrderService {
   }
 }
 
-export const _orderService = new OrderService();
+const _orderService = new OrderService();
+export default _orderService;

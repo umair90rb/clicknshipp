@@ -28,20 +28,21 @@ export default function IncentiveReport() {
 
   const renderToolbar = () => <GridToolbarWithHeading heading="Incentive Report" />;
 
+  console.log(data);
+
   if (data && data.length) {
     const { name, quantity, ...restColumns } = data[0];
     const columnArray = Object.keys(restColumns);
-    for (let index = 0; index < columnArray.length; index++) {
-      const k = columnArray[index];
-      if (/confirmed|delivered/g.test(k)) {
+    for (let k of columnArray) {
+      if (!/confirmed|delivered/g.test(k)) {
         continue;
       }
-      const confirmKey = `${k}_confirmed`;
+      const confirmKey = `${k}`;
       // const deliverKey = `${k}_delivered`;
       withAgentColumns.push(
         {
           field: confirmKey,
-          headerName: `${toSentence(k.split('_').join(' '))} Confirmed`,
+          headerName: `${toSentence(k.split('_').join(' '))}`,
           flex: 0.5,
           valueGetter: (params) => {
             if (params.row.id === 'TOTAL') {
@@ -66,6 +67,8 @@ export default function IncentiveReport() {
       // columnGroupingModel.push({ groupId: k.toUpperCase(), children: [{ field: confirmKey }, { field: deliverKey }] });
     }
   }
+
+  console.log(withAgentColumns);
 
   return (
     <div style={{ width: '100%' }}>

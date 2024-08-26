@@ -3,7 +3,7 @@ const { Op } = require("sequelize");
 import model from "../models";
 import logger from "../middleware/logger";
 import { getEndOfDay, getStartOfDay } from "../helpers/pgDateFormat";
-import BookingService from "../services/BookingService";
+import bookingService from "../services/BookingService";
 const { Delivery, DeliveryServiceAccounts, Tokens } = model;
 
 function getFormattedTimestampFromYesterday() {
@@ -19,8 +19,6 @@ const yesterdayEndOfDay = getEndOfDay(yesterday);
 const every5Sec = "*/5 * * * * *";
 const every20Min = " */20 * * * *";
 const everyMorningAt8Am = "0 8 * * *";
-
-const bookingServices = new BookingService();
 
 schedule(everyMorningAt8Am, async () => {
   try {
@@ -55,7 +53,7 @@ schedule(everyMorningAt8Am, async () => {
     const track = (deliveryToTrack) => {
       return new Promise(async (resolve, reject) => {
         try {
-          const courierService = bookingServices.getCourierService(
+          const courierService = bookingService.getCourierService(
             deliveryToTrack.courier
           );
           const { isSuccess, history, remarks } =
