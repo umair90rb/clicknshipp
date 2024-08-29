@@ -164,12 +164,21 @@ const columns = (
     sortable: false,
     editable: false,
     type: 'string',
+    valueFormatter: (params) => {
+      console.log(params);
+      const payments = params.value;
+      let paymentsStr = '';
+      if (payments && payments.length > 0) {
+        paymentsStr = payments.reduce(
+          (pv, cv) => `${cv.label || ''} Rs.${cv.amount} TID:${cv.tid} ${cv.note || ''} ${pv ? ',' + pv : ''}`,
+          ''
+        );
+      }
+      return paymentsStr;
+    },
     renderCell: (params) => {
       const payments = params.row.payments;
-      let paymentsStr = 'None';
-      // if (payments && payments.length === 1) {
-      //   paymentsStr = `${payments[0].amount}-${payments[0].type}-${payments[0].note}-${payments[0].tid}`;
-      // }
+      let paymentsStr = '';
       if (payments && payments.length > 0) {
         paymentsStr = payments.reduce(
           (pv, cv) => `${cv.label || ''} Rs.${cv.amount} TID:${cv.tid} ${cv.note || ''} ${pv ? ',' + pv : ''}`,
@@ -599,12 +608,12 @@ const OrderTable = memo(() => {
           Last Day Order
         </Button>
 
-        <DateRangePicker
-        // startPeriod={startPeriod}
-        // endPeriod={endPeriod}
-        // onStartDateSelect={(date) => dispatch(setReportPeriod({ period: 'startPeriod', value: date }))}
-        // onEndDateSelect={(date) => dispatch(setReportPeriod({ period: 'endPeriod', value: date }))}
-        />
+        {/* <DateRangePicker
+        startPeriod={startPeriod}
+        endPeriod={endPeriod}
+        onStartDateSelect={(date) => dispatch(setReportPeriod({ period: 'startPeriod', value: date }))}
+        onEndDateSelect={(date) => dispatch(setReportPeriod({ period: 'endPeriod', value: date }))}
+        /> */}
 
         <GridDropdownFilter
           multiple
