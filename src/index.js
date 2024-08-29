@@ -10,8 +10,6 @@ import "dotenv/config";
 import "./workers/bookingWorker";
 import "./jobs/assignOrders";
 // import "./jobs/trackOrders";
-import "./config/sentry";
-import * as Sentry from "@sentry/node";
 import { dirname } from "node:path";
 import { Server } from "socket.io";
 import DeliveryController from "./controllers/DeliveryController";
@@ -24,7 +22,6 @@ app.use(express.static(path.join(rootDir, "../client", "build")));
 
 route(app);
 
-Sentry.setupExpressErrorHandler(app);
 app.use(logErrors);
 app.use(clientErrorHandler);
 app.use(errorHandler);
