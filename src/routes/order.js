@@ -9,7 +9,7 @@ import {
   orderAssignSchema,
   orderBookSchema,
   orderStatusUpdateSchema,
-  orderAddItemSchema,
+  orderItemsAddUpdateSchema,
   orderPatchUpdateSchema,
   bulkOrderDeleteSchema,
   orderFilterSchema,
@@ -116,8 +116,16 @@ router.post(
   "/add-items",
   Auth,
   can(PERMISSIONS.PERMISSION_UPDATE_ORDER),
-  schemaValidator(orderAddItemSchema),
+  schemaValidator(orderItemsAddUpdateSchema),
   OrderController.addItemInOrder
+);
+
+router.post(
+  "/update-items",
+  Auth,
+  can(PERMISSIONS.PERMISSION_UPDATE_ORDER),
+  schemaValidator(orderItemsAddUpdateSchema),
+  OrderController.updatedItems
 );
 
 router.put(

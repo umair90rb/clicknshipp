@@ -19,3 +19,6 @@ npm-debug.log*
 /client/.env
 /client/yarn.lock
 /client/package-lock.json
+
+# Sentry Config File
+.sentryclirc

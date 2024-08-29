@@ -130,7 +130,7 @@ class OrderService {
             model: OrderItem,
             as: "items",
             attributes: {
-              exclude: ["OrderId", "createdAt", "updatedAt"],
+              include: ["id", "name", "price", "quantity"],
             },
           },
           {

@@ -1,6 +1,11 @@
-export default (phoneNumber) => {
-  if (!phoneNumber) return;
+import logger from "../middleware/logger";
+
+export default (phoneNumber = "") => {
+  logger.log("info", { phoneNumber });
+  if (!phoneNumber) {
+    return phoneNumber;
+  }
   let phone = `${phoneNumber.replace(/\s/g, "")}`;
   let [number] = phone.match(/(3[0-9]*)/g);
-  return number || phoneNumber;
+  return number;
 };

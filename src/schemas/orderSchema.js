@@ -50,7 +50,7 @@ export const orderStatusUpdateSchema = Joi.object({
   remarks: Joi.string().allow(""),
 });
 
-export const orderAddItemSchema = Joi.object({
+export const orderItemsAddUpdateSchema = Joi.object({
   orderId: Joi.number().required(),
   items: Joi.array()
     .items({

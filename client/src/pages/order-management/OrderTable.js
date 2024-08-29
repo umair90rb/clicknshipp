@@ -61,7 +61,17 @@ import {
   deliveryServiceAccountsListSelector
 } from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSelector';
 import useAccess from 'hooks/useAccess';
-const columns = (apiRef, rowModesModel, couriersList, handleViewClick, handleSaveClick, handleCancelClick, handleAddItemClick) => [
+import PaymentsModal from './PaymentsModal';
+const columns = (
+  apiRef,
+  rowModesModel,
+  couriersList,
+  handleViewClick,
+  handleSaveClick,
+  handleCancelClick,
+  handleAddItemClick,
+  handleAddPaymentClick
+) => [
   {
     field: 'id',
     headerName: 'ID',
@@ -102,24 +112,6 @@ const columns = (apiRef, rowModesModel, couriersList, handleViewClick, handleSav
     valueGetter: (param) => param.row.address?.city || '',
     renderEditCell: (params) => <GridSearchSelect multiple={true} {...params} />
   },
-  // {
-  //   field: 'first_name',
-  //   headerName: 'First Name',
-  //   flex: 0.5,
-  //   sortable: false,
-  //   editable: true,
-  //   type: 'string',
-  //   valueGetter: (param) => param.row.customer?.first_name || ''
-  // },
-  // {
-  //   field: 'last_name',
-  //   headerName: 'Last Name',
-  //   flex: 0.5,
-  //   sortable: false,
-  //   editable: true,
-  //   type: 'string',
-  //   valueGetter: (param) => param.row.customer?.last_name || ''
-  // },
   {
     field: 'phone',
     headerName: 'Phone',
@@ -134,37 +126,29 @@ const columns = (apiRef, rowModesModel, couriersList, handleViewClick, handleSav
     flex: 1,
     sortable: false,
     editable: false,
-    valueGetter: (param) => {
-      const items = param.row.items;
-      if (!items || !items.length) {
-        return 'None';
-      }
+    type: 'string',
+    renderCell: (params) => {
+      const items = params.row.items;
+      let itemsStr = 'None';
       if (items && items.length === 1) {
-        return `${items[0].name}/${items[0].quantity}`;
+        itemsStr = `${items[0].name}/${items[0].quantity}`;
       }
-      return items.reduce((pv, cv) => `${cv.name}/${cv.quantity}, ${pv}`, '');
-    },
-    type: 'string'
-  },
-  {
-    field: 'addItem',
-    headerName: 'Add Item',
-    sortable: false,
-    flex: 0.2,
-    type: 'actions',
-    cellClassName: 'actions',
-    getActions: (params) => {
-      const id = params.id;
-      return [
-        <GridActionsCellItem
-          key={id}
-          icon={<AddIcon />}
-          label="Add item"
-          className="textPrimary"
-          onClick={handleAddItemClick(id)}
-          color="inherit"
-        />
-      ];
+      if (items && items.length > 1) {
+        itemsStr = items.reduce((pv, cv) => `${cv.name}/${cv.quantity}, ${pv}`, '');
+      }
+      return (
+        <div>
+          <span style={{ fontSize: 18 }}>{itemsStr}</span>
+          <GridActionsCellItem
+            key={params.id}
+            icon={<EditIcon />}
+            label="Update item"
+            className="textPrimary"
+            onClick={handleAddItemClick(params.id, items)}
+            color="inherit"
+          />
+        </div>
+      );
     }
   },
   {
@@ -178,17 +162,30 @@ const columns = (apiRef, rowModesModel, couriersList, handleViewClick, handleSav
     flex: 1,
     sortable: false,
     editable: false,
-    valueGetter: (param) => {
-      const payments = param.row.payments;
-      if (!payments || !payments.length) {
-        return 'None';
-      }
+    type: 'string',
+    renderCell: (params) => {
+      const payments = params.row.payments;
+      let paymentsStr = 'None';
       if (payments && payments.length === 1) {
-        return `${payments[0].amount}/${payments[0].type}/${payments[0].note}`;
+        paymentsStr = `${payments[0].amount}/${payments[0].type}/${payments[0].note}`;
       }
-      return payments.reduce((pv, cv) => `${cv.amount}/${cv.type}/${cv.note}, ${pv}`, '');
-    },
-    type: 'string'
+      if (payments && payments.length > 1) {
+        paymentsStr = payments.reduce((pv, cv) => `${cv.amount}/${cv.type}/${cv.note}, ${pv}`, '');
+      }
+      return (
+        <div>
+          <span style={{ fontSize: 18 }}>{paymentsStr}</span>
+          <GridActionsCellItem
+            key={params.id}
+            icon={<EditIcon />}
+            label="Update payment"
+            className="textPrimary"
+            onClick={handleAddPaymentClick(params.id, payments)}
+            color="inherit"
+          />
+        </div>
+      );
+    }
   },
   {
     field: 'total_discounts',
@@ -355,8 +352,7 @@ const OrderTable = memo(() => {
     total_discounts: false,
     receivedAt: false,
     createdAt: false,
-    assignedAt: false,
-    payments: false
+    assignedAt: false
   });
 
   const [showAssignSelectedModal, setShowAssignSelectedModal] = useState(false);
@@ -369,13 +365,31 @@ const OrderTable = memo(() => {
 
   const [addItemInOrderVisible, setAddItemInOrderVisible] = useState(false);
   const [addItemInOrderOrderId, setAddItemInOrderOrderId] = useState(null);
-  const handleAddItemClick = (orderId) => () => {
+  const [addItemInOrderItems, setAddItemInOrderItems] = useState([]);
+  const handleAddItemClick = (orderId, items) => () => {
     setAddItemInOrderOrderId(orderId);
+    setAddItemInOrderItems(items);
     setAddItemInOrderVisible(true);
   };
   const hideAddItemInOrderVisible = () => {
     setAddItemInOrderOrderId(null);
+    setAddItemInOrderItems([]);
     setAddItemInOrderVisible(false);
+  };
+
+  const [addPaymentVisible, setAddPaymentVisible] = useState(false);
+  const [addPaymentOrderId, setAddPaymentOrderId] = useState(null);
+  const [addPaymentExistingPayments, setAddPaymentItems] = useState([]);
+
+  const handleAddPaymentClick = (orderId, payments) => () => {
+    setAddPaymentOrderId(orderId);
+    setAddPaymentItems(payments);
+    setAddPaymentVisible(true);
+  };
+  const hideAddPaymentVisible = () => {
+    setAddPaymentOrderId(null);
+    setAddPaymentItems([]);
+    setAddPaymentVisible(false);
   };
 
   const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false);
@@ -586,7 +600,7 @@ const OrderTable = memo(() => {
         <GridDropdownFilter
           multiple
           label="filter by status"
-          options={ORDER_STATUSES}
+          options={[...ORDER_STATUSES, 'Booked']}
           value={filters.find((filter) => filter.column === 'status' && filter.op !== 'Text not in')?.value || []}
           onChange={(e) => {
             if (e.target.value.length === 0) {
@@ -632,6 +646,9 @@ const OrderTable = memo(() => {
         sx={{
           '& .MuiDataGrid-cellContent': {
             fontSize: 18
+          },
+          '& .MuiDataGrid-cell': {
+            borderColor: 'black'
           }
         }}
         slots={{
@@ -643,6 +660,8 @@ const OrderTable = memo(() => {
             sortModel
           }
         }}
+        disableRowSelectionOnClick
+        showCellVerticalBorder
         loading={listIsLoading}
         checkboxSelection={hasPermission(PERMISSIONS.PERMISSION_CREATE_BULK_ORDER)}
         rowSelectionModel={rowSelectionModel}
@@ -673,11 +692,23 @@ const OrderTable = memo(() => {
           handleViewClick,
           handleSaveClick,
           handleCancelClick,
-          handleAddItemClick
+          handleAddItemClick,
+          handleAddPaymentClick
         )}
       />
-      <GridAddItemModal orderId={addItemInOrderOrderId} visible={addItemInOrderVisible} onClose={hideAddItemInOrderVisible} />
+      <GridAddItemModal
+        orderId={addItemInOrderOrderId}
+        items={addItemInOrderItems}
+        visible={addItemInOrderVisible}
+        onClose={hideAddItemInOrderVisible}
+      />
       <AssignSelectedOrderModal visible={showAssignSelectedModal} onClose={hideAssignSelectedModal} selectedRows={rowSelectionModel} />
+      <PaymentsModal
+        visible={addPaymentVisible}
+        onClose={hideAddPaymentVisible}
+        orderId={addPaymentOrderId}
+        payments={addPaymentExistingPayments}
+      />
       {/* <FilterModal
         visible={showFilterModal}
         onClose={hideFilterModal}

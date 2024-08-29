@@ -7,7 +7,7 @@ import * as Yup from 'yup';
 import { itemFetchStatusSelector, itemIsLoadingSelector, itemItemsSelector } from 'store/slices/item/itemSelector';
 import fetchStatus from 'constants/fetchStatuses';
 import { fetchAllItem } from 'store/slices/item/fetchItem';
-import { fetchAddItemInOrder } from 'store/slices/order/fetchOrder';
+import { fetchUpdateItemsInOrder } from 'store/slices/order/fetchOrder';
 import { setMessage } from 'store/slices/util/utilSlice';
 import { setOrder } from 'store/slices/order/orderSlice';
 
@@ -16,13 +16,13 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: '50%',
+  width: '75%',
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 4
 };
 
-export default function GridAddItemModal({ visible, onClose, orderId }) {
+export default function GridAddItemModal({ visible, onClose, orderId, items: orderItems }) {
   const dispatch = useDispatch();
   const items = useSelector(itemItemsSelector);
   const itemsIsLoading = useSelector(itemIsLoadingSelector);
@@ -33,17 +33,18 @@ export default function GridAddItemModal({ visible, onClose, orderId }) {
     if (visible && itemsFetchStatus !== fetchStatus.SUCCESS) {
       dispatch(fetchAllItem());
     }
+    console.log(orderItems);
   }, [visible]);
 
   const handleAddItem = async (values, actions) => {
     setAddingItem(true);
-    const { type, payload } = await dispatch(fetchAddItemInOrder({ body: values }));
-    if (type === 'order/addItem/fetch/fulfilled') {
-      dispatch(setMessage({ type: 'success', message: payload.data.message || 'Success! Item added in order' }));
-      dispatch(setOrder({ order: payload.data.order }));
+    const { type, payload } = await dispatch(fetchUpdateItemsInOrder({ body: values }));
+    if (type === 'order/updateItems/fetch/fulfilled') {
+      dispatch(setMessage({ type: 'success', message: payload?.data?.message || 'Success! Item updated in order' }));
+      dispatch(setOrder({ order: payload?.data?.order }));
       onClose();
     } else {
-      dispatch(setMessage({ type: 'error', message: payload.data.message || 'Error! Item can not added in order' }));
+      dispatch(setMessage({ type: 'error', message: payload?.data?.message || 'Error! Item can not updated in order' }));
     }
     setAddingItem(false);
   };
@@ -53,7 +54,7 @@ export default function GridAddItemModal({ visible, onClose, orderId }) {
       <Box sx={style}>
         <Formik
           initialValues={{
-            items: [{ id: '', name: '', quantity: 1 }],
+            items: [...orderItems],
             orderId
           }}
           validationSchema={Yup.object().shape({
@@ -159,9 +160,39 @@ export default function GridAddItemModal({ visible, onClose, orderId }) {
                         />
                       </Grid>
 
+                      {/* <Grid item xs={2}>
+                        <FormControl fullWidth margin="normal">
+                          <TextField value={item.price} type="number" variant="outlined" />
+                        </FormControl>
+                      </Grid> */}
+
                       <Grid item xs={2}>
                         <FormControl fullWidth margin="normal">
-                          <TextField disabled value={item.price} type="number" variant="outlined" />
+                          <TextField
+                            error={
+                              addItemForm.touched.items &&
+                              addItemForm.touched.items[index] &&
+                              addItemForm.touched.items[index].price &&
+                              !!addItemForm.errors.items &&
+                              !!addItemForm.errors.items[index] &&
+                              !!addItemForm.errors.items[index].price
+                            }
+                            value={item.price}
+                            onChange={addItemForm.handleChange}
+                            type="number"
+                            id={`items.${index}.price`}
+                            name={`items.${index}.price`}
+                            label=""
+                            variant="outlined"
+                          />
+                          <ErrorMessage
+                            name={`items.${index}.price`}
+                            render={(msg) => (
+                              <FormHelperText sx={{ m: 0 }} error id="helper-text-price">
+                                {msg}
+                              </FormHelperText>
+                            )}
+                          />
                         </FormControl>
                       </Grid>
 
@@ -222,7 +253,7 @@ export default function GridAddItemModal({ visible, onClose, orderId }) {
                     sx={{ flexGrow: 1 }}
                     variant="contained"
                   >
-                    Add item to order
+                    Add/Update items in order
                   </Button>
                 </Grid>
               </Grid>

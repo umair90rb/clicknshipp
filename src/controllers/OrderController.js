@@ -83,7 +83,7 @@ export default {
           {
             model: OrderItem,
             as: "items",
-            attributes: ["id", "name", "quantity"],
+            attributes: ["id", "name", "quantity", "price"],
           },
           {
             model: Chanel,
@@ -253,7 +253,13 @@ export default {
         "phone" in customer_data &&
         customer_data.phone !== null
       ) {
-        customer_data.phone = formatPhoneNumber(customer_data.phone);
+        logger.log("info", {
+          phone: customer_data.phone,
+          address_phone: address_data.phone,
+        });
+        customer_data.phone = formatPhoneNumber(
+          customer_data.phone || address_data.phone
+        );
       }
       const order_items_data = body["line_items"].map((item) =>
         extract(item, item_data_keys)
@@ -264,13 +270,6 @@ export default {
         brand_id: chanel?.brand_id,
         data: JSON.stringify(body),
       });
-      if (
-        customer_data &&
-        "phone" in customer_data &&
-        (customer_data.phone == null || customer_data.phone == "")
-      ) {
-        customer_data.phone = formatPhoneNumber(address_data.phone);
-      }
       let customer;
       if (
         customer_data &&
@@ -298,7 +297,6 @@ export default {
       return sendSuccessResponse(res, 201, {}, "Order created successfully");
     } catch (error) {
       logger.error(error.message, {
-        data: req.body,
         stack: error.stack,
       });
       return sendErrorResponse(
@@ -700,6 +698,123 @@ export default {
           });
         })
       );
+      const order = await _orderService.loadFullOrder(orderId);
+      return sendSuccessResponse(
+        res,
+        200,
+        {
+          order,
+        },
+        "Operation successful."
+      );
+    } catch (error) {
+      console.error(error);
+      return sendErrorResponse(
+        res,
+        500,
+        "Could not perform operation at this time, kindly try again later.",
+        error
+      );
+    }
+  },
+
+  async updatedItems(req, res) {
+    try {
+      const { orderId, items } = req.body;
+      let total_price = items.reduce(
+        (total, item) => total + parseInt(item.price),
+        0
+      );
+      const payments = Payments.findAll({ where: { order_id: orderId } });
+      if (payments && payments.length) {
+        let pendingPayments = 0,
+          receivedPayments = 0;
+        payments.forEach(({ type, amount }) => {
+          switch (type) {
+            case "received":
+              receivedPayments += amount;
+              break;
+            case "pending":
+              pendingPayments += amount;
+              break;
+          }
+        });
+        total_price += pendingPayments - receivedPayments;
+      }
+      await sequelize.transaction(async (t) => {
+        await OrderItem.destroy({
+          where: { order_id: orderId },
+          transaction: t,
+        });
+        await OrderItem.bulkCreate(
+          items.map(({ name, quantity, price, id }) => ({
+            name,
+            quantity,
+            price,
+            product_id: id,
+            order_id: orderId,
+          })),
+          { transaction: t }
+        );
+        await Order.update(
+          { total_price, subtotal_price: total_price },
+          {
+            where: { id: orderId },
+            transaction: t,
+          }
+        );
+      });
+      const order = await _orderService.loadFullOrder(orderId);
+      return sendSuccessResponse(
+        res,
+        200,
+        {
+          order,
+        },
+        "Operation successful."
+      );
+    } catch (error) {
+      console.error(error);
+      return sendErrorResponse(
+        res,
+        500,
+        "Could not perform operation at this time, kindly try again later.",
+        error
+      );
+    }
+  },
+
+  async updatedPayment(req, res) {
+    try {
+      const { orderId, payments } = req.body;
+      let pendingPayments = 0,
+        receivedPayments = 0;
+      if (payments && payments.length) {
+        payments.forEach(({ type, amount }) => {
+          switch (type) {
+            case "received":
+              receivedPayments += amount;
+              break;
+            case "pending":
+              pendingPayments += amount;
+              break;
+          }
+        });
+        await sequelize.transaction(async (t) => {
+          await Payments.destroy({
+            where: { order_id: orderId },
+            transaction: t,
+          });
+          await Payments.bulkCreate(
+            payments.map((payment) => ({ ...payment, order_id: order.id })),
+            { transaction: t }
+          );
+          await Order.decrement(["total_price", "subtotal_price"], {
+            by: receivedPayments,
+            where: { id: orderId },
+          });
+        });
+      }
       const order = await _orderService.loadFullOrder(orderId);
       return sendSuccessResponse(
         res,
