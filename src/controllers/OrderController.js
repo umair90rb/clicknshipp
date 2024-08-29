@@ -247,20 +247,12 @@ export default {
       }
       const order_data = extract(body, order_data_keys);
       const address_data = extract(body["shipping_address"], address_data_keys);
-      const customer_data = extract(body["customer"], customer_data_keys);
-      if (
-        customer_data &&
-        "phone" in customer_data &&
-        customer_data.phone !== null
-      ) {
-        logger.log("error", {
-          phone: customer_data.phone,
-          address_phone: address_data.phone,
-        });
-        customer_data.phone = formatPhoneNumber(
-          !!customer_data.phone ? customer_data.phone : address_data.phone
-        );
-      }
+      let customer_data = extract(body["customer"], customer_data_keys);
+      customer_data.phone = formatPhoneNumber(
+        !!customer_data.phone ? customer_data.phone : address_data.phone
+      );
+      customer_data = { shopify_id: customer_data.id, ...customer_data };
+      delete customer_data.id;
       const order_items_data = body["line_items"].map((item) =>
         extract(item, item_data_keys)
       );
@@ -270,22 +262,12 @@ export default {
         brand_id: chanel?.brand_id,
         data: JSON.stringify(body),
       });
-      let customer;
-      if (
-        customer_data &&
-        "phone" in customer_data &&
-        customer_data.phone !== null
-      ) {
-        customer = await Customer.findOne({
-          where: { phone: customer_data?.phone },
-          raw: true,
-        });
-      }
-      if (!customer) {
-        const cus = { shopify_id: customer_data.id, ...customer_data };
-        delete cus.id;
-        customer = await order.createCustomer(cus);
-      }
+
+      let [customer, created] = await Customer.findOrCreate({
+        where: { phone: customer_data?.phone },
+        defaults: customer_data,
+        raw: true,
+      });
       await order.setCustomer(customer.id);
       const address = await order.createAddress(address_data);
       await address.setCustomer(customer.id);
