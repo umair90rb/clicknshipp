@@ -258,7 +258,7 @@ export default {
           address_phone: address_data.phone,
         });
         customer_data.phone = formatPhoneNumber(
-          !customer_data.phone ? address_data.phone : customer_data.phone
+          !!customer_data.phone ? customer_data.phone : address_data.phone
         );
       }
       const order_items_data = body["line_items"].map((item) =>
