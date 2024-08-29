@@ -1,7 +1,7 @@
 import logger from "../middleware/logger";
 
 export default (phoneNumber = "") => {
-  logger.log("info", { phoneNumber });
+  logger.log("error", { phoneNumber });
   if (!phoneNumber) {
     return phoneNumber;
   }

@@ -253,12 +253,12 @@ export default {
         "phone" in customer_data &&
         customer_data.phone !== null
       ) {
-        logger.log("info", {
+        logger.log("error", {
           phone: customer_data.phone,
           address_phone: address_data.phone,
         });
         customer_data.phone = formatPhoneNumber(
-          customer_data.phone || address_data.phone
+          !customer_data.phone ? address_data.phone : customer_data.phone
         );
       }
       const order_items_data = body["line_items"].map((item) =>
