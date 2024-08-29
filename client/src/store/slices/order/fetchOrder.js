@@ -13,8 +13,8 @@ const fetchUpdateStatusOrder = createAsyncThunk('order/status/fetch', ({ body },
   orderService.fetchUpdateStatusOrder(body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
-const fetchAddItemInOrder = createAsyncThunk('order/addItem/fetch', ({ body }, { rejectWithValue }) =>
-  orderService.fetchAddItemInOrder(body).catch((error) => rejectWithValue(error.response.data || error.message))
+const fetchAddPaymentInOrder = createAsyncThunk('order/addPayment/fetch', ({ body }, { rejectWithValue }) =>
+  orderService.fetchAddPaymentInOrder(body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
 const fetchUpdateItemsInOrder = createAsyncThunk('order/updateItems/fetch', ({ body }, { rejectWithValue }) =>
@@ -73,7 +73,7 @@ export {
   fetchAllOrder,
   fetchOrder,
   fetchUpdateStatusOrder,
-  fetchAddItemInOrder,
+  fetchAddPaymentInOrder,
   fetchUpdateItemsInOrder,
   fetchBookOrder,
   fetchBookAllOrder,

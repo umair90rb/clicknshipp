@@ -50,6 +50,16 @@ export const orderStatusUpdateSchema = Joi.object({
   remarks: Joi.string().allow(""),
 });
 
+export const orderAddPaymentSchema = Joi.object({
+  orderId: Joi.number().required(),
+  type: Joi.string().required(),
+  label: Joi.string().required(),
+  bank: Joi.string().required(),
+  tid: Joi.string().required(),
+  amount: Joi.number().required(),
+  note: Joi.string().allow(""),
+});
+
 export const orderItemsAddUpdateSchema = Joi.object({
   orderId: Joi.number().required(),
   items: Joi.array()

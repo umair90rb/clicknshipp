@@ -10,6 +10,7 @@ import {
   orderBookSchema,
   orderStatusUpdateSchema,
   orderItemsAddUpdateSchema,
+  orderAddPaymentSchema,
   orderPatchUpdateSchema,
   bulkOrderDeleteSchema,
   orderFilterSchema,
@@ -113,11 +114,11 @@ router.post(
 );
 
 router.post(
-  "/add-items",
+  "/add-payment",
   Auth,
   can(PERMISSIONS.PERMISSION_UPDATE_ORDER),
-  schemaValidator(orderItemsAddUpdateSchema),
-  OrderController.addItemInOrder
+  schemaValidator(orderAddPaymentSchema),
+  OrderController.addPaymentInOrder
 );
 
 router.post(

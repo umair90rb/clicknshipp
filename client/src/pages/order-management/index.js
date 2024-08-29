@@ -2,7 +2,6 @@ import React, { memo, useState } from 'react';
 import { Button, Grid, Typography } from '@mui/material';
 import MainCard from 'components/MainCard';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import StartIcon from '@mui/icons-material/Start';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import SyncIcon from '@mui/icons-material/Sync';
@@ -16,7 +15,6 @@ import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 import BulkUploadModal from './BulkUploadModal';
 import AssignOrderModal from './AssignOrderModal';
-import BulkBookingModal from './BulkBookingModal';
 
 const OrderManagement = memo(() => {
   const navigate = useNavigate();
@@ -36,10 +34,6 @@ const OrderManagement = memo(() => {
   const showAssignModal = () => setAssignModalVisible(true);
   const hideAssignModal = () => setAssignModalVisible(false);
 
-  const [bulkBookingModalVisible, setBulkBookingModalVisible] = useState(false);
-  const showBulkBookingModal = () => setBulkBookingModalVisible(true);
-  const hideBulkBookingModal = () => setBulkBookingModalVisible(false);
-
   return (
     <>
       <Grid item xs={12} md={7} lg={8}>
@@ -49,13 +43,6 @@ const OrderManagement = memo(() => {
           </Grid>
           <Grid item>
             <Grid container spacing={1}>
-              {hasPermission(PERMISSIONS.PERMISSION_CREATE_BULK_ORDER) && (
-                <Grid item>
-                  <Button component="label" variant="contained" onClick={showBulkBookingModal} startIcon={<LocalShippingIcon />}>
-                    Book Today&apos;s All Confirmed Orders
-                  </Button>
-                </Grid>
-              )}
               {hasPermission(PERMISSIONS.PERMISSION_CREATE_BULK_ORDER) && (
                 <Grid item>
                   <Button component="label" variant="contained" onClick={showAssignModal} startIcon={<StartIcon />}>
@@ -102,7 +89,6 @@ const OrderManagement = memo(() => {
       </Grid>
       <BulkUploadModal visible={bulkOrderModalVisible} onClose={hideBulkOrderModal} />
       <AssignOrderModal visible={assignModalVisible} onClose={hideAssignModal} />
-      <BulkBookingModal visible={bulkBookingModalVisible} onClose={hideBulkBookingModal} />
     </>
   );
 });

@@ -9,7 +9,7 @@ class OrderService extends Ajax {
 
   fetchUpdateStatusOrder = (data) => this.post(`${this.pathname}/status`, data);
 
-  fetchAddItemInOrder = (data) => this.post(`${this.pathname}/add-items`, data);
+  fetchAddPaymentInOrder = (data) => this.post(`${this.pathname}/add-payment`, data);
 
   fetchUpdateItemsInOrder = (data) => this.post(`${this.pathname}/update-items`, data);
 

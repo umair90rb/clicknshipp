@@ -62,6 +62,7 @@ import {
 } from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSelector';
 import useAccess from 'hooks/useAccess';
 import PaymentsModal from './PaymentsModal';
+import DateRangePicker from 'components/DatePicker';
 const columns = (
   apiRef,
   rowModesModel,
@@ -166,21 +167,24 @@ const columns = (
     renderCell: (params) => {
       const payments = params.row.payments;
       let paymentsStr = 'None';
-      if (payments && payments.length === 1) {
-        paymentsStr = `${payments[0].amount}/${payments[0].type}/${payments[0].note}`;
-      }
-      if (payments && payments.length > 1) {
-        paymentsStr = payments.reduce((pv, cv) => `${cv.amount}/${cv.type}/${cv.note}, ${pv}`, '');
+      // if (payments && payments.length === 1) {
+      //   paymentsStr = `${payments[0].amount}-${payments[0].type}-${payments[0].note}-${payments[0].tid}`;
+      // }
+      if (payments && payments.length > 0) {
+        paymentsStr = payments.reduce(
+          (pv, cv) => `${cv.label || ''} Rs.${cv.amount} TID:${cv.tid} ${cv.note || ''} ${pv ? ',' + pv : ''}`,
+          ''
+        );
       }
       return (
         <div>
           <span style={{ fontSize: 18 }}>{paymentsStr}</span>
           <GridActionsCellItem
             key={params.id}
-            icon={<EditIcon />}
+            icon={<AddIcon />}
             label="Update payment"
             className="textPrimary"
-            onClick={handleAddPaymentClick(params.id, payments)}
+            onClick={handleAddPaymentClick(params.id)}
             color="inherit"
           />
         </div>
@@ -379,16 +383,13 @@ const OrderTable = memo(() => {
 
   const [addPaymentVisible, setAddPaymentVisible] = useState(false);
   const [addPaymentOrderId, setAddPaymentOrderId] = useState(null);
-  const [addPaymentExistingPayments, setAddPaymentItems] = useState([]);
 
-  const handleAddPaymentClick = (orderId, payments) => () => {
+  const handleAddPaymentClick = (orderId) => () => {
     setAddPaymentOrderId(orderId);
-    setAddPaymentItems(payments);
     setAddPaymentVisible(true);
   };
   const hideAddPaymentVisible = () => {
     setAddPaymentOrderId(null);
-    setAddPaymentItems([]);
     setAddPaymentVisible(false);
   };
 
@@ -529,7 +530,7 @@ const OrderTable = memo(() => {
           </Button>
         )}
 
-        {rowSelectionModel.length > 0 && (
+        {userPermissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) && rowSelectionModel.length > 0 && (
           <Button onClick={displayShowAssignSelectedModal} size="small" startIcon={<AssignmentIndIcon />}>
             Assign
           </Button>
@@ -597,6 +598,14 @@ const OrderTable = memo(() => {
         >
           Last Day Order
         </Button>
+
+        <DateRangePicker
+        // startPeriod={startPeriod}
+        // endPeriod={endPeriod}
+        // onStartDateSelect={(date) => dispatch(setReportPeriod({ period: 'startPeriod', value: date }))}
+        // onEndDateSelect={(date) => dispatch(setReportPeriod({ period: 'endPeriod', value: date }))}
+        />
+
         <GridDropdownFilter
           multiple
           label="filter by status"
@@ -703,12 +712,7 @@ const OrderTable = memo(() => {
         onClose={hideAddItemInOrderVisible}
       />
       <AssignSelectedOrderModal visible={showAssignSelectedModal} onClose={hideAssignSelectedModal} selectedRows={rowSelectionModel} />
-      <PaymentsModal
-        visible={addPaymentVisible}
-        onClose={hideAddPaymentVisible}
-        orderId={addPaymentOrderId}
-        payments={addPaymentExistingPayments}
-      />
+      <PaymentsModal visible={addPaymentVisible} onClose={hideAddPaymentVisible} orderId={addPaymentOrderId} />
       {/* <FilterModal
         visible={showFilterModal}
         onClose={hideFilterModal}

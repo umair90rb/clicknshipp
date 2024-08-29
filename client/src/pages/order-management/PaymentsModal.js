@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Modal, Box, Button, MenuItem, Select, FormHelperText, Grid, ListItemText, InputLabel, OutlinedInput, Stack } from '@mui/material';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import AnimateButton from 'components/@extended/AnimateButton';
 import { useDispatch } from '../../../node_modules/react-redux/es/exports';
+import { fetchAddPaymentInOrder } from 'store/slices/order/fetchOrder';
+import { setOrder } from 'store/slices/order/orderSlice';
+import { setMessage } from 'store/slices/util/utilSlice';
 
 const PAYMENT_TYPES = [
   { id: 0, label: 'Receive Advanced Payment', type: 'received' },
-  { id: 1, label: 'Received Advanced Delivery Charges', type: 'received' },
-  { id: 2, label: 'Pending Delivery Charges', type: 'pending' }
+  { id: 1, label: 'Received Advanced Delivery Charges', type: 'received' }
 ];
 
 const style = {
@@ -22,24 +24,21 @@ const style = {
   p: 4
 };
 
-export default function PaymentsModal({ visible, onClose, orderId, payments }) {
+export default function PaymentsModal({ visible, onClose, orderId }) {
   const dispatch = useDispatch();
-  const [addingItem, setAddingPayment] = useState(false);
 
-  const handleAddItem = async (values, actions) => {
-    setAddingPayment(true);
-    const { type, payload } = await dispatch(fetchUpdateItemsInOrder({ body: values }));
-    if (type === 'order/updateItems/fetch/fulfilled') {
+  useEffect(() => {}, [visible]);
+
+  const handleSubmit = async (values, _actions) => {
+    const { type, payload } = await dispatch(fetchAddPaymentInOrder({ body: { orderId, ...values } }));
+    if (type === 'order/addPayment/fetch/fulfilled') {
       dispatch(setMessage({ type: 'success', message: payload?.data?.message || 'Success! Item updated in order' }));
       dispatch(setOrder({ order: payload?.data?.order }));
       onClose();
     } else {
       dispatch(setMessage({ type: 'error', message: payload?.data?.message || 'Error! Item can not updated in order' }));
     }
-    setAddingPayment(false);
   };
-
-  const handleSubmit = (values, actions) => {};
 
   return (
     <Modal open={visible} onClose={onClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
@@ -55,8 +54,8 @@ export default function PaymentsModal({ visible, onClose, orderId, payments }) {
           }}
           validationSchema={Yup.object().shape({
             type: Yup.string().required('Type is required'),
-            bank: Yup.string(),
-            tid: Yup.string(),
+            bank: Yup.string().required('Bank is required'),
+            tid: Yup.string().required('TID is required'),
             amount: Yup.number().required('Amount is required'),
             note: Yup.string('Note is required')
           })}

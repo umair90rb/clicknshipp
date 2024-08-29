@@ -599,7 +599,7 @@ export default {
           `This order is already confirmed, you can't set its status to ${status}`
         );
       }
-      const ud = {
+      let ud = {
         status,
         remarks: remarks || order.remarks,
         cancel_reason: reason || order.cancel_reason,
@@ -634,52 +634,34 @@ export default {
     }
   },
 
-  async addItemInOrder(req, res) {
+  async addPaymentInOrder(req, res) {
     try {
-      const { orderId, items } = req.body;
-      if (!orderId || (items && items.length < 1)) {
+      const { orderId, label, type, bank, tid, amount, note } = req.body;
+
+      if (!orderId) {
         return sendErrorResponse(res, 404, "No data found with this id.");
       }
-      await Promise.all(
-        items.map(async ({ id, name, quantity, price }) => {
-          const existed = await OrderItem.findOne({
-            where: { order_id: orderId, name: name },
-          });
-          if (existed) {
-            await OrderItem.update(
-              { quantity: existed.quantity + quantity },
-              {
-                where: {
-                  id: existed.id,
-                  order_id: orderId,
-                },
-              }
-            );
-            await OrderHistory.create({
-              order_id: orderId,
-              user_id: req.user.id,
-              event: "order item quantity increased!",
-            });
-          } else {
-            await OrderItem.create({
-              name,
-              quantity,
-              price,
-              product_id: id,
-              order_id: orderId,
-            });
-            await OrderHistory.create({
-              order_id: orderId,
-              user_id: req.user.id,
-              event: "new item added in order!",
-            });
-          }
-          await Order.increment(["total_price", "subtotal_price"], {
-            by: price * quantity,
-            where: { id: orderId },
-          });
-        })
-      );
+
+      await sequelize.transaction(async (t) => {
+        await Payments.create(
+          {
+            type,
+            bank,
+            tid,
+            amount,
+            note: note || label,
+            order_id: orderId,
+          },
+          { transaction: t }
+        );
+
+        await Order.decrement(["total_price", "subtotal_price"], {
+          by: amount,
+          where: { id: orderId },
+          transaction: t,
+        });
+      });
+
       const order = await _orderService.loadFullOrder(orderId);
       return sendSuccessResponse(
         res,
@@ -707,21 +689,13 @@ export default {
         (total, item) => total + parseInt(item.price),
         0
       );
-      const payments = Payments.findAll({ where: { order_id: orderId } });
-      if (payments && payments.length) {
-        let pendingPayments = 0,
-          receivedPayments = 0;
-        payments.forEach(({ type, amount }) => {
-          switch (type) {
-            case "received":
-              receivedPayments += amount;
-              break;
-            case "pending":
-              pendingPayments += amount;
-              break;
-          }
-        });
-        total_price += pendingPayments - receivedPayments;
+      const payments = await Payments.findAll({ where: { order_id: orderId } });
+      if (payments) {
+        let receivedPayment = payments.reduce(
+          (total, payment) => payment.amount + total,
+          0
+        );
+        total_price -= receivedPayment;
       }
       await sequelize.transaction(async (t) => {
         await OrderItem.destroy({
