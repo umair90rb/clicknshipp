@@ -266,16 +266,19 @@ class ReportingService {
 
   async getIncentiveReport(startPeriod, endPeriod, reportBrand) {
     let where = {
-      "$order.assigned_at$": {
+      assigned_at: {
         [Op.gte]: startPeriod,
         [Op.lte]: endPeriod,
       },
-      "$order.user_id$": {
+      user_id: {
         [Op.ne]: null,
+      },
+      status: {
+        [Op.in]: ["Confirmed", "Booked"],
       },
     };
     if (reportBrand && reportBrand !== "All") {
-      where["$order.brand_id$"] = reportBrand;
+      where["brand_id"] = reportBrand;
     }
 
     const users = await User.findAll({
@@ -300,7 +303,7 @@ class ReportingService {
         ],
       },
     });
-    const columns = ["name", "quantity"];
+    const columns = [[col("items.name"), "name"]];
     for (let index = 0; index < users.length; index++) {
       const user = users[index];
       columns.push(
@@ -308,7 +311,7 @@ class ReportingService {
           fn(
             "SUM",
             literal(
-              `CASE WHEN "order"."user_id" = ${user.id} AND "order"."status" = 'Confirmed' OR "order"."status" = 'Booked' THEN "quantity" ELSE 0 END`
+              `CASE WHEN "Order"."user_id" = ${user.id} AND "Order"."status" IN ('Confirmed', 'Booked') THEN "items"."quantity" ELSE 0 END`
             )
           ),
           `${user.name.toLowerCase().split(" ").join("_")}_confirmed`,
@@ -317,7 +320,7 @@ class ReportingService {
           fn(
             "SUM",
             literal(
-              `CASE WHEN "order"."status" = 'Delivered' THEN "quantity" ELSE 0 END`
+              `CASE WHEN "Order"."status" = 'Booked' THEN "items"."quantity" ELSE 0 END`
             )
           ),
           `${user.name.toLowerCase().split(" ").join("_")}_delivered`,
@@ -325,23 +328,63 @@ class ReportingService {
       );
     }
 
-    return OrderItem.findAll({
+    return Order.findAll({
       attributes: columns,
+      // [
+      //   [col("items.name"), "name"],
+      //   [
+      //     fn(
+      //       "SUM",
+      //       literal(
+      //         'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'Booked\' THEN "items"."quantity" ELSE 0 END'
+      //       )
+      //     ),
+      //     "confirmed",
+      //   ],
+      //   [
+      //     fn(
+      //       "SUM",
+      //       literal(
+      //         'CASE WHEN "Order"."status" = \'Booked\' THEN "items"."quantity" ELSE 0 END'
+      //       )
+      //     ),
+      //     "delivered",
+      //   ],
+      // ],
       include: [
         {
-          model: Order,
-          as: "order",
+          model: OrderItem,
+          as: "items",
           attributes: [],
-          include: {
-            model: Chanel,
-            as: "chanel",
-            attributes: [["name", "chanel_name`"]],
-          },
+        },
+        {
+          model: User,
+          as: "user",
+          attributes: [],
         },
       ],
       where,
-      group: ["OrderItem.name", "quantity", "order.id", "order->chanel.id"],
+      group: ["items.name"],
+      raw: true,
     });
+
+    // return OrderItem.findAll({
+    //   attributes: columns,
+    //   include: [
+    //     {
+    //       model: Order,
+    //       as: "order",
+    //       attributes: [],
+    //       include: {
+    //         model: Chanel,
+    //         as: "chanel",
+    //         attributes: [["name", "chanel_name`"]],
+    //       },
+    //     },
+    //   ],
+    //   where,
+    //   group: ["OrderItem.name", "quantity", "order.id", "order->chanel.id"],
+    // });
   }
 }
 
