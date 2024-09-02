@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
 import bookingService from "../services/BookingService";
@@ -6,6 +7,7 @@ import logger from "../middleware/logger";
 import _orderService from "../services/OrderService";
 import { Server } from "socket.io";
 import deliveryServiceAccountService from "../services/DeliveryServiceAccountService";
+import { getEndOfDay, getStartOfDay } from "../helpers/pgDateFormat";
 
 const {
   Order,
@@ -63,69 +65,56 @@ export default {
     }
   },
 
-  async bulkBooking(socket) {
+  async downloadParcelReceipt(req, res) {
     try {
-      const orders = await _orderService.loadTodayReadyForBookingOrders();
-      socket.emit("booking:count", orders.length);
-      for (const order of orders) {
-        const bookingResponse = await bookingService.bookParcelWithCourier(
-          order,
-          order.courier.get()
+      const { accountId } = req.body;
+      const deliveryServiceAccount = await DeliveryServiceAccounts.findByPk(
+        accountId
+      );
+      if (
+        !deliveryServiceAccount ||
+        deliveryServiceAccount.service !== "postex"
+      ) {
+        return sendErrorResponse(
+          res,
+          500,
+          "Error! Either account not found or only postex account is allowed"
         );
-        const { cn, slip, isSuccess, error, response } = bookingResponse || {};
-        console.log(bookingResponse, "bookingResponse");
-        if (isSuccess) {
-          let delivery = await Delivery.findOne({
-            where: { order_id: order.id },
-          });
-          console.log(delivery?.get(), "delivery found for order");
-          if (delivery) {
-            await delivery.update({
-              courier: deliveryAccount.service,
-              account_id: deliveryAccount.id,
-              cn,
-              slip_link: slip,
-              status: "Booked",
-            });
-          } else {
-            delivery = await Delivery.create({
-              courier: deliveryAccount.service,
-              account_id: deliveryAccount.id,
-              cn,
-              slip_link: slip,
-              status: "Booked",
-              order_id: order.id,
-            });
-          }
-          await order.update({ status: "Booked" });
-          await order.createHistory({
-            user_id: req.user.id,
-            event: `order booked with ${deliveryAccount?.service}, tracking number: ${cn}, brand no: ${order?.brand?.shipment_series}`,
-          });
-          await Brand.update(
-            { shipment_series: order.brand.shipment_series + 1 },
-            {
-              where: {
-                id: order.brand.id,
-              },
-            }
-          );
-          socket.emit("booking:single:success", {
-            courier: order.courier.service,
-          });
-        } else {
-          await order.update({ status: `${order.status}/ErrorInBooking` });
-          await order.createHistory({
-            user_id: req.user.id,
-            event: `Error while booking order, not booked with ${deliveryAccount?.service}. error ${error}`,
-          });
-          socket.emit("booking:single:error", {
-            courier: order.courier.service,
-          });
-        }
       }
+      const deliveries = await Delivery.findAll({
+        attributes: ["cn"],
+        where: {
+          account_id: accountId,
+          createdAt: {
+            [Op.and]: [
+              { [Op.gte]: getStartOfDay() },
+              { [Op.lte]: getEndOfDay() },
+            ],
+          },
+        },
+        raw: true,
+      });
+      if (!deliveries || !deliveries.length) {
+        return sendErrorResponse(
+          res,
+          500,
+          "No delivery booked with this account!"
+        );
+      }
+      const bookingServiceRes =
+        await bookingService.downloadParcelReceiptWithCourier(
+          deliveries.map((d) => d.cn),
+          deliveryServiceAccount
+        );
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=Air Ways Bill.pdf"
+      );
+      return res.send(bookingServiceRes.data);
     } catch (error) {
-      console.error(error);
+      logger.error(error);
+      return sendErrorResponse(res, 500, "Something goes wrong!", error);
     }
   },
 

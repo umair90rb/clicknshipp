@@ -17,10 +17,35 @@ export default {
             Sequelize.fn(
               "SUM",
               Sequelize.literal(
-                "CASE WHEN status = 'Confirmed' THEN 1 ELSE 0 END"
+                "CASE WHEN status = 'Confirmed' OR status = 'Booked' THEN 1 ELSE 0 END"
               )
             ),
             "confirmedOrders",
+          ],
+          [
+            Sequelize.fn(
+              "SUM",
+              Sequelize.literal(
+                "CASE WHEN status = 'No Pick' OR status = 'Payment Pending' THEN 1 ELSE 0 END"
+              )
+            ),
+            "noPickOrders",
+          ],
+          [
+            Sequelize.fn(
+              "SUM",
+              Sequelize.literal("CASE WHEN status = 'Cancel' THEN 1 ELSE 0 END")
+            ),
+            "cancelOrders",
+          ],
+          [
+            Sequelize.fn(
+              "SUM",
+              Sequelize.literal(
+                "CASE WHEN status = 'Assigned' THEN 1 ELSE 0 END"
+              )
+            ),
+            "assignedOrders",
           ],
           [
             Sequelize.fn(
@@ -35,7 +60,7 @@ export default {
           ],
         ],
         where: {
-          createdAt: {
+          assignedAt: {
             [Op.gte]: startPeriod,
             [Op.lte]: endPeriod,
           },

@@ -42,7 +42,7 @@ class DeawooCourier extends CourierInterface {
           order.customer.last_name || ""
         }`,
         receiver_cnic: "",
-        receiver_mobile: `${order.customer.phone}`,
+        receiver_mobile: `0${order.customer.phone}`,
         receiver_address: `${order.address.address1}, ${order.address.city}`,
         receiver_city: destinationCity.maped,
         receiver_email: order.customer.email || "empty",

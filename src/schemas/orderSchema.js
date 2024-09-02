@@ -38,6 +38,10 @@ export const orderBookSchema = Joi.object({
   orderId: Joi.number().required(),
 });
 
+export const orderReceiptDownloadSchema = Joi.object({
+  accountId: Joi.number().required(),
+});
+
 export const orderAssignSchema = Joi.object({
   agentIds: Joi.array().items(Joi.number()).min(1),
   orderIds: Joi.array().items(Joi.number()).min(1),

@@ -8,6 +8,7 @@ import { idSchema } from "../schemas/commonSchema";
 import {
   orderAssignSchema,
   orderBookSchema,
+  orderReceiptDownloadSchema,
   orderStatusUpdateSchema,
   orderItemsAddUpdateSchema,
   orderAddPaymentSchema,
@@ -54,6 +55,14 @@ router.post(
   can(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS),
   schemaValidator(orderBookSchema),
   DeliveryController.book
+);
+
+router.post(
+  "/download-receipts",
+  Auth,
+  can(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS),
+  schemaValidator(orderReceiptDownloadSchema),
+  DeliveryController.downloadParcelReceipt
 );
 
 router.get(

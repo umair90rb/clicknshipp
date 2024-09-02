@@ -992,9 +992,10 @@ export default {
         };
       }
       await order.update(orderUpdateData);
-      await order.createHistory({
+      await OrderHistory.createHistory({
         user_id: req.user.id,
         event: "order updated",
+        order_id: order.id,
       });
       const completeOrder = await _orderService.loadFullOrder(order.id);
       return sendSuccessResponse(

@@ -54,6 +54,15 @@ const DashboardDefault = () => {
         <AnalyticEcommerce title="Booked Orders" count={statsIsLoading ? 'loading...' : stats.bookedOrders || 0} />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
+        <AnalyticEcommerce title="No Picked Orders" count={statsIsLoading ? 'loading...' : stats.noPickOrders || 0} />
+      </Grid>
+      <Grid item xs={12} sm={6} md={4} lg={3}>
+        <AnalyticEcommerce title="Cancel Orders" count={statsIsLoading ? 'loading...' : stats.cancelOrders || 0} />
+      </Grid>
+      <Grid item xs={12} sm={6} md={4} lg={3}>
+        <AnalyticEcommerce title="Un-attempted Orders" count={statsIsLoading ? 'loading...' : stats.assignedOrders || 0} />
+      </Grid>
+      <Grid item xs={12} sm={6} md={4} lg={3}>
         <AnalyticEcommerce title="Total Sales" count={statsIsLoading ? 'loading...' : `Rs ${parseInt(stats.totalSalesValue) || 0}`} />
       </Grid>
 

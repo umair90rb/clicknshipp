@@ -177,8 +177,50 @@ class PostexCourier extends CourierInterface {
     }
   }
 
-  downloadReceipt(trackingNumber, deliveryAccount) {
-    // Implementation for downloading receipt via TCS
+  async downloadReceipt(trackingNumbers, deliveryAccount) {
+    let trackingNumbersStr = "";
+    try {
+      if (trackingNumbers && trackingNumbers.length === 1) {
+        trackingNumbersStr = `${trackingNumbers[0]}`;
+      }
+      if (trackingNumbers && trackingNumbers.length > 1) {
+        trackingNumbersStr = trackingNumbers.reduce(
+          (numbers, trackingNo) => `${trackingNo}, ${numbers}`,
+          ""
+        );
+      }
+      if (!trackingNumbersStr) {
+        return {
+          isSuccess: false,
+          error: "Empty tracking no! Enter at least one tracking id.",
+          response: null,
+        };
+      }
+      return this.http.get(
+        `https://api.postex.pk/services/integration/api/order/v1/get-invoice?trackingNumbers=${trackingNumbersStr}`,
+        {
+          headers: { token: deliveryAccount.key },
+          responseType: "arraybuffer",
+        }
+      );
+      // logger.log("info", "postex airways bill download response");
+      // const { statusCode, statusMessage } = response?.data || {};
+      // return {
+      //   isSuccess: statusCode == "200" ? true : false,
+      //   error: statusCode != "200" ? statusMessage : null,
+      //   response: statusMessage,
+      // };
+    } catch (error) {
+      logger.log("error", "postex airways bill api error", {
+        stack: error.stack,
+      });
+      throw error;
+      // return {
+      //   isSuccess: false,
+      //   error,
+      //   response,
+      // };
+    }
   }
 }
 

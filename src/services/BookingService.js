@@ -47,6 +47,15 @@ class BookingService {
       throw new Error("Courier service not available");
     }
   }
+
+  downloadParcelReceiptWithCourier(cns, deliveryAccount) {
+    if (deliveryAccount.service in this.availableCouriers) {
+      const courier = this.availableCouriers[deliveryAccount.service];
+      return courier.downloadReceipt(cns, deliveryAccount);
+    } else {
+      throw new Error("Courier service not available");
+    }
+  }
 }
 
 const bookingService = new BookingService();

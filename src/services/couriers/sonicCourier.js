@@ -54,7 +54,7 @@ class SonicCourier extends CourierInterface {
         item_insurance: 0,
         item_price: order.total_price,
         pickup_date: new Date().toISOString().split("T")[0],
-        // special_instructions: order.address.address2 || "",
+        special_instructions: "Rush Delivery",
         estimated_weight: 0.5,
         shipping_mode_id: 1,
         // same_day_timing_id: "",
