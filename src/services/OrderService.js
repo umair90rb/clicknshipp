@@ -225,14 +225,17 @@ class OrderService {
         user_id: req.user.id,
         event: `order booked with ${deliveryAccount?.service}, tracking number: ${cn}, brand no: ${order?.brand?.shipment_series}`,
       });
-      await Brand.update(
-        { shipment_series: order.brand.shipment_series + 1 },
-        {
-          where: {
-            id: order.brand.id,
-          },
-        }
-      );
+      await Brand.increment({
+        shipment_series: order.brand.shipment_series + 1,
+      });
+      // await Brand.update(
+      //   { shipment_series: order.brand.shipment_series + 1 },
+      //   {
+      //     where: {
+      //       id: order.brand.id,
+      //     },
+      //   }
+      // );
       return delivery;
     }
     return null;

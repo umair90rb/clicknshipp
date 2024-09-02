@@ -49,7 +49,7 @@ class LeapordCourier extends CourierInterface {
         origin_city: 322,
         destination_city: parseInt(destinationCity.assigned_id),
         shipment_id: 10,
-        // shipment_id: 1504100,
+        shipment_id: null,
         shipment_name_eng: "Sukooon Wellness",
         shipment_email: "umekalsoom011@gmail.com",
         shipment_phone: "03094446319",
