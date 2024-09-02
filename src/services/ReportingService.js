@@ -320,7 +320,7 @@ class ReportingService {
           fn(
             "SUM",
             literal(
-              `CASE WHEN "Order"."status" = 'Booked' THEN "items"."quantity" ELSE 0 END`
+              `CASE WHEN "Order"."user_id" = ${user.id} AND "Order"."status" = 'Booked' THEN "items"."quantity" ELSE 0 END`
             )
           ),
           `${user.name.toLowerCase().split(" ").join("_")}_delivered`,
