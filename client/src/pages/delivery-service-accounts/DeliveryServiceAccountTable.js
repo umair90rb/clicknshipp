@@ -98,7 +98,7 @@ export default function DeliveryServiceAccountTable({ updateAccountHandler }) {
   const handleDownloadAction = async (id) => {
     const { type, payload } = await dispatch(fetchDownloadBookedOrderReceipts({ body: { accountId: id } }));
     if (type === 'order/downloadReceipts/fetch/fulfilled') {
-      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const blob = new Blob([payload.data], { type: 'application/pdf' });
       const link = document.createElement('a');
       link.href = window.URL.createObjectURL(blob);
       link.download = 'Airways Bill.pdf';

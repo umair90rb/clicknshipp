@@ -65,7 +65,7 @@ export default {
           assigned_at: {
             [Op.and]: [
               { [Op.gte]: getStartOfDay() },
-              { [Op.lte]: getEndOfDay(today) },
+              { [Op.lte]: getEndOfDay() },
             ],
           },
         },
@@ -981,10 +981,15 @@ export default {
         }
       }
       if (status === "Duplicate") {
+        console.log(status === "Duplicate", `status === "Duplicate"`);
         orderUpdateData["assignedAt"] = null;
         orderUpdateData["user_id"] = null;
       }
-      if ((order.status = "No Pick" && status === "Confirmed")) {
+      if (order.status === "No Pick" && status === "Confirmed") {
+        console.log(
+          `((order.status = "No Pick" && status === "Confirmed"))`,
+          (order.status = "No Pick" && status === "Confirmed")
+        );
         orderUpdateData = {
           ...orderUpdateData,
           assignedAt: new Date().toISOString(),
