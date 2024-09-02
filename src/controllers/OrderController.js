@@ -992,7 +992,7 @@ export default {
         };
       }
       await order.update(orderUpdateData);
-      await OrderHistory.createHistory({
+      await OrderHistory.create({
         user_id: req.user.id,
         event: "order updated",
         order_id: order.id,
