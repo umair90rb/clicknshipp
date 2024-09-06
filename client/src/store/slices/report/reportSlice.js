@@ -9,7 +9,8 @@ const initialState = {
   fetchStatus: fetchStatus.IDLE,
   error: null,
   type: '',
-  brand: null,
+  brand: [],
+  chanel: [],
   startPeriod: moment(new Date()).startOf('day').format('YYYY-MM-DDTHH:mm:ss'),
   endPeriod: moment(new Date()).endOf('day').format('YYYY-MM-DDTHH:mm:ss')
 };
@@ -24,10 +25,15 @@ const reportSlice = createSlice({
     },
     setReportType: (state, action) => {
       state.data = [];
+      state.error = null;
+      state.fetchStatus = fetchStatus.IDLE;
       state.type = action.payload;
     },
     setReportBrand: (state, action) => {
       state.brand = action.payload;
+    },
+    setReportChanel: (state, action) => {
+      state.chanel = action.payload;
     },
     clearReportState: () => initialState
   },
@@ -48,5 +54,5 @@ const reportSlice = createSlice({
     });
   }
 });
-export const { setReportPeriod, setReportType, setReportBrand, clearReportState } = reportSlice.actions;
+export const { setReportPeriod, setReportType, setReportBrand, setReportChanel, clearReportState } = reportSlice.actions;
 export default reportSlice.reducer;

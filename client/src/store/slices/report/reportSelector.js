@@ -6,5 +6,6 @@ export const reportErrorSelector = (state) => state.report.error;
 export const reportDataSelector = (state) => state.report.data;
 export const reportTypeSelector = (state) => state.report.type;
 export const reportBrandSelector = (state) => state.report.brand;
+export const reportChanelSelector = (state) => state.report.chanel;
 export const reportStartPeriodSelector = (state) => state.report.startPeriod;
 export const reportEndPeriodSelector = (state) => state.report.endPeriod;

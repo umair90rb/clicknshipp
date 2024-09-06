@@ -97,7 +97,7 @@ export default {
       if (!deliveries || !deliveries.length) {
         return sendErrorResponse(
           res,
-          500,
+          404,
           "No delivery booked with this account!"
         );
       }

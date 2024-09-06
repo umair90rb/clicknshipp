@@ -7,7 +7,7 @@ const { Order, OrderItem, Delivery, User, Chanel, Role, Permission } = model;
 class ReportingService {
   constructor() {}
 
-  getAgentReport(startPeriod, endPeriod, reportBrand) {
+  getAgentReport(startPeriod, endPeriod, reportBrand, reportChanel) {
     let where = {
       assigned_at: {
         [Op.gte]: startPeriod,
@@ -17,8 +17,16 @@ class ReportingService {
         [Op.ne]: null,
       },
     };
-    if (reportBrand && reportBrand !== "All") {
-      where["brand_id"] = reportBrand;
+    if (reportBrand && reportBrand.length) {
+      where["brand_id"] = {
+        [Op.in]: reportBrand,
+      };
+    }
+
+    if (reportChanel && reportChanel.length) {
+      where["chanel_id"] = {
+        [Op.in]: reportChanel,
+      };
     }
     return Order.findAll({
       attributes: [
@@ -79,7 +87,7 @@ class ReportingService {
     });
   }
 
-  getUnitReport(startPeriod, endPeriod, reportBrand) {
+  getUnitReport(startPeriod, endPeriod, reportBrand, reportChanel) {
     let where = {
       assigned_at: {
         [Op.gte]: startPeriod,
@@ -89,10 +97,17 @@ class ReportingService {
         [Op.ne]: null,
       },
     };
-    if (reportBrand && reportBrand !== "All") {
-      where["brand_id"] = reportBrand;
+    if (reportBrand && reportBrand.length) {
+      where["brand_id"] = {
+        [Op.in]: reportBrand,
+      };
     }
 
+    if (reportChanel && reportChanel.length) {
+      where["chanel_id"] = {
+        [Op.in]: reportChanel,
+      };
+    }
     return Order.findAll({
       attributes: [
         [col("items.name"), "name"],
@@ -195,7 +210,7 @@ class ReportingService {
     });
   }
 
-  getChannelReport(startPeriod, endPeriod, reportBrand) {
+  getChannelReport(startPeriod, endPeriod, reportBrand, reportChanel) {
     let where = {
       assigned_at: {
         [Op.gte]: startPeriod,
@@ -205,10 +220,16 @@ class ReportingService {
         [Op.ne]: null,
       },
     };
-    if (reportBrand && reportBrand !== "All") {
-      where["brand_id"] = reportBrand;
+    if (reportBrand && reportBrand.length) {
+      where["brand_id"] = {
+        [Op.in]: reportBrand,
+      };
     }
-
+    if (reportChanel && reportChanel.length) {
+      where["chanel_id"] = {
+        [Op.in]: reportChanel,
+      };
+    }
     return Order.findAll({
       attributes: [
         [col("chanel.name"), "chanel"],
@@ -264,7 +285,7 @@ class ReportingService {
     });
   }
 
-  async getIncentiveReport(startPeriod, endPeriod, reportBrand) {
+  async getIncentiveReport(startPeriod, endPeriod, reportBrand, reportChanel) {
     let where = {
       assigned_at: {
         [Op.gte]: startPeriod,
@@ -277,10 +298,17 @@ class ReportingService {
         [Op.in]: ["Confirmed", "Booked"],
       },
     };
-    if (reportBrand && reportBrand !== "All") {
-      where["brand_id"] = reportBrand;
+    if (reportBrand && reportBrand.length) {
+      where["brand_id"] = {
+        [Op.in]: reportBrand,
+      };
     }
 
+    if (reportChanel && reportChanel.length) {
+      where["chanel_id"] = {
+        [Op.in]: reportChanel,
+      };
+    }
     const users = await User.findAll({
       attributes: ["id", "name"],
       include: {
@@ -330,27 +358,6 @@ class ReportingService {
 
     return Order.findAll({
       attributes: columns,
-      // [
-      //   [col("items.name"), "name"],
-      //   [
-      //     fn(
-      //       "SUM",
-      //       literal(
-      //         'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'Booked\' THEN "items"."quantity" ELSE 0 END'
-      //       )
-      //     ),
-      //     "confirmed",
-      //   ],
-      //   [
-      //     fn(
-      //       "SUM",
-      //       literal(
-      //         'CASE WHEN "Order"."status" = \'Booked\' THEN "items"."quantity" ELSE 0 END'
-      //       )
-      //     ),
-      //     "delivered",
-      //   ],
-      // ],
       include: [
         {
           model: OrderItem,
@@ -367,24 +374,6 @@ class ReportingService {
       group: ["items.name"],
       raw: true,
     });
-
-    // return OrderItem.findAll({
-    //   attributes: columns,
-    //   include: [
-    //     {
-    //       model: Order,
-    //       as: "order",
-    //       attributes: [],
-    //       include: {
-    //         model: Chanel,
-    //         as: "chanel",
-    //         attributes: [["name", "chanel_name`"]],
-    //       },
-    //     },
-    //   ],
-    //   where,
-    //   group: ["OrderItem.name", "quantity", "order.id", "order->chanel.id"],
-    // });
   }
 }
 

@@ -5,35 +5,40 @@ import { _reportingService as reportingService } from "../services/ReportingServ
 export default {
   async getReport(req, res) {
     try {
-      const { reportBrand, reportType, startPeriod, endPeriod } = req.body;
+      const { reportBrand, reportChanel, reportType, startPeriod, endPeriod } =
+        req.body;
       let report;
       switch (reportType) {
         case "Agent Report":
           report = await reportingService.getAgentReport(
             startPeriod,
             endPeriod,
-            reportBrand
+            reportBrand,
+            reportChanel
           );
           break;
         case "Unit Report":
           report = await reportingService.getUnitReport(
             startPeriod,
             endPeriod,
-            reportBrand
+            reportBrand,
+            reportChanel
           );
           break;
         case "Channel Report":
           report = await reportingService.getChannelReport(
             startPeriod,
             endPeriod,
-            reportBrand
+            reportBrand,
+            reportChanel
           );
           break;
         case "Incentive Report":
           report = await reportingService.getIncentiveReport(
             startPeriod,
             endPeriod,
-            reportBrand
+            reportBrand,
+            reportChanel
           );
           break;
       }
@@ -41,7 +46,14 @@ export default {
       return sendSuccessResponse(
         res,
         200,
-        { report, startPeriod, endPeriod, reportBrand, reportType },
+        {
+          report,
+          startPeriod,
+          endPeriod,
+          reportType,
+          reportBrand,
+          reportChanel,
+        },
         "Report fetched successfully"
       );
     } catch (e) {
