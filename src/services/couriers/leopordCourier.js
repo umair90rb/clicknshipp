@@ -45,7 +45,9 @@ class LeapordCourier extends CourierInterface {
         // booked_packet_vol_weight_l: 0,
         booked_packet_no_piece: order?.items?.length,
         booked_packet_collect_amount: order.total_price,
-        booked_packet_order_id: `${order.brand.name}x${order.brand.shipment_series}`,
+        booked_packet_order_id: `${order?.brand?.name || "Sukoon"}x${
+          order?.brand?.shipment_series || order.order_number
+        }`,
         origin_city: 322,
         destination_city: parseInt(destinationCity.assigned_id),
         shipment_id: 10,
@@ -95,13 +97,13 @@ class LeapordCourier extends CourierInterface {
       logger.log("error", _error.message, {
         body,
         res: response?.data,
-        stack: "in leopard booking function",
+        stack: _error.stack,
       });
       const { track_number, slip_link, status, error } = response?.data || {};
       return {
         cn: null,
         slip: null,
-        isSuccess: Boolean(status),
+        isSuccess: false,
         error: error,
         response: "Error: Something goes wrong!",
       };

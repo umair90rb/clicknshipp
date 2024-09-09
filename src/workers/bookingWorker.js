@@ -9,14 +9,17 @@ const bookingWorker = new Worker(
   async (job) => {
     const { orderId, deliveryAccountId } = job.data;
     const order = await _orderService.loadOrderForBooking(orderId);
+    console.log(order?.get());
     const deliveryAccount =
       await deliveryServiceAccountService.getAccountWithToken(
         deliveryAccountId
       );
+    console.log(deliveryAccount?.get());
     const bookingRes = await bookingService.bookParcelWithCourier(
       order,
       deliveryAccount
     );
+    console.log(bookingRes);
     await _orderService.updateOrderAfterBooking(
       bookingRes,
       order,

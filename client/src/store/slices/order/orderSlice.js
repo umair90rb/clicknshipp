@@ -84,7 +84,6 @@ const orderSlice = createSlice({
     builder.addCase(fetchAllOrder.rejected, (state, action) => {
       state.list.orders = null;
       state.list.fetchStatus = fetchStatus.FAILURE;
-      console.log(action.payload, 'error order all');
       state.list.error = action.payload?.message || action.payload || 'Error in fetching orders';
     });
 

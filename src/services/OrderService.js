@@ -201,7 +201,6 @@ class OrderService {
       let delivery = await Delivery.findOne({
         where: { order_id: order.id },
       });
-      console.log(delivery?.get(), "delivery found for order");
       if (delivery) {
         await delivery.update({
           courier: deliveryAccount.service,
@@ -221,18 +220,20 @@ class OrderService {
         });
       }
       await order.update({ status: "Booked" });
-      await order.createHistory({
+      await OrderHistory.create({
+        order_id: order.id,
         user_id: req.user.id,
         event: `order booked with ${deliveryAccount?.service}, tracking number: ${cn}, brand no: ${order?.brand?.shipment_series}`,
       });
       // await order.brand.increment({
       //   shipment_series: order.brand.shipment_series + 1,
       // });
+      console.log(order.brand_id, "order.brand_id");
       await Brand.increment(
         { shipment_series: 1 },
         {
           where: {
-            id: order.brand.id,
+            id: order.brand_id,
           },
         }
       );

@@ -53,7 +53,7 @@ export default {
           "Operation successful"
         );
       }
-      return sendErrorResponse(res, 500, error, response);
+      throw new Error("Something goes wrong");
     } catch (error) {
       console.error(error);
       return sendErrorResponse(
