@@ -122,12 +122,25 @@ const columns = (
     valueGetter: (param) => param.row.customer?.phone || ''
   },
   {
-    field: 'item',
+    field: 'items',
     headerName: 'Items',
     flex: 1,
     sortable: false,
     editable: false,
     type: 'string',
+    valueFormatter: (params) => {
+      const items = params.value;
+      console.log(params);
+
+      let itemsStr = 'None';
+      if (items && items.length === 1) {
+        itemsStr = `${items[0].name}/${items[0].quantity}`;
+      }
+      if (items && items.length > 1) {
+        itemsStr = items.reduce((pv, cv) => `${cv.name}/${cv.quantity}, ${pv}`, '');
+      }
+      return itemsStr;
+    },
     renderCell: (params) => {
       const items = params.row.items;
       let itemsStr = 'None';
@@ -165,7 +178,6 @@ const columns = (
     editable: false,
     type: 'string',
     valueFormatter: (params) => {
-      console.log(params);
       const payments = params.value;
       let paymentsStr = '';
       if (payments && payments.length > 0) {
