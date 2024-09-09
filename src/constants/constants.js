@@ -124,4 +124,6 @@ export const FILTER_COLUMNS = {
   createdAt: "createdAt",
   assignedAt: "assignedAt",
   chanel: "$chanel.name$",
+  chanel_id: "chanel_id",
+  brand_id: "brand_id",
 };

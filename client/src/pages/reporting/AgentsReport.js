@@ -4,6 +4,8 @@ import { Typography, Button, LinearProgress } from '@mui/material';
 import styled from '@mui/system/styled';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  reportBrandSelector,
+  reportChanelSelector,
   reportDataSelector,
   reportEndPeriodSelector,
   reportFetchStatusSelector,
@@ -35,18 +37,28 @@ export default function AgentsReports() {
   const reportFetchStatus = useSelector(reportFetchStatusSelector);
   const startPeriod = useSelector(reportStartPeriodSelector);
   const endPeriod = useSelector(reportEndPeriodSelector);
+  const reportChanelFilter = useSelector(reportChanelSelector);
+  const reportBrandFilter = useSelector(reportBrandSelector);
   const data = useSelector(reportDataSelector);
   // const _data = data;
 
   const renderToolBar = () => <GridToolbarWithHeading heading="Agent Report" />;
   const linkClicked = (id, status) => {
     const _filters = [
-      { column: 'agent', op: 'Text is any', value: id },
       { column: 'assignedAt', op: 'Greater than or equal to', value: startPeriod },
       { column: 'assignedAt', op: 'Less than or equal to', value: endPeriod }
     ];
+    if (id && Array.isArray(id) && id.length) {
+      _filters.push({ column: 'agent', op: 'Text is any', value: id });
+    }
     if (status.length) {
       _filters.push({ column: 'status', op: 'Text is any', value: status });
+    }
+    if (reportChanelFilter.length) {
+      _filters.push({ column: 'chanel_id', op: 'Text is any', value: reportChanelFilter });
+    }
+    if (reportBrandFilter.length) {
+      _filters.push({ column: 'brand_id', op: 'Text is any', value: reportBrandFilter });
     }
     dispatch(setOrderFilters(_filters));
     navigate('/order/all');
@@ -92,7 +104,7 @@ export default function AgentsReports() {
             <Button
               onClick={() =>
                 linkClicked(
-                  data.map((row) => row.user_id),
+                  data.map((row) => row.user_id).filter((uid) => uid === null),
                   []
                 )
               }
@@ -126,7 +138,7 @@ export default function AgentsReports() {
             <Button
               onClick={() =>
                 linkClicked(
-                  data.map((row) => row.user_id),
+                  data.map((row) => row.user_id).filter((uid) => uid === null),
                   ['Confirmed']
                 )
               }
@@ -194,7 +206,7 @@ export default function AgentsReports() {
             <Button
               onClick={() =>
                 linkClicked(
-                  data.map((row) => row.user_id),
+                  data.map((row) => row.user_id).filter((uid) => uid === null),
                   ['No Pick', 'Payment Pending']
                 )
               }
@@ -228,7 +240,7 @@ export default function AgentsReports() {
             <Button
               onClick={() =>
                 linkClicked(
-                  data.map((row) => row.user_id),
+                  data.map((row) => row.user_id).filter((uid) => uid === null),
                   ['Cancel']
                 )
               }
