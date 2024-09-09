@@ -226,17 +226,16 @@ class OrderService {
         event: `order booked with ${deliveryAccount?.service}, tracking number: ${cn}, brand no: ${order?.brand?.shipment_series}`,
       });
       console.log(order.brand_id, "order.brand_id");
-      await Brand.increment(
-        { shipment_series: 1 },
-        {
-          where: {
-            id: order.brand_id,
-          },
-        }
-      );
       return delivery;
+    } else {
+      await order.update({ status: "Booking Error" });
+      await order.createHistory({
+        order_id: order.id,
+        user_id: req.user.id,
+        event: `error in order booking with ${deliveryAccount?.service}, error: ${error}`,
+      });
+      return null;
     }
-    return null;
   }
 
   async addDuplicateOrder(order) {

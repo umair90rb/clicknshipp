@@ -293,6 +293,7 @@ export default function AgentsReports() {
         autoHeight
         disableRowSelectionOnClick
         hideFooterPagination
+        checkboxSelection
         loading={reportIsLoading}
         slots={{
           toolbar: renderToolBar,

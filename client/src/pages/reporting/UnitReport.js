@@ -182,6 +182,7 @@ export default function UnitReport() {
       <DataGrid
         autoHeight
         hideFooterPagination
+        checkboxSelection
         loading={reportIsLoading}
         slots={{ toolbar: renderToolbar, noRowsOverlay: CustomNoRowsOverlay }}
         rows={data}

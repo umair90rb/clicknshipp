@@ -75,6 +75,7 @@ export default function IncentiveReport() {
       <DataGrid
         autoHeight
         hideFooterPagination
+        checkboxSelection
         loading={reportIsLoading}
         slots={{ toolbar: renderToolbar, noRowsOverlay: CustomNoRowsOverlay }}
         getRowId={(row) => `${Math.random().toString().split('.')[1]}`}

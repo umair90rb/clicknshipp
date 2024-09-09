@@ -35,7 +35,7 @@ class DeawooCourier extends CourierInterface {
         };
       }
       const body = {
-        order_no: `${order.brand.name}x${order.brand.shipment_series}`,
+        order_no: `Sukooonx${order.order_number}`,
         source_terminal_id: "10",
         destination_terminal_id: destinationCity.assigned_id,
         receiver_name: `${order.customer.first_name} ${

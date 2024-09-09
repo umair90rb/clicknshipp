@@ -45,9 +45,7 @@ class LeapordCourier extends CourierInterface {
         // booked_packet_vol_weight_l: 0,
         booked_packet_no_piece: order?.items?.length,
         booked_packet_collect_amount: order.total_price,
-        booked_packet_order_id: `${order?.brand?.name || "Sukoon"}x${
-          order?.brand?.shipment_series || order.order_number
-        }`,
+        booked_packet_order_id: `Sukooonx${order.order_number}`,
         origin_city: 322,
         destination_city: parseInt(destinationCity.assigned_id),
         shipment_id: 10,

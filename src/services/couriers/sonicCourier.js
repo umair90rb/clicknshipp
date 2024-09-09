@@ -43,7 +43,7 @@ class SonicCourier extends CourierInterface {
         consignee_phone_number_1: `0${order.customer.phone}`,
         // consignee_phone_number_2: "",
         // consignee_email_address: order.customer.email || "",
-        order_id: `${order.brand.name}x${order.brand.shipment_series}`,
+        order_id: `Sukooonx${order.order_number}`,
         item_product_type_id: 15,
         item_description: order.items.reduce(
           (p, c, i) =>

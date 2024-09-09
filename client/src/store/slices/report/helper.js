@@ -67,7 +67,6 @@ export function addTotalRow(report, data) {
           }
         }
       }
-      console.log(total);
       return [
         ...data,
         {

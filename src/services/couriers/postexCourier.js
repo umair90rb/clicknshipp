@@ -51,7 +51,7 @@ class PostexCourier extends CourierInterface {
             i > 0 ? `${c.name}/${c.quantity}-${p}` : `${c.name}/${c.quantity}`,
           ""
         ),
-        orderRefNumber: `${order.brand.name}x${order.brand.shipment_series}`,
+        orderRefNumber: `Sukooonx${order.order_number}`,
         orderType: "Normal",
         transactionNotes: "Rush Delivery",
         pickupAddressCode: "001", //required

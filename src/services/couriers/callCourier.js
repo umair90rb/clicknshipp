@@ -63,11 +63,11 @@ class CallCourier extends CourierInterface {
       }
       url = `SaveBooking?loginId=${deliveryAccount.key}&ConsigneeName="${
         order.customer.first_name
-      } ${order.customer.last_name || ""}"&ConsigneeRefNo="${
-        order.brand.name
-      }x${order.brand.shipment_series}"&ConsigneeCellNo=0${
-        order.customer.phone
-      }&Address=${order.address.address1}&Origin=FAISALABAD&DestCityId=${
+      } ${order.customer.last_name || ""}"&ConsigneeRefNo="Sukooonx${
+        order.order_number
+      }"&ConsigneeCellNo=0${order.customer.phone}&Address=${
+        order.address.address1
+      }&Origin=FAISALABAD&DestCityId=${
         destinationCity.assigned_id
       }&ServiceTypeId=7&Pcs=${
         order.items.length

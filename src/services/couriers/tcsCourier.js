@@ -178,7 +178,7 @@ class TCSCourier extends CourierInterface {
         },
         shipmentinfo: {
           costcentercode: deliveryAccount.cost_center,
-          referenceno: `${order.brand.name}x${order.brand.shipment_series}`,
+          referenceno: `Sukooonx${order.order_number}`,
           contentdesc: order.items.reduce(
             (p, c, i) =>
               i > 0
@@ -202,7 +202,13 @@ class TCSCourier extends CourierInterface {
           weightinkg: 0.5,
           pieces: order.items.length,
           fragile: false,
-          remarks: "Rush delivery",
+          remarks: order.items.reduce(
+            (p, c, i) =>
+              i > 0
+                ? `${c.name}/${c.quantity}-${p}`
+                : `${c.name}/${c.quantity}`,
+            ""
+          ),
           skus: [],
         },
       };
