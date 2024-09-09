@@ -27,14 +27,17 @@ export function GridDropdownFilter({ label = '', options = [], value, multiple =
         input={<InputBase id="select-multiple-chip" label="Chip" />}
         renderValue={(selected) => {
           if (multiple) {
-            if (selected.length === 0) {
+            if (selected?.length === 0) {
               return <Chip size="small" sx={{ borderRadius: 5 }} variant="outlined" key="All" label={label} />;
             }
             return (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {selected.map((value) => (
-                  <Chip size="small" sx={{ borderRadius: 5 }} variant="outlined" key={value} label={value} />
-                ))}
+                {selected?.map((value) => {
+                  if (typeof value === 'object' && 'label' in value) {
+                    return <Chip size="small" sx={{ borderRadius: 5 }} variant="outlined" key={value.id} label={value.label} />;
+                  }
+                  return <Chip size="small" sx={{ borderRadius: 5 }} variant="outlined" key={value} label={value} />;
+                })}
               </Box>
             );
           }
@@ -45,11 +48,20 @@ export function GridDropdownFilter({ label = '', options = [], value, multiple =
         }}
         // MenuProps={MenuProps}
       >
-        {options.map((option, index) => (
-          <MenuItem key={index} value={option}>
-            {option}
-          </MenuItem>
-        ))}
+        {options?.map((option, index) => {
+          if (typeof option === 'object' && 'label' in option) {
+            return (
+              <MenuItem key={index} value={option}>
+                {option.label}
+              </MenuItem>
+            );
+          }
+          return (
+            <MenuItem key={index} value={option}>
+              {option}
+            </MenuItem>
+          );
+        })}
       </Select>
     </FormControl>
   );

@@ -58,7 +58,6 @@ export default {
     try {
       const { page, pageSize, filters, sort } = req.body;
       const permissions = req.user.permissions;
-      const today = new Date();
       let query = {
         where: {
           user_id: req.user.id,
@@ -140,15 +139,6 @@ export default {
         delete query.where.assigned_at;
       }
 
-      // else if (
-      //   "settings" in req.user &&
-      //   req.user?.settings?.hasOwnProperty("default_brand_id")
-      // ) {
-      //   query.where.brand_id = req.user.settings.default_brand_id;
-      // } else if ("brands" in req.user) {
-      //   query.where.brand_id = req.user?.brands[0]?.id;
-      // }
-
       if (filters.length) {
         let _filters = {};
         for (let i = 0; i < filters.length; i++) {
@@ -176,19 +166,6 @@ export default {
           if (column === FILTER_COLUMNS.status && value[0] === "No Pick") {
             delete query.where.user_id;
           }
-          // if (
-          //   FILTER_COLUMNS[column] in _filters &&
-          //   !Array.isArray(_filters[FILTER_COLUMNS[column]])
-          // ) {
-          //   const filterValues = filters
-          //     .filter((filter) => filter.column === column)
-          //     .map((filter) => filter.value);
-          //   _filters[FILTER_COLUMNS[column]] = filterValues;
-          // } else if (!(FILTER_COLUMNS[column] in _filters)) {
-          //   _filters[FILTER_COLUMNS[column]] = {
-          //     [FILTER_OP[op]]: value,
-          //   };
-          // }
         }
         const _query = { ...query, where: { ...query.where, ..._filters } };
         query = _query;

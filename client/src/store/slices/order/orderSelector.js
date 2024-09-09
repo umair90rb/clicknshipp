@@ -8,6 +8,7 @@ export const orderPageSelector = (state) => state.order.list.page;
 export const orderPageSizeSelector = (state) => state.order.list.pageSize;
 export const orderTotalSelector = (state) => state.order.list.total;
 export const orderFiltersSelector = (state) => state.order.list.filters;
+export const orderChanelFiltersSelector = (state) => state.order.list.chanelFilter;
 export const orderSortSelector = (state) => state.order.list.sort;
 export const orderNextOrderSelector = (state) => state.order.list.nextOrder;
 export const orderPreOrderSelector = (state) => state.order.list.preOrder;

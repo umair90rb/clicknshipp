@@ -26,6 +26,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
 import CancelIcon from '@mui/icons-material/Close';
 import {
+  orderChanelFiltersSelector,
   orderFiltersSelector,
   orderListIsLoadingSelector,
   orderListSelector,
@@ -63,6 +64,8 @@ import {
 import useAccess from 'hooks/useAccess';
 import PaymentsModal from './PaymentsModal';
 import DateRangePicker from 'components/DatePicker';
+import { chanelChanelsSelector, chanelFetchStatusSelector } from 'store/slices/chanel/chanelSelector';
+import { fetchAllChanel } from 'store/slices/chanel/fetchChanel';
 const columns = (
   apiRef,
   rowModesModel,
@@ -130,8 +133,6 @@ const columns = (
     type: 'string',
     valueFormatter: (params) => {
       const items = params.value;
-      console.log(params);
-
       let itemsStr = 'None';
       if (items && items.length === 1) {
         itemsStr = `${items[0].name}/${items[0].quantity}`;
@@ -360,12 +361,15 @@ const OrderTable = memo(() => {
   const page = useSelector(orderPageSelector);
   const pageSize = useSelector(orderPageSizeSelector);
   const filters = useSelector(orderFiltersSelector);
+  const orderChanelFilter = useSelector(orderChanelFiltersSelector);
   const sortModel = useSelector(orderSortSelector);
   const total = useSelector(orderTotalSelector);
 
   const citiesFetchStatus = useSelector(cityFetchStatusSelector);
   const deliveryServiceAccountsList = useSelector(deliveryServiceAccountsListSelector);
   const deliveryServiceAccountsFetchStatus = useSelector(deliveryServiceAccountsFetchStatusSelector);
+  const chanel = useSelector(chanelChanelsSelector);
+  const chanelFetchStatus = useSelector(chanelFetchStatusSelector);
   const userPermissions = useSelector(authPermissionsSelector);
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({
@@ -493,9 +497,19 @@ const OrderTable = memo(() => {
     if (deliveryServiceAccountsFetchStatus !== fetchStatus.SUCCESS) {
       dispatch(fetchDeliveryServiceAccounts());
     }
+    if (chanelFetchStatus !== fetchStatus.SUCCESS) {
+      dispatch(fetchAllChanel());
+    }
   }, []);
 
-  const fetchOrders = (filters) => dispatch(fetchAllOrder({ body: { sort: sortModel, page, pageSize, filters } }));
+  const fetchOrders = (filters) => {
+    let _filters = filters.filter((f) => f.column !== 'chanel_id');
+    let chanelFilter = filters.find((f) => f.column === 'chanel_id');
+    if (chanelFilter) {
+      chanelFilter = { ...chanelFilter, value: chanelFilter.value.map((c) => c.id) };
+    }
+    dispatch(fetchAllOrder({ body: { sort: sortModel, page, pageSize, filters: [..._filters, chanelFilter] } }));
+  };
 
   useEffect(() => {
     fetchOrders(filters);
@@ -531,7 +545,7 @@ const OrderTable = memo(() => {
     return (
       <GridToolbarContainer>
         <GridToolbarColumnsButton />
-        <GridToolbarDensitySelector />
+        {/* <GridToolbarDensitySelector /> */}
         {/* <Button
           onClick={displayFilterModal}
           size="small"
@@ -621,10 +635,32 @@ const OrderTable = memo(() => {
         </Button>
 
         {/* <DateRangePicker
-        startPeriod={startPeriod}
-        endPeriod={endPeriod}
-        onStartDateSelect={(date) => dispatch(setReportPeriod({ period: 'startPeriod', value: date }))}
-        onEndDateSelect={(date) => dispatch(setReportPeriod({ period: 'endPeriod', value: date }))}
+          startPeriod={filters.find((f) => f.column === 'assignedAt' && f.op === 'Date is after')?.value}
+          endPeriod={filters.find((f) => f.column === 'assignedAt' && f.op === 'Date is before')?.value}
+          onStartDateSelect={(date) =>
+            dispatch(
+              setOrderFilters([
+                ...filters.filter((f) => f.column === 'assignedAt' && f.op === 'Date is after'),
+                {
+                  column: 'assignedAt',
+                  op: 'Date is after',
+                  value: date
+                }
+              ])
+            )
+          }
+          onEndDateSelect={(date) =>
+            dispatch(
+              setOrderFilters([
+                ...filters.filter((f) => f.column === 'assignedAt' && f.op === 'Date is before'),
+                {
+                  column: 'assignedAt',
+                  op: 'Date is before',
+                  value: date
+                }
+              ])
+            )
+          }
         /> */}
 
         <GridDropdownFilter
@@ -641,6 +677,24 @@ const OrderTable = memo(() => {
               setOrderFilters([
                 ...filters.filter((filter) => filter.column !== 'status'),
                 { column: 'status', op: 'Text is any', value: e.target.value }
+              ])
+            );
+          }}
+        />
+        <GridDropdownFilter
+          multiple
+          label="filter by chanel"
+          options={chanel?.map((c) => ({ id: c.id, label: c.name, value: c.id }))}
+          value={filters?.find((filter) => filter.column === 'chanel_id')?.value || []}
+          onChange={(e) => {
+            if (e.target.value.length === 0) {
+              dispatch(setOrderFilters([...filters.filter((filter) => filter.column !== 'chanel_id')]));
+              return;
+            }
+            dispatch(
+              setOrderFilters([
+                ...filters.filter((filter) => filter.column !== 'chanel_id'),
+                { column: 'chanel_id', op: 'Text is any', value: e.target.value }
               ])
             );
           }}

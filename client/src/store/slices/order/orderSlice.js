@@ -11,6 +11,7 @@ const initialState = {
     pageSize: 100,
     total: 0,
     filters: [],
+    chanelFilter: [],
     sort: [{ field: 'createdAt', sort: 'desc' }],
     nextOrder: null,
     preOrder: null
@@ -36,6 +37,9 @@ const orderSlice = createSlice({
     },
     setOrderFilters: (state, action) => {
       state.list.filters = action.payload;
+    },
+    setOrderChanelFilters: (state, action) => {
+      state.list.chanelFilter = action.payload;
     },
     setOrderSort: (state, action) => {
       state.list.sort = action.payload;
@@ -114,5 +118,6 @@ const orderSlice = createSlice({
     });
   }
 });
-export const { setOrderPagination, setOrderFilters, setOrderSort, setOrder, setNextPreOrder, clearOrderState } = orderSlice.actions;
+export const { setOrderPagination, setOrderFilters, setOrderChanelFilters, setOrderSort, setOrder, setNextPreOrder, clearOrderState } =
+  orderSlice.actions;
 export default orderSlice.reducer;
