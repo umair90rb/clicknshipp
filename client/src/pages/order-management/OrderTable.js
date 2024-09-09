@@ -503,12 +503,12 @@ const OrderTable = memo(() => {
   }, []);
 
   const fetchOrders = (filters) => {
-    let _filters = filters.filter((f) => f.column !== 'chanel_id');
-    let chanelFilter = filters.find((f) => f.column === 'chanel_id');
-    if (chanelFilter) {
-      chanelFilter = { ...chanelFilter, value: chanelFilter.value.map((c) => c.id) };
-    }
-    dispatch(fetchAllOrder({ body: { sort: sortModel, page, pageSize, filters: [..._filters, chanelFilter] } }));
+    // let _filters = filters.filter((f) => f.column !== 'chanel_id');
+    // let chanelFilter = filters.find((f) => f.column === 'chanel_id');
+    // if (chanelFilter) {
+    //   chanelFilter = { ...chanelFilter, value: chanelFilter.value.map((c) => c.id) };
+    // }
+    dispatch(fetchAllOrder({ body: { sort: sortModel, page, pageSize, filters } }));
   };
 
   useEffect(() => {
@@ -681,7 +681,7 @@ const OrderTable = memo(() => {
             );
           }}
         />
-        <GridDropdownFilter
+        {/* <GridDropdownFilter
           multiple
           label="filter by chanel"
           options={chanel?.map((c) => ({ id: c.id, label: c.name, value: c.id }))}
@@ -698,7 +698,7 @@ const OrderTable = memo(() => {
               ])
             );
           }}
-        />
+        /> */}
         <GridDropdownFilter
           label="filter by tags"
           options={ORDER_TAGS}
