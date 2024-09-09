@@ -225,9 +225,6 @@ class OrderService {
         user_id: req.user.id,
         event: `order booked with ${deliveryAccount?.service}, tracking number: ${cn}, brand no: ${order?.brand?.shipment_series}`,
       });
-      // await order.brand.increment({
-      //   shipment_series: order.brand.shipment_series + 1,
-      // });
       console.log(order.brand_id, "order.brand_id");
       await Brand.increment(
         { shipment_series: 1 },
@@ -434,18 +431,7 @@ class OrderService {
 
   async findDuplications(order) {
     try {
-      if (
-        order &&
-        order.items &&
-        order.items.length > 0 &&
-        order.customer.phone
-      ) {
-        const duplicateOrderItemWhere = order.items.map((item) => ({
-          [Op.and]: [
-            { product_id: item?.product_id },
-            { variant_id: item?.variant_id },
-          ],
-        }));
+      if (order && order.customer.phone) {
         return Order.findAll({
           attributes: ["id", "order_number", "status"],
           where: {
@@ -464,12 +450,6 @@ class OrderService {
               where: {
                 phone: order?.customer?.phone || order?.address?.phone,
               },
-            },
-            {
-              attributes: [],
-              model: OrderItem,
-              as: "items",
-              where: duplicateOrderItemWhere,
             },
           ],
         });

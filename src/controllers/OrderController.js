@@ -981,15 +981,10 @@ export default {
         }
       }
       if (status === "Duplicate") {
-        console.log(status === "Duplicate", `status === "Duplicate"`);
         orderUpdateData["assignedAt"] = null;
         orderUpdateData["user_id"] = null;
       }
       if (order.status === "No Pick" && status === "Confirmed") {
-        console.log(
-          `((order.status = "No Pick" && status === "Confirmed"))`,
-          (order.status = "No Pick" && status === "Confirmed")
-        );
         orderUpdateData = {
           ...orderUpdateData,
           assignedAt: new Date().toISOString(),
