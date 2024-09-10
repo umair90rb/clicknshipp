@@ -49,7 +49,7 @@ import { formatDateTime } from 'utils/format-date';
 import { useGridApiRef } from '../../../node_modules/@mui/x-data-grid/index';
 import GridEditTextarea from './GridEditTextarea';
 import ORDER_STATUSES, { ORDER_TAGS } from 'constants/orderStatuses';
-import { cityFetchStatusSelector } from 'store/slices/city/citySelector';
+import { cityCitiesSelector, cityFetchStatusSelector } from 'store/slices/city/citySelector';
 import fetchStatus from 'constants/fetchStatuses';
 import { fetchAllCities } from 'store/slices/city/fetchCity';
 import GridSearchSelect from './GridSearchSelect';
@@ -365,6 +365,7 @@ const OrderTable = memo(() => {
   const sortModel = useSelector(orderSortSelector);
   const total = useSelector(orderTotalSelector);
 
+  const citiesList = useSelector(cityCitiesSelector);
   const citiesFetchStatus = useSelector(cityFetchStatusSelector);
   const deliveryServiceAccountsList = useSelector(deliveryServiceAccountsListSelector);
   const deliveryServiceAccountsFetchStatus = useSelector(deliveryServiceAccountsFetchStatusSelector);
@@ -666,7 +667,7 @@ const OrderTable = memo(() => {
         <GridDropdownFilter
           multiple
           label="filter by status"
-          options={[...ORDER_STATUSES, 'Booked']}
+          options={[...ORDER_STATUSES, 'Booked', 'Booking Error']}
           value={filters.find((filter) => filter.column === 'status' && filter.op !== 'Text not in')?.value || []}
           onChange={(e) => {
             if (e.target.value.length === 0) {
@@ -712,6 +713,26 @@ const OrderTable = memo(() => {
               setOrderFilters([
                 ...filters.filter((filter) => filter.column !== 'tags'),
                 { column: 'tags', op: 'Text contains', value: e.target.value }
+              ])
+            );
+          }}
+        />
+
+        {/* <GridSearchSelect /> */}
+        <GridDropdownFilter
+          multiple
+          label="filter by cities"
+          options={citiesList}
+          value={filters.find((filter) => filter.column === 'city')?.value || []}
+          onChange={(e) => {
+            if (!e.target.value || e.target.value === 'All') {
+              dispatch(setOrderFilters([...filters.filter((filter) => filter.column !== 'city')]));
+              return;
+            }
+            dispatch(
+              setOrderFilters([
+                ...filters.filter((filter) => filter.column !== 'city'),
+                { column: 'city', op: 'Text is any', value: e.target.value }
               ])
             );
           }}

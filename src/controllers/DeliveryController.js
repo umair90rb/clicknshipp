@@ -53,7 +53,12 @@ export default {
           "Operation successful"
         );
       }
-      throw new Error("Something goes wrong");
+      return sendErrorResponse(
+        res,
+        500,
+        "Could not perform operation at this time, kindly try again later.",
+        null
+      );
     } catch (error) {
       console.error(error);
       return sendErrorResponse(

@@ -196,7 +196,6 @@ class OrderService {
 
   async updateOrderAfterBooking(bookingResponse, order, deliveryAccount) {
     const { cn, slip, isSuccess, error, response } = bookingResponse || {};
-    console.log(bookingResponse, "bookingResponse");
     if (isSuccess) {
       let delivery = await Delivery.findOne({
         where: { order_id: order.id },
@@ -222,7 +221,7 @@ class OrderService {
       await order.update({ status: "Booked" });
       await OrderHistory.create({
         order_id: order.id,
-        user_id: req.user.id,
+        user_id: null,
         event: `order booked with ${deliveryAccount?.service}, tracking number: ${cn}, brand no: ${order?.brand?.shipment_series}`,
       });
       console.log(order.brand_id, "order.brand_id");
@@ -231,7 +230,7 @@ class OrderService {
       await order.update({ status: "Booking Error" });
       await order.createHistory({
         order_id: order.id,
-        user_id: req.user.id,
+        user_id: null,
         event: `error in order booking with ${deliveryAccount?.service}, error: ${error}`,
       });
       return null;
