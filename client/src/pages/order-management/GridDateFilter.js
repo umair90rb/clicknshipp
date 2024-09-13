@@ -2,7 +2,6 @@ import { FormControl } from '@mui/material';
 import { formatDate } from 'utils/format-date';
 
 export function GridDateFilter({ label = '', value, onChange }) {
-  console.log(value);
   return (
     <FormControl sx={{ m: 1 }} size="small">
       <input

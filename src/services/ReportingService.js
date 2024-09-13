@@ -1,7 +1,7 @@
-import { Op, QueryTypes, literal, fn, col } from "sequelize";
-import { sequelize } from "../models";
-import model from "../models";
-import { PERMISSIONS } from "../constants/constants";
+import { Op, QueryTypes, literal, fn, col } from 'sequelize';
+import { sequelize } from '../models';
+import model from '../models';
+import { PERMISSIONS } from '../constants/constants';
 const { Order, OrderItem, Delivery, User, Chanel, Role, Permission } = model;
 
 class ReportingService {
@@ -18,72 +18,72 @@ class ReportingService {
       },
     };
     if (reportBrand && reportBrand.length) {
-      where["brand_id"] = {
+      where['brand_id'] = {
         [Op.in]: reportBrand,
       };
     }
 
     if (reportChanel && reportChanel.length) {
-      where["chanel_id"] = {
+      where['chanel_id'] = {
         [Op.in]: reportChanel,
       };
     }
     return Order.findAll({
       attributes: [
-        "user_id",
+        'user_id',
         [
           fn(
-            "SUM",
+            'SUM',
             literal(
               'CASE WHEN "Order"."status" != \'Duplicate\' THEN 1 ELSE 0 END'
             )
           ),
-          "total",
+          'total',
         ],
         [
           fn(
-            "SUM",
+            'SUM',
             literal(
               'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'Booked\' THEN 1 ELSE 0 END'
             )
           ),
-          "confirmed",
+          'confirmed',
         ],
         [
           fn(
-            "SUM",
+            'SUM',
             literal(
               'CASE WHEN "Order"."status" = \'Assigned\' THEN 1 ELSE 0 END'
             )
           ),
-          "assigned",
+          'assigned',
         ],
         [
           fn(
-            "SUM",
+            'SUM',
             literal(
               'CASE WHEN "Order"."status" = \'No Pick\' OR "Order"."status" = \'Payment Pending\' THEN 1 ELSE 0 END'
             )
           ),
-          "no_pick",
+          'no_pick',
         ],
         [
           fn(
-            "SUM",
+            'SUM',
             literal('CASE WHEN "Order"."status" = \'Cancel\' THEN 1 ELSE 0 END')
           ),
-          "cancel",
+          'cancel',
         ],
       ],
       include: [
         {
           model: User,
-          as: "user",
-          attributes: ["id", "name"],
+          as: 'user',
+          attributes: ['id', 'name'],
         },
       ],
       where,
-      group: ["Order.user_id", "user.id"],
+      group: ['Order.user_id', 'user.id'],
     });
   }
 
@@ -98,114 +98,151 @@ class ReportingService {
       },
     };
     if (reportBrand && reportBrand.length) {
-      where["brand_id"] = {
+      where['brand_id'] = {
         [Op.in]: reportBrand,
       };
     }
 
     if (reportChanel && reportChanel.length) {
-      where["chanel_id"] = {
+      where['chanel_id'] = {
         [Op.in]: reportChanel,
       };
     }
     return Order.findAll({
       attributes: [
-        [col("items.name"), "name"],
-        [fn("SUM", col("items.quantity")), "generated"],
+        [col('items.name'), 'name'],
         [
           fn(
-            "SUM",
+            'SUM',
             literal(
-              'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'Booked\' THEN 1 ELSE 0 END'
+              'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'No Pick\' OR "Order"."status" = \'Payment Pending\' OR "Order"."status" = \'Booked\' OR "Order"."status" = \'Booking Error\' OR "Order"."status" = \'Assigned\' THEN 1 ELSE 0 END'
             )
           ),
-          "confirmed",
+          'generated',
         ],
         [
           fn(
-            "SUM",
+            'SUM',
             literal(
-              'CASE WHEN "Order"."status" = \'No Pick\' THEN 1 ELSE 0 END'
+              'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'Booked\' OR "Order"."status" = \'Booking Error\' THEN 1 ELSE 0 END'
             )
           ),
-          "no_pick",
+          'confirmed',
         ],
         [
           fn(
-            "SUM",
-            literal('CASE WHEN "Order"."status" = \'Cancel\' THEN 1 ELSE 0 END')
+            'SUM',
+            literal(
+              'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'No Pick\' OR "Order"."status" = \'Payment Pending\' OR "Order"."status" = \'Booked\' OR "Order"."status" = \'Booking Error\' OR "Order"."status" = \'Assigned\' THEN "items"."quantity" ELSE 0 END'
+            )
           ),
-          "cancel",
+          'unit_generated',
         ],
         [
           fn(
-            "SUM",
+            'SUM',
+            literal(
+              'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'Booked\' OR "Order"."status" = \'Booking Error\' THEN "items"."quantity" ELSE 0 END'
+            )
+          ),
+          'unit_confirmed',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              'CASE WHEN  "Order"."status" = \'Booked\' THEN "items"."quantity" ELSE 0 END'
+            )
+          ),
+          'unit_booked',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              'CASE WHEN "Order"."status" = \'No Pick\' THEN "items"."quantity" ELSE 0 END'
+            )
+          ),
+          'unit_no_pick',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              'CASE WHEN "Order"."status" = \'Cancel\' THEN "items"."quantity" ELSE 0 END'
+            )
+          ),
+          'unit_cancel',
+        ],
+        [
+          fn(
+            'SUM',
             literal(
               `CASE WHEN "delivery"."courier" = 'postex' THEN "items"."quantity" ELSE 0 END`
             )
           ),
-          "postex",
+          'postex',
         ],
         [
           fn(
-            "SUM",
+            'SUM',
             literal(
               `CASE WHEN "delivery"."courier" = 'tcs' THEN "items"."quantity" ELSE 0 END`
             )
           ),
-          "tcs",
+          'tcs',
         ],
         [
           fn(
-            "SUM",
+            'SUM',
             literal(
               `CASE WHEN "delivery"."courier" = 'trax' THEN "items"."quantity" ELSE 0 END`
             )
           ),
-          "trax",
+          'trax',
         ],
         [
           fn(
-            "SUM",
+            'SUM',
             literal(
               `CASE WHEN "delivery"."courier" = 'deawoo' THEN "items"."quantity" ELSE 0 END`
             )
           ),
-          "deawoo",
+          'deawoo',
         ],
         [
           fn(
-            "SUM",
+            'SUM',
             literal(
               `CASE WHEN "delivery"."courier" = 'leapard' THEN "items"."quantity" ELSE 0 END`
             )
           ),
-          "leapard",
+          'leapard',
         ],
         [
           fn(
-            "SUM",
+            'SUM',
             literal(
               `CASE WHEN "delivery"."courier" = 'callcourier' THEN "items"."quantity" ELSE 0 END`
             )
           ),
-          "callcourier",
+          'callcourier',
         ],
       ],
       include: [
         {
           model: OrderItem,
-          as: "items",
+          as: 'items',
           attributes: [],
         },
         {
           model: Delivery,
-          as: "delivery",
+          as: 'delivery',
           attributes: [],
         },
       ],
       where,
-      group: ["items.name"],
+      group: ['items.name'],
       raw: true,
     });
   }
@@ -221,66 +258,66 @@ class ReportingService {
       },
     };
     if (reportBrand && reportBrand.length) {
-      where["brand_id"] = {
+      where['brand_id'] = {
         [Op.in]: reportBrand,
       };
     }
     if (reportChanel && reportChanel.length) {
-      where["chanel_id"] = {
+      where['chanel_id'] = {
         [Op.in]: reportChanel,
       };
     }
     return Order.findAll({
       attributes: [
-        [col("chanel.name"), "chanel"],
-        [col("user.name"), "agent"],
-        [fn("COUNT", col("Order.id")), "orders"],
+        [col('chanel.name'), 'chanel'],
+        [col('user.name'), 'agent'],
+        [fn('COUNT', col('Order.id')), 'orders'],
         [
           fn(
-            "SUM",
+            'SUM',
             literal(
               'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'Booked\' THEN 1 ELSE 0 END'
             )
           ),
-          "confirmed",
+          'confirmed',
         ],
         [
           fn(
-            "SUM",
+            'SUM',
             literal(
               'CASE WHEN "Order"."status" = \'No Pick\' THEN 1 ELSE 0 END'
             )
           ),
-          "no_pick",
+          'no_pick',
         ],
         [
           fn(
-            "SUM",
+            'SUM',
             literal('CASE WHEN "Order"."status" = \'Cancel\' THEN 1 ELSE 0 END')
           ),
-          "cancel",
+          'cancel',
         ],
-        [fn("SUM", col("items.quantity")), "units"],
+        [fn('SUM', col('items.quantity')), 'units'],
       ],
       include: [
         {
           model: Chanel,
-          as: "chanel",
+          as: 'chanel',
           attributes: [],
         },
         {
           model: OrderItem,
-          as: "items",
+          as: 'items',
           attributes: [],
         },
         {
           model: User,
-          as: "user",
+          as: 'user',
           attributes: [],
         },
       ],
       where,
-      group: ["Order.chanel_id", "chanel.name", "user.name"],
+      group: ['Order.chanel_id', 'chanel.name', 'user.name'],
       raw: true,
     });
   }
@@ -295,32 +332,32 @@ class ReportingService {
         [Op.ne]: null,
       },
       status: {
-        [Op.in]: ["Confirmed", "Booked"],
+        [Op.in]: ['Confirmed', 'Booked'],
       },
     };
     if (reportBrand && reportBrand.length) {
-      where["brand_id"] = {
+      where['brand_id'] = {
         [Op.in]: reportBrand,
       };
     }
 
     if (reportChanel && reportChanel.length) {
-      where["chanel_id"] = {
+      where['chanel_id'] = {
         [Op.in]: reportChanel,
       };
     }
     const users = await User.findAll({
-      attributes: ["id", "name"],
+      attributes: ['id', 'name'],
       include: {
         model: Role,
-        as: "roles",
+        as: 'roles',
         through: {
           attributes: [],
         },
         required: true,
         include: [
           {
-            as: "permissions",
+            as: 'permissions',
             model: Permission,
             required: true,
             where: { name: PERMISSIONS.PERMISSION_ASSIGN_ORDERS },
@@ -331,27 +368,27 @@ class ReportingService {
         ],
       },
     });
-    const columns = [[col("items.name"), "name"]];
+    const columns = [[col('items.name'), 'name']];
     for (let index = 0; index < users.length; index++) {
       const user = users[index];
       columns.push(
         [
           fn(
-            "SUM",
+            'SUM',
             literal(
               `CASE WHEN "Order"."user_id" = ${user.id} AND "Order"."status" IN ('Confirmed', 'Booked') THEN "items"."quantity" ELSE 0 END`
             )
           ),
-          `${user.name.toLowerCase().split(" ").join("_")}_confirmed`,
+          `${user.name.toLowerCase().split(' ').join('_')}_confirmed`,
         ],
         [
           fn(
-            "SUM",
+            'SUM',
             literal(
               `CASE WHEN "Order"."user_id" = ${user.id} AND "Order"."status" = 'Booked' THEN "items"."quantity" ELSE 0 END`
             )
           ),
-          `${user.name.toLowerCase().split(" ").join("_")}_delivered`,
+          `${user.name.toLowerCase().split(' ').join('_')}_delivered`,
         ]
       );
     }
@@ -361,17 +398,17 @@ class ReportingService {
       include: [
         {
           model: OrderItem,
-          as: "items",
+          as: 'items',
           attributes: [],
         },
         {
           model: User,
-          as: "user",
+          as: 'user',
           attributes: [],
         },
       ],
       where,
-      group: ["items.name"],
+      group: ['items.name'],
       raw: true,
     });
   }

@@ -53,25 +53,59 @@ const columns = [
       return params.value;
     }
   },
-
   {
-    field: 'no_pick',
-    headerName: 'No Pick',
+    field: 'unit_generated',
+    headerName: 'Unit Generated',
     flex: 0.5,
     valueGetter: (params) => {
       if (params.row.id === 'TOTAL') {
-        return params.row.totalNoPick;
+        return params.row.totalUnitGenerated;
       }
       return params.value;
     }
   },
   {
-    field: 'cancel',
-    headerName: 'Cancel',
+    field: 'unit_confirmed',
+    headerName: 'Unit Confirmed',
     flex: 0.5,
     valueGetter: (params) => {
       if (params.row.id === 'TOTAL') {
-        return params.row.totalCancel;
+        return params.row.totalUnitConfirmed;
+      }
+      return params.value;
+    }
+  },
+
+  {
+    field: 'unit_booked',
+    headerName: 'Unit Booked',
+    flex: 0.5,
+    valueGetter: (params) => {
+      if (params.row.id === 'TOTAL') {
+        return params.row.totalUnitBooked;
+      }
+      return params.value;
+    }
+  },
+
+  {
+    field: 'unit_no_pick',
+    headerName: 'Unit No Pick',
+    flex: 0.5,
+    valueGetter: (params) => {
+      if (params.row.id === 'TOTAL') {
+        return params.row.totalUnitNoPick;
+      }
+      return params.value;
+    }
+  },
+  {
+    field: 'unit_cancel',
+    headerName: 'Unit Cancel',
+    flex: 0.5,
+    valueGetter: (params) => {
+      if (params.row.id === 'TOTAL') {
+        return params.row.totalUnitCancel;
       }
       return params.value;
     }
