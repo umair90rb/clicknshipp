@@ -1,11 +1,11 @@
-import { Op } from "sequelize";
-import { sequelize } from "../models/index";
-import model from "../models";
-import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
-import { extract } from "../utils/extract";
-import excelToJson from "../helpers/excelToJson";
-import formatPhoneNumber from "../helpers/formatPhone";
-import { getStartOfDay, getEndOfDay } from "../helpers/pgDateFormat";
+import { Op } from 'sequelize';
+import { sequelize } from '../models/index';
+import model from '../models';
+import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
+import { extract } from '../utils/extract';
+import excelToJson from '../helpers/excelToJson';
+import formatPhoneNumber from '../helpers/formatPhone';
+import { getStartOfDay, getEndOfDay } from '../helpers/pgDateFormat';
 import {
   PERMISSIONS,
   order_data_keys,
@@ -13,10 +13,10 @@ import {
   customer_data_keys,
   item_data_keys,
   FILTER_COLUMNS,
-} from "../constants/constants";
-import logger from "../middleware/logger";
-import _orderService from "../services/OrderService";
-import bookingQueue from "../queues/bookingQueue";
+} from '../constants/constants';
+import logger from '../middleware/logger';
+import _orderService from '../services/OrderService';
+import bookingQueue from '../queues/bookingQueue';
 
 const {
   Order,
@@ -31,26 +31,26 @@ const {
 } = model;
 
 const FILTER_OP = {
-  "Is empty": Op.eq,
-  "Is not empty": Op.ne,
-  "Text contains": Op.iRegexp,
-  "Text does not contain": Op.notIRegexp,
-  "Text starts with": Op.startsWith,
-  "Text ends with": Op.endsWith,
-  "Text is exactly": Op.eq,
-  "Date is": Op.eq,
-  "Date is before": Op.lt,
-  "Date is after": Op.gt,
-  "Greater than": Op.gt,
-  "Greater than or equal to": Op.gte,
-  "Less than": Op.lt,
-  "Less than or equal to": Op.lte,
-  "Is equal to": Op.eq,
-  "Is not equal to": Op.ne,
-  "Is between": Op.between,
-  "Is not between": Op.notBetween,
-  "Text is any": Op.in,
-  "Text not in": Op.notIn,
+  'Is empty': Op.eq,
+  'Is not empty': Op.ne,
+  'Text contains': Op.iRegexp,
+  'Text does not contain': Op.notIRegexp,
+  'Text starts with': Op.startsWith,
+  'Text ends with': Op.endsWith,
+  'Text is exactly': Op.eq,
+  'Date is': Op.eq,
+  'Date is before': Op.lt,
+  'Date is after': Op.gt,
+  'Greater than': Op.gt,
+  'Greater than or equal to': Op.gte,
+  'Less than': Op.lt,
+  'Less than or equal to': Op.lte,
+  'Is equal to': Op.eq,
+  'Is not equal to': Op.ne,
+  'Is between': Op.between,
+  'Is not between': Op.notBetween,
+  'Text is any': Op.in,
+  'Text not in': Op.notIn,
 };
 
 export default {
@@ -71,58 +71,59 @@ export default {
         include: [
           {
             model: User,
-            as: "user",
-            attributes: ["id", "name"],
+            as: 'user',
+            attributes: ['id', 'name'],
           },
           {
             model: Customer,
-            as: "customer",
-            attributes: ["id", "first_name", "last_name", "phone"],
+            as: 'customer',
+            attributes: ['id', 'first_name', 'last_name', 'phone'],
           },
           {
             model: OrderItem,
-            as: "items",
-            attributes: ["id", "name", "quantity", "price"],
+            as: 'items',
+            attributes: ['id', 'name', 'quantity', 'price'],
           },
           {
             model: Chanel,
-            as: "chanel",
-            attributes: ["id", "name"],
+            as: 'chanel',
+            attributes: ['id', 'name'],
           },
           {
             model: Payments,
-            as: "payments",
+            as: 'payments',
             attributes: {
-              exclude: ["order_id", "updatedAt"],
+              exclude: ['order_id', 'updatedAt'],
             },
           },
           {
             model: Delivery,
-            as: "delivery",
+            as: 'delivery',
             attributes: {
-              exclude: ["slip_link", "createdAt", "updatedAt", "order_id"],
+              exclude: ['slip_link', 'order_id', 'account_id'],
             },
           },
           {
             model: Address,
-            as: "address",
-            attributes: ["id", "name", "phone", "city", "address1"],
+            as: 'address',
+            attributes: ['id', 'name', 'phone', 'city', 'address1'],
+            required: true,
           },
         ],
         attributes: {
-          include: [["delivery_account_id", "courier"]],
+          include: [['delivery_account_id', 'courier']],
           exclude: [
-            "data",
-            "customer_id",
-            "user_id",
-            "chanel_id",
-            "brand_id",
-            "UserId",
-            "CustomerId",
-            "updatedAt",
+            'data',
+            'customer_id',
+            'user_id',
+            'chanel_id',
+            'brand_id',
+            'UserId',
+            'CustomerId',
+            'updatedAt',
           ],
         },
-        order: [["assignedAt", "ASC"]],
+        order: [['assignedAt', 'ASC']],
       };
       if (pageSize > -1) {
         query.limit = pageSize;
@@ -163,7 +164,11 @@ export default {
               ..._filters,
             };
           }
-          if (column === FILTER_COLUMNS.status && value[0] === "No Pick") {
+          if (
+            column === FILTER_COLUMNS.status &&
+            value.length === 1 &&
+            value[0] === 'No Pick'
+          ) {
             delete query.where.user_id;
           }
         }
@@ -175,11 +180,11 @@ export default {
         orders: { ...orders, ...req.body },
       });
     } catch (e) {
-      console.error(e);
+      logger.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
@@ -189,7 +194,7 @@ export default {
       const { id } = req.params;
       const orderExisted = await Order.findByPk(id, { raw: true });
       if (!orderExisted) {
-        return sendErrorResponse(res, 404, "No data found with this id.");
+        return sendErrorResponse(res, 404, 'No data found with this id.');
       }
       const order = await _orderService.loadFullOrder(id);
       if (order) {
@@ -197,11 +202,11 @@ export default {
       }
       return sendSuccessResponse(res, 200, { order });
     } catch (e) {
-      console.error(e);
+      logger.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
@@ -210,8 +215,8 @@ export default {
   async createShopifyOrder(req, res) {
     try {
       const body = req.body;
-      const storeDomain = req.get("x-shopify-shop-domain");
-      const sha256 = req.get("x-shopify-hmac-sha256");
+      const storeDomain = req.get('x-shopify-shop-domain');
+      const sha256 = req.get('x-shopify-hmac-sha256');
       let chanel;
       if (storeDomain) {
         chanel = await Chanel.findOne({
@@ -223,14 +228,14 @@ export default {
         });
       }
       const order_data = extract(body, order_data_keys);
-      const address_data = extract(body["shipping_address"], address_data_keys);
-      let customer_data = extract(body["customer"], customer_data_keys);
+      const address_data = extract(body['shipping_address'], address_data_keys);
+      let customer_data = extract(body['customer'], customer_data_keys);
       customer_data.phone = formatPhoneNumber(
         !!customer_data.phone ? customer_data.phone : address_data.phone
       );
       customer_data = { shopify_id: customer_data.id, ...customer_data };
       delete customer_data.id;
-      const order_items_data = body["line_items"].map((item) =>
+      const order_items_data = body['line_items'].map((item) =>
         extract(item, item_data_keys)
       );
       let order = await Order.create({
@@ -250,10 +255,10 @@ export default {
       await address.setCustomer(customer.id);
       const items = await OrderItem.bulkCreate(order_items_data);
       await order.addItems(items);
-      await order.createHistory({ event: "order create via shopify web hook" });
+      await order.createHistory({ event: 'order create via shopify web hook' });
       order = await _orderService.loadFullOrder(order.id);
       await _orderService.checkOrderDuplication(order);
-      return sendSuccessResponse(res, 201, {}, "Order created successfully");
+      return sendSuccessResponse(res, 201, {}, 'Order created successfully');
     } catch (error) {
       logger.error(error.message, {
         stack: error.stack,
@@ -261,7 +266,7 @@ export default {
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         error
       );
     }
@@ -314,11 +319,11 @@ export default {
         await _orderService.findSameDayOrderByPhone(phone);
       if (orderExistFromCustomer) {
         const { status } = orderExistFromCustomer;
-        if (status === "Confirmed") {
+        if (status === 'Confirmed') {
           return sendErrorResponse(
             res,
             500,
-            "Order from this customer already confirmed!",
+            'Order from this customer already confirmed!',
             null,
             orderExistFromCustomer.get()
           );
@@ -359,10 +364,10 @@ export default {
       if (paymentsArray && paymentsArray.length) {
         paymentsArray.forEach(({ type, amount }) => {
           switch (type) {
-            case "received":
+            case 'received':
               receivedPayments += amount;
               break;
-            case "pending":
+            case 'pending':
               pendingPayments += amount;
               break;
           }
@@ -379,7 +384,7 @@ export default {
         total_price: total_price.toFixed(2),
         total_tax,
         total_discounts: total_discount.toFixed(2),
-        order_number: Math.random().toString().split(".")[1].slice(0, 4),
+        order_number: Math.random().toString().split('.')[1].slice(0, 4),
       });
       if (paymentsArray && paymentsArray.length) {
         await Payments.bulkCreate(
@@ -392,8 +397,8 @@ export default {
         city,
         zip,
         province,
-        country: "Pakistan",
-        country_code: "PK",
+        country: 'Pakistan',
+        country_code: 'PK',
       });
       let customer;
       if (customerId) {
@@ -423,16 +428,16 @@ export default {
       await order.addItems(items);
       await order.reload();
       await order.createHistory({
-        event: "order created",
+        event: 'order created',
         user_id: req.user.id,
       });
       if (orderExistFromCustomer) {
         const { status } = orderExistFromCustomer;
         let existedOrderUpdateData = {
-          tags: "Duplicate,",
-          status: "Duplicate",
+          tags: 'Duplicate,',
+          status: 'Duplicate',
         };
-        if (status === "Assigned") {
+        if (status === 'Assigned') {
           existedOrderUpdateData = {
             ...existedOrderUpdateData,
             user_id: null,
@@ -447,14 +452,14 @@ export default {
         res,
         201,
         { order: orderWithoutData },
-        "Order created successfully"
+        'Order created successfully'
       );
     } catch (error) {
-      console.log(error.stack, "error stack");
+      console.log(error.stack, 'error stack');
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         error
       );
     }
@@ -464,9 +469,9 @@ export default {
     try {
       const { chanel_id } = req.body;
       const json = await excelToJson(req.file.buffer);
-      console.log(json.length, "json.length");
+      console.log(json.length, 'json.length');
       if (!json.length) {
-        return sendErrorResponse(res, 500, "File is empty.");
+        return sendErrorResponse(res, 500, 'File is empty.');
       }
       const chanel = await Chanel.findByPk(chanel_id);
       const brand_id = chanel.brand_id || null;
@@ -488,8 +493,8 @@ export default {
           SKU,
           ...rest
         }) => {
-          const created_at = rest["created at"];
-          const phone = rest["Phone Number"];
+          const created_at = rest['created at'];
+          const phone = rest['Phone Number'];
           const items = [
             {
               product_id: null,
@@ -508,15 +513,15 @@ export default {
             city: City,
             zip: null,
             province: null,
-            country: "Pakistan",
-            country_code: "PK",
+            country: 'Pakistan',
+            country_code: 'PK',
           };
           const customer = { phone: formatPhoneNumber(phone), name: Name };
           const order = {
             chanel_id: parseInt(chanel_id),
             brand_id,
             user_id: null,
-            status: "Received",
+            status: 'Received',
             subtotal_price: Price,
             total_price: Price,
             total_tax: 0,
@@ -543,13 +548,13 @@ export default {
           _orderService.createSubmissionOrder(order, req.user.id)
         )
       );
-      return sendSuccessResponse(res, 200, {}, "Orders imported successfully!");
+      return sendSuccessResponse(res, 200, {}, 'Orders imported successfully!');
     } catch (error) {
       console.error(error);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         error
       );
     }
@@ -558,18 +563,18 @@ export default {
   async updateStatus(req, res) {
     try {
       const { orderId, status, reason, remarks } = req.body;
-      if (status === "Cancel" && !reason) {
+      if (status === 'Cancel' && !reason) {
         return sendErrorResponse(
           res,
           402,
-          "To cancel order you need to add reason for cancelation!"
+          'To cancel order you need to add reason for cancelation!'
         );
       }
       const order = await Order.findByPk(orderId);
       if (!order) {
-        return sendErrorResponse(res, 404, "No data found with this id.");
+        return sendErrorResponse(res, 404, 'No data found with this id.');
       }
-      if (order.status === "Confirmed") {
+      if (order.status === 'Confirmed') {
         return sendErrorResponse(
           res,
           409,
@@ -581,11 +586,11 @@ export default {
         remarks: remarks || order.remarks,
         cancel_reason: reason || order.cancel_reason,
       };
-      if (status === "Duplicate") {
-        ud["assignedAt"] = null;
-        ud["user_id"] = null;
+      if (status === 'Duplicate') {
+        ud['assignedAt'] = null;
+        ud['user_id'] = null;
       }
-      if ((order.status = "No Pick" && status === "Confirmed")) {
+      if ((order.status = 'No Pick' && status === 'Confirmed')) {
         ud = {
           ...ud,
           assignedAt: new Date().toISOString(),
@@ -595,17 +600,17 @@ export default {
       await order.update(ud);
       await order.createHistory({
         event: `order status updated to ${status}. ${
-          remarks && "remarks:" + remarks
-        }, ${reason && "cancel reason:" + reason}`,
+          remarks && 'remarks:' + remarks
+        }, ${reason && 'cancel reason:' + reason}`,
         user_id: req.user.id,
       });
-      return sendSuccessResponse(res, 200, {}, "Operation successful");
+      return sendSuccessResponse(res, 200, {}, 'Operation successful');
     } catch (error) {
       console.error(error);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         error
       );
     }
@@ -616,7 +621,7 @@ export default {
       const { orderId, label, type, bank, tid, amount, note } = req.body;
 
       if (!orderId) {
-        return sendErrorResponse(res, 404, "No data found with this id.");
+        return sendErrorResponse(res, 404, 'No data found with this id.');
       }
 
       await sequelize.transaction(async (t) => {
@@ -632,7 +637,7 @@ export default {
           { transaction: t }
         );
 
-        await Order.decrement(["total_price", "subtotal_price"], {
+        await Order.decrement(['total_price', 'subtotal_price'], {
           by: amount,
           where: { id: orderId },
           transaction: t,
@@ -646,14 +651,14 @@ export default {
         {
           order,
         },
-        "Operation successful."
+        'Operation successful.'
       );
     } catch (error) {
       console.error(error);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         error
       );
     }
@@ -704,14 +709,14 @@ export default {
         {
           order,
         },
-        "Operation successful."
+        'Operation successful.'
       );
     } catch (error) {
       console.error(error);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         error
       );
     }
@@ -725,10 +730,10 @@ export default {
       if (payments && payments.length) {
         payments.forEach(({ type, amount }) => {
           switch (type) {
-            case "received":
+            case 'received':
               receivedPayments += amount;
               break;
-            case "pending":
+            case 'pending':
               pendingPayments += amount;
               break;
           }
@@ -742,7 +747,7 @@ export default {
             payments.map((payment) => ({ ...payment, order_id: order.id })),
             { transaction: t }
           );
-          await Order.decrement(["total_price", "subtotal_price"], {
+          await Order.decrement(['total_price', 'subtotal_price'], {
             by: receivedPayments,
             where: { id: orderId },
           });
@@ -755,14 +760,14 @@ export default {
         {
           order,
         },
-        "Operation successful."
+        'Operation successful.'
       );
     } catch (error) {
       console.error(error);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         error
       );
     }
@@ -792,7 +797,7 @@ export default {
       } = req.body || {};
       const order = await Order.findByPk(id);
       if (!order) {
-        return sendErrorResponse(res, 404, "No data found with this id.");
+        return sendErrorResponse(res, 404, 'No data found with this id.');
       }
       const orderItems = [];
       let subtotal_price = 0;
@@ -809,10 +814,10 @@ export default {
       if (payments && payments.length) {
         payments.forEach(({ type, amount }) => {
           switch (type) {
-            case "received":
+            case 'received':
               receivedPayments += amount;
               break;
-            case "pending":
+            case 'pending':
               pendingPayments += amount;
               break;
           }
@@ -865,7 +870,7 @@ export default {
       );
       await order.createHistory({
         user_id: req.user.id,
-        event: "order update",
+        event: 'order update',
       });
       const completeOrder = await _orderService.loadFullOrder(order.id);
       return sendSuccessResponse(
@@ -874,14 +879,14 @@ export default {
         {
           order: completeOrder,
         },
-        "Operation successful."
+        'Operation successful.'
       );
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
@@ -904,11 +909,11 @@ export default {
       } = req.body;
       const order = await Order.findByPk(orderId, {
         attributes: {
-          exclude: ["data"],
+          exclude: ['data'],
         },
       });
       if (!order) {
-        return sendErrorResponse(res, 404, "Order not found!");
+        return sendErrorResponse(res, 404, 'Order not found!');
       }
       let customer;
       if (customerId) {
@@ -946,22 +951,22 @@ export default {
       }
       let orderUpdateData = { status, remarks };
       if (customer) {
-        orderUpdateData["customer_id"] = customer.id;
+        orderUpdateData['customer_id'] = customer.id;
       }
       if (delivery_account_id) {
-        orderUpdateData["delivery_account_id"] = delivery_account_id;
-        if (status === "Confirmed") {
-          await bookingQueue.add("bookingJob", {
+        orderUpdateData['delivery_account_id'] = delivery_account_id;
+        if (status === 'Confirmed') {
+          await bookingQueue.add('bookingJob', {
             orderId,
             deliveryAccountId: delivery_account_id,
           });
         }
       }
-      if (status === "Duplicate") {
-        orderUpdateData["assignedAt"] = null;
-        orderUpdateData["user_id"] = null;
+      if (status === 'Duplicate') {
+        orderUpdateData['assignedAt'] = null;
+        orderUpdateData['user_id'] = null;
       }
-      if (order.status === "No Pick" && status === "Confirmed") {
+      if (order.status === 'No Pick' && status === 'Confirmed') {
         orderUpdateData = {
           ...orderUpdateData,
           assignedAt: new Date().toISOString(),
@@ -971,7 +976,7 @@ export default {
       await order.update(orderUpdateData);
       await OrderHistory.create({
         user_id: req.user.id,
-        event: "order updated",
+        event: 'order updated',
         order_id: order.id,
       });
       const completeOrder = await _orderService.loadFullOrder(order.id);
@@ -981,14 +986,14 @@ export default {
         {
           order: completeOrder,
         },
-        "Order updated successfully!"
+        'Order updated successfully!'
       );
     } catch (error) {
       console.error(error);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         error
       );
     }
@@ -1007,13 +1012,13 @@ export default {
           `Order with id ${id} has been deleted successful.`
         );
       }
-      return sendErrorResponse(res, 404, "No data found with this id.");
+      return sendErrorResponse(res, 404, 'No data found with this id.');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
@@ -1057,13 +1062,13 @@ export default {
         { transaction: t }
       );
       await t.commit();
-      return sendSuccessResponse(res, 200, {}, "Orders deleted successful.");
+      return sendSuccessResponse(res, 200, {}, 'Orders deleted successful.');
     } catch (error) {
       await t.rollback();
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         error
       );
     }

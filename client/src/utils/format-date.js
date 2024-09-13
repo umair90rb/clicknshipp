@@ -1,3 +1,4 @@
+import { startOfDay, endOfDay, format } from 'date-fns';
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 export default (date = new Date().toISOString()) => {
@@ -13,6 +14,10 @@ export default (date = new Date().toISOString()) => {
 };
 
 export const getDate = (date) => date.split('T')[0];
+
+export const getStartOfDay = (date = new Date()) => startOfDay(format(date, 'yyyy-MM-dd HH:mm:ss.SSS XXX"'));
+export const getEndOfDay = (date = new Date()) => endOfDay(format(date, 'yyyy-MM-dd HH:mm:ss.SSS XXX"'));
+export const formatDate = (formatStr = 'dd/MM/yyyy', date = new Date()) => format(date, formatStr);
 
 export function formatDateTime(dateTimeString, omitYearAndSec = false) {
   if (!dateTimeString) {

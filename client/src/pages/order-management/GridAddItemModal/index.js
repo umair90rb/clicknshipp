@@ -54,7 +54,12 @@ export default function GridAddItemModal({ visible, onClose, orderId, items: ord
       <Box sx={style}>
         <Formik
           initialValues={{
-            items: (orderItems || []).map(({ id, name, price, quantity }) => ({ id, name, price, quantity })),
+            items: (orderItems || [{ id: '', name: '', price: 0, quantity: 0 }]).map(({ id, name, price, quantity }) => ({
+              id,
+              name,
+              price,
+              quantity
+            })),
             orderId
           }}
           validationSchema={Yup.object().shape({

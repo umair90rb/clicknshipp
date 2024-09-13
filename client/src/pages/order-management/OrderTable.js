@@ -45,7 +45,7 @@ import { setOrder, setOrderFilters, setOrderPagination, setOrderSort } from 'sto
 import { setMessage } from 'store/slices/util/utilSlice';
 import { authPermissionsSelector } from 'store/slices/auth/authSelector';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
-import { formatDateTime } from 'utils/format-date';
+import { formatDateTime, getEndOfDay, getStartOfDay } from 'utils/format-date';
 import { useGridApiRef } from '../../../node_modules/@mui/x-data-grid/index';
 import GridEditTextarea from './GridEditTextarea';
 import ORDER_STATUSES, { ORDER_TAGS } from 'constants/orderStatuses';
@@ -66,6 +66,7 @@ import PaymentsModal from './PaymentsModal';
 import DateRangePicker from 'components/DatePicker';
 import { chanelChanelsSelector, chanelFetchStatusSelector } from 'store/slices/chanel/chanelSelector';
 import { fetchAllChanel } from 'store/slices/chanel/fetchChanel';
+import { GridDateFilter } from './GridDateFilter';
 const columns = (
   apiRef,
   rowModesModel,
@@ -218,7 +219,6 @@ const columns = (
     headerName: 'Discount',
     flex: 0.33
   },
-  //advance payments will be here
   {
     field: 'status',
     headerName: 'Status',
@@ -227,7 +227,6 @@ const columns = (
     type: 'singleSelect',
     valueOptions: ORDER_STATUSES
   },
-  // courier remarks index 12
   {
     field: 'courier',
     headerName: 'Courier',
@@ -330,6 +329,13 @@ const columns = (
     field: 'total_tax',
     headerName: 'Tax Amount',
     flex: 0.33
+  },
+  {
+    field: 'delivery',
+    headerName: 'Delivery',
+    flex: 1,
+    sortable: false,
+    valueGetter: ({ value }) => `${JSON.stringify(value)}`
   },
   {
     field: 'createdAt',
@@ -576,94 +582,39 @@ const OrderTable = memo(() => {
             Delete All
           </Button>
         )}
-        {userPermissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) && (
-          <Button
-            onClick={() => {
-              dispatch(setOrderFilters([...filters.filter((filter) => filter.column !== 'status')]));
-              dispatch(
-                setOrderFilters([
-                  ...filters.filter((filter) => filter.column !== 'status'),
-                  { column: 'status', op: 'Text is any', value: ['Confirmed'] }
-                ])
-              );
-            }}
-            size="small"
-            startIcon={<VerifiedIcon />}
-          >
-            Processed
-          </Button>
-        )}
 
-        <Button
-          onClick={() => {
+        <GridDateFilter
+          label="Start By"
+          value={filters.find((f) => f.column === 'assignedAt' && f.op === 'Date is after')?.value}
+          onChange={(date) =>
             dispatch(
               setOrderFilters([
-                { column: 'status', op: 'Text is any', value: ['No Pick'] },
-                {
-                  column: 'assignedAt',
-                  op: 'Date is before',
-                  value: moment().subtract(1, 'days').endOf('day').format('YYYY-MM-DDTHH:mm:ss')
-                }
-              ])
-            );
-          }}
-          size="small"
-          startIcon={<CallMissedOutgoingIcon />}
-        >
-          No Pick
-        </Button>
-        <Button
-          onClick={() => {
-            dispatch(
-              setOrderFilters([
+                ...filters.filter((f) => f.column !== 'assignedAt' && f.op !== 'Date is after'),
                 {
                   column: 'assignedAt',
                   op: 'Date is after',
-                  value: moment().subtract(1, 'days').startOf('day').format('YYYY-MM-DDTHH:mm:ss')
-                },
-                {
-                  column: 'assignedAt',
-                  op: 'Date is before',
-                  value: moment().subtract(1, 'days').endOf('day').format('YYYY-MM-DDTHH:mm:ss')
-                }
-              ])
-            );
-          }}
-          size="small"
-          startIcon={<ArrowBackIcon />}
-        >
-          Last Day Order
-        </Button>
-
-        {/* <DateRangePicker
-          startPeriod={filters.find((f) => f.column === 'assignedAt' && f.op === 'Date is after')?.value}
-          endPeriod={filters.find((f) => f.column === 'assignedAt' && f.op === 'Date is before')?.value}
-          onStartDateSelect={(date) =>
-            dispatch(
-              setOrderFilters([
-                ...filters.filter((f) => f.column === 'assignedAt' && f.op === 'Date is after'),
-                {
-                  column: 'assignedAt',
-                  op: 'Date is after',
-                  value: date
+                  value: getStartOfDay(date)
                 }
               ])
             )
           }
-          onEndDateSelect={(date) =>
+        />
+        <GridDateFilter
+          label="End By"
+          value={filters.find((f) => f.column === 'assignedAt' && f.op === 'Date is before')?.value}
+          onChange={(date) =>
             dispatch(
               setOrderFilters([
-                ...filters.filter((f) => f.column === 'assignedAt' && f.op === 'Date is before'),
+                ...filters.filter((f) => f.column !== 'assignedAt' && f.op !== 'Date is before'),
                 {
                   column: 'assignedAt',
                   op: 'Date is before',
-                  value: date
+                  value: getEndOfDay(date)
                 }
               ])
             )
           }
-        /> */}
-
+        />
         <GridDropdownFilter
           multiple
           label="filter by status"

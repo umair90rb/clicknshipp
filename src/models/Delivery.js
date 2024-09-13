@@ -1,5 +1,5 @@
-"use strict";
-import { Model } from "sequelize";
+'use strict';
+import { Model } from 'sequelize';
 module.exports = (sequelize, DataTypes) => {
   class Delivery extends Model {
     /**
@@ -9,12 +9,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Delivery.belongsTo(models.Order, {
-        as: "order",
-        foreignKey: "order_id",
+        as: 'order',
+        foreignKey: 'order_id',
       });
       Delivery.belongsTo(models.DeliveryServiceAccounts, {
-        as: "account",
-        foreignKey: "account_id",
+        as: 'account',
+        foreignKey: 'account_id',
       });
     }
   }
@@ -32,10 +32,12 @@ module.exports = (sequelize, DataTypes) => {
       account_id: {
         type: DataTypes.INTEGER,
       },
+      createdAt: DataTypes.DATE,
+      updatedAt: DataTypes.DATE,
     },
     {
       sequelize,
-      modelName: "Delivery",
+      modelName: 'Delivery',
     }
   );
   return Delivery;

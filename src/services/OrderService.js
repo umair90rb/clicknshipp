@@ -1,12 +1,12 @@
-import formatPhone from "../helpers/formatPhone";
+import formatPhone from '../helpers/formatPhone';
 import {
   getEndOfDay,
   getStartOfDay,
   subtractDaysFromToday,
-} from "../helpers/pgDateFormat";
-import splitName from "../helpers/splitName";
-import model from "../models";
-import Sequelize, { Op } from "sequelize";
+} from '../helpers/pgDateFormat';
+import splitName from '../helpers/splitName';
+import model from '../models';
+import Sequelize, { Op } from 'sequelize';
 const {
   Order,
   OrderItem,
@@ -50,12 +50,12 @@ class OrderService {
       await order.addItems(itemsArray);
       await order.createHistory({
         user_id: userId,
-        event: "order created via submission file upload",
+        event: 'order created via submission file upload',
       });
       await order.reload();
       return order;
     } catch (error) {
-      console.log(error, "error in create submission order in order service");
+      console.log(error, 'error in create submission order in order service');
       return error.message;
     }
   }
@@ -64,31 +64,31 @@ class OrderService {
     try {
       const order = await Order.findByPk(id, {
         attributes: {
-          include: [["delivery_account_id", "courier"]],
-          exclude: ["data", "CustomerId", "user_id", "chanel_id", "brand_id"],
+          include: [['delivery_account_id', 'courier']],
+          exclude: ['data', 'CustomerId', 'user_id', 'chanel_id', 'brand_id'],
         },
         include: [
           {
             model: Chanel,
-            as: "chanel",
-            attributes: ["id", "name"],
+            as: 'chanel',
+            attributes: ['id', 'name'],
           },
           {
             model: User,
-            as: "user",
+            as: 'user',
             attributes: {
               exclude: [
-                "password",
-                "status",
-                "settings",
-                "createdAt",
-                "updatedAt",
+                'password',
+                'status',
+                'settings',
+                'createdAt',
+                'updatedAt',
               ],
             },
           },
           {
             model: Customer,
-            as: "customer",
+            as: 'customer',
             // include: {
             //   attributes: ["id", "order_number", "status"],
             //   model: Order,
@@ -100,44 +100,44 @@ class OrderService {
           },
           {
             model: OrderHistory,
-            as: "history",
+            as: 'history',
           },
           {
             model: Payments,
-            as: "payments",
+            as: 'payments',
             attributes: {
-              exclude: ["order_id", "updatedAt"],
+              exclude: ['order_id', 'updatedAt'],
             },
           },
           {
             model: Address,
-            as: "address",
+            as: 'address',
             attributes: {
               exclude: [
-                "order_id",
-                "customer_id",
-                "CustomerId",
-                "OrderId",
-                "company",
-                "longitude",
-                "latitude",
-                "country_code",
-                "province_code",
+                'order_id',
+                'customer_id',
+                'CustomerId',
+                'OrderId',
+                'company',
+                'longitude',
+                'latitude',
+                'country_code',
+                'province_code',
               ],
             },
           },
           {
             model: OrderItem,
-            as: "items",
+            as: 'items',
             attributes: {
-              include: ["id", "name", "price", "quantity"],
+              include: ['id', 'name', 'price', 'quantity'],
             },
           },
           {
             model: Delivery,
-            as: "delivery",
+            as: 'delivery',
             attributes: {
-              exclude: ["slip_link", "createdAt", "updatedAt", "order_id"],
+              exclude: ['slip_link', 'createdAt', 'updatedAt', 'order_id'],
             },
           },
         ],
@@ -152,42 +152,42 @@ class OrderService {
   loadOrderForBooking(id) {
     return Order.findByPk(id, {
       attributes: {
-        exclude: ["data", "CustomerId", "updatedAt", "customer_id", "user_id"],
+        exclude: ['data', 'CustomerId', 'updatedAt', 'customer_id', 'user_id'],
       },
       include: [
         {
           model: Customer,
-          as: "customer",
+          as: 'customer',
         },
         {
           model: Brand,
-          as: "brand",
+          as: 'brand',
           attributes: {
-            exclude: ["createdAt", "updatedAt"],
+            exclude: ['createdAt', 'updatedAt'],
           },
         },
         {
           model: Address,
-          as: "address",
+          as: 'address',
           attributes: {
             exclude: [
-              "order_id",
-              "customer_id",
-              "CustomerId",
-              "OrderId",
-              "company",
-              "longitude",
-              "latitude",
-              "country_code",
-              "province_code",
+              'order_id',
+              'customer_id',
+              'CustomerId',
+              'OrderId',
+              'company',
+              'longitude',
+              'latitude',
+              'country_code',
+              'province_code',
             ],
           },
         },
         {
           model: OrderItem,
-          as: "items",
+          as: 'items',
           attributes: {
-            exclude: ["OrderId", "createdAt", "updatedAt"],
+            exclude: ['OrderId', 'createdAt', 'updatedAt'],
           },
         },
       ],
@@ -196,52 +196,44 @@ class OrderService {
 
   async updateOrderAfterBooking(bookingResponse, order, deliveryAccount) {
     const { cn, slip, isSuccess, error, response } = bookingResponse || {};
-    if (isSuccess) {
-      let delivery = await Delivery.findOne({
-        where: { order_id: order.id },
-      });
-      if (delivery) {
-        await delivery.update({
-          courier: deliveryAccount.service,
-          account_id: deliveryAccount.id,
-          cn,
-          slip_link: slip,
-          status: "Booked",
-        });
-      } else {
-        delivery = await Delivery.create({
-          courier: deliveryAccount.service,
-          account_id: deliveryAccount.id,
-          cn,
-          slip_link: slip,
-          status: "Booked",
-          order_id: order.id,
-        });
-      }
-      await order.update({ status: "Booked" });
-      await OrderHistory.create({
+    let deliveryData = {
         order_id: order.id,
-        user_id: null,
-        event: `order booked with ${deliveryAccount?.service}, tracking number: ${cn}, brand no: ${order?.brand?.shipment_series}`,
-      });
-      console.log(order.brand_id, "order.brand_id");
-      return delivery;
-    } else {
-      await order.update({ status: "Booking Error" });
-      await order.createHistory({
-        order_id: order.id,
-        user_id: null,
-        event: `error in order booking with ${deliveryAccount?.service}, error: ${error}`,
-      });
-      return null;
+        courier: deliveryAccount.service,
+        account_id: deliveryAccount.id,
+        cn,
+        slip_link: slip,
+        status: 'Booked',
+      },
+      event = `order booked with ${deliveryAccount?.service}, tracking number: ${cn}, brand no: ${order?.brand?.shipment_series}`,
+      orderStatus = 'Booked';
+    if (!isSuccess) {
+      deliveryData = {
+        ...deliveryData,
+        cn: error,
+        slip_link: JSON.stringify(response),
+        status: 'Booking Error',
+      };
+      event = `error in order booking with ${deliveryAccount?.service}, error: ${error}`;
+      orderStatus = 'Booking Error';
     }
+    let [delivery, created] = await Delivery.findOrCreate({
+      where: { order_id: order.id },
+      defaults: deliveryData,
+    });
+    await order.update({ status: orderStatus });
+    await OrderHistory.create({
+      order_id: order.id,
+      user_id: null,
+      event,
+    });
+    return delivery;
   }
 
   async addDuplicateOrder(order) {
     try {
       if (order) {
         const duplicate = await this.findDuplications(order);
-        order.setDataValue("duplicate", duplicate);
+        order.setDataValue('duplicate', duplicate);
       }
     } catch (error) {
       console.log(error);
@@ -254,14 +246,14 @@ class OrderService {
       if (order) {
         const duplicates = await this.findDuplications(order);
         if (duplicates && duplicates.length) {
-          await order.update({ tags: "Duplicate" });
+          await order.update({ tags: 'Duplicate' });
           duplicates.map(async (duplicate) => {
-            const tags = (duplicate?.tags || "").split(",");
-            if (!tags.includes("Duplicate")) {
+            const tags = (duplicate?.tags || '').split(',');
+            if (!tags.includes('Duplicate')) {
               const tags =
                 duplicate.tags && duplicate.tags.length
                   ? `Duplicate,${duplicate.tags}`
-                  : "Duplicate";
+                  : 'Duplicate';
               await duplicate.update({ tags });
             }
           });
@@ -277,51 +269,51 @@ class OrderService {
     try {
       const query = {
           attributes: [
-            [Sequelize.fn("COUNT", Sequelize.col("Order.id")), "total"],
+            [Sequelize.fn('COUNT', Sequelize.col('Order.id')), 'total'],
             [
               Sequelize.fn(
-                "ARRAY_AGG",
+                'ARRAY_AGG',
                 Sequelize.literal(
                   'CASE WHEN "Order"."user_id" IS NULL THEN "Order"."id" ELSE NULL END'
                 )
               ),
-              "unassigned",
+              'unassigned',
             ],
             [
               Sequelize.fn(
-                "ARRAY_AGG",
+                'ARRAY_AGG',
                 Sequelize.literal(
                   '"Order"."id" FILTER (WHERE "Order"."user_id" IS NOT NULL)'
                 )
               ),
-              "assigned",
+              'assigned',
             ],
             [
               Sequelize.fn(
-                "ARRAY_AGG",
+                'ARRAY_AGG',
                 Sequelize.literal(
                   '"Order"."id" FILTER (WHERE "Order"."user_id" IS NOT NULL AND "Order"."status" = \'Assigned\')'
                 )
               ),
-              "assigned_not_confirmed",
+              'assigned_not_confirmed',
             ],
           ],
         },
         where = {};
       if (chanel && chanel.length) {
-        where["chanel_id"] = { [Op.in]: chanel };
+        where['chanel_id'] = { [Op.in]: chanel };
       }
       if (brand && brand.length) {
-        where["brand_id"] = { [Op.in]: brand };
+        where['brand_id'] = { [Op.in]: brand };
       }
       if (startPeriod) {
-        where["createdAt"] = { [Op.gte]: startPeriod };
+        where['createdAt'] = { [Op.gte]: startPeriod };
       }
       if (endPeriod) {
-        where["createdAt"] = { ...where["createdAt"], [Op.lte]: endPeriod };
+        where['createdAt'] = { ...where['createdAt'], [Op.lte]: endPeriod };
       }
       if (Object.keys(where).length) {
-        query["where"] = where;
+        query['where'] = where;
       }
       const orders = await Order.findAll(query);
       return orders;
@@ -334,13 +326,13 @@ class OrderService {
   findOrdersBy(
     tag,
     query,
-    orderFields = ["id", "order_number", "status", "createdAt"]
+    orderFields = ['id', 'order_number', 'status', 'createdAt']
   ) {
     try {
       const sqlQuery = {
         attributes: orderFields,
         where:
-          tag === "Order Number"
+          tag === 'Order Number'
             ? {
                 order_number: query,
               }
@@ -348,20 +340,20 @@ class OrderService {
         include: [
           {
             model: User,
-            as: "user",
-            attributes: ["id", "name"],
+            as: 'user',
+            attributes: ['id', 'name'],
           },
           {
             model: Address,
-            as: "address",
-            attributes: ["address1", "city"],
+            as: 'address',
+            attributes: ['address1', 'city'],
           },
           {
             model: Customer,
-            as: "customer",
-            attributes: ["first_name", "last_name", "name"],
+            as: 'customer',
+            attributes: ['first_name', 'last_name', 'name'],
             where:
-              tag === "Phone"
+              tag === 'Phone'
                 ? {
                     phone: formatPhone(query),
                   }
@@ -369,10 +361,10 @@ class OrderService {
           },
           {
             model: OrderItem,
-            as: "items",
-            attributes: ["id", "name", "quantity"],
+            as: 'items',
+            attributes: ['id', 'name', 'quantity'],
             where:
-              tag === "Item"
+              tag === 'Item'
                 ? {
                     name: {
                       [Op.iLike]: query,
@@ -392,7 +384,7 @@ class OrderService {
   findSameDayOrderByPhone(phone) {
     try {
       const sqlQuery = {
-        attributes: ["id", "status", "createdAt"],
+        attributes: ['id', 'status', 'createdAt'],
         where: {
           createdAt: {
             [Op.gt]: getStartOfDay(),
@@ -402,21 +394,21 @@ class OrderService {
         include: [
           {
             model: User,
-            as: "user",
-            attributes: ["id", "name"],
+            as: 'user',
+            attributes: ['id', 'name'],
           },
           {
             model: Customer,
-            as: "customer",
-            attributes: ["first_name", "last_name", "name", "phone"],
+            as: 'customer',
+            attributes: ['first_name', 'last_name', 'name', 'phone'],
             where: {
               phone: formatPhone(phone),
             },
           },
           {
             model: OrderItem,
-            as: "items",
-            attributes: ["id", "name", "quantity"],
+            as: 'items',
+            attributes: ['id', 'name', 'quantity'],
           },
         ],
       };
@@ -431,7 +423,7 @@ class OrderService {
     try {
       if (order && order.customer.phone) {
         return Order.findAll({
-          attributes: ["id", "order_number", "status"],
+          attributes: ['id', 'order_number', 'status'],
           where: {
             id: {
               [Op.ne]: order.id,
@@ -444,7 +436,7 @@ class OrderService {
             {
               attributes: [],
               model: Customer,
-              as: "customer",
+              as: 'customer',
               where: {
                 phone: order?.customer?.phone || order?.address?.phone,
               },
