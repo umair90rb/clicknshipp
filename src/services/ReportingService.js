@@ -214,7 +214,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              `CASE WHEN "delivery"."courier" = 'leapard' THEN "items"."quantity" ELSE 0 END`
+              `CASE WHEN "delivery"."courier" = 'leopard' THEN "items"."quantity" ELSE 0 END`
             )
           ),
           'leapard',

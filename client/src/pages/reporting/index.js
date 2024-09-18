@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
-import { Grid, FormControl, Select, InputLabel, MenuItem, Typography, Button } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { Grid, FormControl, Select, InputLabel, MenuItem, Typography, Button, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import MainCard from 'components/MainCard';
 import DateRangePicker from 'components/DatePicker';
+import DateTimePicker from 'components/DateTimePicker';
 import {
   reportBrandSelector,
   reportChanelSelector,
@@ -21,7 +22,6 @@ import AgentsReports from './AgentsReport';
 import IncentiveReport from './IncentiveReport';
 import { chanelChanelsSelector, chanelFetchStatusSelector } from 'store/slices/chanel/chanelSelector';
 import { fetchAllChanel } from 'store/slices/chanel/fetchChanel';
-import { GridDropdownFilter } from 'pages/order-management/GridDropdownFilter';
 
 const REPORT_TYPES = ['Agent Report', 'Unit Report', 'Channel Report', 'Incentive Report'];
 
@@ -36,6 +36,7 @@ const Reporting = () => {
   const brandsFetchStatus = useSelector(brandFetchStatusSelector);
   const chanels = useSelector(chanelChanelsSelector);
   const chanelsFetchStatus = useSelector(chanelFetchStatusSelector);
+  const [withTime, setWithTime] = useState(false);
 
   const fetchReport = () => {
     if (!reportBrand || !reportType) {
@@ -129,15 +130,29 @@ const Reporting = () => {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={2} md={2} lg={2}>
-          <DateRangePicker
-            startPeriod={startPeriod}
-            endPeriod={endPeriod}
-            onStartDateSelect={(date) => dispatch(setReportPeriod({ period: 'startPeriod', value: date }))}
-            onEndDateSelect={(date) => dispatch(setReportPeriod({ period: 'endPeriod', value: date }))}
-          />
+        <Grid item xs={1} md={1} lg={1}>
+          <FormGroup>
+            <FormControlLabel control={<Checkbox onChange={() => setWithTime((wT) => !wT)} />} label="With Time" />
+          </FormGroup>
         </Grid>
         <Grid item xs={3} md={3} lg={3}>
+          {withTime ? (
+            <DateTimePicker
+              startPeriod={startPeriod}
+              endPeriod={endPeriod}
+              onStartDateSelect={(date) => dispatch(setReportPeriod({ period: 'startPeriod', value: date }))}
+              onEndDateSelect={(date) => dispatch(setReportPeriod({ period: 'endPeriod', value: date }))}
+            />
+          ) : (
+            <DateRangePicker
+              startPeriod={startPeriod}
+              endPeriod={endPeriod}
+              onStartDateSelect={(date) => dispatch(setReportPeriod({ period: 'startPeriod', value: date }))}
+              onEndDateSelect={(date) => dispatch(setReportPeriod({ period: 'endPeriod', value: date }))}
+            />
+          )}
+        </Grid>
+        <Grid item xs={2} md={2} lg={2}>
           <Button sx={{ ml: 10 }} variant="contained" color="primary" size="small" onClick={fetchReport}>
             Get Report
           </Button>
