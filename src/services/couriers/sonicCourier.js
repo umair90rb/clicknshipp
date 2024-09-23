@@ -1,14 +1,14 @@
-import logger from "../../middleware/logger";
-import CourierInterface from "../../interfaces/courierInterface";
-import getAxiosInstance from "../AxiosService";
-import models from "../../models";
-import { Op } from "sequelize";
+import logger from '../../middleware/logger';
+import CourierInterface from '../../interfaces/courierInterface';
+import getAxiosInstance from '../AxiosService';
+import models from '../../models';
+import { Op } from 'sequelize';
 const { CityNameMaping } = models;
 
 class SonicCourier extends CourierInterface {
   constructor() {
     super();
-    this.http = getAxiosInstance("https://sonic.pk/api/shipment/");
+    this.http = getAxiosInstance('https://sonic.pk/api/shipment/');
   }
   async bookParcel(order, deliveryAccount) {
     let response, body;
@@ -27,8 +27,8 @@ class SonicCourier extends CourierInterface {
           cn: null,
           slip: null,
           isSuccess: false,
-          error: "City not found in the database, contact admin",
-          response: "destination not found in the db",
+          error: 'City not found in the database, contact admin',
+          response: 'destination not found in the db',
         };
       }
       body = {
@@ -37,7 +37,7 @@ class SonicCourier extends CourierInterface {
         information_display: 1,
         consignee_city_id: destinationCity.assigned_id,
         consignee_name: `${order.customer.first_name} ${
-          order.customer.last_name || ""
+          order.customer.last_name || ''
         }`,
         consignee_address: order.address.address1,
         consignee_phone_number_1: `0${order.customer.phone}`,
@@ -48,13 +48,13 @@ class SonicCourier extends CourierInterface {
         item_description: order.items.reduce(
           (p, c, i) =>
             i > 0 ? `${c.name}/${c.quantity}-${p}` : `${c.name}/${c.quantity}`,
-          ""
+          ''
         ),
         item_quantity: order.items.length,
         item_insurance: 0,
         item_price: order.total_price,
-        pickup_date: new Date().toISOString().split("T")[0],
-        special_instructions: "Rush Delivery",
+        pickup_date: new Date().toISOString().split('T')[0],
+        special_instructions: 'Rush Delivery',
         estimated_weight: 0.5,
         shipping_mode_id: 1,
         // same_day_timing_id: "",
@@ -62,17 +62,17 @@ class SonicCourier extends CourierInterface {
         payment_mode_id: 1,
         // charges_mode_id: 3,
         open_shipment: 0,
-        pieces_quantity: order.items.length,
-        shipper_reference_number_1: "",
+        // pieces_quantity: order.items.length,
+        shipper_reference_number_1: '',
         // shipper_reference_number_2: "",
         // shipper_reference_number_3: "",
         // shipper_reference_number_4: "",
         // shipper_reference_number_5: "",
       };
-      response = await this.http.post("book", body, {
+      response = await this.http.post('book', body, {
         headers: { Authorization: deliveryAccount.key },
       });
-      logger.log("info", "trax book parcel api response", {
+      logger.log('info', 'trax book parcel api response', {
         res: response?.data,
         body,
       });
@@ -86,10 +86,10 @@ class SonicCourier extends CourierInterface {
         response: message,
       };
     } catch (error) {
-      logger.log("error", error.message, {
+      logger.log('error', error.message, {
         body,
         res: response?.data,
-        stack: "in trax booking function",
+        stack: 'in trax booking function',
       });
       const { message, status, ...rest } = response?.data || {};
       return {
@@ -97,7 +97,7 @@ class SonicCourier extends CourierInterface {
         slip: null,
         isSuccess: false,
         error: message,
-        response: "Error: Something goes wrong!",
+        response: 'Error: Something goes wrong!',
       };
     }
   }
@@ -111,7 +111,7 @@ class SonicCourier extends CourierInterface {
           headers: { Authorization: deliveryAccount.key },
         }
       );
-      logger.log("info", "trax check parcel status api response", {
+      logger.log('info', 'trax check parcel status api response', {
         res: response.data,
       });
       const { message, status, details } = response.data || {};
@@ -130,9 +130,9 @@ class SonicCourier extends CourierInterface {
       };
     } catch (error) {
       const { message, status, details } = response.data || {};
-      logger.log("error", error.message, {
+      logger.log('error', error.message, {
         res: response.data,
-        stack: "in trax check parcel status function",
+        stack: 'in trax check parcel status function',
       });
       return {
         isSuccess: false,
@@ -153,7 +153,7 @@ class SonicCourier extends CourierInterface {
     let response;
     try {
       response = await this.http.post(
-        "cancel",
+        'cancel',
         {
           tracking_number: trackingNumber,
         },
@@ -161,7 +161,7 @@ class SonicCourier extends CourierInterface {
           headers: { Authorization: deliveryAccount.key },
         }
       );
-      logger.log("info", "trax cancel api response", {
+      logger.log('info', 'trax cancel api response', {
         res: response.data,
       });
       const { message, status } = response.data || {};
@@ -172,14 +172,14 @@ class SonicCourier extends CourierInterface {
       };
     } catch (error) {
       const { message, status } = response.data || {};
-      logger.log("error", error.message, {
+      logger.log('error', error.message, {
         res: response.data,
-        stack: "in trax cancel function",
+        stack: 'in trax cancel function',
       });
       return {
         isSuccess: false,
         error: message,
-        response: "Error in cancel booking",
+        response: 'Error in cancel booking',
       };
     }
   }

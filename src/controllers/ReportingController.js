@@ -1,6 +1,6 @@
-import model from "../models";
-import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
-import { _reportingService as reportingService } from "../services/ReportingService";
+import model from '../models';
+import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
+import { _reportingService as reportingService } from '../services/ReportingService';
 
 export default {
   async getReport(req, res) {
@@ -9,7 +9,7 @@ export default {
         req.body;
       let report;
       switch (reportType) {
-        case "Agent Report":
+        case 'Agent Report':
           report = await reportingService.getAgentReport(
             startPeriod,
             endPeriod,
@@ -17,7 +17,7 @@ export default {
             reportChanel
           );
           break;
-        case "Unit Report":
+        case 'Unit Report':
           report = await reportingService.getUnitReport(
             startPeriod,
             endPeriod,
@@ -25,7 +25,7 @@ export default {
             reportChanel
           );
           break;
-        case "Channel Report":
+        case 'Channel Report':
           report = await reportingService.getChannelReport(
             startPeriod,
             endPeriod,
@@ -33,7 +33,7 @@ export default {
             reportChanel
           );
           break;
-        case "Incentive Report":
+        case 'Incentive Report':
           report = await reportingService.getIncentiveReport(
             startPeriod,
             endPeriod,
@@ -54,14 +54,14 @@ export default {
           reportBrand,
           reportChanel,
         },
-        "Report fetched successfully"
+        'Report fetched successfully'
       );
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }

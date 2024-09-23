@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import fetchStatus from 'constants/fetchStatuses';
 import { fetchAgentReport } from './fetchReport';
-import moment from 'moment';
 import { addTotalRow } from './helper';
+import { getEndOfDay, getStartOfDay } from 'utils/format-date';
 
 const initialState = {
   data: [],
@@ -11,8 +11,8 @@ const initialState = {
   type: '',
   brand: [],
   chanel: [],
-  startPeriod: moment(new Date()).startOf('day').format('YYYY-MM-DDTHH:mm:ss'),
-  endPeriod: moment(new Date()).endOf('day').format('YYYY-MM-DDTHH:mm:ss')
+  startPeriod: getStartOfDay(),
+  endPeriod: getEndOfDay()
 };
 
 const reportSlice = createSlice({

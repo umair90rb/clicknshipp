@@ -73,7 +73,7 @@ const Reporting = () => {
         <Typography variant="h5">Reporting</Typography>
       </Grid>
 
-      <Grid container gap={3} justifyContent="center" alignItems="center">
+      <Grid container gap={1} justifyContent="start" alignItems="center">
         <Grid item xs={2} md={2} lg={2}>
           <FormControl fullWidth size="small">
             <InputLabel id="demo-select-small-label">Select report</InputLabel>
@@ -101,9 +101,16 @@ const Reporting = () => {
               id="demo-select-small"
               value={reportBrand}
               label="Select Brand"
-              onChange={(e) => dispatch(setReportBrand(e.target.value))}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val.length === 1 && val[0] === 'all') {
+                  dispatch(setReportBrand(brands.map((br) => br.id)));
+                } else {
+                  dispatch(setReportBrand(val));
+                }
+              }}
             >
-              {brands.map((br, index) => (
+              {[{ name: 'Select all', id: 'all' }, ...brands].map((br, index) => (
                 <MenuItem key={index} value={br.id}>
                   {br.name}
                 </MenuItem>
@@ -120,9 +127,16 @@ const Reporting = () => {
               id="demo-select-small"
               value={reportChanel}
               label="Select Brand"
-              onChange={(e) => dispatch(setReportChanel(e.target.value))}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val.length === 1 && val[0] === 'all') {
+                  dispatch(setReportChanel(chanels.map((br) => br.id)));
+                } else {
+                  dispatch(setReportChanel(val));
+                }
+              }}
             >
-              {chanels.map((ch, index) => (
+              {[{ name: 'Select all', id: 'all' }, ...chanels].map((ch, index) => (
                 <MenuItem key={index} value={ch.id}>
                   {ch.name}
                 </MenuItem>
@@ -135,7 +149,7 @@ const Reporting = () => {
             <FormControlLabel control={<Checkbox onChange={() => setWithTime((wT) => !wT)} />} label="With Time" />
           </FormGroup>
         </Grid>
-        <Grid item xs={3} md={3} lg={3}>
+        <Grid item xs={2} md={2} lg={2}>
           {withTime ? (
             <DateTimePicker
               startPeriod={startPeriod}
@@ -152,8 +166,8 @@ const Reporting = () => {
             />
           )}
         </Grid>
-        <Grid item xs={2} md={2} lg={2}>
-          <Button sx={{ ml: 10 }} variant="contained" color="primary" size="small" onClick={fetchReport}>
+        <Grid item xs={1} md={1} lg={1}>
+          <Button variant="contained" color="primary" size="small" onClick={fetchReport}>
             Get Report
           </Button>
         </Grid>

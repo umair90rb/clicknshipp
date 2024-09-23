@@ -312,10 +312,10 @@ export default function AssignOrderModal({ visible, onClose }) {
                 </MenuItem>,
                 <MenuItem key={2} value="assigned_not_confirmed">
                   Assigned not confirmed yet!
-                </MenuItem>,
-                <MenuItem key={3} value="today_no_pick">
-                  Today No Pick!
                 </MenuItem>
+                // <MenuItem key={3} value="today_no_pick">
+                //   Today No Pick!
+                // </MenuItem>
               ]}
           </Select>
           {assignOrderForm.touched.type && !!assignOrderForm.errors.type && (

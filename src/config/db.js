@@ -1,4 +1,4 @@
-require("dotenv").config();
+require('dotenv').config();
 module.exports = {
   development: {
     username: process.env.DB_USERNAME,
@@ -6,15 +6,19 @@ module.exports = {
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    dialect: "postgres",
-    seederStorage: "sequelize",
-    timezone: "+05:00",
-    // dialectOptions: {
-    //   ssl: {
-    //     require: true,
-    //     rejectUnauthorized: false,
-    //   },
-    // },
+    dialect: 'postgres',
+    seederStorage: 'sequelize',
+    timezone: '+05:00',
+    ...(process.env.DB_SSL
+      ? {
+          dialectOptions: {
+            ssl: {
+              require: true,
+              rejectUnauthorized: false,
+            },
+          },
+        }
+      : {}),
   },
   test: {
     username: process.env.DB_USERNAME,
@@ -23,9 +27,9 @@ module.exports = {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     logging: false,
-    dialect: "postgres",
-    seederStorage: "sequelize",
-    timezone: "+05:00",
+    dialect: 'postgres',
+    seederStorage: 'sequelize',
+    timezone: '+05:00',
     dialectOptions: {
       ssl: {
         require: true,
@@ -40,9 +44,9 @@ module.exports = {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     logging: false,
-    dialect: "postgres",
-    seederStorage: "sequelize",
-    timezone: "+05:00",
+    dialect: 'postgres',
+    seederStorage: 'sequelize',
+    timezone: '+05:00',
     dialectOptions: {
       ssl: {
         require: true,
