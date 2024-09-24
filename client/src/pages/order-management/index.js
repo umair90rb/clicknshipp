@@ -3,6 +3,7 @@ import { Button, Grid, Typography } from '@mui/material';
 import MainCard from 'components/MainCard';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import StartIcon from '@mui/icons-material/Start';
+import AddIcon from '@mui/icons-material/Add';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import SyncIcon from '@mui/icons-material/Sync';
 import OrderTable from './OrderTable';
@@ -15,6 +16,7 @@ import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 import BulkUploadModal from './BulkUploadModal';
 import AssignOrderModal from './AssignOrderModal';
+import AddCourierCityModal from './AddCityModal';
 
 const OrderManagement = memo(() => {
   const navigate = useNavigate();
@@ -34,6 +36,10 @@ const OrderManagement = memo(() => {
   const showAssignModal = () => setAssignModalVisible(true);
   const hideAssignModal = () => setAssignModalVisible(false);
 
+  const [addCityModalVisible, setAddCityModalVisible] = useState(false);
+  const showAddCityModal = () => setAddCityModalVisible(true);
+  const hideAddCityModal = () => setAddCityModalVisible(false);
+
   return (
     <>
       <Grid item xs={12} md={7} lg={8}>
@@ -44,6 +50,13 @@ const OrderManagement = memo(() => {
           <Grid item>
             <Grid container spacing={1}>
               {hasPermission(PERMISSIONS.PERMISSION_CREATE_BULK_ORDER) && (
+                <Grid item>
+                  <Button component="label" variant="contained" onClick={showAddCityModal} startIcon={<AddIcon />}>
+                    Add Courier City
+                  </Button>
+                </Grid>
+              )}
+              {hasPermission(PERMISSIONS.PERMISSION_CREATE_DELIVERY_ACCOUNTS) && (
                 <Grid item>
                   <Button component="label" variant="contained" onClick={showAssignModal} startIcon={<StartIcon />}>
                     Day Start
@@ -89,6 +102,7 @@ const OrderManagement = memo(() => {
       </Grid>
       <BulkUploadModal visible={bulkOrderModalVisible} onClose={hideBulkOrderModal} />
       <AssignOrderModal visible={assignModalVisible} onClose={hideAssignModal} />
+      <AddCourierCityModal visible={addCityModalVisible} onClose={hideAddCityModal} />
     </>
   );
 });

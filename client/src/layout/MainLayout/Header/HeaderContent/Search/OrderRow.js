@@ -1,6 +1,6 @@
-import { Typography, Stack, Box, Chip } from '@mui/material';
+import { Typography, Stack, Button, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { isToday, format, formatDistanceToNow } from 'date-fns';
+import { formatDistance, formatDate, isItToday } from 'utils/format-date';
 
 const OrderRow = ({ order, onNavigate }) => {
   const navigate = useNavigate();
@@ -12,12 +12,11 @@ const OrderRow = ({ order, onNavigate }) => {
   return (
     <Stack
       component="div"
-      onClick={handleNavigate}
       sx={{
         ':hover': {
           background: '#ECECEC'
         },
-        background: isToday(createdAt) ? '#FFD580' : undefined,
+        background: isItToday(createdAt) ? '#FFD580' : undefined,
         width: '100%',
         my: 0.5,
         p: 0.5,
@@ -30,14 +29,17 @@ const OrderRow = ({ order, onNavigate }) => {
         <Typography component="span" variant="h5">
           {status}
         </Typography>{' '}
-        | {customer?.name || ''} Placed at {format(createdAt, 'MMM dd')}, {formatDistanceToNow(createdAt)} ago | Assigned to{' '}
+        | {customer?.name || ''} Placed at {formatDate('MMM dd', createdAt)}, {formatDistance(createdAt)} | Assigned to{' '}
         <Typography component="span" variant="h5">
           {user?.name || 'None'}
         </Typography>{' '}
         Items: {items?.reduce((pv, cv) => `${cv.name}/${cv.quantity} ${pv}`, '')}, Address: {address.address1}, City:{' '}
         <Typography component="span" variant="h5">
-          {address.city},
+          {address.city}{' '}
         </Typography>
+        <Link component="button" onClick={handleNavigate}>
+          View Details
+        </Link>
       </Typography>
     </Stack>
   );

@@ -1,6 +1,6 @@
-import model from "../models";
-import { Op, Sequelize } from "sequelize";
-import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
+import model from '../models';
+import { Op, Sequelize } from 'sequelize';
+import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
 
 const { CityNameMaping, DeliveryServiceAccounts } = model;
 
@@ -8,26 +8,51 @@ export default {
   async cities(req, res) {
     try {
       const cities = await CityNameMaping.findAll({
-        attributes: [[Sequelize.fn("DISTINCT", Sequelize.col("city")), "city"]],
+        attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('city')), 'city']],
       });
       return sendSuccessResponse(
         res,
         200,
         { cities: cities.map((c) => c.city) },
-        "All available cities."
+        'All available cities.'
       );
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
   },
 
-  async city(req, res) {},
+  async search(req, res) {
+    try {
+      const { city } = req.body;
+      const result = await CityNameMaping.findAll({
+        where: {
+          name: {
+            [Op.iLike]: `%${city}%`,
+          },
+        },
+      });
+      return sendSuccessResponse(
+        res,
+        200,
+        { cities: result },
+        'All available cities.'
+      );
+    } catch (e) {
+      console.error(e);
+      return sendErrorResponse(
+        res,
+        500,
+        'Could not perform operation at this time, kindly try again later.',
+        e
+      );
+    }
+  },
 
   async create(req, res) {
     try {
@@ -45,15 +70,15 @@ export default {
           },
         },
       });
-      console.log(existed, "existed");
+      console.log(existed, 'existed');
       if (existed) {
-        return sendErrorResponse(res, 500, "City with details already added.");
+        return sendErrorResponse(res, 500, 'City with details already added.');
       }
 
       const addedCity = await CityNameMaping.create({
         city,
         maped,
-        assigned_id: assigned_id === "" ? null : assigned_id,
+        assigned_id: assigned_id === '' ? null : assigned_id,
         courier: deliveryAccount.service,
         code,
       });
@@ -61,14 +86,14 @@ export default {
         res,
         200,
         { city: addedCity.get() },
-        "New city added."
+        'New city added.'
       );
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }

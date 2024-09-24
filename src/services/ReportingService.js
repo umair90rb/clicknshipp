@@ -1,4 +1,4 @@
-import { Op, QueryTypes, literal, fn, col } from 'sequelize';
+import { Op, QueryTypes, literal, fn, col, Sequelize } from 'sequelize';
 import { sequelize } from '../models';
 import model from '../models';
 import { PERMISSIONS } from '../constants/constants';
@@ -228,6 +228,15 @@ class ReportingService {
           ),
           'callcourier',
         ],
+        [
+          fn(
+            'SUM',
+            literal(
+              `CASE WHEN "delivery"."courier" = 'mnp' THEN "items"."quantity" ELSE 0 END`
+            )
+          ),
+          'mnp',
+        ],
       ],
       include: [
         {
@@ -238,6 +247,217 @@ class ReportingService {
         {
           model: Delivery,
           as: 'delivery',
+          attributes: [],
+        },
+      ],
+      where,
+      group: ['items.name'],
+      raw: true,
+    });
+  }
+  getFOCReport(startPeriod, endPeriod, reportBrand, reportChanel) {
+    return sequelize.query(
+      `select
+      oi.name,
+      count(oi.name) as foc,
+      sum(case when d."courier" = 'callcourier' then oi."quantity" else 0 end) as callcourier,
+      sum(case when d."courier" = 'trax' then oi."quantity" else 0 end) as trax,
+      sum(case when d."courier" = 'tcs' then oi."quantity" else 0 end) as tcs,
+      sum(case when d."courier" = 'deawoo' then oi."quantity" else 0 end) as deawoo,
+      sum(case when d."courier" = 'leopard' then oi."quantity" else 0 end) as leopard,
+      sum(case when d."courier" = 'postex' then oi."quantity" else 0 end) as postex,
+      sum(case when d."courier" = 'mnp' then oi."quantity" else 0 end) as mnp
+    from
+      "OrderItems" oi
+    join "Deliveries" d on
+      d.order_id = oi.order_id
+    join "Orders" o on 
+      o.id = oi.order_id 
+    where
+      oi.price = 0
+      and d."createdAt" >= :startPeriod
+      and d."createdAt" <= :endPeriod
+      ${
+        reportChanel && reportChanel.length
+          ? 'and o.chanel_id in (:reportChanel)'
+          : ''
+      }
+      ${
+        reportBrand && reportBrand.length
+          ? 'and o.brand_id in (:reportBrand)'
+          : ''
+      }
+    group by
+      oi.name;`,
+      {
+        replacements: { startPeriod, endPeriod, reportChanel, reportBrand },
+        type: QueryTypes.SELECT,
+      }
+    );
+  }
+
+  getBookingUnitReport(startPeriod, endPeriod, reportBrand, reportChanel) {
+    let where = {
+      '$delivery.createdAt$': {
+        [Op.gte]: startPeriod,
+        [Op.lte]: endPeriod,
+      },
+      user_id: {
+        [Op.ne]: null,
+      },
+    };
+    if (reportBrand && reportBrand.length) {
+      where['brand_id'] = {
+        [Op.in]: reportBrand,
+      };
+    }
+
+    if (reportChanel && reportChanel.length) {
+      where['chanel_id'] = {
+        [Op.in]: reportChanel,
+      };
+    }
+    return Order.findAll({
+      attributes: [
+        [col('items.name'), 'name'],
+        [
+          fn(
+            'SUM',
+            literal(
+              'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'No Pick\' OR "Order"."status" = \'Payment Pending\' OR "Order"."status" = \'Booked\' OR "Order"."status" = \'Booking Error\' OR "Order"."status" = \'Assigned\' THEN 1 ELSE 0 END'
+            )
+          ),
+          'generated',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'Booked\' OR "Order"."status" = \'Booking Error\' THEN 1 ELSE 0 END'
+            )
+          ),
+          'confirmed',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'No Pick\' OR "Order"."status" = \'Payment Pending\' OR "Order"."status" = \'Booked\' OR "Order"."status" = \'Booking Error\' OR "Order"."status" = \'Assigned\' THEN "items"."quantity" ELSE 0 END'
+            )
+          ),
+          'unit_generated',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'Booked\' OR "Order"."status" = \'Booking Error\' THEN "items"."quantity" ELSE 0 END'
+            )
+          ),
+          'unit_confirmed',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              'CASE WHEN  "Order"."status" = \'Booked\' THEN "items"."quantity" ELSE 0 END'
+            )
+          ),
+          'unit_booked',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              'CASE WHEN "Order"."status" = \'No Pick\' THEN "items"."quantity" ELSE 0 END'
+            )
+          ),
+          'unit_no_pick',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              'CASE WHEN "Order"."status" = \'Cancel\' THEN "items"."quantity" ELSE 0 END'
+            )
+          ),
+          'unit_cancel',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              `CASE WHEN "delivery"."courier" = 'postex' THEN "items"."quantity" ELSE 0 END`
+            )
+          ),
+          'postex',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              `CASE WHEN "delivery"."courier" = 'tcs' THEN "items"."quantity" ELSE 0 END`
+            )
+          ),
+          'tcs',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              `CASE WHEN "delivery"."courier" = 'trax' THEN "items"."quantity" ELSE 0 END`
+            )
+          ),
+          'trax',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              `CASE WHEN "delivery"."courier" = 'deawoo' THEN "items"."quantity" ELSE 0 END`
+            )
+          ),
+          'deawoo',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              `CASE WHEN "delivery"."courier" = 'leopard' THEN "items"."quantity" ELSE 0 END`
+            )
+          ),
+          'leopard',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              `CASE WHEN "delivery"."courier" = 'callcourier' THEN "items"."quantity" ELSE 0 END`
+            )
+          ),
+          'callcourier',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              `CASE WHEN "delivery"."courier" = 'mnp' THEN "items"."quantity" ELSE 0 END`
+            )
+          ),
+          'mnp',
+        ],
+      ],
+      include: [
+        {
+          model: OrderItem,
+          as: 'items',
+          required: true,
+          attributes: [],
+        },
+        {
+          model: Delivery,
+          as: 'delivery',
+          required: true,
           attributes: [],
         },
       ],

@@ -5,9 +5,9 @@ const fetchAllCities = createAsyncThunk('cities/fetch', (_, { rejectWithValue })
   cityService.fetchAllCity().catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
-// const fetchCity = createAsyncThunk('city/fetch', ({ id }, { rejectWithValue }) =>
-//   cityService.fetchCity(id).catch((error) => rejectWithValue(error.response.data || error.message))
-// );
+const fetchSearchCity = createAsyncThunk('city/search/fetch', ({ body }, { rejectWithValue }) =>
+  cityService.fetchSearchCity(body).catch((error) => rejectWithValue(error.response.data || error.message))
+);
 
 const fetchCreateCity = createAsyncThunk('city/create/fetch', ({ body }, { rejectWithValue }) =>
   cityService.fetchCreateCity(body).catch((error) => rejectWithValue(error.response.data || error.message))
@@ -23,6 +23,7 @@ const fetchCreateCity = createAsyncThunk('city/create/fetch', ({ body }, { rejec
 
 export {
   fetchAllCities,
+  fetchSearchCity,
   fetchCreateCity
   // fetchCity, fetchUpdateCity, fetchDeleteCity
 };

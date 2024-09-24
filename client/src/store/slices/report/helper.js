@@ -44,7 +44,46 @@ export function addTotalRow(report, data) {
           totalDeawoo: data.reduce((acc, row) => acc + (parseInt(row.deawoo) || 0), 0),
           totalTrax: data.reduce((acc, row) => acc + (parseInt(row.trax) || 0), 0),
           totalLeapard: data.reduce((acc, row) => acc + (parseInt(row.leapard) || 0), 0),
-          totalCallCourier: data.reduce((acc, row) => acc + (parseInt(row.callcourier) || 0), 0)
+          totalCallCourier: data.reduce((acc, row) => acc + (parseInt(row.callcourier) || 0), 0),
+          totalMNP: data.reduce((acc, row) => acc + (parseInt(row.mnp) || 0), 0)
+        }
+      ];
+    case 'FOC Report':
+      return [
+        ...data.map((row) => ({ ...row, id: `${row.name}-${row.generated}-${row.confirmed}` })),
+        {
+          id: 'TOTAL',
+          label: 'Total',
+          totalFOC: data.reduce((acc, row) => acc + (parseInt(row.generated) || 0), 0),
+          totalPostex: data.reduce((acc, row) => acc + (parseInt(row.postex) || 0), 0),
+          totalTCS: data.reduce((acc, row) => acc + (parseInt(row.tcs) || 0), 0),
+          totalDeawoo: data.reduce((acc, row) => acc + (parseInt(row.deawoo) || 0), 0),
+          totalTrax: data.reduce((acc, row) => acc + (parseInt(row.trax) || 0), 0),
+          totalLeapard: data.reduce((acc, row) => acc + (parseInt(row.leapard) || 0), 0),
+          totalCallCourier: data.reduce((acc, row) => acc + (parseInt(row.callcourier) || 0), 0),
+          totalMNP: data.reduce((acc, row) => acc + (parseInt(row.mnp) || 0), 0)
+        }
+      ];
+    case 'Booking Unit Report':
+      return [
+        ...data.map((row) => ({ ...row, id: `${row.name}-${row.generated}-${row.confirmed}` })),
+        {
+          id: 'TOTAL',
+          label: 'Total',
+          totalGenerated: data.reduce((acc, row) => acc + (parseInt(row.generated) || 0), 0),
+          totalConfirmed: data.reduce((acc, row) => acc + (parseInt(row.confirmed) || 0), 0),
+          totalUnitGenerated: data.reduce((acc, row) => acc + (parseInt(row.unit_generated) || 0), 0),
+          totalUnitBooked: data.reduce((acc, row) => acc + (parseInt(row.unit_booked) || 0), 0),
+          totalUnitConfirmed: data.reduce((acc, row) => acc + (parseInt(row.unit_confirmed) || 0), 0),
+          totalUnitNoPick: data.reduce((acc, row) => acc + (parseInt(row.unit_no_pick) || 0), 0),
+          totalUnitCancel: data.reduce((acc, row) => acc + (parseInt(row.unit_cancel) || 0), 0),
+          totalPostex: data.reduce((acc, row) => acc + (parseInt(row.postex) || 0), 0),
+          totalTCS: data.reduce((acc, row) => acc + (parseInt(row.tcs) || 0), 0),
+          totalDeawoo: data.reduce((acc, row) => acc + (parseInt(row.deawoo) || 0), 0),
+          totalTrax: data.reduce((acc, row) => acc + (parseInt(row.trax) || 0), 0),
+          totalLeapard: data.reduce((acc, row) => acc + (parseInt(row.leapard) || 0), 0),
+          totalCallCourier: data.reduce((acc, row) => acc + (parseInt(row.callcourier) || 0), 0),
+          totalMNP: data.reduce((acc, row) => acc + (parseInt(row.mnp) || 0), 0)
         }
       ];
     case 'Incentive Report':

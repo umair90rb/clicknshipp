@@ -6,10 +6,7 @@ import { fetchBookOrder } from 'store/slices/order/fetchOrder';
 import { setMessage } from 'store/slices/util/utilSlice';
 import { fetchDeliveryServiceAccounts } from 'store/slices/deliveryServicesAccounts/fetchDeliveryServicesAccounts';
 import { useSelector } from 'react-redux';
-import {
-  deliveryServiceAccountsIsLoadingSelector,
-  deliveryServiceAccountsListSelector
-} from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSelector';
+import { deliveryServiceAccountsListSelector } from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSelector';
 
 const style = {
   position: 'absolute',

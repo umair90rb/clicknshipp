@@ -45,7 +45,7 @@ import { setOrder, setOrderFilters, setOrderPagination, setOrderSort } from 'sto
 import { setMessage } from 'store/slices/util/utilSlice';
 import { authPermissionsSelector } from 'store/slices/auth/authSelector';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
-import { formatDateTime, getEndOfDay, getStartOfDay } from 'utils/format-date';
+import { formatDate, formatDateTime, formatDistance, getEndOfDay, getStartOfDay } from 'utils/format-date';
 import { useGridApiRef } from '../../../node_modules/@mui/x-data-grid/index';
 import GridEditTextarea from './GridEditTextarea';
 import ORDER_STATUSES, { ORDER_TAGS } from 'constants/orderStatuses';
@@ -335,7 +335,7 @@ const columns = (
     headerName: 'Delivery',
     flex: 1,
     sortable: false,
-    valueGetter: ({ value }) => `${JSON.stringify(value)}`
+    valueGetter: ({ value }) => `${value?.tracking_status || ''} ${value?.cn || ''} `
   },
   {
     field: 'createdAt',

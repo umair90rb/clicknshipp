@@ -110,29 +110,7 @@ const columns = [
       return params.value;
     }
   },
-  {
-    field: 'percentage',
-    headerName: 'Percentage%',
-    flex: 1,
-    valueGetter: (params) => {
-      if (params.row.id === 'TOTAL') {
-        return params.row.totalPercentage;
-      }
-      return `${((params.row.confirmed / params.row.generated) * 100).toFixed(2)}%`;
-    },
-    renderCell: (params) => {
-      let percentage = ((params.row.confirmed / params.row.generated) * 100).toFixed(0);
-      if (params.row.id === 'TOTAL') {
-        percentage = ((params.row.totalConfirmed / params.row.totalGenerated) * 100).toFixed(0);
-      }
-      return (
-        <>
-          <BorderLinearProgress color="success" variant="determinate" value={percentage} />
-          <Typography variant="body2" color="text.secondary">{`${percentage}%`}</Typography>
-        </>
-      );
-    }
-  },
+
   {
     field: 'postex',
     headerName: 'POSTEX',
@@ -178,7 +156,7 @@ const columns = [
     }
   },
   {
-    field: 'leapard',
+    field: 'leopard',
     headerName: 'LCS',
     flex: 0.5,
     valueGetter: (params) => {
@@ -212,7 +190,7 @@ const columns = [
   }
 ];
 
-export default function UnitReport() {
+export default function BookingUnitReport() {
   const reportIsLoading = useSelector(reportIsLoadingSelector);
   const data = useSelector(reportDataSelector);
 
@@ -229,6 +207,7 @@ export default function UnitReport() {
         hideFooterPagination
         checkboxSelection
         loading={reportIsLoading}
+        getRowId={(row) => `${row.name}`}
         slots={{ toolbar: renderToolbar, noRowsOverlay: CustomNoRowsOverlay }}
         rows={data}
         columns={columns}

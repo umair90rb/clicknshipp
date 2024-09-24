@@ -33,7 +33,6 @@ export default function GridAddItemModal({ visible, onClose, orderId, items: ord
     if (visible && itemsFetchStatus !== fetchStatus.SUCCESS) {
       dispatch(fetchAllItem());
     }
-    console.log(orderItems);
   }, [visible]);
 
   const handleAddItem = async (values, actions) => {
@@ -54,12 +53,14 @@ export default function GridAddItemModal({ visible, onClose, orderId, items: ord
       <Box sx={style}>
         <Formik
           initialValues={{
-            items: (orderItems || [{ id: '', name: '', price: 0, quantity: 0 }]).map(({ id, name, price, quantity }) => ({
-              id,
-              name,
-              price,
-              quantity
-            })),
+            items: orderItems.length
+              ? orderItems.map(({ id, name, price, quantity }) => ({
+                  id,
+                  name,
+                  price,
+                  quantity
+                }))
+              : [{ id: '', name: '', price: 0, quantity: 0 }],
             orderId
           }}
           validationSchema={Yup.object().shape({
@@ -165,42 +166,6 @@ export default function GridAddItemModal({ visible, onClose, orderId, items: ord
                         />
                       </Grid>
 
-                      {/* <Grid item xs={2}>
-                        <FormControl fullWidth margin="normal">
-                          <TextField value={item.price} type="number" variant="outlined" />
-                        </FormControl>
-                      </Grid> */}
-
-                      <Grid item xs={2}>
-                        <FormControl fullWidth margin="normal">
-                          <TextField
-                            error={
-                              addItemForm.touched.items &&
-                              addItemForm.touched.items[index] &&
-                              addItemForm.touched.items[index].price &&
-                              !!addItemForm.errors.items &&
-                              !!addItemForm.errors.items[index] &&
-                              !!addItemForm.errors.items[index].price
-                            }
-                            value={item.price}
-                            onChange={addItemForm.handleChange}
-                            type="number"
-                            id={`items.${index}.price`}
-                            name={`items.${index}.price`}
-                            label=""
-                            variant="outlined"
-                          />
-                          <ErrorMessage
-                            name={`items.${index}.price`}
-                            render={(msg) => (
-                              <FormHelperText sx={{ m: 0 }} error id="helper-text-price">
-                                {msg}
-                              </FormHelperText>
-                            )}
-                          />
-                        </FormControl>
-                      </Grid>
-
                       <Grid item xs={1}>
                         <FormControl fullWidth margin="normal">
                           <TextField
@@ -224,6 +189,36 @@ export default function GridAddItemModal({ visible, onClose, orderId, items: ord
                             name={`items.${index}.quantity`}
                             render={(msg) => (
                               <FormHelperText sx={{ m: 0 }} error id="helper-text-quantity">
+                                {msg}
+                              </FormHelperText>
+                            )}
+                          />
+                        </FormControl>
+                      </Grid>
+
+                      <Grid item xs={2}>
+                        <FormControl fullWidth margin="normal">
+                          <TextField
+                            error={
+                              addItemForm.touched.items &&
+                              addItemForm.touched.items[index] &&
+                              addItemForm.touched.items[index].price &&
+                              !!addItemForm.errors.items &&
+                              !!addItemForm.errors.items[index] &&
+                              !!addItemForm.errors.items[index].price
+                            }
+                            value={item.price * item.quantity}
+                            onChange={addItemForm.handleChange}
+                            type="number"
+                            id={`items.${index}.price`}
+                            name={`items.${index}.price`}
+                            label=""
+                            variant="outlined"
+                          />
+                          <ErrorMessage
+                            name={`items.${index}.price`}
+                            render={(msg) => (
+                              <FormHelperText sx={{ m: 0 }} error id="helper-text-price">
                                 {msg}
                               </FormHelperText>
                             )}

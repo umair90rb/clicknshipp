@@ -32,105 +32,14 @@ const columns = [
     }
   },
   {
-    field: 'generated',
-    headerName: 'Generated',
+    field: 'foc',
+    headerName: 'FOC',
     flex: 0.5,
     valueGetter: (params) => {
       if (params.row.id === 'TOTAL') {
-        return params.row.totalGenerated;
+        return params.row.totalFOC;
       }
       return params.value;
-    }
-  },
-  {
-    field: 'confirmed',
-    headerName: 'Confirmed',
-    flex: 0.5,
-    valueGetter: (params) => {
-      if (params.row.id === 'TOTAL') {
-        return params.row.totalConfirmed;
-      }
-      return params.value;
-    }
-  },
-  {
-    field: 'unit_generated',
-    headerName: 'Unit Generated',
-    flex: 0.5,
-    valueGetter: (params) => {
-      if (params.row.id === 'TOTAL') {
-        return params.row.totalUnitGenerated;
-      }
-      return params.value;
-    }
-  },
-  {
-    field: 'unit_confirmed',
-    headerName: 'Unit Confirmed',
-    flex: 0.5,
-    valueGetter: (params) => {
-      if (params.row.id === 'TOTAL') {
-        return params.row.totalUnitConfirmed;
-      }
-      return params.value;
-    }
-  },
-
-  {
-    field: 'unit_booked',
-    headerName: 'Unit Booked',
-    flex: 0.5,
-    valueGetter: (params) => {
-      if (params.row.id === 'TOTAL') {
-        return params.row.totalUnitBooked;
-      }
-      return params.value;
-    }
-  },
-
-  {
-    field: 'unit_no_pick',
-    headerName: 'Unit No Pick',
-    flex: 0.5,
-    valueGetter: (params) => {
-      if (params.row.id === 'TOTAL') {
-        return params.row.totalUnitNoPick;
-      }
-      return params.value;
-    }
-  },
-  {
-    field: 'unit_cancel',
-    headerName: 'Unit Cancel',
-    flex: 0.5,
-    valueGetter: (params) => {
-      if (params.row.id === 'TOTAL') {
-        return params.row.totalUnitCancel;
-      }
-      return params.value;
-    }
-  },
-  {
-    field: 'percentage',
-    headerName: 'Percentage%',
-    flex: 1,
-    valueGetter: (params) => {
-      if (params.row.id === 'TOTAL') {
-        return params.row.totalPercentage;
-      }
-      return `${((params.row.confirmed / params.row.generated) * 100).toFixed(2)}%`;
-    },
-    renderCell: (params) => {
-      let percentage = ((params.row.confirmed / params.row.generated) * 100).toFixed(0);
-      if (params.row.id === 'TOTAL') {
-        percentage = ((params.row.totalConfirmed / params.row.totalGenerated) * 100).toFixed(0);
-      }
-      return (
-        <>
-          <BorderLinearProgress color="success" variant="determinate" value={percentage} />
-          <Typography variant="body2" color="text.secondary">{`${percentage}%`}</Typography>
-        </>
-      );
     }
   },
   {
@@ -178,23 +87,12 @@ const columns = [
     }
   },
   {
-    field: 'leapard',
+    field: 'leopard',
     headerName: 'LCS',
     flex: 0.5,
     valueGetter: (params) => {
       if (params.row.id === 'TOTAL') {
         return params.row.totalLeapard;
-      }
-      return params.value;
-    }
-  },
-  {
-    field: 'callcourier',
-    headerName: 'CC',
-    flex: 0.5,
-    valueGetter: (params) => {
-      if (params.row.id === 'TOTAL') {
-        return params.row.totalCallCourier;
       }
       return params.value;
     }
@@ -209,10 +107,21 @@ const columns = [
       }
       return params.value;
     }
+  },
+  {
+    field: 'callcourier',
+    headerName: 'CC',
+    flex: 0.5,
+    valueGetter: (params) => {
+      if (params.row.id === 'TOTAL') {
+        return params.row.totalCallCourier;
+      }
+      return params.value;
+    }
   }
 ];
 
-export default function UnitReport() {
+export default function FOCReport() {
   const reportIsLoading = useSelector(reportIsLoadingSelector);
   const data = useSelector(reportDataSelector);
 
@@ -229,6 +138,7 @@ export default function UnitReport() {
         hideFooterPagination
         checkboxSelection
         loading={reportIsLoading}
+        getRowId={(row) => `${row.name}`}
         slots={{ toolbar: renderToolbar, noRowsOverlay: CustomNoRowsOverlay }}
         rows={data}
         columns={columns}

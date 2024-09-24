@@ -8,6 +8,7 @@ import {
   reportBrandSelector,
   reportChanelSelector,
   reportEndPeriodSelector,
+  reportIsLoadingSelector,
   reportStartPeriodSelector,
   reportTypeSelector
 } from 'store/slices/report/reportSelector';
@@ -22,13 +23,16 @@ import AgentsReports from './AgentsReport';
 import IncentiveReport from './IncentiveReport';
 import { chanelChanelsSelector, chanelFetchStatusSelector } from 'store/slices/chanel/chanelSelector';
 import { fetchAllChanel } from 'store/slices/chanel/fetchChanel';
+import BookingUnitReport from './BookingUnitReport';
+import FOCReport from './FOCReport';
 
-const REPORT_TYPES = ['Agent Report', 'Unit Report', 'Channel Report', 'Incentive Report'];
+const REPORT_TYPES = ['Agent Report', 'Unit Report', 'Booking Unit Report', 'FOC Report', 'Channel Report', 'Incentive Report'];
 
 const Reporting = () => {
   const dispatch = useDispatch();
   const startPeriod = useSelector(reportStartPeriodSelector);
   const endPeriod = useSelector(reportEndPeriodSelector);
+  const reportIsLoading = useSelector(reportIsLoadingSelector);
   const reportType = useSelector(reportTypeSelector);
   const reportBrand = useSelector(reportBrandSelector);
   const reportChanel = useSelector(reportChanelSelector);
@@ -60,6 +64,10 @@ const Reporting = () => {
         return <AgentsReports />;
       case 'Unit Report':
         return <UnitReport />;
+      case 'Booking Unit Report':
+        return <BookingUnitReport />;
+      case 'FOC Report':
+        return <FOCReport />;
       case 'Channel Report':
         return <ChannelReport />;
       case 'Incentive Report':
@@ -172,12 +180,15 @@ const Reporting = () => {
           </Button>
         </Grid>
       </Grid>
-
-      <Grid item xs={12} md={12} lg={12}>
-        <MainCard sx={{ mt: 2 }} content={false}>
-          {renderReport()}
-        </MainCard>
-      </Grid>
+      {reportIsLoading ? (
+        'Loading...'
+      ) : (
+        <Grid item xs={12} md={12} lg={12}>
+          <MainCard sx={{ mt: 2 }} content={false}>
+            {renderReport()}
+          </MainCard>
+        </Grid>
+      )}
     </Grid>
   );
 };

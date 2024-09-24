@@ -5,7 +5,7 @@ class CityService extends Ajax {
 
   fetchAllCity = () => this.getJson(`${this.pathname}/all`);
 
-  //   fetchCity = (id) => this.getJson(`${this.pathname}/${id}`);
+  fetchSearchCity = (data) => this.post(`${this.pathname}/search`, data);
 
   fetchCreateCity = (data) => this.post(`${this.pathname}`, data);
 
