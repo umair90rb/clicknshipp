@@ -9,16 +9,6 @@ module.exports = {
     dialect: 'postgres',
     seederStorage: 'sequelize',
     timezone: '+05:00',
-    ...(process.env.DB_SSL
-      ? {
-          dialectOptions: {
-            ssl: {
-              require: true,
-              rejectUnauthorized: false,
-            },
-          },
-        }
-      : {}),
   },
   test: {
     username: process.env.DB_USERNAME,

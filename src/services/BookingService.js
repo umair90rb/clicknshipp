@@ -1,9 +1,10 @@
-import DeawooCourier from "./couriers/deawooCourier";
-import LeapordCourier from "./couriers/leopordCourier";
-import PostexCourier from "./couriers/postexCourier";
-import SonicCourier from "./couriers/sonicCourier";
-import TCSCourier from "./couriers/tcsCourier";
-import CallCourier from "./couriers/callCourier";
+import DeawooCourier from './couriers/deawooCourier';
+import LeapordCourier from './couriers/leopordCourier';
+import PostexCourier from './couriers/postexCourier';
+import SonicCourier from './couriers/sonicCourier';
+import TCSCourier from './couriers/tcsCourier';
+import CallCourier from './couriers/callCourier';
+import MnpCourier from './couriers/mnpCourier';
 
 class BookingService {
   constructor() {
@@ -14,6 +15,7 @@ class BookingService {
       trax: new SonicCourier(),
       tcs: new TCSCourier(),
       callcourier: new CallCourier(),
+      mnp: new MnpCourier(),
     };
   }
 
@@ -26,7 +28,7 @@ class BookingService {
       const courier = this.availableCouriers[deliveryAccount.service];
       return courier.bookParcel(orderDetails, deliveryAccount);
     } else {
-      throw new Error("Courier service not available");
+      throw new Error('Courier service not available');
     }
   }
 
@@ -35,7 +37,7 @@ class BookingService {
       const courier = this.availableCouriers[deliveryAccount.service];
       return courier.cancelBooking(cn, deliveryAccount);
     } else {
-      throw new Error("Courier service not available");
+      throw new Error('Courier service not available');
     }
   }
 
@@ -44,7 +46,7 @@ class BookingService {
       const courier = this.availableCouriers[deliveryAccount.service];
       return courier.checkParcelStatus(cn, deliveryAccount);
     } else {
-      throw new Error("Courier service not available");
+      throw new Error('Courier service not available');
     }
   }
 
@@ -53,7 +55,7 @@ class BookingService {
       const courier = this.availableCouriers[deliveryAccount.service];
       return courier.downloadReceipt(cns, deliveryAccount);
     } else {
-      throw new Error("Courier service not available");
+      throw new Error('Courier service not available');
     }
   }
 }

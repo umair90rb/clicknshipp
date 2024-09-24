@@ -1,5 +1,5 @@
-const data = require("../data/index");
-const fs = require("fs");
+const data = require('../data/index');
+const fs = require('fs');
 
 // const capitalizeWord = (word) => word[0] + word.substring(1).toLowerCase();
 // const capitalizeSentense = (sentense) => {
@@ -68,7 +68,7 @@ function mapCities(
   courier,
   thresold = 1
 ) {
-  console.log("working on service:", courier, " with data key:", listNameKey);
+  console.log('working on service:', courier, ' with data key:', listNameKey);
   return cities.map((city) => {
     const maped = findSimilarStrings(city, list, thresold, listNameKey);
     if (maped.length) {
@@ -106,11 +106,11 @@ mappedCities.forEach((list) => {
   });
 });
 const result = JSON.stringify(singleArr);
-const filePath = __dirname + "/output.json";
-fs.writeFile(filePath, result, "utf8", (err) => {
+const filePath = __dirname + '/output-mnp.json';
+fs.writeFile(filePath, result, 'utf8', (err) => {
   if (err) {
-    console.error("Error writing JSON to file:", err);
+    console.error('Error writing JSON to file:', err);
     return;
   }
-  console.log("JSON data has been written to file successfully.");
+  console.log('JSON data has been written to file successfully.');
 });

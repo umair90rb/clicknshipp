@@ -59,7 +59,7 @@ const CreateUpdateForm = ({ account }) => {
         validationSchema={Yup.object().shape({
           name: Yup.string().max(255).required('Name is required'),
           service: Yup.string().max(255).required('Service type is required'),
-          key: Yup.string().max(255).required('Key is required'),
+          key: Yup.string().max(255),
           client_id: Yup.string().max(255),
           cost_center: Yup.string().max(255),
           username: Yup.string().max(255),
