@@ -178,7 +178,14 @@ export default function GridAddItemModal({ visible, onClose, orderId, items: ord
                               !!addItemForm.errors.items[index].quantity
                             }
                             value={item.quantity}
-                            onChange={addItemForm.handleChange}
+                            // onChange={addItemForm.handleChange}
+                            onChange={(e) => {
+                              const quantity = e.target.value;
+                              addItemForm.setFieldValue(`items.${index}.quantity`, quantity);
+                              if (quantity) {
+                                addItemForm.setFieldValue(`items.${index}.price`, addItemForm.values.items[index].price * quantity);
+                              }
+                            }}
                             type="number"
                             id={`items.${index}.quantity`}
                             name={`items.${index}.quantity`}
@@ -207,7 +214,7 @@ export default function GridAddItemModal({ visible, onClose, orderId, items: ord
                               !!addItemForm.errors.items[index] &&
                               !!addItemForm.errors.items[index].price
                             }
-                            value={item.price * item.quantity}
+                            value={item.price}
                             onChange={addItemForm.handleChange}
                             type="number"
                             id={`items.${index}.price`}
