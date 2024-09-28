@@ -1,33 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Grid, Typography, Modal, Box } from '@mui/material';
+import { Button, Grid, Typography } from '@mui/material';
 import MainCard from 'components/MainCard';
 import { UserAddOutlined } from '@ant-design/icons';
 import AddModeratorIcon from '@mui/icons-material/AddModerator';
-import AuthRegister from 'pages/authentication/auth-forms/AuthRegister';
 import { useSelector } from 'react-redux';
 import { userUsersSelector } from 'store/slices/user/userSelector';
 import UserTable from './UserTable';
 import AddUpdateRoleModal from './AddUpdateRoleModal';
 import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
+import AddUpdateUserModal from './AddUpdateUserModal';
 
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4
-};
-
-const UserManagement = () => {
+export default function UserManagement() {
   const users = useSelector(userUsersSelector);
+  const [userToUpdate, setUserToUpdate] = useState({});
+  const [openAddUpdateUserModal, setOpenAddUpdateUserModal] = useState(false);
 
-  const [openAddUserModal, setOpenAddUserModal] = useState(false);
-  const handleOpenAddUserModal = () => setOpenAddUserModal(true);
-  const handleCloseAddUserModal = () => setOpenAddUserModal(false);
+  const handleOpenAddUpdateUserModal = () => setOpenAddUpdateUserModal(true);
+
+  const handleCloseAddUpdateUserModal = () => {
+    setUserToUpdate({});
+    setOpenAddUpdateUserModal(false);
+  };
+
+  const handleUpdateUser = (user) => {
+    setUserToUpdate(user);
+    handleOpenAddUpdateUserModal();
+  };
 
   const [openAddRoleModal, setOpenAddRoleModal] = useState(false);
   const handleOpenAddRoleModal = () => setOpenAddRoleModal(true);
@@ -36,7 +35,7 @@ const UserManagement = () => {
   const { hasPermission } = useAccess();
 
   useEffect(() => {
-    if (openAddUserModal) setOpenAddUserModal(false);
+    if (openAddUpdateUserModal) handleCloseAddUpdateUserModal();
   }, [users]);
 
   return (
@@ -57,7 +56,7 @@ const UserManagement = () => {
               )}
               {hasPermission(PERMISSIONS.PERMISSION_CREATE_USER) && (
                 <Grid item>
-                  <Button variant="contained" startIcon={<UserAddOutlined />} onClick={handleOpenAddUserModal}>
+                  <Button variant="contained" startIcon={<UserAddOutlined />} onClick={handleOpenAddUpdateUserModal}>
                     Add User
                   </Button>
                 </Grid>
@@ -66,31 +65,11 @@ const UserManagement = () => {
           </Grid>
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>
-          <UserTable orderBy="id" order="asc" openUpateForm={setOpenAddUserModal} />
+          <UserTable orderBy="id" order="asc" updateUser={handleUpdateUser} />
         </MainCard>
       </Grid>
-      <Modal
-        open={openAddUserModal}
-        onClose={handleCloseAddUserModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <AuthRegister />
-        </Box>
-      </Modal>
-      <Modal
-        open={openAddRoleModal}
-        onClose={handleCloseAddRoleModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <AddUpdateRoleModal handleCloseAddRoleModal={handleCloseAddRoleModal} />
-        </Box>
-      </Modal>
+      <AddUpdateUserModal visible={openAddUpdateUserModal} onClose={handleCloseAddUpdateUserModal} userToUpdate={userToUpdate} />
+      <AddUpdateRoleModal visible={openAddRoleModal} onClose={handleCloseAddRoleModal} />
     </>
   );
-};
-
-export default UserManagement;
+}

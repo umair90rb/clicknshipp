@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 
 import {
   Box,
@@ -19,25 +19,17 @@ import * as Yup from 'yup';
 import { Formik } from 'formik';
 import AnimateButton from 'components/@extended/AnimateButton';
 import { useDispatch } from 'react-redux';
-import { fetchAllPermissions, fetchCreateRole } from 'store/slices/role/fetchRole';
+import { fetchCreateRole } from 'store/slices/acl/fetchACL';
 import { setMessage } from 'store/slices/util/utilSlice';
+import { useSelector } from '../../../node_modules/react-redux/es/exports';
+import { aclPermissionsIsLoadingSelector, aclPermissionsListSelector } from 'store/slices/acl/aclSelector';
+import FormHelperTextComponent from 'components/LoadingHelperText';
 
 const AddRoleForm = ({ closeModal }) => {
   const dispatch = useDispatch();
   const formRef = useRef();
-  const [loadingPermissions, setLoadingPermissions] = useState(true);
-  const [permissions, setPermissions] = useState([]);
-
-  const fetchPermissions = async () => {
-    const { type, payload } = await dispatch(fetchAllPermissions());
-    if (type === 'permissions/all/fetch/fulfilled') {
-      setPermissions(payload.data.permissions);
-      setLoadingPermissions(false);
-    } else {
-      setPermissions([]);
-      setLoadingPermissions(false);
-    }
-  };
+  const permissions = useSelector(aclPermissionsListSelector);
+  const permissionsIsLoading = useSelector(aclPermissionsIsLoadingSelector);
 
   const handleSubmit = async ({ name, permissions }, { setErrors, setStatus, setSubmitting }) => {
     const body = { name, permissions };
@@ -53,17 +45,13 @@ const AddRoleForm = ({ closeModal }) => {
     }
   };
 
-  useEffect(() => {
-    fetchPermissions();
-  }, []);
-
   return (
     <>
       <Formik
         innerRef={formRef}
         initialValues={{
           name: '',
-          permissions: permissions
+          permissions: []
         }}
         validationSchema={Yup.object().shape({
           name: Yup.string().max(255).required('Role name is required'),
@@ -95,44 +83,44 @@ const AddRoleForm = ({ closeModal }) => {
                   )}
                 </Stack>
               </Grid>
-              {!loadingPermissions && (
-                <Grid item xs={12}>
-                  <Stack spacing={1}>
-                    <InputLabel htmlFor="permissions-signup">Permissions</InputLabel>
-                    <Select
-                      fullWidth
-                      multiple
-                      error={Boolean(touched.permissions && errors.permissions)}
-                      id="permissions-signup"
-                      value={values.permissions}
-                      name="permissions"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      inputProps={{}}
-                      labelId="permissions-signup"
-                      renderValue={(selected) => (
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                          {selected.map((id) => (
-                            <Chip key={id} label={permissions.find((p) => p.id === id).name} />
-                          ))}
-                        </Box>
-                      )}
-                    >
-                      {permissions.map(({ id, name }, index) => (
-                        <MenuItem key={index} value={id}>
-                          <Checkbox checked={values.permissions.indexOf(id) > -1} />
-                          <ListItemText primary={name} />
-                        </MenuItem>
-                      ))}
-                    </Select>
-                    {touched.permissions && errors.permissions && (
-                      <FormHelperText error id="helper-text-permissions-signup">
-                        {errors.permissions}
-                      </FormHelperText>
+
+              <Grid item xs={12}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="permissions-signup">Permissions</InputLabel>
+                  <Select
+                    fullWidth
+                    multiple
+                    error={Boolean(touched.permissions && errors.permissions)}
+                    id="permissions-signup"
+                    value={values.permissions}
+                    name="permissions"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    inputProps={{}}
+                    labelId="permissions-signup"
+                    renderValue={(selected) => (
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {selected.map((id) => (
+                          <Chip key={id} label={permissions.find((p) => p.id === id).name} />
+                        ))}
+                      </Box>
                     )}
-                  </Stack>
-                </Grid>
-              )}
+                  >
+                    {permissions.map(({ id, name }, index) => (
+                      <MenuItem key={index} value={id}>
+                        <Checkbox checked={values.permissions.indexOf(id) > -1} />
+                        <ListItemText primary={name} />
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  <FormHelperTextComponent loading={permissionsIsLoading} />
+                  {touched.permissions && errors.permissions && (
+                    <FormHelperText error id="helper-text-permissions-signup">
+                      {errors.permissions}
+                    </FormHelperText>
+                  )}
+                </Stack>
+              </Grid>
 
               {errors.submit && (
                 <Grid item xs={12}>
@@ -142,7 +130,6 @@ const AddRoleForm = ({ closeModal }) => {
               <Grid item xs={12}>
                 <AnimateButton>
                   <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
-                    {/* {userUpdateData.data === null ? 'Create Role' : 'Update Role'} */}
                     Create Role
                   </Button>
                 </AnimateButton>

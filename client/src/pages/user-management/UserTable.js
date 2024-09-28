@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { userIsLoadingSelector, userUsersSelector } from 'store/slices/user/userSelector';
-import { fetchAllUser } from 'store/slices/user/fetchUser';
+import { fetchAllUser, fetchDisableUser } from 'store/slices/user/fetchUser';
 import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import NoAccountsIcon from '@mui/icons-material/NoAccounts';
@@ -86,7 +86,7 @@ const columns = (handleEditAction, handleDeleteAction) => [
   }
 ];
 
-export default function UserTable({ openUpateForm }) {
+export default function UserTable({ updateUser }) {
   const dispatch = useDispatch();
   const userIsLoading = useSelector(userIsLoadingSelector);
   const users = useSelector(userUsersSelector);
@@ -103,17 +103,18 @@ export default function UserTable({ openUpateForm }) {
       return;
     }
     try {
-      await userService.fetchUpdateUser(id, { status: 'inactive' });
-      dispatch(setMessage({ message: 'User disabled!', type: 'success' }));
-      dispatch(disableUser(id));
+      const { type, payload } = await dispatch(fetchDisableUser({ id }));
+      console.log(type, payload);
+      if (type === 'user/disable/fetch/fulfilled') {
+        dispatch(setMessage({ message: payload.data.message, type: 'success' }));
+        dispatch(disableUser(id));
+      } else {
+        throw new Error(payload.data.error);
+      }
     } catch (error) {
+      console.log(error);
       dispatch(setMessage({ message: 'User not disabled!', type: 'error' }));
     }
-  };
-
-  const handleUpdate = (data) => {
-    dispatch(setUserForUpdate(data));
-    setTimeout(() => openUpateForm(true), 500);
   };
 
   return (
@@ -129,7 +130,7 @@ export default function UserTable({ openUpateForm }) {
         pageSizeOptions={[25, 50, 75, 100]}
         rows={users}
         columns={columns(
-          hasPermission(PERMISSIONS.PERMISSION_UPDATE_USER) ? handleUpdate : undefined,
+          hasPermission(PERMISSIONS.PERMISSION_UPDATE_USER) ? updateUser : undefined,
           hasPermission(PERMISSIONS.PERMISSION_DELETE_USER) ? handleDisableUser : undefined
         )}
       />

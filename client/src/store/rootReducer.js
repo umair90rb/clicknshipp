@@ -11,6 +11,7 @@ import department from './slices/department/departmentSlice';
 import designation from './slices/designation/designationSlice';
 import allowance from './slices/allowance/allowanceSlice';
 import employee from './slices/employee/employeeSlice';
+import acl from './slices/acl/aclSlice';
 import category from './slices/category/categorySlice';
 import item from './slices/item/itemSlice';
 import supplier from './slices/supplier/supplierSlice';
@@ -44,7 +45,8 @@ const reducers = combineReducers(
     department,
     designation,
     allowance,
-    employee
+    employee,
+    acl
   },
   composeWithDevTools()
 );

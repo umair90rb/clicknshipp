@@ -29,4 +29,17 @@ const fetchDeleteUser = createAsyncThunk('user/delete/fetch', ({ id }, { rejectW
   userService.fetchDeleteUser(id).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
-export { fetchAllUser, fetchUser, fetchFilteredUsers, fetchCreateUser, fetchUpdateUser, fetchSetUserDefaultBrand, fetchDeleteUser };
+const fetchDisableUser = createAsyncThunk('user/disable/fetch', ({ id }, { rejectWithValue }) =>
+  userService.fetchDisableUser(id).catch((error) => rejectWithValue(error.response.data || error.message))
+);
+
+export {
+  fetchAllUser,
+  fetchUser,
+  fetchFilteredUsers,
+  fetchCreateUser,
+  fetchUpdateUser,
+  fetchSetUserDefaultBrand,
+  fetchDeleteUser,
+  fetchDisableUser
+};

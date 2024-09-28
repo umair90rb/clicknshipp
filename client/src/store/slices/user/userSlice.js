@@ -32,10 +32,8 @@ const userSlice = createSlice({
       state.users = state.users.filter((user) => user.id !== action.payload);
     },
     disableUser: (state, action) => {
-      const index = state.users.findIndex((user) => user.id === action.payload);
-      if (index > -1) {
-        state.users[index].status = 'inactive';
-      }
+      const users = [...state.users];
+      state.users = users.filter((user) => user.id !== action.payload);
     }
   },
   extraReducers: (builder) => {

@@ -15,6 +15,8 @@ class UserService extends Ajax {
 
   fetchSetDefaultBrand = (id) => this.getJson(`${this.pathname}/set-default-brand/${id}`);
 
+  fetchDisableUser = (id) => this.getJson(`${this.pathname}/disable/${id}`);
+
   fetchDeleteUser = (id) => this.delete(`${this.pathname}/${id}`);
 }
 

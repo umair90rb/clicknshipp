@@ -1,30 +1,30 @@
-import express from "express";
-import UserController from "../controllers/UserController";
-import { PERMISSIONS } from "../constants/constants";
+import express from 'express';
+import UserController from '../controllers/UserController';
+import { PERMISSIONS } from '../constants/constants';
 
-import can from "../middleware/canAccess";
-import Auth from "../middleware/auth";
+import can from '../middleware/canAccess';
+import Auth from '../middleware/auth';
 import {
   createUserSchema,
   filteredUsersSchema,
   updateUserSchema,
-} from "../schemas/userSchema";
-import { idSchema } from "../schemas/commonSchema";
-import schemaValidator from "../middleware/schemaValidator";
-import { createValidator } from "express-joi-validation";
+} from '../schemas/userSchema';
+import { idSchema } from '../schemas/commonSchema';
+import schemaValidator from '../middleware/schemaValidator';
+import { createValidator } from 'express-joi-validation';
 
 const router = express.Router();
 const validator = createValidator();
 
 router.get(
-  "/all",
+  '/all',
   Auth,
   can(PERMISSIONS.PERMISSION_VIEW_USERS),
   UserController.users
 );
 
 router.get(
-  "/:id",
+  '/:id',
   Auth,
   can(PERMISSIONS.PERMISSION_VIEW_USERS),
   validator.params(idSchema),
@@ -32,7 +32,7 @@ router.get(
 );
 
 router.post(
-  "/filtered",
+  '/filtered',
   Auth,
   can(PERMISSIONS.PERMISSION_VIEW_USERS),
   schemaValidator(filteredUsersSchema),
@@ -40,7 +40,7 @@ router.post(
 );
 
 router.post(
-  "/",
+  '/',
   Auth,
   can(PERMISSIONS.PERMISSION_CREATE_USER),
   schemaValidator(createUserSchema),
@@ -48,7 +48,7 @@ router.post(
 );
 
 router.put(
-  "/:id",
+  '/:id',
   Auth,
   can(PERMISSIONS.PERMISSION_UPDATE_USER),
   validator.params(idSchema),
@@ -57,14 +57,22 @@ router.put(
 );
 
 router.get(
-  "/set-default-brand/:id",
+  '/set-default-brand/:id',
   Auth,
   validator.params(idSchema),
   UserController.setDefaultBrand
 );
 
+router.get(
+  '/disable/:id',
+  Auth,
+  can(PERMISSIONS.PERMISSION_DELETE_USER),
+  validator.params(idSchema),
+  UserController.disable
+);
+
 router.delete(
-  "/:id",
+  '/:id',
   Auth,
   can(PERMISSIONS.PERMISSION_DELETE_USER),
   validator.params(idSchema),

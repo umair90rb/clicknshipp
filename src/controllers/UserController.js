@@ -1,7 +1,7 @@
-import { Op } from "sequelize";
-import model from "../models";
-import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
-const bcrypt = require("bcrypt");
+import { Op } from 'sequelize';
+import model from '../models';
+import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
+const bcrypt = require('bcrypt');
 
 const {
   User,
@@ -17,18 +17,21 @@ const {
 export default {
   async users(req, res) {
     try {
-      const users = await User.scope("clean").findAll({
+      const users = await User.scope('clean').findAll({
+        where: {
+          status: 'active',
+        },
         include: [
           {
             model: Role,
-            as: "roles",
+            as: 'roles',
             through: {
               attributes: [],
             },
             include: [
               {
                 model: Permission,
-                as: "permissions",
+                as: 'permissions',
                 through: {
                   attributes: [],
                 },
@@ -37,8 +40,8 @@ export default {
           },
           {
             model: Brand,
-            as: "brands",
-            attributes: ["id", "name"],
+            as: 'brands',
+            attributes: ['id', 'name'],
             through: {
               attributes: [],
             },
@@ -58,14 +61,14 @@ export default {
             ),
           })),
         },
-        "All registered users"
+        'All registered users'
       );
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
@@ -73,18 +76,18 @@ export default {
   async user(req, res) {
     try {
       const { id } = req.params;
-      const user = await User.scope("clean").findByPk(id, {
+      const user = await User.scope('clean').findByPk(id, {
         include: [
           {
             model: Role,
-            as: "roles",
+            as: 'roles',
             through: {
               attributes: [],
             },
             include: [
               {
                 model: Permission,
-                as: "permissions",
+                as: 'permissions',
                 through: {
                   attributes: [],
                 },
@@ -93,7 +96,7 @@ export default {
           },
           {
             model: Brand,
-            as: "brands",
+            as: 'brands',
             through: {
               attributes: [],
             },
@@ -114,16 +117,16 @@ export default {
               ),
             },
           },
-          "User with id"
+          'User with id'
         );
       }
-      return sendErrorResponse(res, 404, "No data found with this id.");
+      return sendErrorResponse(res, 404, 'No data found with this id.');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
@@ -140,14 +143,14 @@ export default {
       if (permissions && permissions.length) {
         include.push({
           model: Role,
-          as: "roles",
+          as: 'roles',
           through: {
             attributes: [],
           },
           required: true,
           include: [
             {
-              as: "permissions",
+              as: 'permissions',
               model: Permission,
               required: true,
               through: {
@@ -156,23 +159,23 @@ export default {
             },
           ],
         });
-        where["$roles.permissions.name$"] = { [Op.in]: permissions };
+        where['$roles.permissions.name$'] = { [Op.in]: permissions };
       }
       if (brand && brand.length) {
         include.push({
           model: Brand,
-          as: "brands",
+          as: 'brands',
           through: {
             attributes: [],
           },
         });
-        where["$brands.id$"] = { [Op.in]: brand };
+        where['$brands.id$'] = { [Op.in]: brand };
       }
       if (Object.keys(where).length) {
-        query["where"] = where;
+        query['where'] = where;
       }
-      console.log(query, "filtered user query", JSON.stringify(query));
-      const users = await User.scope("clean").findAll(query);
+      console.log(query, 'filtered user query', JSON.stringify(query));
+      const users = await User.scope('clean').findAll(query);
       if (users && users.length) {
         return sendSuccessResponse(
           res,
@@ -180,16 +183,16 @@ export default {
           {
             users,
           },
-          "Filtered users"
+          'Filtered users'
         );
       }
-      return sendErrorResponse(res, 404, "No data found!");
+      return sendErrorResponse(res, 404, 'No data found!');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
@@ -205,7 +208,7 @@ export default {
         return sendErrorResponse(
           res,
           422,
-          "User with email or phone already exists."
+          'User with email or phone already exists.'
         );
       }
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -251,13 +254,13 @@ export default {
             })),
           },
         },
-        "Account created successfully"
+        'Account created successfully'
       );
     } catch (error) {
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         error
       );
     }
@@ -277,7 +280,7 @@ export default {
           return sendErrorResponse(
             res,
             409,
-            "Email or phone number already registered!"
+            'Email or phone number already registered!'
           );
         }
       }
@@ -335,7 +338,7 @@ export default {
               phone: user.phone,
               status: user.status,
               brands: await user.getBrands({
-                attributes: ["id", "name"],
+                attributes: ['id', 'name'],
                 joinTableAttributes: [],
               }),
               roles: assignedRoles?.length
@@ -346,16 +349,16 @@ export default {
                 : [],
             },
           },
-          "Operation successful."
+          'Operation successful.'
         );
       }
-      return sendErrorResponse(res, 404, "No data found with this id.");
+      return sendErrorResponse(res, 404, 'No data found with this id.');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
@@ -369,8 +372,8 @@ export default {
       const user = await User.findByPk(userId, {
         include: {
           model: Brand,
-          as: "brands",
-          attributes: ["id", "name"],
+          as: 'brands',
+          attributes: ['id', 'name'],
           through: {
             attributes: [],
           },
@@ -386,7 +389,7 @@ export default {
             {
               settings,
             },
-            "Operation successful."
+            'Operation successful.'
           );
         } else {
           return sendErrorResponse(
@@ -397,13 +400,40 @@ export default {
           );
         }
       }
-      return sendErrorResponse(res, 404, {}, "User not found!");
+      return sendErrorResponse(res, 404, {}, 'User not found!');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
+        e
+      );
+    }
+  },
+
+  async disable(req, res) {
+    try {
+      const id = req.params.id;
+      if (id === req.user.id) {
+        return sendErrorResponse(
+          res,
+          400,
+          'Logged in user could not delete himself!'
+        );
+      }
+      const user = await User.findByPk(id);
+      if (user) {
+        await user.update({ status: 'inactive' });
+        return sendSuccessResponse(res, 200, {}, 'Operation successful.');
+      }
+      return sendErrorResponse(res, 404, 'No data found with this id.');
+    } catch (e) {
+      console.error(e);
+      return sendErrorResponse(
+        res,
+        500,
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
@@ -416,7 +446,7 @@ export default {
         return sendErrorResponse(
           res,
           400,
-          "Logged in user could not delete himself!"
+          'Logged in user could not delete himself!'
         );
       }
       const user = await User.findByPk(id);
@@ -432,15 +462,15 @@ export default {
         });
         await user.setBrands([]);
         await user.destroy();
-        return sendSuccessResponse(res, 200, {}, "Operation successful.");
+        return sendSuccessResponse(res, 200, {}, 'Operation successful.');
       }
-      return sendErrorResponse(res, 404, "No data found with this id.");
+      return sendErrorResponse(res, 404, 'No data found with this id.');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }

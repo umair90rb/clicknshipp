@@ -1,7 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-
-// material-ui
 import {
   Box,
   Button,
@@ -20,39 +17,23 @@ import {
   Checkbox,
   Chip
 } from '@mui/material';
-
-// third party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-
-// project import
-// import FirebaseSocial from './FirebaseSocial';
 import AnimateButton from 'components/@extended/AnimateButton';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
-
-// assets
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import { userService } from 'api/index';
 import { addUser, setUserForUpdate, updateUser } from 'store/slices/user/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { userUpdateUserData } from 'store/slices/user/userSelector';
-import { fetchAllRoles } from 'store/slices/role/fetchRole';
+import { fetchAllRoles } from 'store/slices/acl/fetchACL';
 import { fetchAllBrand } from 'store/slices/brand/fetchBrand';
-
-// ============================|| FIREBASE - REGISTER ||============================ //
 
 const AuthRegister = () => {
   const dispatch = useDispatch();
   const formRef = useRef();
-  const [initialValues, setInitialValues] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-    roles: [],
-    brands: []
-  });
   const userUpdateData = useSelector(userUpdateUserData);
+  const [initialValues, setInitialValues] = useState();
   const [level, setLevel] = useState();
   const [showPassword, setShowPassword] = useState(false);
   const [roles, setRoles] = useState([]);
@@ -62,6 +43,8 @@ const AuthRegister = () => {
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
+
+  console.log(userUpdateData, 'userUpdateDatauserUpdateDatauserUpdateData');
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
@@ -148,7 +131,14 @@ const AuthRegister = () => {
     <>
       <Formik
         innerRef={formRef}
-        initialValues={initialValues}
+        initialValues={{
+          name: '',
+          email: '',
+          phone: '',
+          password: '',
+          roles: [],
+          brands: []
+        }}
         validationSchema={Yup.object().shape({
           name: Yup.string().max(255).required('First Name is required'),
           phone: Yup.number().min(11),
