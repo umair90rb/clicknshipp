@@ -5,7 +5,7 @@ import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
 import { extract } from '../utils/extract';
 import excelToJson from '../helpers/excelToJson';
 import formatPhoneNumber from '../helpers/formatPhone';
-import { getStartOfDay, getEndOfDay } from '../helpers/pgDateFormat';
+import { getStartOfDay, getEndOfDay, getDate } from '../helpers/pgDateFormat';
 import {
   PERMISSIONS,
   order_data_keys,
@@ -476,69 +476,57 @@ export default {
       const chanel = await Chanel.findByPk(chanel_id);
       const brand_id = chanel.brand_id || null;
 
-      // console.log(json);
-      // return;
-
       const orders = json.map(
         ({
-          ID,
-          Page,
-          Account,
-          Name,
-          Address,
-          City,
-          Quantity,
-          Product,
-          Price,
-          SKU,
-          ...rest
+          order_number,
+          name,
+          phone,
+          address: address_raw,
+          city,
+          item,
+          quantity,
+          price,
+          date,
+          remarks,
         }) => {
-          const created_at = rest['created at'];
-          const phone = rest['Phone Number'];
+          const created_at = date || getDate();
           const items = [
             {
               product_id: null,
-              name: Product,
-              price: Price,
+              name: item,
+              price: price,
               total_discount: 0,
-              quantity: parseInt(Quantity),
-              sku: SKU,
+              quantity: parseInt(quantity),
+              sku: null,
               grams: null,
               reason: null,
             },
           ];
           const address = {
-            address1: Address,
+            address1: address_raw,
             address2: null,
-            city: City,
+            city: city,
             zip: null,
             province: null,
             country: 'Pakistan',
             country_code: 'PK',
           };
-          const customer = { phone: formatPhoneNumber(phone), name: Name };
+          console.log(phone);
+          const customer = { phone: formatPhoneNumber(phone), name };
           const order = {
             chanel_id: parseInt(chanel_id),
             brand_id,
             user_id: null,
+            remarks,
             status: 'Received',
-            subtotal_price: Price,
-            total_price: Price,
+            subtotal_price: price,
+            total_price: price,
             total_tax: 0,
             total_discounts: 0,
-            order_number: ID,
+            order_number: order_number,
             created_at,
             updated_at: created_at,
-            data: JSON.stringify({
-              ID,
-              Page,
-              Account,
-              Name,
-              Address,
-              City,
-              Quantity,
-              ...rest,
-            }),
+            data: null,
           };
           return { order, items, address, customer };
         }

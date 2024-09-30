@@ -7,18 +7,13 @@ import {
   GridToolbarContainer,
   GridToolbarColumnsButton,
   GridToolbarQuickFilter,
-  GridToolbarDensitySelector,
   GridToolbarExport,
   GridRowEditStopReasons,
   GridRowModes
 } from '@mui/x-data-grid';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 // import FilterListIcon from '@mui/icons-material/FilterList';
-import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import VerifiedIcon from '@mui/icons-material/Verified';
 import FilterListOffIcon from '@mui/icons-material/FilterListOff';
-import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import EditIcon from '@mui/icons-material/Edit';
@@ -55,7 +50,6 @@ import { fetchAllCities } from 'store/slices/city/fetchCity';
 import GridSearchSelect from './GridSearchSelect';
 import GridAddItemModal from './GridAddItemModal/index';
 import { GridDropdownFilter } from './GridDropdownFilter';
-import moment from 'moment';
 import { fetchDeliveryServiceAccounts } from 'store/slices/deliveryServicesAccounts/fetchDeliveryServicesAccounts';
 import {
   deliveryServiceAccountsFetchStatusSelector,
@@ -63,7 +57,6 @@ import {
 } from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSelector';
 import useAccess from 'hooks/useAccess';
 import PaymentsModal from './PaymentsModal';
-import DateRangePicker from 'components/DatePicker';
 import { chanelChanelsSelector, chanelFetchStatusSelector } from 'store/slices/chanel/chanelSelector';
 import { fetchAllChanel } from 'store/slices/chanel/fetchChanel';
 import { GridDateFilter } from './GridDateFilter';
@@ -115,7 +108,7 @@ const columns = (
     editable: true,
     type: 'string',
     valueGetter: (param) => param.row.address?.city || '',
-    renderEditCell: (params) => <GridSearchSelect multiple={true} {...params} />
+    renderEditCell: (params) => <GridSearchSelect {...params} />
   },
   {
     field: 'phone',

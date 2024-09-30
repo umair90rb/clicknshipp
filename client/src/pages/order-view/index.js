@@ -14,7 +14,6 @@ import location from 'utils/location';
 import CourierDropdownModal from './CourierDropdownModal';
 import TrackingModal from './TrackingModal';
 import StatusModal from './StatusModal';
-import AddCityModal from './AddCityModal';
 import History from './History';
 // import OldOrders from './OldOrders';
 import DuplicateOrders from './DuplicateOrders';
@@ -36,10 +35,6 @@ const OrderView = () => {
   const [showBookModal, setShowBookModal] = useState(false);
   const showBookingModal = () => setShowBookModal(true);
   const hideBookingModal = () => setShowBookModal(false);
-
-  const [addCityModalVisible, setAddCityModalVisible] = useState(false);
-  const showAddCityModal = () => setAddCityModalVisible(true);
-  const hideAddCityModal = () => setAddCityModalVisible(false);
 
   const [showTrackModal, setShowTrackModal] = useState(false);
   const showTrackingModal = () => setShowTrackModal(true);
@@ -99,10 +94,6 @@ const OrderView = () => {
     getOrderDetails();
     dispatch(setNextPreOrder(orderId));
   }, [orderId]);
-
-  useEffect(() => {
-    console.log(nextOrder, preOrder, 'nextOrder, preOrder');
-  }, [nextOrder, preOrder]);
 
   const trackOrder = async () => {
     if (delivery) {
@@ -189,13 +180,13 @@ const OrderView = () => {
                 </Button>
               </Grid>
             )}
-            {(orderStatus === 'Confirmed' || orderStatus === 'Booked') && (
+            {/* {(orderStatus === 'Confirmed' || orderStatus === 'Booked') && (
               <Grid item>
                 <Button variant="outlined" disabled={orderStatus !== 'Confirmed'} onClick={showAddCityModal} color="primary">
                   Add Courier City
                 </Button>
               </Grid>
-            )}
+            )} */}
             {(hasPermission(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) || canUpdate) && (
               <Grid item>
                 <Button
@@ -210,12 +201,7 @@ const OrderView = () => {
             )}
             {(hasPermission(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) || canUpdate) && (
               <Grid item>
-                <Button
-                  variant="contained"
-                  disabled={orderStatus === 'Confirmed' || orderStatus === 'Booked'}
-                  onClick={() => navigate(location.createOrder(), { state: { order } })}
-                  color="primary"
-                >
+                <Button variant="contained" onClick={() => navigate(location.createOrder(), { state: { order } })} color="primary">
                   Update
                 </Button>
               </Grid>
@@ -288,7 +274,7 @@ const OrderView = () => {
       />
       <StatusModal visible={showOrderStatusUpdateModal} onClose={hideOrderStatusModal} setOrderStatus={setOrderStatus} orderId={id} />
       <TrackingModal visible={showTrackModal} onClose={hideTrackingModal} orderId={id} />
-      <AddCityModal city={city} visible={addCityModalVisible} onClose={hideAddCityModal} />
+      {/* <AddCityModal city={city} visible={addCityModalVisible} onClose={hideAddCityModal} /> */}
     </Stack>
   );
 };

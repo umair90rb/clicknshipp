@@ -1,37 +1,25 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  Grid,
-  Stack,
-  FormHelperText,
-  ListItemText,
-  InputLabel,
-  Button,
-  FormControlLabel,
-  Select,
-  MenuItem,
-  Box,
-  Modal,
-  FormGroup,
-  Checkbox,
-  Typography
-} from '@mui/material';
+import { Grid, Stack, FormHelperText, ListItemText, InputLabel, Button, Select, MenuItem, Box, Modal, Typography } from '@mui/material';
+import Link from '@mui/material/Link';
 import { styled } from '@mui/material/styles';
 import { setMessage } from 'store/slices/util/utilSlice';
 import { fetchAllChanel } from 'store/slices/chanel/fetchChanel';
-import { chanelChanelsSelector, chanelIsLoadingSelector } from 'store/slices/chanel/chanelSelector';
+import { chanelChanelsSelector, chanelFetchStatusSelector, chanelIsLoadingSelector } from 'store/slices/chanel/chanelSelector';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { fetchAllOrder, fetchImportOrder } from 'store/slices/order/fetchOrder';
 import {
   orderFiltersSelector,
-  orderImportFetchStatusSelector,
   orderImportIsLoadingSelector,
   orderPageSelector,
   orderPageSizeSelector,
   orderSortSelector
 } from 'store/slices/order/orderSelector';
+import { brandBrandsSelector, brandFetchStatusSelector, brandIsLoadingSelector } from 'store/slices/brand/brandSelector';
+import FormHelperTextComponent from 'components/LoadingHelperText';
 import fetchStatus from 'constants/fetchStatuses';
+import { fetchAllBrand } from 'store/slices/brand/fetchBrand';
 
 const style = {
   position: 'absolute',
@@ -65,6 +53,7 @@ export default function BulkUploadModal({ visible, onClose }) {
   const orderImportIsLoading = useSelector(orderImportIsLoadingSelector);
   const chanels = useSelector(chanelChanelsSelector);
   const chanelsIsLoading = useSelector(chanelIsLoadingSelector);
+  const chanelFetchStatus = useSelector(chanelFetchStatusSelector);
 
   const createBulkOrders = async (values) => {
     let formData = new FormData();
@@ -96,15 +85,21 @@ export default function BulkUploadModal({ visible, onClose }) {
   });
 
   useEffect(() => {
-    bulkOrderUploadForm.handleReset();
-    dispatch(fetchAllChanel());
+    if (visible) {
+      bulkOrderUploadForm.handleReset();
+      if (chanelFetchStatus !== fetchStatus.SUCCESS) {
+        dispatch(fetchAllChanel());
+      }
+    }
   }, [visible]);
 
   return (
     <Modal open={visible} onClose={onClose}>
       <Box sx={style}>
-        <Typography>Bulk Orders Upload</Typography>
-        <Grid container sx={{ flexGrow: 1, my: 2 }}>
+        <Typography display="flex" justifyContent="center" alignItems="center">
+          Add Bulk Orders
+        </Typography>
+        <Grid container gap={1} spacing={1} my={2}>
           <Stack spacing={1} sx={{ flexGrow: 1 }}>
             <Button sx={{ flexGrow: 1 }} component="label" variant="contained">
               {(bulkOrderUploadForm.values.file && bulkOrderUploadForm.values.file.name) || 'Select file (Not Selected)'}
@@ -125,40 +120,47 @@ export default function BulkUploadModal({ visible, onClose }) {
           </Stack>
         </Grid>
 
-        {!chanelsIsLoading && (
-          <Grid item xs={12}>
-            <Stack spacing={1}>
-              <InputLabel htmlFor="chanel_id-signup">Chanel</InputLabel>
-              <Select
-                fullWidth
-                error={Boolean(bulkOrderUploadForm.touched.chanel_id && bulkOrderUploadForm.errors.chanel_id)}
-                id="chanel_id-signup"
-                value={bulkOrderUploadForm.values.chanel_id}
-                name="chanel_id"
-                onBlur={bulkOrderUploadForm.handleBlur}
-                onChange={bulkOrderUploadForm.handleChange}
-                inputProps={{}}
-                labelId="chanel_id-signup"
-              >
-                {chanels.map(({ name, id }, index) => (
-                  <MenuItem key={index} value={id}>
-                    <ListItemText primary={name} />
-                  </MenuItem>
-                ))}
-              </Select>
-              {bulkOrderUploadForm.touched.chanel_id && bulkOrderUploadForm.errors.chanel_id && (
-                <FormHelperText error id="helper-text-chanel_id-signup">
-                  {bulkOrderUploadForm.errors.chanel_id}
-                </FormHelperText>
-              )}
-            </Stack>
-          </Grid>
-        )}
-        <Grid container sx={{ flexGrow: 1, mt: 5 }}>
-          <Grid xs display="flex" justifyContent="center" alignItems="center">
+        <Grid item xs={12}>
+          <Stack spacing={1}>
+            <InputLabel htmlFor="chanel_id-signup">Chanel</InputLabel>
+            <Select
+              fullWidth
+              error={Boolean(bulkOrderUploadForm.touched.chanel_id && bulkOrderUploadForm.errors.chanel_id)}
+              id="chanel_id-signup"
+              value={bulkOrderUploadForm.values.chanel_id}
+              name="chanel_id"
+              onBlur={bulkOrderUploadForm.handleBlur}
+              onChange={bulkOrderUploadForm.handleChange}
+              labelId="chanel_id-signup"
+            >
+              {chanels.map(({ name, id }, index) => (
+                <MenuItem key={index} value={id}>
+                  <ListItemText primary={name} />
+                </MenuItem>
+              ))}
+            </Select>
+            <FormHelperTextComponent loading={chanelsIsLoading} />
+            {bulkOrderUploadForm.touched.chanel_id && bulkOrderUploadForm.errors.chanel_id && (
+              <FormHelperText error id="helper-text-chanel_id-signup">
+                {bulkOrderUploadForm.errors.chanel_id}
+              </FormHelperText>
+            )}
+          </Stack>
+        </Grid>
+
+        <Grid container spacing={1} mt={5}>
+          <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
             <Button onClick={bulkOrderUploadForm.handleSubmit} sx={{ flexGrow: 1 }} disable={orderImportIsLoading} variant="contained">
               Upload
             </Button>
+          </Grid>
+          <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
+            <Link
+              target="_blank"
+              href="https://spreadsheets.google.com/feeds/download/spreadsheets/Export?key=11K1q6jyzBRe1RCGVadk_jv-vN7T8n5tqG-idMIx3Ym0&exportFormat=xlsx"
+            >
+              Download Bulk Order Upload Excel Format
+            </Link>
           </Grid>
         </Grid>
       </Box>

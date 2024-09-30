@@ -32,10 +32,11 @@ export default {
       const { city } = req.body;
       const result = await CityNameMaping.findAll({
         where: {
-          name: {
+          city: {
             [Op.iLike]: `%${city}%`,
           },
         },
+        order: [['city', 'asc']],
       });
       return sendSuccessResponse(
         res,
@@ -56,38 +57,17 @@ export default {
 
   async create(req, res) {
     try {
-      const { city, maped, assigned_id, service_id, code } = req.body;
-      const deliveryAccount = await DeliveryServiceAccounts.findByPk(
-        service_id,
-        { raw: true }
+      const cities = req.body;
+      await Promise.all(
+        cities.map(({ id, ...rest }) => {
+          if (id) {
+            return CityNameMaping.update(rest, { where: { id } });
+          } else {
+            return CityNameMaping.create(rest);
+          }
+        })
       );
-      const existed = await CityNameMaping.findOne({
-        where: {
-          [Op.and]: {
-            city,
-            maped,
-            courier: deliveryAccount.service,
-          },
-        },
-      });
-      console.log(existed, 'existed');
-      if (existed) {
-        return sendErrorResponse(res, 500, 'City with details already added.');
-      }
-
-      const addedCity = await CityNameMaping.create({
-        city,
-        maped,
-        assigned_id: assigned_id === '' ? null : assigned_id,
-        courier: deliveryAccount.service,
-        code,
-      });
-      return sendSuccessResponse(
-        res,
-        200,
-        { city: addedCity.get() },
-        'New city added.'
-      );
+      return sendSuccessResponse(res, 200, {}, 'Operation successful!');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(

@@ -1,14 +1,20 @@
-import { startOfDay, endOfDay, subDays, formatISO } from "date-fns";
+import { startOfDay, endOfDay, subDays, formatISO } from 'date-fns';
+
+export function getDate(date = new Date()) {
+  return formatISO(date, {
+    representation: 'complete',
+  });
+}
 
 export function getStartOfDay(date = new Date()) {
   return formatISO(startOfDay(date), {
-    representation: "complete",
+    representation: 'complete',
   });
 }
 
 export function getEndOfDay(date = new Date()) {
   return formatISO(endOfDay(date), {
-    representation: "complete",
+    representation: 'complete',
   });
 }
 

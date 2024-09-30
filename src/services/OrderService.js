@@ -52,8 +52,8 @@ class OrderService {
         user_id: userId,
         event: 'order created via submission file upload',
       });
-      await order.reload();
-      return order;
+      await this.checkOrderDuplication(await this.loadFullOrder(order.id));
+      // return order;
     } catch (error) {
       console.log(error, 'error in create submission order in order service');
       return error.message;

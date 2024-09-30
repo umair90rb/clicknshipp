@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import { cityCitiesSelector } from 'store/slices/city/citySelector';
 
 export default function GridSearchSelect(props) {
-  const { id, field, value, multiple = false } = props;
+  const { id, field, value } = props;
   const citiesList = useSelector(cityCitiesSelector);
   const [open, setOpen] = useState(false);
   const apiRef = useGridApiContext();
