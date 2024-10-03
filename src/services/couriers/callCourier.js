@@ -1,8 +1,8 @@
-import CourierInterface from "../../interfaces/courierInterface";
-import getAxiosInstance from "../AxiosService";
-import models from "../../models";
-import { Op } from "sequelize";
-import logger from "../../middleware/logger";
+import CourierInterface from '../../interfaces/courierInterface';
+import getAxiosInstance from '../AxiosService';
+import models from '../../models';
+import { Op } from 'sequelize';
+import logger from '../../middleware/logger';
 const { CityNameMaping } = models;
 
 class CallCourier extends CourierInterface {
@@ -10,7 +10,7 @@ class CallCourier extends CourierInterface {
     super();
 
     this.http = getAxiosInstance(
-      "http://cod.callcourier.com.pk/API/CallCourier/",
+      'http://cod.callcourier.com.pk/API/CallCourier/',
       {}
     );
   }
@@ -57,30 +57,28 @@ class CallCourier extends CourierInterface {
           cn: null,
           slip: null,
           isSuccess: false,
-          error: "City not found in the database, contact admin",
-          response: "destination not found in the db",
+          error: 'City not found in the database, contact admin',
+          response: 'destination not found in the db',
         };
       }
       url = `SaveBooking?loginId=${deliveryAccount.key}&ConsigneeName="${
         order.customer.first_name
-      } ${order.customer.last_name || ""}"&ConsigneeRefNo="Sukooonx${
+      } ${order.customer.last_name || ''}"&ConsigneeRefNo="Sukooonx${
         order.order_number
       }"&ConsigneeCellNo=0${order.customer.phone}&Address=${
         order.address.address1
       }&Origin=FAISALABAD&DestCityId=${
         destinationCity.assigned_id
-      }&ServiceTypeId=7&Pcs=${
-        order.items.length
-      }&Weight=${0.5}&Description=${order.items.reduce(
+      }&ServiceTypeId=7&Pcs=1&Weight=${0.5}&Description=${order.items.reduce(
         (p, c, i) =>
           i > 0 ? `${c.name}/${c.quantity}-${p}` : `${c.name}/${c.quantity}`,
-        ""
+        ''
       )}&SelOrigin=Domestic&CodAmount=${
         order.total_price
       }&SpecialHandling=false&MyBoxId=1&Holiday=false&remarks=Rush Delivery&ShipperName=SWAP&ShipperCellNo=03005444103&ShipperArea=1&ShipperCity=1&ShipperAddress=286-K, GULISTAN COLONY NO.1,NEAR GIRLS HIGH SCHOOL, FAISALABAD"
       &ShipperLandLineNo=03005444103&ShipperEmail=SWAPNEARN@GMAIL.COM`;
       response = await this.http.get(url);
-      logger.log("info", "leopard book parcel api response", {
+      logger.log('info', 'leopard book parcel api response', {
         res: response.data,
       });
       const { CNNO, Response, ...rest } = response.data;
@@ -93,9 +91,9 @@ class CallCourier extends CourierInterface {
       };
     } catch (error) {
       const { Response, ...rest } = response.data;
-      logger.log("error", error.message, {
+      logger.log('error', error.message, {
         data: response.data,
-        stack: "in call courier booking function",
+        stack: 'in call courier booking function',
       });
       return {
         cn: null,
@@ -111,7 +109,7 @@ class CallCourier extends CourierInterface {
     let response;
     try {
       response = await this.http.get(`GetTackingHistory?cn=${trackingNumber}`);
-      logger.log("info", "leopard booking status,s api response", {
+      logger.log('info', 'leopard booking status,s api response', {
         res: response.data,
       });
       return {
@@ -122,10 +120,10 @@ class CallCourier extends CourierInterface {
         date: null,
         remarks: null,
         data: {},
-        response: "Current Booking status!",
+        response: 'Current Booking status!',
       };
     } catch (error) {
-      logger.log("error", error.message, {
+      logger.log('error', error.message, {
         res: response.data,
       });
       return {
@@ -136,7 +134,7 @@ class CallCourier extends CourierInterface {
         date: null,
         remarks: null,
         data: {},
-        response: "Error in fetching current booking status!",
+        response: 'Error in fetching current booking status!',
       };
     }
   }
@@ -144,7 +142,7 @@ class CallCourier extends CourierInterface {
   cancelBooking(trackingNumber, deliveryAccount) {
     return {
       isSuccess: false,
-      error: "Cancel booking not available for Call Courier",
+      error: 'Cancel booking not available for Call Courier',
       response: trackingNumber,
     };
   }

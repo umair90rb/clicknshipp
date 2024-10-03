@@ -220,6 +220,9 @@ class OrderService {
       where: { order_id: order.id },
       defaults: deliveryData,
     });
+    if (!created && delivery) {
+      await delivery.update(deliveryData);
+    }
     await order.update({ status: orderStatus });
     await OrderHistory.create({
       order_id: order.id,

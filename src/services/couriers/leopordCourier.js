@@ -1,8 +1,8 @@
-import CourierInterface from "../../interfaces/courierInterface";
-import getAxiosInstance from "../AxiosService";
-import logger from "../../middleware/logger";
-import models from "../../models";
-import { Op } from "sequelize";
+import CourierInterface from '../../interfaces/courierInterface';
+import getAxiosInstance from '../AxiosService';
+import logger from '../../middleware/logger';
+import models from '../../models';
+import { Op } from 'sequelize';
 const { CityNameMaping } = models;
 
 class LeapordCourier extends CourierInterface {
@@ -10,7 +10,7 @@ class LeapordCourier extends CourierInterface {
     super();
     // staging url => https://merchantapistaging.leopardscourier.com/api/
     this.http = getAxiosInstance(
-      "https://merchantapi.leopardscourier.com/api/",
+      'https://merchantapi.leopardscourier.com/api/',
       {}
     );
   }
@@ -32,8 +32,8 @@ class LeapordCourier extends CourierInterface {
           cn: null,
           slip: null,
           isSuccess: false,
-          error: "City not found in the database, contact admin",
-          response: "destination not found in the db",
+          error: 'City not found in the database, contact admin',
+          response: 'destination not found in the db',
         };
       }
       body = {
@@ -43,19 +43,20 @@ class LeapordCourier extends CourierInterface {
         // booked_packet_vol_weight_w: 0,
         // booked_packet_vol_weight_h: 0,
         // booked_packet_vol_weight_l: 0,
-        booked_packet_no_piece: order?.items?.length,
+        // booked_packet_no_piece: order?.items?.length,
+        booked_packet_no_piece: 1,
         booked_packet_collect_amount: order.total_price,
         booked_packet_order_id: `Sukooonx${order.order_number}`,
         origin_city: 322,
-        destination_city: parseInt(destinationCity.assigned_id),
+        destination_city: destinationCity.assigned_id,
         shipment_id: 10,
         shipment_id: null,
-        shipment_name_eng: "Sukooon Wellness",
-        shipment_email: "umekalsoom011@gmail.com",
-        shipment_phone: "03094446319",
-        shipment_address: "SIE MILLAT ROAD FAISALABAD",
+        shipment_name_eng: 'Sukooon Wellness',
+        shipment_email: 'umekalsoom011@gmail.com',
+        shipment_phone: '03094446319',
+        shipment_address: 'SIE MILLAT ROAD FAISALABAD',
         consignment_name_eng: `${order.customer.first_name} ${
-          order.customer.last_name || ""
+          order.customer.last_name || ''
         }`,
         // consignment_email: order.customer.email || "",
         consignment_phone: `0${order.customer.phone}`,
@@ -69,15 +70,15 @@ class LeapordCourier extends CourierInterface {
               i > 0
                 ? `${c.name}/${c.quantity}-${p}`
                 : `${c.name}/${c.quantity}`,
-            ""
+            ''
           ),
-        shipment_type: "overnight",
+        shipment_type: 'overnight',
         // custom_data: "",
-        return_address: "SIE MILLAT ROAD FAISALABAD",
+        return_address: 'SIE MILLAT ROAD FAISALABAD',
         return_city: 322,
       };
-      response = await this.http.post("bookPacket/format/json", body);
-      logger.log("info", "leopard book parcel api response", {
+      response = await this.http.post('bookPacket/format/json', body);
+      logger.log('info', 'leopard book parcel api response', {
         res: response.data,
         body,
       });
@@ -88,11 +89,11 @@ class LeapordCourier extends CourierInterface {
         isSuccess: Boolean(status),
         error: error ? error : null,
         response: status
-          ? "Package booked with leopards"
-          : "Error: Something goes wrong!",
+          ? 'Package booked with leopards'
+          : 'Error: Something goes wrong!',
       };
     } catch (_error) {
-      logger.log("error", _error.message, {
+      logger.log('error', _error.message, {
         body,
         res: response?.data,
         stack: _error.stack,
@@ -103,7 +104,7 @@ class LeapordCourier extends CourierInterface {
         slip: null,
         isSuccess: false,
         error: error,
-        response: "Error: Something goes wrong!",
+        response: 'Error: Something goes wrong!',
       };
     }
   }
@@ -116,8 +117,8 @@ class LeapordCourier extends CourierInterface {
         api_password: deliveryAccount.password,
         track_numbers: trackingNumber,
       };
-      response = await this.http.post("trackBookedPacket/format/json", body);
-      logger.log("info", "leopard booking status,s api response", {
+      response = await this.http.post('trackBookedPacket/format/json', body);
+      logger.log('info', 'leopard booking status,s api response', {
         body,
         res: response.data,
       });
@@ -125,7 +126,7 @@ class LeapordCourier extends CourierInterface {
       const parcel = packet_list[0] || {};
       const { booked_packet_status, activity_date, status_remarks, reverseCN } =
         parcel || {};
-      const history = parcel["Tracking Detail"] || [];
+      const history = parcel['Tracking Detail'] || [];
       return {
         isSuccess: Boolean(status),
         error,
@@ -136,10 +137,10 @@ class LeapordCourier extends CourierInterface {
         data: {
           reverseCN,
         },
-        response: status === 0 ? error : "Current Booking status!",
+        response: status === 0 ? error : 'Current Booking status!',
       };
     } catch (_error) {
-      logger.log("error", "leopard booking status api response", {
+      logger.log('error', 'leopard booking status api response', {
         body,
         res: response.data,
       });
@@ -152,7 +153,7 @@ class LeapordCourier extends CourierInterface {
         date: null,
         remarks: null,
         error,
-        response: "Error in getting booking status!",
+        response: 'Error in getting booking status!',
       };
     }
   }
@@ -165,8 +166,8 @@ class LeapordCourier extends CourierInterface {
         api_password: deliveryAccount.password,
         cn_numbers: trackingNumber,
       };
-      response = await this.http.post("cancelBookedPackets/format/json", body);
-      logger.log("info", "leopard cancel booking parcel api response", {
+      response = await this.http.post('cancelBookedPackets/format/json', body);
+      logger.log('info', 'leopard cancel booking parcel api response', {
         body,
         res: response.data,
       });
@@ -174,10 +175,10 @@ class LeapordCourier extends CourierInterface {
       return {
         isSuccess: Boolean(status),
         error,
-        response: status === 0 ? error : "Booking canceled!",
+        response: status === 0 ? error : 'Booking canceled!',
       };
     } catch (_error) {
-      logger.log("error", "leopard cancel booking parcel api error", {
+      logger.log('error', 'leopard cancel booking parcel api error', {
         body,
         res: response.data,
       });
@@ -185,7 +186,7 @@ class LeapordCourier extends CourierInterface {
       return {
         isSuccess: Boolean(status),
         error,
-        response: "Error in booking cancelation!",
+        response: 'Error in booking cancelation!',
       };
     }
   }

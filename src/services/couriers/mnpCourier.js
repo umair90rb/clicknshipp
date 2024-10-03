@@ -68,10 +68,10 @@ class MnpCourier extends CourierInterface {
         orderReferenceId: tracking_number,
       } = response?.data[0] || {};
       return {
-        cn: isSuccess < 1 ? tracking_number : null,
+        cn: isSuccess ? tracking_number : null,
         slip: JSON.stringify({ message, isSuccess, tracking_number }),
         isSuccess,
-        error: !isSuccess > 0 ? message : null,
+        error: !isSuccess ? message : null,
         response: message,
       };
     } catch (error) {
@@ -122,7 +122,7 @@ class MnpCourier extends CourierInterface {
       });
       return {
         isSuccess: false,
-        error: status > 0 ? message : null,
+        error: message,
         history: [],
         status: null,
         date: null,

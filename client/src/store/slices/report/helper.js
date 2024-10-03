@@ -54,12 +54,12 @@ export function addTotalRow(report, data) {
         {
           id: 'TOTAL',
           label: 'Total',
-          totalFOC: data.reduce((acc, row) => acc + (parseInt(row.generated) || 0), 0),
+          totalFOC: data.reduce((acc, row) => acc + (parseInt(row.foc) || 0), 0),
           totalPostex: data.reduce((acc, row) => acc + (parseInt(row.postex) || 0), 0),
           totalTCS: data.reduce((acc, row) => acc + (parseInt(row.tcs) || 0), 0),
           totalDeawoo: data.reduce((acc, row) => acc + (parseInt(row.deawoo) || 0), 0),
           totalTrax: data.reduce((acc, row) => acc + (parseInt(row.trax) || 0), 0),
-          totalLeapard: data.reduce((acc, row) => acc + (parseInt(row.leapard) || 0), 0),
+          totalLeopard: data.reduce((acc, row) => acc + (parseInt(row.leopard) || 0), 0),
           totalCallCourier: data.reduce((acc, row) => acc + (parseInt(row.callcourier) || 0), 0),
           totalMNP: data.reduce((acc, row) => acc + (parseInt(row.mnp) || 0), 0)
         }
@@ -81,7 +81,7 @@ export function addTotalRow(report, data) {
           totalTCS: data.reduce((acc, row) => acc + (parseInt(row.tcs) || 0), 0),
           totalDeawoo: data.reduce((acc, row) => acc + (parseInt(row.deawoo) || 0), 0),
           totalTrax: data.reduce((acc, row) => acc + (parseInt(row.trax) || 0), 0),
-          totalLeapard: data.reduce((acc, row) => acc + (parseInt(row.leapard) || 0), 0),
+          totalLeopard: data.reduce((acc, row) => acc + (parseInt(row.leopard) || 0), 0),
           totalCallCourier: data.reduce((acc, row) => acc + (parseInt(row.callcourier) || 0), 0),
           totalMNP: data.reduce((acc, row) => acc + (parseInt(row.mnp) || 0), 0)
         }

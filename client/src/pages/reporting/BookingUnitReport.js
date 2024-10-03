@@ -161,7 +161,7 @@ const columns = [
     flex: 0.5,
     valueGetter: (params) => {
       if (params.row.id === 'TOTAL') {
-        return params.row.totalLeapard;
+        return params.row.totalLeopard;
       }
       return params.value;
     }
