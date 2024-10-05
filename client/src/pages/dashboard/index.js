@@ -114,7 +114,7 @@ const DashboardDefault = () => {
                   series={[
                     {
                       arcLabel: (item) => `${item.label}(${item.data})`,
-                      data: stats.topCities.map((c, id) => ({ id, value: c.orders, label: c.city }))
+                      data: (stats.topCities || []).map((c, id) => ({ id, value: c.orders, label: c.city }))
                     }
                   ]}
                   height={500}
