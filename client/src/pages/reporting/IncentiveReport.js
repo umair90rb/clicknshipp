@@ -68,8 +68,6 @@ export default function IncentiveReport() {
     }
   }
 
-  console.log(withAgentColumns);
-
   return (
     <div style={{ width: '100%' }}>
       <DataGrid

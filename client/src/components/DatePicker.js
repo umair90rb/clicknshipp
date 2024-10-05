@@ -18,12 +18,13 @@ import { dateFormat } from 'constants/index';
 const Wrapper = styled.div`
   position: relative;
   display: inline-block;
+  width: '100%';
 `;
 
 const Input = styled.input`
   padding: 8px;
   font-size: 14px;
-  width: 250px;
+  width: 300px;
   border: 1px solid #ccc;
   border-radius: 4px;
   margin: 0 0px;

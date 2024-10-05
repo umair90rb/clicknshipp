@@ -48,7 +48,7 @@ export default function AddCourierCityModal({ visible, onClose }) {
     if (type === 'city/create/fetch/fulfilled') {
       dispatch(setMessage({ type: 'success', message: payload?.data?.message || 'Success! Item updated in order' }));
       dispatch(fetchAllCities());
-      // onClose();
+      onClose();
     } else {
       dispatch(setMessage({ type: 'error', message: payload?.data?.message || 'Error! Item can not updated in order' }));
     }

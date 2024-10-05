@@ -10,9 +10,9 @@ const initialState = {
     page: 0,
     pageSize: 100,
     total: 0,
+    sort: [{ field: 'createdAt', sort: 'desc' }],
     filters: [],
     chanelFilter: [],
-    sort: [{ field: 'createdAt', sort: 'desc' }],
     nextOrder: null,
     preOrder: null
   },

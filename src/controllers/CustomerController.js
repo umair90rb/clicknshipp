@@ -1,21 +1,42 @@
-import { Op } from "sequelize";
-import model from "../models";
-import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
-import { subtractDaysFromToday } from "../helpers/pgDateFormat";
-import formatPhone from "../helpers/formatPhone";
+import { Op, Sequelize } from 'sequelize';
+import model from '../models';
+import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
+import { subtractDaysFromToday } from '../helpers/pgDateFormat';
+import formatPhone from '../helpers/formatPhone';
 const { Customer, Address, Order, OrderItem, User } = model;
 
 export default {
   async customers(req, res) {
     try {
-      const customers = await Customer.findAll();
-      return sendSuccessResponse(res, 200, { customers });
+      const { page, pageSize, sort } = req.body;
+      const customers = await Customer.findAndCountAll({
+        attributes: {
+          include: [
+            [
+              Sequelize.literal(
+                '(SELECT COUNT(*) FROM "Orders" o WHERE o.customer_id = "Customer"."id")'
+              ),
+              'totalOrders',
+            ],
+          ],
+        },
+        limit: pageSize,
+        offset: page * pageSize,
+        ...(sort.length
+          ? {
+              order: [sort.map((s) => [`${s.field}`, s.sort.toUpperCase()])],
+            }
+          : {}),
+      });
+      return sendSuccessResponse(res, 200, {
+        customers: { ...customers, ...req.body },
+      });
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
@@ -27,22 +48,22 @@ export default {
         include: [
           {
             model: Address,
-            as: "addresses",
+            as: 'addresses',
             attributes: {
-              exclude: ["CustomerId", "latitude", "longitude"],
+              exclude: ['CustomerId', 'latitude', 'longitude'],
             },
           },
           {
             model: Order,
-            as: "orders",
+            as: 'orders',
             include: [
               {
                 model: OrderItem,
-                as: "items",
-                attributes: ["name", "quantity"],
+                as: 'items',
+                attributes: ['name', 'quantity'],
               },
             ],
-            attributes: ["id", "total_price", "total_discounts", "createdAt"],
+            attributes: ['id', 'total_price', 'total_discounts', 'createdAt'],
           },
         ],
       });
@@ -51,13 +72,13 @@ export default {
           customer,
         });
       }
-      return sendErrorResponse(res, 404, "No data found with this id.");
+      return sendErrorResponse(res, 404, 'No data found with this id.');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
@@ -66,22 +87,23 @@ export default {
   async search(req, res) {
     const query = req.body;
     try {
-      if ("phone" in query) {
+      if ('phone' in query) {
         query.phone = formatPhone(query.phone);
       }
       let customer = await Customer.findOne({
         where: { ...query },
         include: {
           attributes: [
-            "id",
-            "order_number",
-            "status",
-            "createdAt",
-            "remarks",
-            "total_price",
+            'id',
+            'order_number',
+            'status',
+            'createdAt',
+            'remarks',
+            'total_price',
           ],
           model: Order,
-          as: "orders",
+          as: 'orders',
+          required: false,
           where: {
             createdAt: {
               [Op.gte]: subtractDaysFromToday(30),
@@ -90,22 +112,22 @@ export default {
           include: [
             {
               model: OrderItem,
-              as: "items",
+              as: 'items',
             },
             {
               model: User,
-              as: "user",
-              attributes: ["name"],
+              as: 'user',
+              attributes: ['name'],
             },
           ],
         },
-        order: [[{ model: Order, as: "orders" }, "createdAt", "DESC"]],
+        order: [[{ model: Order, as: 'orders' }, 'createdAt', 'DESC']],
       });
       if (!customer) {
-        return sendErrorResponse(res, 404, "Customer not found!");
+        return sendErrorResponse(res, 404, 'Customer not found!');
       }
       const address = await Address.findOne({
-        attributes: ["id", "address1", "address2", "city", "zip", "province"],
+        attributes: ['id', 'address1', 'address2', 'city', 'zip', 'province'],
         where: { customer_id: customer.id },
       });
       return sendSuccessResponse(
@@ -115,13 +137,13 @@ export default {
           ...customer.get(),
           address,
         },
-        "Customer found."
+        'Customer found.'
       );
     } catch (error) {
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         error
       );
     }

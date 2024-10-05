@@ -1,7 +1,9 @@
-import { Grid, Typography } from '@mui/material';
-import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
 import { useEffect } from 'react';
-import { batch, useDispatch, useSelector } from 'react-redux';
+import { Grid, Typography } from '@mui/material';
+import { BarChart } from '@mui/x-charts/BarChart';
+import { PieChart } from '@mui/x-charts/PieChart';
+import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
+import { useDispatch, useSelector } from 'react-redux';
 import { fetchDashboardStats } from 'store/slices/dashboard/fetchDashboard';
 import {
   dashboardStartPeriodSelector,
@@ -10,9 +12,8 @@ import {
   dashboardStatsSelector
 } from 'store/slices/dashboard/dashboardSelector';
 import { setDashboardStatPeriod } from 'store/slices/dashboard/dashboardSlice';
-// import moment from 'moment';
 import DateRangePicker from 'components/DatePicker';
-// import MonthlyBarChart from './MonthlyBarChart';
+import MainCard from 'components/MainCard';
 
 const DashboardDefault = () => {
   const dispatch = useDispatch();
@@ -26,9 +27,9 @@ const DashboardDefault = () => {
   }, [startPeriod, endPeriod]);
 
   return (
-    <Grid container rowSpacing={4.5} columnSpacing={2.75}>
+    <Grid container rowSpacing={1} columnSpacing={0.75}>
       {/* row 1 */}
-      <Grid item xs={12} sx={{ mb: -2.25 }}>
+      <Grid item xs={12}>
         <Grid container item justifyContent="center" alignItems="center">
           <Grid item xs={6}>
             <Typography variant="h5">Dashboard</Typography>
@@ -44,53 +45,85 @@ const DashboardDefault = () => {
           </Grid>
         </Grid>
       </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Orders" count={statsIsLoading ? 'loading...' : stats.totalOrders || 0} />
-      </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Confirm Orders" count={statsIsLoading ? 'loading...' : stats.confirmedOrders || 0} />
-      </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Booked Orders" count={statsIsLoading ? 'loading...' : stats.bookedOrders || 0} />
-      </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="No Picked Orders" count={statsIsLoading ? 'loading...' : stats.noPickOrders || 0} />
-      </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Cancel Orders" count={statsIsLoading ? 'loading...' : stats.cancelOrders || 0} />
-      </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Un-attempted Orders" count={statsIsLoading ? 'loading...' : stats.assignedOrders || 0} />
-      </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Sales" count={statsIsLoading ? 'loading...' : `Rs ${parseInt(stats.totalSalesValue) || 0}`} />
-      </Grid>
-
-      {/* row 2 */}
-      {/* <Grid item xs={12} md={12} lg={12}>
-        <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
-            <Typography variant="h5">Products by orders</Typography>
+      {statsIsLoading ? (
+        <Grid container item justifyContent="center" alignItems="center">
+          <Grid item xs={12}>
+            Loading...
           </Grid>
-          <Grid item />
         </Grid>
-        <MainCard sx={{ mt: 2 }} content={false}>
-          <ItemsByOrders />
-        </MainCard>
-      </Grid> */}
-
-      {/* row 3 */}
-      {/* <Grid item xs={12} md={12} lg={12}>
-        <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
-            <Typography variant="h5">Last 7 days</Typography>
+      ) : (
+        <>
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <AnalyticEcommerce title="Total Orders" count={stats.totalOrders || 0} />
           </Grid>
-          <Grid item />
-        </Grid>
-        <MainCard sx={{ mt: 2 }} content={false}>
-          <MonthlyBarChart />
-        </MainCard>
-      </Grid> */}
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <AnalyticEcommerce title="Total Sales(Rs)" count={stats.totalSalesValue || 0} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <AnalyticEcommerce title="Confirm Orders" count={stats.confirmedOrders || 0} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <AnalyticEcommerce title="Confirm Orders Value(Rs)" count={stats.confirmedOrdersSalesValue || 0} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <AnalyticEcommerce title="Confirm Orders Average Value(Rs)" count={stats.confirmedOrdersAverageValue || 0} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <AnalyticEcommerce title="Confirm Orders No of Units" count={stats.confirmedOrdersUnits || 0} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <AnalyticEcommerce title="Booked Orders" count={stats.bookedOrders || 0} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <AnalyticEcommerce title="No Picked Orders" count={stats.noPickOrders || 0} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <AnalyticEcommerce title="Cancel Orders" count={stats.cancelOrders || 0} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <AnalyticEcommerce title="Un-attempted Orders" count={stats.assignedOrders || 0} />
+          </Grid>
+          {/* row 2 */}
+          <Grid item xs={12} md={12} lg={12}>
+            <MainCard content={true}>
+              <BarChart
+                dataset={stats.channelsOrderCount}
+                yAxis={[{ label: 'No of orders' }]}
+                xAxis={[{ label: 'Channels', scaleType: 'band', dataKey: 'chanel' }]}
+                series={[{ label: 'Orders by Channel', dataKey: 'orders' }]}
+                height={300}
+              />
+            </MainCard>
+          </Grid>
+          <Grid item container rowSpacing={1} columnSpacing={0.75}>
+            <Grid item xs={12} sm={12} md={6} lg={6}>
+              <MainCard content={false}>
+                <BarChart
+                  dataset={stats.topItems}
+                  yAxis={[{ scaleType: 'band', dataKey: 'item' }]}
+                  series={[{ dataKey: 'sold', label: 'Top Items' }]}
+                  barLabel={(item, context) => stats.topItems[item.dataIndex].item}
+                  layout="horizontal"
+                  height={500}
+                />
+              </MainCard>
+            </Grid>
+            <Grid item xs={12} sm={12} md={6} lg={6}>
+              <MainCard content={false}>
+                <PieChart
+                  series={[
+                    {
+                      arcLabel: (item) => `${item.label}(${item.data})`,
+                      data: stats.topCities.map((c, id) => ({ id, value: c.orders, label: c.city }))
+                    }
+                  ]}
+                  height={500}
+                />
+              </MainCard>
+            </Grid>
+          </Grid>
+        </>
+      )}
     </Grid>
   );
 };

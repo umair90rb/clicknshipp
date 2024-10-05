@@ -360,15 +360,15 @@ const OrderTable = memo(() => {
   const page = useSelector(orderPageSelector);
   const pageSize = useSelector(orderPageSizeSelector);
   const filters = useSelector(orderFiltersSelector);
-  const orderChanelFilter = useSelector(orderChanelFiltersSelector);
   const sortModel = useSelector(orderSortSelector);
   const total = useSelector(orderTotalSelector);
+  // const orderChanelFilter = useSelector(orderChanelFiltersSelector);
 
   const citiesList = useSelector(cityCitiesSelector);
   const citiesFetchStatus = useSelector(cityFetchStatusSelector);
   const deliveryServiceAccountsList = useSelector(deliveryServiceAccountsListSelector);
   const deliveryServiceAccountsFetchStatus = useSelector(deliveryServiceAccountsFetchStatusSelector);
-  const chanel = useSelector(chanelChanelsSelector);
+  // const chanel = useSelector(chanelChanelsSelector);
   const chanelFetchStatus = useSelector(chanelFetchStatusSelector);
   const userPermissions = useSelector(authPermissionsSelector);
   const [rowSelectionModel, setRowSelectionModel] = useState([]);

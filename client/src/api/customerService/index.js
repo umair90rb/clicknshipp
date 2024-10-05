@@ -3,7 +3,7 @@ import Ajax from 'api/ajax';
 class CustomerService extends Ajax {
   pathname = 'customer';
 
-  fetchAllCustomer = () => this.getJson(`${this.pathname}/all`);
+  fetchAllCustomer = (body) => this.post(`${this.pathname}/all`, body);
 
   fetchCustomer = (id) => this.getJson(`${this.pathname}/${id}`);
 

@@ -40,6 +40,7 @@ const Reporting = () => {
   const brandsFetchStatus = useSelector(brandFetchStatusSelector);
   const chanels = useSelector(chanelChanelsSelector);
   const chanelsFetchStatus = useSelector(chanelFetchStatusSelector);
+  const [filteredChanels, setFilteredChanels] = useState([]);
   const [withTime, setWithTime] = useState(false);
 
   const fetchReport = () => {
@@ -57,6 +58,16 @@ const Reporting = () => {
       dispatch(fetchAllChanel());
     }
   }, []);
+
+  useEffect(() => {
+    setFilteredChanels(
+      chanels.filter((c) => {
+        return reportBrand.includes(c.brand.id);
+      })
+    );
+    dispatch(setReportChanel([]));
+    console.log(filteredChanels.length, reportBrand.length, reportChanel.length);
+  }, [reportBrand]);
 
   const renderReport = () => {
     switch (reportType) {
@@ -77,11 +88,11 @@ const Reporting = () => {
 
   return (
     <Grid container>
-      <Grid item xs={12} sx={{ mb: 2 }}>
+      <Grid item xs={12} mb={2}>
         <Typography variant="h5">Reporting</Typography>
       </Grid>
 
-      <Grid container gap={1} justifyContent="start" alignItems="center">
+      <Grid container xs={12} gap={0.25} justifyContent="start" alignItems="center">
         <Grid item xs={2} md={2} lg={2}>
           <FormControl fullWidth size="small">
             <InputLabel id="demo-select-small-label">Select report</InputLabel>
@@ -111,14 +122,23 @@ const Reporting = () => {
               label="Select Brand"
               onChange={(e) => {
                 const val = e.target.value;
+                console.log(val);
                 if (val.length === 1 && val[0] === 'all') {
                   dispatch(setReportBrand(brands.map((br) => br.id)));
+                } else if (val.includes('none')) {
+                  dispatch(setReportBrand([]));
                 } else {
                   dispatch(setReportBrand(val));
                 }
               }}
             >
-              {[{ name: 'Select all', id: 'all' }, ...brands].map((br, index) => (
+              {[
+                {
+                  name: brands.length === reportBrand.length ? 'Unselect all' : 'Select all',
+                  id: brands.length === reportBrand.length ? 'none' : 'all'
+                },
+                ...brands
+              ].map((br, index) => (
                 <MenuItem key={index} value={br.id}>
                   {br.name}
                 </MenuItem>
@@ -138,13 +158,21 @@ const Reporting = () => {
               onChange={(e) => {
                 const val = e.target.value;
                 if (val.length === 1 && val[0] === 'all') {
-                  dispatch(setReportChanel(chanels.map((br) => br.id)));
+                  dispatch(setReportChanel(filteredChanels.map((br) => br.id)));
+                } else if (val.includes('none')) {
+                  dispatch(setReportChanel([]));
                 } else {
                   dispatch(setReportChanel(val));
                 }
               }}
             >
-              {[{ name: 'Select all', id: 'all' }, ...chanels].map((ch, index) => (
+              {[
+                {
+                  name: chanels.length === reportChanel.length ? 'Unselect all' : 'Select all',
+                  id: chanels.length === reportChanel.length ? 'none' : 'all'
+                },
+                ...filteredChanels
+              ].map((ch, index) => (
                 <MenuItem key={index} value={ch.id}>
                   {ch.name}
                 </MenuItem>
@@ -157,7 +185,7 @@ const Reporting = () => {
             <FormControlLabel control={<Checkbox onChange={() => setWithTime((wT) => !wT)} />} label="With Time" />
           </FormGroup>
         </Grid>
-        <Grid item xs={2} md={2} lg={2}>
+        <Grid item xs={3.5} md={3.5} lg={3.5}>
           {withTime ? (
             <DateTimePicker
               startPeriod={startPeriod}

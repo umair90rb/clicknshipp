@@ -3,35 +3,47 @@ import { useDispatch, useSelector } from 'react-redux';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
 import { fetchAllCustomer } from 'store/slices/customer/fetchCustomer';
-import { customerCustomersSelector, customerIsLoadingSelector } from 'store/slices/customer/customerSelector';
+import {
+  customerCustomersSelector,
+  customerIsLoadingSelector,
+  customerPageSelector,
+  customerPageSizeSelector,
+  customerSortSelector,
+  customerTotalSelector
+} from 'store/slices/customer/customerSelector';
 import { useSearchParams } from 'react-router-dom';
+import { setCustomerPagination, setCustomerSort } from 'store/slices/customer/customerSlice';
 
 const columns = (handleView) => [
   {
     field: 'id',
     headerName: 'ID.',
-    flex: 0.3,
+    flex: 0.25,
     type: 'number'
   },
   {
     field: 'name',
     headerName: 'Name',
-    flex: 0.5
+    flex: 1,
+    sortable: false
   },
   {
     field: 'email',
     headerName: 'Email',
-    flex: 0.5
+    flex: 1,
+    sortable: false
   },
   {
     field: 'phone',
     headerName: 'Phone',
-    flex: 0.5
+    flex: 0.75,
+    sortable: false
   },
   {
-    field: 'note',
-    headerName: 'Note',
-    flex: 0.5
+    field: 'totalOrders',
+    headerName: 'Total Orders',
+    flex: 0.5,
+    sortable: false
   },
   {
     field: 'actions',
@@ -56,13 +68,19 @@ export default function CustomerTable({ openViewForm }) {
   const dispatch = useDispatch();
   const customerIsLoading = useSelector(customerIsLoadingSelector);
   const customers = useSelector(customerCustomersSelector) || [];
+  const page = useSelector(customerPageSelector);
+  const pageSize = useSelector(customerPageSizeSelector);
+  // const filters = useSelector(orderFiltersSelector);
+  const sortModel = useSelector(customerSortSelector);
+  const total = useSelector(customerTotalSelector);
+
   const [searchParams] = useSearchParams();
   const searchCustomerId = searchParams.get('id');
   const filterModel = searchCustomerId ? [{ field: 'id', operator: '=', value: searchCustomerId }] : [];
 
   useEffect(() => {
-    dispatch(fetchAllCustomer());
-  }, []);
+    dispatch(fetchAllCustomer({ body: { sort: sortModel, page, pageSize } }));
+  }, [page, pageSize, sortModel]);
 
   useEffect(() => {
     console.log(filterModel);
@@ -85,9 +103,16 @@ export default function CustomerTable({ openViewForm }) {
           }
         }}
         loading={customerIsLoading}
-        pageSizeOptions={[25, 50, 75, 100]}
         rows={customers}
         columns={columns(openViewForm)}
+        pageSizeOptions={[25, 50, 75, 100]}
+        rowCount={total}
+        paginationMode="server"
+        onPaginationModelChange={(paginationModal) => dispatch(setCustomerPagination(paginationModal))}
+        paginationModel={{ page, pageSize }}
+        sortingMode="server"
+        sortModel={sortModel}
+        onSortModelChange={(sortModel) => dispatch(setCustomerSort(sortModel))}
       />
     </div>
   );
