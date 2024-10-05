@@ -102,11 +102,11 @@ export default {
       });
 
       const channelsOrderCount = await sequelize.query(
-        `SELECT COUNT(*) AS "orders", "chanel"."name" AS "chanel" FROM "Orders" AS "Order" LEFT OUTER JOIN "Chanels" AS "chanel" ON "Order"."chanel_id" = "chanel"."id" WHERE ("Order"."deleted_at" IS NULL AND ("Order"."status" IN ('Confirmed', 'Booked') AND ("Order"."assigned_at" >= :startPeriod AND "Order"."assigned_at" <= :endPeriod))) GROUP BY "chanel"."id", "Order"."id"`,
+        `SELECT COUNT(*) AS "orders", "chanel"."name" AS "chanel" FROM "Orders" AS "Order" LEFT OUTER JOIN "Chanels" AS "chanel" ON "Order"."chanel_id" = "chanel"."id" WHERE ("Order"."deleted_at" IS NULL AND ("Order"."status" IN ('Confirmed', 'Booked') AND ("Order"."assigned_at" >= :startPeriod AND "Order"."assigned_at" <= :endPeriod))) GROUP BY chanel, "chanel"."id", "Order"."id"`,
         { replacements: { startPeriod, endPeriod }, type: QueryTypes.SELECT }
       );
       const topItems = await sequelize.query(
-        `SELECT COUNT(*) AS "sold", "oi"."name" AS "item" FROM "Orders" o JOIN "OrderItems" oi ON o.chanel_id = oi.id WHERE (o.deleted_at IS NULL AND (o.status IN ('Confirmed', 'Booked') AND (o.assigned_at >= :startPeriod AND o.assigned_at <= :endPeriod))) GROUP BY oi.name ORDER BY sold DESC LIMIT 5`,
+        `SELECT COUNT(*) AS "sold", "oi"."name" AS "item" FROM "Orders" o JOIN "OrderItems" oi ON o.id = oi.order_id WHERE (o.deleted_at IS NULL AND (o.status IN ('Confirmed', 'Booked') AND (o.assigned_at >= :startPeriod AND o.assigned_at <= :endPeriod))) GROUP BY oi.name ORDER BY sold DESC LIMIT 5`,
         { replacements: { startPeriod, endPeriod }, type: QueryTypes.SELECT }
       );
 
