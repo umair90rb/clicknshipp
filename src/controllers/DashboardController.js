@@ -105,21 +105,21 @@ export default {
         `SELECT c.name AS "chanel", COUNT(*) AS "orders" FROM "Orders" AS o LEFT OUTER JOIN "Chanels" AS c ON o.chanel_id = c.id WHERE (o.deleted_at IS NULL AND (o.status IN ('Confirmed', 'Booked') AND (o.assigned_at >= :startPeriod AND o.assigned_at <= :endPeriod))) GROUP BY c.name ORDER BY orders DESC LIMIT 10`,
         { replacements: { startPeriod, endPeriod }, type: QueryTypes.SELECT }
       );
-      // const topItems = await sequelize.query(
-      //   `SELECT COUNT(*) AS "sold", "oi"."name" AS "item" FROM "Orders" o JOIN "OrderItems" oi ON o.id = oi.order_id WHERE (o.deleted_at IS NULL AND (o.status IN ('Confirmed', 'Booked') AND (o.assigned_at >= :startPeriod AND o.assigned_at <= :endPeriod))) GROUP BY oi.name ORDER BY sold DESC LIMIT 10`,
-      //   { replacements: { startPeriod, endPeriod }, type: QueryTypes.SELECT }
-      // );
-
-      const topCities = await sequelize.query(
-        `SELECT COUNT(*) AS "orders", "a"."city" AS "city" FROM "Orders" o JOIN "Addresses" a ON o.id = a.order_id WHERE (o.deleted_at IS NULL AND (o.status IN ('Confirmed', 'Booked') AND (o.assigned_at >= :startPeriod AND o.assigned_at <= :endPeriod))) GROUP BY a.city ORDER BY orders DESC LIMIT 5`,
+      const topItems = await sequelize.query(
+        `SELECT COUNT(*) AS "sold", "oi"."name" AS "item" FROM "Orders" o JOIN "OrderItems" oi ON o.id = oi.order_id WHERE (o.deleted_at IS NULL AND (o.status IN ('Confirmed', 'Booked') AND (o.assigned_at >= :startPeriod AND o.assigned_at <= :endPeriod))) GROUP BY oi.name ORDER BY sold DESC LIMIT 10`,
         { replacements: { startPeriod, endPeriod }, type: QueryTypes.SELECT }
       );
+
+      // const topCities = await sequelize.query(
+      //   `SELECT COUNT(*) AS "orders", "a"."city" AS "city" FROM "Orders" o JOIN "Addresses" a ON o.id = a.order_id WHERE (o.deleted_at IS NULL AND (o.status IN ('Confirmed', 'Booked') AND (o.assigned_at >= :startPeriod AND o.assigned_at <= :endPeriod))) GROUP BY a.city ORDER BY orders DESC LIMIT 5`,
+      //   { replacements: { startPeriod, endPeriod }, type: QueryTypes.SELECT }
+      // );
 
       const stats = result[0].get();
       return sendSuccessResponse(
         res,
         201,
-        { stats: { ...stats, topChannels, topCities } },
+        { stats: { ...stats, topChannels, topItems } },
         'Dashboard stats.'
       );
     } catch (e) {

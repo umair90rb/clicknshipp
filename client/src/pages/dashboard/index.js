@@ -101,9 +101,10 @@ const DashboardDefault = () => {
             <Grid item xs={12} sm={12} md={6} lg={6}>
               <MainCard content={false}>
                 <BarChart
+                  tooltip={{ trigger: 'axis' }}
                   dataset={stats.topItems || []}
                   yAxis={[{ scaleType: 'band', dataKey: 'item' }]}
-                  series={[{ dataKey: 'sold', label: 'Top Items' }]}
+                  series={[{ dataKey: 'sold', label: 'Top Items', valueFormatter: (value) => `${value}` }]}
                   barLabel={(item, context) => `${stats.topItems[item.dataIndex].item}(${stats.topItems[item.dataIndex].sold})`}
                   layout="horizontal"
                   height={500}
@@ -115,7 +116,7 @@ const DashboardDefault = () => {
                 <BarChart
                   dataset={stats.topChannels || []}
                   yAxis={[{ scaleType: 'band', dataKey: 'chanel' }]}
-                  series={[{ label: 'Top Channel', dataKey: 'orders' }]}
+                  series={[{ label: 'Top Channel', dataKey: 'orders', valueFormatter: (value) => `${value}` }]}
                   barLabel={(item, context) => `${stats.topChannels[item.dataIndex].chanel}(${stats.topChannels[item.dataIndex].orders})`}
                   layout="horizontal"
                   height={500}
