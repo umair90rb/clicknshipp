@@ -84,25 +84,24 @@ const DashboardDefault = () => {
             <AnalyticEcommerce title="Un-attempted Orders" count={stats.assignedOrders || 0} />
           </Grid>
           {/* row 2 */}
-          <Grid item xs={12} md={12} lg={12}>
-            <MainCard content={true}>
-              <BarChart
-                dataset={stats.channelsOrderCount}
-                yAxis={[{ label: 'No of orders' }]}
-                xAxis={[{ label: 'Channels', scaleType: 'band', dataKey: 'chanel' }]}
-                series={[{ label: 'Orders by Channel', dataKey: 'orders' }]}
-                barLabel={(item, context) =>
-                  `${stats.channelsOrderCount[item.dataIndex].chanel}(${stats.channelsOrderCount[item.dataIndex].orders})`
-                }
-                height={300}
-              />
-            </MainCard>
-          </Grid>
+          {/* <Grid item xs={12} md={12} lg={12}>
+            <MainCard content={false}>
+                <PieChart
+                  series={[
+                    {
+                      arcLabel: (item) => `${item.label}(${item.data})`,
+                      data: (stats.topCities || []).map((c, id) => ({ id, value: c.orders, label: c.city }))
+                    }
+                  ]}
+                  height={500}
+                />
+              </MainCard>
+          </Grid> */}
           <Grid item container rowSpacing={1} columnSpacing={0.75}>
             <Grid item xs={12} sm={12} md={6} lg={6}>
               <MainCard content={false}>
                 <BarChart
-                  dataset={stats.topItems}
+                  dataset={stats.topItems || []}
                   yAxis={[{ scaleType: 'band', dataKey: 'item' }]}
                   series={[{ dataKey: 'sold', label: 'Top Items' }]}
                   barLabel={(item, context) => `${stats.topItems[item.dataIndex].item}(${stats.topItems[item.dataIndex].sold})`}
@@ -113,13 +112,12 @@ const DashboardDefault = () => {
             </Grid>
             <Grid item xs={12} sm={12} md={6} lg={6}>
               <MainCard content={false}>
-                <PieChart
-                  series={[
-                    {
-                      arcLabel: (item) => `${item.label}(${item.data})`,
-                      data: (stats.topCities || []).map((c, id) => ({ id, value: c.orders, label: c.city }))
-                    }
-                  ]}
+                <BarChart
+                  dataset={stats.topChannels || []}
+                  yAxis={[{ scaleType: 'band', dataKey: 'chanel' }]}
+                  series={[{ label: 'Top Channel', dataKey: 'orders' }]}
+                  barLabel={(item, context) => `${stats.topChannels[item.dataIndex].chanel}(${stats.topChannels[item.dataIndex].orders})`}
+                  layout="horizontal"
                   height={500}
                 />
               </MainCard>
