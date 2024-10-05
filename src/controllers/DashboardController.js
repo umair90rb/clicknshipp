@@ -102,7 +102,7 @@ export default {
       });
 
       const channelsOrderCount = await sequelize.query(
-        `SELECT COUNT(*) AS "orders", "chanel"."name" AS "chanel" FROM "Orders" AS "Order" LEFT OUTER JOIN "Chanels" AS "chanel" ON "Order"."chanel_id" = "chanel"."id" WHERE ("Order"."deleted_at" IS NULL AND ("Order"."status" IN ('Confirmed', 'Booked') AND ("Order"."assigned_at" >= :startPeriod AND "Order"."assigned_at" <= :endPeriod))) GROUP BY chanel, "chanel"."id", "Order"."id"`,
+        `SELECT c.name AS "chanel", COUNT(*) AS "orders" FROM "Orders" AS o LEFT OUTER JOIN "Chanels" AS c ON o.chanel_id = c.id WHERE (o.deleted_at IS NULL AND (o.status IN ('Confirmed', 'Booked') AND (o.assigned_at >= :startPeriod AND o.assigned_at <= :endPeriod))) GROUP BY c.name`,
         { replacements: { startPeriod, endPeriod }, type: QueryTypes.SELECT }
       );
       const topItems = await sequelize.query(

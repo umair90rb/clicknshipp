@@ -91,6 +91,9 @@ const DashboardDefault = () => {
                 yAxis={[{ label: 'No of orders' }]}
                 xAxis={[{ label: 'Channels', scaleType: 'band', dataKey: 'chanel' }]}
                 series={[{ label: 'Orders by Channel', dataKey: 'orders' }]}
+                barLabel={(item, context) =>
+                  `${stats.channelsOrderCount[item.dataIndex].chanel}(${stats.channelsOrderCount[item.dataIndex].orders})`
+                }
                 height={300}
               />
             </MainCard>
@@ -102,7 +105,7 @@ const DashboardDefault = () => {
                   dataset={stats.topItems}
                   yAxis={[{ scaleType: 'band', dataKey: 'item' }]}
                   series={[{ dataKey: 'sold', label: 'Top Items' }]}
-                  barLabel={(item, context) => stats.topItems[item.dataIndex].item}
+                  barLabel={(item, context) => `${stats.topItems[item.dataIndex].item}(${stats.topItems[item.dataIndex].sold})`}
                   layout="horizontal"
                   height={500}
                 />
