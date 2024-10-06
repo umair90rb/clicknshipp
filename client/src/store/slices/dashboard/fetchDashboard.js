@@ -5,4 +5,8 @@ const fetchDashboardStats = createAsyncThunk('stats/fetch', ({ startPeriod, endP
   dashboardService.fetchStats(startPeriod, endPeriod).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
-export { fetchDashboardStats };
+const fetchDashboardCompareStats = createAsyncThunk('compare/fetch', ({ startPeriod, endPeriod }, { rejectWithValue }) =>
+  dashboardService.fetchStats(startPeriod, endPeriod).catch((error) => rejectWithValue(error.response.data || error.message))
+);
+
+export { fetchDashboardStats, fetchDashboardCompareStats };

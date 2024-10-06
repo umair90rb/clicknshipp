@@ -11,7 +11,7 @@ import { RiseOutlined, FallOutlined } from '@ant-design/icons';
 
 // ==============================|| STATISTICS - ECOMMERCE CARD  ||============================== //
 
-const AnalyticEcommerce = ({ color, title, count, percentage, isLoss, extra }) => (
+const AnalyticEcommerce = ({ color, title, count, compare, percentage, isLoss, extra }) => (
   <MainCard contentSX={{ p: 2.25 }}>
     <Stack spacing={0.5}>
       <Typography variant="h6" color="textSecondary">
@@ -27,7 +27,7 @@ const AnalyticEcommerce = ({ color, title, count, percentage, isLoss, extra }) =
           <Grid item>
             <Chip
               variant="combined"
-              color={color}
+              color={isLoss ? 'error' : 'primary'}
               icon={
                 <>
                   {isLoss ? (

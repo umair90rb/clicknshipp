@@ -92,9 +92,8 @@ export default function ChannelReport() {
   const renderToolbar = () => <GridToolbarWithHeading heading="Channel Report" />;
 
   return (
-    <div style={{ width: '100%' }}>
+    <div style={{ width: '100%', height: '75vh' }}>
       <DataGrid
-        autoHeight
         hideFooterPagination
         checkboxSelection
         loading={reportIsLoading}

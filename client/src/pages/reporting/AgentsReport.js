@@ -288,9 +288,8 @@ export default function AgentsReports() {
   }
 
   return (
-    <div style={{ width: '100%' }}>
+    <div style={{ width: '100%', height: '75vh' }}>
       <DataGrid
-        autoHeight
         disableRowSelectionOnClick
         hideFooterPagination
         checkboxSelection

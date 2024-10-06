@@ -93,6 +93,11 @@ const Reporting = () => {
       </Grid>
 
       <Grid container xs={12} gap={0.25} justifyContent="start" alignItems="center">
+        <Grid item xs={1} md={1} lg={1}>
+          <Button variant="contained" color="primary" size="small" onClick={fetchReport}>
+            Get Report
+          </Button>
+        </Grid>
         <Grid item xs={2} md={2} lg={2}>
           <FormControl fullWidth size="small">
             <InputLabel id="demo-select-small-label">Select report</InputLabel>
@@ -202,17 +207,12 @@ const Reporting = () => {
             />
           )}
         </Grid>
-        <Grid item xs={1} md={1} lg={1}>
-          <Button variant="contained" color="primary" size="small" onClick={fetchReport}>
-            Get Report
-          </Button>
-        </Grid>
       </Grid>
       {reportIsLoading ? (
         'Loading...'
       ) : (
         <Grid item xs={12} md={12} lg={12}>
-          <MainCard sx={{ mt: 2 }} content={false}>
+          <MainCard mt={2} content={false}>
             {renderReport()}
           </MainCard>
         </Grid>

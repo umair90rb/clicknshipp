@@ -689,7 +689,7 @@ const OrderTable = memo(() => {
   }
 
   return (
-    <div style={{ height: !orders || !orders.length ? 400 : '80vh', width: '100%' }}>
+    <div style={{ height: '80vh', width: '100%' }}>
       <DataGrid
         apiRef={apiRef}
         sx={{

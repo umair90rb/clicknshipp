@@ -69,9 +69,8 @@ export default function IncentiveReport() {
   }
 
   return (
-    <div style={{ width: '100%' }}>
+    <div style={{ width: '100%', height: '75vh' }}>
       <DataGrid
-        autoHeight
         hideFooterPagination
         checkboxSelection
         loading={reportIsLoading}

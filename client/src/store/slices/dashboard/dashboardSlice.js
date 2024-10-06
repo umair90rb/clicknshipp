@@ -1,14 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit';
 import fetchStatus from 'constants/fetchStatuses';
-import { fetchDashboardStats } from './fetchDashboard';
+import { fetchDashboardStats, fetchDashboardCompareStats } from './fetchDashboard';
 import moment from '../../../../node_modules/moment/moment';
 
 const initialState = {
   stats: {},
+  compare: null,
   fetchStatus: fetchStatus.IDLE,
   error: null,
   startPeriod: moment(new Date()).startOf('day').format('YYYY-MM-DDTHH:MM'),
-  endPeriod: moment(new Date()).endOf('day').format('YYYY-MM-DDTHH:MM')
+  endPeriod: moment(new Date()).endOf('day').format('YYYY-MM-DDTHH:MM'),
+  compareStartPeriod: null,
+  compareEndPeriod: null
 };
 
 const dashboardSlice = createSlice({
@@ -33,6 +36,21 @@ const dashboardSlice = createSlice({
     });
     builder.addCase(fetchDashboardStats.rejected, (state, action) => {
       state.stats = {};
+      state.fetchStatus = fetchStatus.FAILURE;
+      state.error = action.payload;
+    });
+
+    builder.addCase(fetchDashboardCompareStats.pending, (state, _action) => {
+      state.fetchStatus = fetchStatus.REQUEST;
+    });
+    builder.addCase(fetchDashboardCompareStats.fulfilled, (state, action) => {
+      const { data } = action.payload;
+      state.fetchStatus = fetchStatus.SUCCESS;
+      state.compare = data.stats;
+      state.error = null;
+    });
+    builder.addCase(fetchDashboardCompareStats.rejected, (state, action) => {
+      state.compare = null;
       state.fetchStatus = fetchStatus.FAILURE;
       state.error = action.payload;
     });
