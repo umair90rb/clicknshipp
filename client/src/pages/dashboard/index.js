@@ -80,7 +80,7 @@ const DashboardDefault = () => {
               title="Total Orders"
               count={stats.totalOrders || 0}
               percentage={compare?.totalOrders && Math.round(((stats.totalOrders - compare?.totalOrders) / compare?.totalOrders) * 100)}
-              isLoss={Math.round(((stats.totalOrders - compare?.totalOrders) / compare?.totalOrders) * 100) < 0}
+              extra={compare?.totalOrders}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
@@ -91,7 +91,7 @@ const DashboardDefault = () => {
                 compare?.totalSalesValue &&
                 Math.round(((stats.totalSalesValue - compare?.totalSalesValue) / compare?.totalSalesValue) * 100)
               }
-              isLoss={Math.round(((stats.totalSalesValue - compare?.totalSalesValue) / compare?.totalSalesValue) * 100) < 0}
+              extra={compare?.totalSalesValue}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
@@ -102,7 +102,7 @@ const DashboardDefault = () => {
                 compare?.confirmedOrders &&
                 Math.round(((stats.confirmedOrders - compare?.confirmedOrders) / compare?.confirmedOrders) * 100)
               }
-              isLoss={Math.round(((stats.confirmedOrders - compare?.confirmedOrders) / compare?.confirmedOrders) * 100) < 0}
+              extra={compare?.confirmedOrders}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
@@ -115,16 +115,12 @@ const DashboardDefault = () => {
                   ((stats.confirmedOrdersSalesValue - compare?.confirmedOrdersSalesValue) / compare?.confirmedOrdersSalesValue) * 100
                 )
               }
-              isLoss={
-                Math.round(
-                  ((stats.confirmedOrdersSalesValue - compare?.confirmedOrdersSalesValue) / compare?.confirmedOrdersSalesValue) * 100
-                ) < 0
-              }
+              extra={compare?.confirmedOrdersSalesValue}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
             <AnalyticEcommerce
-              title="Confirm Orders Average Value(Rs)"
+              title="Orders Average Value(Rs)"
               count={stats.confirmedOrdersAverageValue || 0}
               percentage={
                 compare?.confirmedOrdersAverageValue &&
@@ -132,56 +128,52 @@ const DashboardDefault = () => {
                   ((stats.confirmedOrdersAverageValue - compare?.confirmedOrdersAverageValue) / compare?.confirmedOrdersAverageValue) * 100
                 )
               }
-              isLoss={
-                Math.round(
-                  ((stats.confirmedOrdersAverageValue - compare?.confirmedOrdersAverageValue) / compare?.confirmedOrdersAverageValue) * 100
-                ) < 0
-              }
+              extra={compare?.confirmedOrdersAverageValue}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
             <AnalyticEcommerce
-              title="Confirm Orders No of Units"
+              title="Confirm Orders Units"
               count={stats.confirmedOrdersUnits || 0}
               percentage={
                 compare?.confirmedOrdersUnits &&
                 Math.round(((stats.confirmedOrdersUnits - compare?.confirmedOrdersUnits) / compare?.confirmedOrdersUnits) * 100)
               }
-              isLoss={Math.round(((stats.confirmedOrdersUnits - compare?.confirmedOrdersUnits) / compare?.confirmedOrdersUnits) * 100) < 0}
+              extra={compare?.confirmedOrdersUnits}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
             <AnalyticEcommerce
               title="Booked Orders"
               count={stats.bookedOrders || 0}
+              extra={compare?.bookedOrders}
               percentage={compare?.bookedOrders && Math.round(((stats.bookedOrders - compare?.bookedOrders) / compare?.bookedOrders) * 100)}
-              isLoss={Math.round(((stats.bookedOrders - compare?.bookedOrders) / compare?.bookedOrders) * 100) < 0}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
             <AnalyticEcommerce
               title="No Picked Orders"
               count={stats.noPickOrders || 0}
+              extra={compare?.noPickOrders}
               percentage={compare?.noPickOrders && Math.round(((stats.noPickOrders - compare?.noPickOrders) / compare?.noPickOrders) * 100)}
-              isLoss={Math.round(((stats.noPickOrders - compare?.noPickOrders) / compare?.noPickOrders) * 100) < 0}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
             <AnalyticEcommerce
               title="Cancel Orders"
               count={stats.cancelOrders || 0}
+              extra={compare?.cancelOrders}
               percentage={compare?.cancelOrders && Math.round(((stats.cancelOrders - compare?.cancelOrders) / compare?.cancelOrders) * 100)}
-              isLoss={Math.round(((stats.cancelOrders - compare?.cancelOrders) / compare?.cancelOrders) * 100) < 0}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
             <AnalyticEcommerce
               title="Un-attempted Orders"
               count={stats.assignedOrders || 0}
+              extra={compare?.assignedOrders}
               percentage={
                 compare?.assignedOrders && Math.round(((stats.assignedOrders - compare?.assignedOrders) / compare?.assignedOrders) * 100)
               }
-              isLoss={Math.round(((stats.assignedOrders - compare?.assignedOrders) / compare?.assignedOrders) * 100) < 0}
             />
           </Grid>
           <Grid item container rowSpacing={1} columnSpacing={0.75}>
@@ -227,7 +219,7 @@ const DashboardDefault = () => {
                           {
                             label: 'Compare Channel',
                             data: (compare?.topChannels || []).map((c) => c.orders),
-                            valueFormatter: (value) => `Compare Orders ${value}`
+                            valueFormatter: (value) => `Orders ${value}`
                           }
                         ]
                       : [])

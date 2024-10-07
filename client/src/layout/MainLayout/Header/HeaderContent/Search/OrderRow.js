@@ -33,9 +33,9 @@ const OrderRow = ({ order, onNavigate }) => {
         <Typography component="span" variant="h5">
           {user?.name || 'None'}
         </Typography>{' '}
-        Items: {items?.reduce((pv, cv) => `${cv.name}/${cv.quantity} ${pv}`, '')}, Address: {address.address1}, City:{' '}
+        Items: {items?.reduce((pv, cv) => `${cv.name}/${cv.quantity} ${pv}`, '')}, Address: {address?.address1}, City:{' '}
         <Typography component="span" variant="h5">
-          {address.city}{' '}
+          {address?.city}{' '}
         </Typography>
         <Link component="button" onClick={handleNavigate}>
           View Details
