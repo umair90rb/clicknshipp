@@ -41,6 +41,8 @@ schedule(every15Sec, async () => {
         },
       },
       attributes: ['id', 'cn', 'account_id'],
+      order: [['createdAt', 'DESC']],
+      limit: 10,
     });
     console.log(`No of orders for tracking: ${deliveriesToTrack.length}`);
     if (!deliveriesToTrack?.length) {
