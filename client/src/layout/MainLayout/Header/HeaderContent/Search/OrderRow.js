@@ -8,7 +8,7 @@ const OrderRow = ({ order, onNavigate }) => {
     navigate(`/order/${id}`);
     onNavigate && onNavigate();
   };
-  const { id, order_number, status, items, address, customer, user, createdAt } = order || {};
+  const { id, order_number, status, chanel, items, address, customer, user, createdAt } = order || {};
   return (
     <Stack
       component="div"
@@ -25,7 +25,11 @@ const OrderRow = ({ order, onNavigate }) => {
       }}
     >
       <Typography component="p" variant="h6" ml={1}>
-        #{order_number} | Status:{' '}
+        #{order_number} | Channel:{' '}
+        <Typography component="span" variant="h5">
+          {chanel?.name}
+        </Typography>{' '}
+        | Status:{' '}
         <Typography component="span" variant="h5">
           {status}
         </Typography>{' '}

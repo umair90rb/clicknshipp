@@ -112,12 +112,13 @@ class CallCourier extends CourierInterface {
       logger.log('info', 'leopard booking status,s api response', {
         res: response.data,
       });
+      const history = response.data.revers();
       return {
         isSuccess: true,
         error: null,
-        history: response.data,
-        status: null,
-        date: null,
+        history,
+        status: history[0]?.ProcessDescForPortal,
+        date: history[0]?.TransactionDate,
         remarks: null,
         data: {},
         response: 'Current Booking status!',

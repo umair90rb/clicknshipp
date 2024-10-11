@@ -381,6 +381,11 @@ class OrderService {
             attributes: ['id', 'name'],
           },
           {
+            model: Chanel,
+            as: 'chanel',
+            attributes: ['name'],
+          },
+          {
             model: Address,
             as: 'address',
             attributes: ['address1', 'city'],
@@ -487,7 +492,38 @@ class OrderService {
     }
   }
 
-  async updateOrderDeliveryStatus(parcelStatusRes, deliveryId, cn) {}
+  async updateOrderDeliveryStatus(parcelStatusRes, deliveryId) {
+    const { isSuccess, error, history, status } = parcelStatusRes;
+    console.log(
+      isSuccess,
+      error,
+      history,
+      status,
+      'data received in updateOrderDeliveryStatus'
+    );
+    await Delivery.update(
+      isSuccess
+        ? {
+            tracking_status: status,
+            tracking: history,
+            updatedAt: new Date().now(),
+          }
+        : {
+            tracking_status: 'Failed',
+            tracking: error,
+            updatedAt: new Date().now(),
+          },
+      { where: { id: deliveryId } }
+    );
+  }
+
+  async canUpdateOrder(orderId) {
+    const order = await Order.findByPk(orderId);
+    if ('account_id' in order && order.account_id !== null) {
+      return false;
+    }
+    return true;
+  }
 }
 
 const _orderService = new OrderService();

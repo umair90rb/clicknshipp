@@ -106,8 +106,8 @@ class MnpCourier extends CourierInterface {
         isSuccess,
         error: !isSuccess ? message : null,
         history: tracking_history,
-        status: tracking_history.CNStatus,
-        date: tracking_history.BookingDate,
+        status: tracking_history?.CNStatus,
+        date: tracking_history?.BookingDate,
         remarks: null,
         data: {
           tracking_history,

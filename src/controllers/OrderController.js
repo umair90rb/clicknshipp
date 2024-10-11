@@ -175,9 +175,10 @@ export default {
         const _query = { ...query, where: { ...query.where, ..._filters } };
         query = _query;
       }
-      const orders = await Order.findAndCountAll(query);
+      const count = await Order.count(query);
+      const rows = await Order.findAll(query);
       return sendSuccessResponse(res, 200, {
-        orders: { ...orders, ...req.body },
+        orders: { rows, count, ...req.body },
       });
     } catch (e) {
       logger.error(e);
@@ -470,7 +471,6 @@ export default {
     try {
       const { chanel_id } = req.body;
       const json = await excelToJson(req.file.buffer);
-      console.log(json.length, 'json.length');
       if (!json.length) {
         return sendErrorResponse(res, 500, 'File is empty.');
       }
@@ -552,6 +552,7 @@ export default {
   async updateStatus(req, res) {
     try {
       const { orderId, status, reason, remarks } = req.body;
+      const permissions = req.user.permissions;
       if (status === 'Cancel' && !reason) {
         return sendErrorResponse(
           res,
@@ -562,6 +563,16 @@ export default {
       const order = await Order.findByPk(orderId);
       if (!order) {
         return sendErrorResponse(res, 404, 'No data found with this id.');
+      }
+      if (
+        !permissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) &&
+        order?.account_id
+      ) {
+        return sendErrorResponse(
+          res,
+          500,
+          'Cannot update order, already booked'
+        );
       }
       if (order.status === 'Confirmed') {
         return sendErrorResponse(
@@ -608,11 +619,21 @@ export default {
   async addPaymentInOrder(req, res) {
     try {
       const { orderId, label, type, bank, tid, amount, note } = req.body;
-
+      const permissions = req.user.permissions;
       if (!orderId) {
         return sendErrorResponse(res, 404, 'No data found with this id.');
       }
 
+      if (
+        !permissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) &&
+        !(await _orderService.canUpdateOrder(orderId))
+      ) {
+        return sendErrorResponse(
+          res,
+          500,
+          'Cannot update order, already booked'
+        );
+      }
       await sequelize.transaction(async (t) => {
         await Payments.create(
           {
@@ -656,6 +677,17 @@ export default {
   async updatedItems(req, res) {
     try {
       const { orderId, items } = req.body;
+      const permissions = req.user.permissions;
+      if (
+        !permissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) &&
+        !(await _orderService.canUpdateOrder(orderId))
+      ) {
+        return sendErrorResponse(
+          res,
+          500,
+          'Cannot update order, already booked'
+        );
+      }
       let total_price = items.reduce(
         (total, item) => total + parseInt(item.price),
         0
@@ -714,6 +746,18 @@ export default {
   async updatedPayment(req, res) {
     try {
       const { orderId, payments } = req.body;
+      const permissions = req.user.permissions;
+      if (
+        !permissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) &&
+        !(await _orderService.canUpdateOrder(orderId))
+      ) {
+        return sendErrorResponse(
+          res,
+          500,
+          'Cannot update order, already booked'
+        );
+      }
+
       let pendingPayments = 0,
         receivedPayments = 0;
       if (payments && payments.length) {
@@ -784,9 +828,16 @@ export default {
         payments,
         items: itemsArray,
       } = req.body || {};
+      const permissions = req.user.permissions;
       const order = await Order.findByPk(id);
       if (!order) {
         return sendErrorResponse(res, 404, 'No data found with this id.');
+      }
+      if (
+        !permissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) &&
+        order?.account_id
+      ) {
+        return sendErrorResponse(res, 500, 'Order already booked!');
       }
       const orderItems = [];
       let subtotal_price = 0;
@@ -896,13 +947,21 @@ export default {
         address,
         city,
       } = req.body;
+      const permissions = req.user.permissions;
       const order = await Order.findByPk(orderId, {
         attributes: {
           exclude: ['data'],
         },
       });
+
       if (!order) {
         return sendErrorResponse(res, 404, 'Order not found!');
+      }
+      if (
+        !permissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) &&
+        order?.account_id
+      ) {
+        return sendErrorResponse(res, 500, 'Order already booked!');
       }
       let customer;
       if (customerId) {

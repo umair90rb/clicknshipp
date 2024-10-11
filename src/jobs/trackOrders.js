@@ -2,24 +2,32 @@ import { schedule } from 'node-cron';
 const { Op } = require('sequelize');
 import model from '../models';
 import logger from '../middleware/logger';
-import {
-  getEndOfDay,
-  getStartOfDay,
-  subtractDaysFromToday,
-} from '../helpers/pgDateFormat';
-import bookingService from '../services/BookingService';
-const { Delivery, DeliveryServiceAccounts, Tokens } = model;
+import { getEndOfDay, subtractDaysFromToday } from '../helpers/pgDateFormat';
+import deliveryStatusSyncQueue from '../queues/deliveryStatusSyncQueue';
+const { Delivery } = model;
 
 const yesterday = getEndOfDay(subtractDaysFromToday(1));
 
-const every5Sec = '*/5 * * * * *';
+const every15Sec = '*/15 * * * * *';
 const every20Min = ' */20 * * * *';
 const every10Min = ' */10 * * * *';
 const everyMorningAt8Am = '0 8 * * *';
 
-schedule(every10Min, async () => {
+schedule(every15Sec, async () => {
+  // schedule(every10Min, async () => {
   try {
     console.log('Order track job started at ' + new Date().toISOString());
+    const pendingJobs = await deliveryStatusSyncQueue.count();
+    console.log(
+      `Order track job in process, currently pending ${pendingJobs} ${new Date().toISOString()}`
+    );
+    if (pendingJobs) {
+      console.log(
+        'Job stopped due to pending work ' + new Date().toISOString()
+      );
+      return;
+    }
+    console.log('Moving on');
     const deliveriesToTrack = await Delivery.findAll({
       where: {
         status: {
@@ -29,25 +37,24 @@ schedule(every10Min, async () => {
           [Op.lte]: yesterday,
         },
         updatedAt: {
-          [Op.lte]: yesterdayEndOfDay,
-        },
-        tracking_status: { [Op.any]: [null, 'Failed'] },
-      },
-      include: {
-        model: DeliveryServiceAccounts,
-        as: 'account',
-        include: {
-          as: 'tokens',
-          model: Tokens,
+          [Op.lte]: yesterday,
         },
       },
+      attributes: ['id', 'cn', 'account_id'],
     });
     console.log(`No of orders for tracking: ${deliveriesToTrack.length}`);
     if (!deliveriesToTrack?.length) {
       console.warn('No order to track!');
       return;
     }
+    await deliveryStatusSyncQueue.addBulk(
+      deliveriesToTrack.map((data) => ({
+        name: 'deliveryStatusSyncQueue',
+        data,
+      }))
+    );
   } catch (error) {
+    console.log(error);
     logger.error(`Error updating delivery ${deliveryToTrack.id}: ${error}`);
   }
 });
