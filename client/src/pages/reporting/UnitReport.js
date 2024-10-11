@@ -209,6 +209,17 @@ const columns = [
       }
       return params.value;
     }
+  },
+  {
+    field: 'manual',
+    headerName: 'Manual',
+    flex: 0.5,
+    valueGetter: (params) => {
+      if (params.row.id === 'TOTAL') {
+        return params.row.totalManual;
+      }
+      return params.value;
+    }
   }
 ];
 

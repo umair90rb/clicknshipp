@@ -1,6 +1,6 @@
-import model from "../models";
-import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
-import TCSCourier from "../services/couriers/tcsCourier";
+import model from '../models';
+import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
+import TCSCourier from '../services/couriers/tcsCourier';
 
 const { DeliveryServiceAccounts, Tokens } = model;
 
@@ -10,22 +10,22 @@ export default {
       const accounts = await DeliveryServiceAccounts.findAll({
         where: { active: true },
         attributes: {
-          exclude: ["createdAt", "updatedAt"],
+          exclude: ['createdAt', 'updatedAt'],
         },
-        order: [["name", "ASC"]],
+        order: [['name', 'ASC']],
       });
       return sendSuccessResponse(
         res,
         200,
         { accounts },
-        "All service accounts!"
+        'All service accounts!'
       );
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
@@ -36,14 +36,17 @@ export default {
     const { name, service, client_id, cost_center, key, username, password } =
       req.body;
     try {
-      let account = await DeliveryServiceAccounts.findOne({
-        where: { key },
-      });
+      let account = null;
+      if (key) {
+        account = await DeliveryServiceAccounts.findOne({
+          where: { key },
+        });
+      }
       if (account) {
         return sendErrorResponse(
           res,
           422,
-          "Service key already exists, add different key!"
+          'Service key already exists, add different key!'
         );
       }
       let createData = {
@@ -56,8 +59,8 @@ export default {
         password,
         active: true,
       };
-      if (service === "tcs") {
-        const tcsService = new TCSCourier("tcs");
+      if (service === 'tcs') {
+        const tcsService = new TCSCourier('tcs');
         const headerToken = await tcsService.getHeaderToken(client_id, key);
         const bodyToken = await tcsService.getBodyToken(
           headerToken.token,
@@ -68,16 +71,16 @@ export default {
           ...createData,
           tokens: [
             {
-              type: "header",
+              type: 'header',
               ...headerToken,
             },
-            { type: "body", ...bodyToken },
+            { type: 'body', ...bodyToken },
           ],
         };
       }
       account = await DeliveryServiceAccounts.create(createData, {
         include: {
-          as: "tokens",
+          as: 'tokens',
           model: Tokens,
         },
       });
@@ -87,13 +90,13 @@ export default {
         {
           account: account?.get(),
         },
-        "Service created successfully"
+        'Service created successfully'
       );
     } catch (error) {
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         error
       );
     }
@@ -132,16 +135,16 @@ export default {
           {
             account: account.get() || null,
           },
-          "Operation successful"
+          'Operation successful'
         );
       }
-      return sendErrorResponse(res, 404, "No data found with this id");
+      return sendErrorResponse(res, 404, 'No data found with this id');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later",
+        'Could not perform operation at this time, kindly try again later',
         e
       );
     }
@@ -153,15 +156,15 @@ export default {
       const account = await DeliveryServiceAccounts.findByPk(id);
       if (account) {
         await account.destroy();
-        return sendSuccessResponse(res, 200, {}, "Operation successful");
+        return sendSuccessResponse(res, 200, {}, 'Operation successful');
       }
-      return sendErrorResponse(res, 404, "No data found with this id");
+      return sendErrorResponse(res, 404, 'No data found with this id');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later",
+        'Could not perform operation at this time, kindly try again later',
         e
       );
     }

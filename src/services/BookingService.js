@@ -5,6 +5,7 @@ import SonicCourier from './couriers/sonicCourier';
 import TCSCourier from './couriers/tcsCourier';
 import CallCourier from './couriers/callCourier';
 import MnpCourier from './couriers/mnpCourier';
+import ManualCourier from './couriers/manualCourier';
 
 class BookingService {
   constructor() {
@@ -16,6 +17,7 @@ class BookingService {
       tcs: new TCSCourier(),
       callcourier: new CallCourier(),
       mnp: new MnpCourier(),
+      manual: new ManualCourier(),
     };
   }
 

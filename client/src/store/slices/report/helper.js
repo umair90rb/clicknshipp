@@ -45,7 +45,8 @@ export function addTotalRow(report, data) {
           totalTrax: data.reduce((acc, row) => acc + (parseInt(row.trax) || 0), 0),
           totalLeapard: data.reduce((acc, row) => acc + (parseInt(row.leapard) || 0), 0),
           totalCallCourier: data.reduce((acc, row) => acc + (parseInt(row.callcourier) || 0), 0),
-          totalMNP: data.reduce((acc, row) => acc + (parseInt(row.mnp) || 0), 0)
+          totalMNP: data.reduce((acc, row) => acc + (parseInt(row.mnp) || 0), 0),
+          totalManual: data.reduce((acc, row) => acc + (parseInt(row.manual) || 0), 0)
         }
       ];
     case 'FOC Report':
@@ -61,7 +62,8 @@ export function addTotalRow(report, data) {
           totalTrax: data.reduce((acc, row) => acc + (parseInt(row.trax) || 0), 0),
           totalLeopard: data.reduce((acc, row) => acc + (parseInt(row.leopard) || 0), 0),
           totalCallCourier: data.reduce((acc, row) => acc + (parseInt(row.callcourier) || 0), 0),
-          totalMNP: data.reduce((acc, row) => acc + (parseInt(row.mnp) || 0), 0)
+          totalMNP: data.reduce((acc, row) => acc + (parseInt(row.mnp) || 0), 0),
+          totalManual: data.reduce((acc, row) => acc + (parseInt(row.manual) || 0), 0)
         }
       ];
     case 'Booking Unit Report':
@@ -83,7 +85,8 @@ export function addTotalRow(report, data) {
           totalTrax: data.reduce((acc, row) => acc + (parseInt(row.trax) || 0), 0),
           totalLeopard: data.reduce((acc, row) => acc + (parseInt(row.leopard) || 0), 0),
           totalCallCourier: data.reduce((acc, row) => acc + (parseInt(row.callcourier) || 0), 0),
-          totalMNP: data.reduce((acc, row) => acc + (parseInt(row.mnp) || 0), 0)
+          totalMNP: data.reduce((acc, row) => acc + (parseInt(row.mnp) || 0), 0),
+          totalManual: data.reduce((acc, row) => acc + (parseInt(row.manual) || 0), 0)
         }
       ];
     case 'Incentive Report':

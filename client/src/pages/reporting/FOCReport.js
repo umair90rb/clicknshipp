@@ -109,8 +109,19 @@ const columns = [
     }
   },
   {
+    field: 'manual',
+    headerName: 'Manual',
+    flex: 0.5,
+    valueGetter: (params) => {
+      if (params.row.id === 'TOTAL') {
+        return params.row.totalManual;
+      }
+      return params.value;
+    }
+  },
+  {
     field: 'callcourier',
-    headerName: 'CC',
+    headerName: 'Call Courier',
     flex: 0.5,
     valueGetter: (params) => {
       if (params.row.id === 'TOTAL') {

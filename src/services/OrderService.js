@@ -17,9 +17,7 @@ const {
   Chanel,
   Payments,
   Delivery,
-  DeliveryServiceAccounts,
   OrderHistory,
-  Tokens,
 } = model;
 
 class OrderService {
@@ -101,6 +99,12 @@ class OrderService {
           {
             model: OrderHistory,
             as: 'history',
+            attributes: ['event', 'createdAt'],
+            include: {
+              model: User,
+              as: 'user',
+              attributes: ['name'],
+            },
           },
           {
             model: Payments,
@@ -204,7 +208,7 @@ class OrderService {
         slip_link: slip,
         status: 'Booked',
       },
-      event = `order booked with ${deliveryAccount?.service}, tracking number: ${cn}, brand no: ${order?.brand?.shipment_series}`,
+      event = `order booked with ${deliveryAccount?.service}, tracking number: ${cn}`,
       orderStatus = 'Booked';
     if (!isSuccess) {
       deliveryData = {
@@ -213,7 +217,9 @@ class OrderService {
         slip_link: JSON.stringify(response),
         status: 'Booking Error',
       };
-      event = `error in order booking with ${deliveryAccount?.service}, error: ${error}`;
+      event = `error in order booking with ${
+        deliveryAccount?.service
+      }, error: ${error || response}`;
       orderStatus = 'Booking Error';
     }
     let [delivery, created] = await Delivery.findOrCreate({
@@ -223,7 +229,8 @@ class OrderService {
     if (!created && delivery) {
       await delivery.update(deliveryData);
     }
-    await order.update({ status: orderStatus });
+    // await order.update({ status: orderStatus });
+    await Order.update({ status: orderStatus }, { where: { id: order.id } });
     await OrderHistory.create({
       order_id: order.id,
       user_id: null,

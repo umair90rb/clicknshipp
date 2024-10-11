@@ -237,6 +237,15 @@ class ReportingService {
           ),
           'mnp',
         ],
+        [
+          fn(
+            'SUM',
+            literal(
+              `CASE WHEN "delivery"."courier" = 'manual' THEN "items"."quantity" ELSE 0 END`
+            )
+          ),
+          'manual',
+        ],
       ],
       include: [
         {
@@ -266,7 +275,8 @@ class ReportingService {
       sum(case when d."courier" = 'deawoo' then oi."quantity" else 0 end) as deawoo,
       sum(case when d."courier" = 'leopard' then oi."quantity" else 0 end) as leopard,
       sum(case when d."courier" = 'postex' then oi."quantity" else 0 end) as postex,
-      sum(case when d."courier" = 'mnp' then oi."quantity" else 0 end) as mnp
+      sum(case when d."courier" = 'mnp' then oi."quantity" else 0 end) as mnp,
+      sum(case when d."courier" = 'manual' then oi."quantity" else 0 end) as manual
     from
       "OrderItems" oi
     join "Deliveries" d on
@@ -445,6 +455,15 @@ class ReportingService {
             )
           ),
           'mnp',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              `CASE WHEN "delivery"."courier" = 'manual' THEN "items"."quantity" ELSE 0 END`
+            )
+          ),
+          'manual',
         ],
       ],
       include: [

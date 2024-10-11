@@ -446,6 +446,7 @@ export default {
         }
         await orderExistFromCustomer.update(existedOrderUpdateData);
       }
+      await _orderService.checkOrderDuplication(order);
       let orderWithoutData = order.dataValues;
       delete orderWithoutData.data;
       return sendSuccessResponse(
