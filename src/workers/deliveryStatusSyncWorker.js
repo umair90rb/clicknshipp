@@ -11,11 +11,21 @@ const bookingWorker = new Worker(
     console.log(
       `tracking delivery ${id} with cn ${cn} and delivery account ${deliveryAccountId}`
     );
+    if (!deliveryAccountId) {
+      console.log(`tracking delivery stopped, no delivery account id provided`);
+      return;
+    }
+    if (!cn) {
+      console.log(`tracking delivery stopped, no cn provided`);
+      return;
+    }
     const deliveryAccount =
       await deliveryServiceAccountService.getAccountWithToken(
         deliveryAccountId
       );
-    console.log(`delivery account found ${deliveryAccount.get()}`);
+    if (!deliveryAccount) {
+      console.log(`tracking delivery stopped, delivery account not found`);
+    }
     const parcelStatusRes = await bookingService.checkParcelStatusWithCourier(
       cn,
       deliveryAccount
