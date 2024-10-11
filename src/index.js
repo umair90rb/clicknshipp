@@ -10,7 +10,7 @@ import 'dotenv/config';
 import './workers/bookingWorker';
 import './workers/deliveryStatusSyncWorker';
 import './jobs/assignOrders';
-import './jobs/trackOrders';
+// import './jobs/trackOrders';
 import { dirname } from 'node:path';
 // import { Server } from "socket.io";
 // import DeliveryController from "./controllers/DeliveryController";
