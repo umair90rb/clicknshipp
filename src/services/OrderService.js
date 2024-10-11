@@ -58,6 +58,27 @@ class OrderService {
     }
   }
 
+  async loadOrderWithCustomer(id) {
+    try {
+      const order = await Order.findByPk(id, {
+        attributes: {
+          exclude: ['data', 'CustomerId', 'user_id', 'chanel_id', 'brand_id'],
+        },
+        include: [
+          {
+            model: Customer,
+            as: 'customer',
+            attributes: ['phone'],
+          },
+        ],
+      });
+      return order;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
   async loadFullOrder(id) {
     try {
       const order = await Order.findByPk(id, {
@@ -254,7 +275,13 @@ class OrderService {
   async checkOrderDuplication(order) {
     try {
       if (order) {
-        const duplicates = await this.findDuplications(order);
+        let orderWithCustomer, duplicates;
+        if ('customer' in order) {
+          duplicates = await this.findDuplications(order);
+        } else {
+          orderWithCustomer = await this.loadOrderWithCustomer(order.id);
+          duplicates = await this.findDuplications(orderWithCustomer);
+        }
         if (duplicates && duplicates.length) {
           await order.update({ tags: 'Duplicate' });
           duplicates.map(async (duplicate) => {
@@ -431,7 +458,7 @@ class OrderService {
 
   async findDuplications(order) {
     try {
-      if (order && order.customer.phone) {
+      if (order && order?.customer?.phone) {
         return Order.findAll({
           attributes: ['id', 'order_number', 'status'],
           where: {
@@ -459,6 +486,8 @@ class OrderService {
       throw error;
     }
   }
+
+  async updateOrderDeliveryStatus(parcelStatusRes, deliveryId, cn) {}
 }
 
 const _orderService = new OrderService();

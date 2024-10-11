@@ -575,38 +575,42 @@ const OrderTable = memo(() => {
           </Button>
         )}
 
-        <GridDateFilter
+        {/* <GridDateFilter
           label="Start By"
           value={filters.find((f) => f.column === 'assignedAt' && f.op === 'Date is after')?.value}
-          onChange={(date) =>
+          onChange={(date) => {
+            console.log(filters.filter((f) => f.column === 'assignedAt' && f.op === 'Date is after'));
             dispatch(
               setOrderFilters([
-                ...filters.filter((f) => f.column !== 'assignedAt' && f.op !== 'Date is after'),
+                ...filters.filter((f) => f.column === 'assignedAt' && f.op === 'Date is after'),
+                // ...filters,
                 {
                   column: 'assignedAt',
                   op: 'Date is after',
                   value: getStartOfDay(date)
                 }
               ])
-            )
-          }
+            );
+          }}
         />
         <GridDateFilter
           label="End By"
           value={filters.find((f) => f.column === 'assignedAt' && f.op === 'Date is before')?.value}
-          onChange={(date) =>
+          onChange={(date) => {
+            console.log(filters.filter((f) => f.column === 'assignedAt' && f.op === 'Date is before'));
             dispatch(
               setOrderFilters([
-                ...filters.filter((f) => f.column !== 'assignedAt' && f.op !== 'Date is before'),
+                ...filters.filter((f) => f.column === 'assignedAt' && f.op === 'Date is before'),
+                // ...filters,
                 {
                   column: 'assignedAt',
                   op: 'Date is before',
                   value: getEndOfDay(date)
                 }
               ])
-            )
-          }
-        />
+            );
+          }}
+        /> */}
         <GridDropdownFilter
           multiple
           label="filter by status"
