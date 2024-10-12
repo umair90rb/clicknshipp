@@ -7,22 +7,20 @@ import bookingService from '../services/BookingService';
 const bookingWorker = new Worker(
   'deliveryStatusSyncQueue',
   async (job) => {
-    const { id, cn, deliveryAccountId } = job.data;
+    const { id, cn, account_id } = job.data;
     console.log(
-      `tracking delivery ${id} with cn ${cn} and delivery account ${deliveryAccountId}`
+      `tracking delivery ${id} with cn ${cn} and delivery account ${account_id}`
     );
-    if (!deliveryAccountId) {
+    if (!account_id) {
       console.log(`tracking delivery stopped, no delivery account id provided`);
       return;
     }
-    if (!cn) {
+    if (!cn || typeof parseInt(cn) !== 'number') {
       console.log(`tracking delivery stopped, no cn provided`);
       return;
     }
     const deliveryAccount =
-      await deliveryServiceAccountService.getAccountWithToken(
-        deliveryAccountId
-      );
+      await deliveryServiceAccountService.getAccountWithToken(account_id);
     if (!deliveryAccount) {
       console.log(`tracking delivery stopped, delivery account not found`);
     }
@@ -30,7 +28,6 @@ const bookingWorker = new Worker(
       cn,
       deliveryAccount
     );
-    console.log(`parcel status ${parcelStatusRes}`);
     await _orderService.updateOrderDeliveryStatus(parcelStatusRes, id);
   },
   {

@@ -33,6 +33,9 @@ schedule(every15Sec, async () => {
         status: {
           [Op.notIn]: ['Delivered'],
         },
+        tracking_status: {
+          [Op.notIn]: ['Success'],
+        },
         createdAt: {
           [Op.lte]: yesterday,
         },
@@ -41,10 +44,9 @@ schedule(every15Sec, async () => {
         },
       },
       attributes: ['id', 'cn', 'account_id'],
-      order: [['createdAt', 'DESC']],
-      limit: 5,
+      limit: 10,
     });
-    console.log(`No of orders for tracking: ${deliveriesToTrack.length}`);
+    console.log(`No of orders for tracking: ${deliveriesToTrack.length} `);
     if (!deliveriesToTrack?.length) {
       console.warn('No order to track!');
       return;
@@ -53,10 +55,11 @@ schedule(every15Sec, async () => {
       deliveriesToTrack.map((data) => ({
         name: 'deliveryStatusSyncQueue',
         data,
+        opts: { removeOnComplete: true, removeOnFail: true },
       }))
     );
   } catch (error) {
     console.log(error);
-    logger.error(`Error updating delivery ${deliveryToTrack.id}: ${error}`);
+    logger.error(`Error in track orders jobs ${error}`);
   }
 });

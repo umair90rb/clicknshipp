@@ -497,24 +497,23 @@ class OrderService {
     console.log(
       isSuccess,
       error,
-      history,
       status,
       'data received in updateOrderDeliveryStatus'
     );
-    await Delivery.update(
+    const ur = await Delivery.update(
       isSuccess
         ? {
-            tracking_status: status,
+            tracking_status: 'Success',
+            updatedAt: new Date().toISOString(),
             tracking: history,
-            updatedAt: new Date().now(),
           }
         : {
             tracking_status: 'Failed',
-            tracking: error,
-            updatedAt: new Date().now(),
+            updatedAt: new Date().toISOString(),
           },
       { where: { id: deliveryId } }
     );
+    console.log(ur.get(), 'update delivery response');
   }
 
   async canUpdateOrder(orderId) {

@@ -1003,11 +1003,15 @@ export default {
       }
       if (delivery_account_id) {
         orderUpdateData['delivery_account_id'] = delivery_account_id;
-        if (status === 'Confirmed') {
-          await bookingQueue.add('bookingJob', {
-            orderId,
-            deliveryAccountId: delivery_account_id,
-          });
+        if (status === 'Confirmed' && !order.account_id) {
+          await bookingQueue.add(
+            'bookingJob',
+            {
+              orderId,
+              deliveryAccountId: delivery_account_id,
+            },
+            { removeOnComplete: true, removeOnFail: true }
+          );
         }
       }
       if (status === 'Duplicate') {
