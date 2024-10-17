@@ -1,14 +1,14 @@
-import CourierInterface from "../../interfaces/courierInterface";
-import getAxiosInstance from "../AxiosService";
-import models from "../../models";
-import { Op } from "sequelize";
-import logger from "../../middleware/logger";
+import CourierInterface from '../../interfaces/courierInterface';
+import getAxiosInstance from '../AxiosService';
+import models from '../../models';
+import { Op } from 'sequelize';
+import logger from '../../middleware/logger';
 const { CityNameMaping } = models;
 
 class DeawooCourier extends CourierInterface {
   constructor() {
     super();
-    this.http = getAxiosInstance("https://codapi.daewoo.net.pk/", {});
+    this.http = getAxiosInstance('https://codapi.daewoo.net.pk/', {});
   }
   getUrlWithApiCred(url, api, username, password) {
     return `${url}?apiKey=${api}&apiUser=${username}&apiPassword=${password}`;
@@ -30,41 +30,41 @@ class DeawooCourier extends CourierInterface {
           cn: null,
           slip: null,
           isSuccess: false,
-          error: "City not found in the database, contact admin",
-          response: "destination not found in the db",
+          error: 'City not found in the database, contact admin',
+          response: 'destination not found in the db',
         };
       }
       const body = {
         order_no: `Sukooonx${order.order_number}`,
-        source_terminal_id: "10",
+        source_terminal_id: '10',
         destination_terminal_id: destinationCity.assigned_id,
         receiver_name: `${order.customer.first_name} ${
-          order.customer.last_name || ""
+          order.customer.last_name || ''
         }`,
-        receiver_cnic: "",
+        receiver_cnic: '',
         receiver_mobile: `0${order.customer.phone}`,
         receiver_address: `${order.address.address1}, ${order.address.city}`,
         receiver_city: destinationCity.maped,
-        receiver_email: order.customer.email || "empty",
-        remarks: "rush delivery",
-        category_id: "0",
+        receiver_email: order.customer.email || 'empty',
+        remarks: 'rush delivery',
+        category_id: '0',
         qty: order.items.length,
-        weight: "0.5",
-        barcode: "0",
+        weight: '0.5',
+        barcode: '0',
         cod_amount: order.total_price,
-        source_location_point: "0.0",
-        destination_location_point: "0.0",
-        source_location_address: "madina town faisalabad",
+        source_location_point: '0.0',
+        destination_location_point: '0.0',
+        source_location_address: 'madina town faisalabad',
         destination_location_address: `${order.address.address1}, ${destinationCity.maped}`,
         item_description: order.items.reduce(
           (p, c, i) =>
             i > 0 ? `${c.name}/${c.quantity}-${p}` : `${c.name}/${c.quantity}`,
-          ""
+          ''
         ),
       };
       response = await this.http.post(
         this.getUrlWithApiCred(
-          "api/booking/quickBook",
+          'api/booking/quickBook',
           deliveryAccount.key,
           deliveryAccount.username,
           deliveryAccount.password
@@ -81,7 +81,7 @@ class DeawooCourier extends CourierInterface {
         CashCollection,
         OrderId,
       } = response.data || {};
-      logger.log("info", "deawoo book parcel api response", {
+      logger.log('info', 'deawoo book parcel api response', {
         body,
         res: response.data,
       });
@@ -93,8 +93,8 @@ class DeawooCourier extends CourierInterface {
         response: Response,
       };
     } catch (error) {
-      logger.log("error", error.message, {
-        stack: "in deawoo booking function",
+      logger.log('error', error.message, {
+        stack: 'in deawoo booking function',
       });
       const {
         TrackNo,
@@ -121,9 +121,9 @@ class DeawooCourier extends CourierInterface {
     try {
       const url = `https://codapi.daewoo.net.pk/api/booking/quickTrack?trackingNo=${trackingNumber}`;
       response = await this.http.get(url);
-      logger.log("info", "deawoo booking status api response", {
+      logger.log('info', 'deawoo booking status api response', {
         body: null,
-        res: response.data,
+        res: response.status,
       });
       const { Result, ...rest } = response.data || {};
       const { Error, Response, Success, TrackingDetails, CurrentTrackStatus } =
@@ -133,7 +133,7 @@ class DeawooCourier extends CourierInterface {
         isSuccess: Success,
         error: Error,
         history: TrackingDetails,
-        status: CurrentTrackStatus,
+        status: CurrentTrackStatus[0]?.status_name,
         date: null,
         remarks: null,
         data: {
@@ -143,7 +143,7 @@ class DeawooCourier extends CourierInterface {
       };
     } catch (error) {
       console.log(error);
-      logger.log("error", "deawoo booking status api error", {
+      logger.log('error', 'deawoo booking status api error', {
         body: null,
         res: response.data,
       });
@@ -165,7 +165,7 @@ class DeawooCourier extends CourierInterface {
     let response;
     try {
       const urlWithApi = this.getUrlWithApiCred(
-        "https://codapi.daewoo.net.pk/api/booking/quickCancel",
+        'https://codapi.daewoo.net.pk/api/booking/quickCancel',
         deliveryAccount.key,
         deliveryAccount.username,
         deliveryAccount.password
@@ -173,12 +173,12 @@ class DeawooCourier extends CourierInterface {
       response = await this.http.post(
         `${urlWithApi}&trackingNo=${trackingNumber}`
       );
-      console.log(response.data, "response.data");
-      logger.log("info", "deawoo cancel booking parcel api response", {
+      console.log(response.data, 'response.data');
+      logger.log('info', 'deawoo cancel booking parcel api response', {
         body: null,
         res: response.data,
       });
-      console.log(response.data, "response.data");
+      console.log(response.data, 'response.data');
       const { Error, Success, Response } = response?.data || {};
       return {
         isSuccess: Success,
@@ -187,7 +187,7 @@ class DeawooCourier extends CourierInterface {
       };
     } catch (error) {
       console.log(error);
-      logger.log("error", "deawoo cancel booking parcel api error", {
+      logger.log('error', 'deawoo cancel booking parcel api error', {
         body: null,
         res: response.data,
       });

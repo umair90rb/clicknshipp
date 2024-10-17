@@ -20,11 +20,11 @@ class ManualCourier extends CourierInterface {
       isSuccess: true,
       error: null,
       history: [],
-      status: '',
+      status: 'Manual Booking',
       date: new Date(),
       remarks: null,
       data: {},
-      response: 'check parcel status',
+      response: 'parcel status',
     };
   }
 

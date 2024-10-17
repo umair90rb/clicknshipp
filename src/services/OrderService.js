@@ -493,27 +493,32 @@ class OrderService {
   }
 
   async updateOrderDeliveryStatus(parcelStatusRes, deliveryId) {
-    const { isSuccess, error, history, status } = parcelStatusRes;
-    console.log(
-      isSuccess,
-      error,
-      status,
-      'data received in updateOrderDeliveryStatus'
-    );
-    const ur = await Delivery.update(
-      isSuccess
-        ? {
-            tracking_status: 'Success',
-            updatedAt: new Date().toISOString(),
-            tracking: history,
-          }
-        : {
-            tracking_status: 'Failed',
-            updatedAt: new Date().toISOString(),
-          },
-      { where: { id: deliveryId } }
-    );
-    console.log(ur.get(), 'update delivery response');
+    try {
+      const { isSuccess, error, history, status } = parcelStatusRes;
+      console.log(
+        isSuccess,
+        error,
+        status,
+        'data received in updateOrderDeliveryStatus'
+      );
+      const ur = await Delivery.update(
+        isSuccess
+          ? {
+              tracking_status: 'Success',
+              updatedAt: new Date().toISOString(),
+              tracking: history,
+              status,
+            }
+          : {
+              tracking_status: 'Failed',
+              updatedAt: new Date().toISOString(),
+            },
+        { where: { id: deliveryId } }
+      );
+      console.log(ur.get(), 'update delivery response');
+    } catch (error) {
+      console.log(error, 'in updating delivery');
+    }
   }
 
   async canUpdateOrder(orderId) {
