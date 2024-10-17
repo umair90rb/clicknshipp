@@ -47,6 +47,13 @@ const DashboardDefault = () => {
             <Typography variant="h5">Dashboard</Typography>
           </Grid>
           <Grid container item gap={1} justifyContent="flex-end" alignItems="center" xs={10}>
+            <DateRangePicker
+              requiredFormat="YYYY-MM-DDTHH:MM"
+              startPeriod={startPeriod}
+              endPeriod={endPeriod}
+              onStartDateSelect={(date) => dispatch(setDashboardStatPeriod({ period: 'startPeriod', value: date }))}
+              onEndDateSelect={(date) => dispatch(setDashboardStatPeriod({ period: 'endPeriod', value: date }))}
+            />
             <>
               <Typography variant="body1">Compare to:</Typography>
               <DateRangePicker
@@ -57,13 +64,6 @@ const DashboardDefault = () => {
                 onEndDateSelect={(date) => dispatch(setDashboardStatPeriod({ period: 'compareEndPeriod', value: date }))}
               />
             </>
-            <DateRangePicker
-              requiredFormat="YYYY-MM-DDTHH:MM"
-              startPeriod={startPeriod}
-              endPeriod={endPeriod}
-              onStartDateSelect={(date) => dispatch(setDashboardStatPeriod({ period: 'startPeriod', value: date }))}
-              onEndDateSelect={(date) => dispatch(setDashboardStatPeriod({ period: 'endPeriod', value: date }))}
-            />
           </Grid>
         </Grid>
       </Grid>
@@ -219,6 +219,34 @@ const DashboardDefault = () => {
                           {
                             label: 'Compare Channel',
                             data: (compare?.topChannels || []).map((c) => c.orders),
+                            valueFormatter: (value) => `Orders ${value}`
+                          }
+                        ]
+                      : [])
+                  ]}
+                  layout="horizontal"
+                  height={500}
+                />
+              </MainCard>
+            </Grid>
+            <Grid item xs={12} sm={12} md={6} lg={6}>
+              <MainCard content={false}>
+                <BarChart
+                  borderRadius={5}
+                  grid={{ vertical: true }}
+                  leftAxis={null}
+                  yAxis={[{ label: '', scaleType: 'band', data: (stats.topCities || []).map((c) => c.city) }]}
+                  series={[
+                    {
+                      label: 'Top Cities',
+                      data: (stats?.topCities || []).map((c) => c.orders),
+                      valueFormatter: (value) => `Orders ${value}`
+                    },
+                    ...(compare
+                      ? [
+                          {
+                            label: 'Compare Cities',
+                            data: (compare?.topCities || []).map((c) => c.orders),
                             valueFormatter: (value) => `Orders ${value}`
                           }
                         ]

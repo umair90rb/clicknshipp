@@ -1,4 +1,4 @@
-import { startOfDay, endOfDay, format, formatDistanceToNow, isToday } from 'date-fns';
+import { startOfDay, endOfDay, format, formatDistanceToNow, isToday, subDays } from 'date-fns';
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 export default (date = new Date().toISOString()) => {
@@ -20,6 +20,11 @@ export const getEndOfDay = (date = new Date()) => endOfDay(format(date, 'yyyy-MM
 export const formatDate = (formatStr = 'dd/MM/yyyy', date = new Date()) => format(date, formatStr);
 export const formatDistance = (date) => `${formatDistanceToNow(date)} ago`;
 export const isItToday = (date) => isToday(date);
+
+export const subtractDaysFromToday = (days) => subtractDays(days);
+export function subtractDays(days, date = new Date()) {
+  return subDays(date, days);
+}
 
 export function formatDateTime(dateTimeString, omitYearAndSec = false) {
   if (!dateTimeString) {

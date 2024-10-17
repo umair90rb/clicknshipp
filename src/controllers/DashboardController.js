@@ -110,16 +110,16 @@ export default {
         { replacements: { startPeriod, endPeriod }, type: QueryTypes.SELECT }
       );
 
-      // const topCities = await sequelize.query(
-      //   `SELECT COUNT(*) AS "orders", "a"."city" AS "city" FROM "Orders" o JOIN "Addresses" a ON o.id = a.order_id WHERE (o.deleted_at IS NULL AND (o.status IN ('Confirmed', 'Booked') AND (o.assigned_at >= :startPeriod AND o.assigned_at <= :endPeriod))) GROUP BY a.city ORDER BY orders DESC LIMIT 5`,
-      //   { replacements: { startPeriod, endPeriod }, type: QueryTypes.SELECT }
-      // );
+      const topCities = await sequelize.query(
+        `SELECT COUNT(*) AS "orders", "a"."city" AS "city" FROM "Orders" o JOIN "Addresses" a ON o.id = a.order_id WHERE (o.deleted_at IS NULL AND (o.status IN ('Confirmed', 'Booked') AND (o.assigned_at >= :startPeriod AND o.assigned_at <= :endPeriod))) GROUP BY a.city ORDER BY orders DESC LIMIT 5`,
+        { replacements: { startPeriod, endPeriod }, type: QueryTypes.SELECT }
+      );
 
       const stats = result[0].get();
       return sendSuccessResponse(
         res,
         201,
-        { stats: { ...stats, topChannels, topItems } },
+        { stats: { ...stats, topChannels, topItems, topCities } },
         'Dashboard stats.'
       );
     } catch (e) {

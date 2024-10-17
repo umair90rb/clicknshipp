@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import fetchStatus from 'constants/fetchStatuses';
 import { fetchDashboardStats, fetchDashboardCompareStats } from './fetchDashboard';
 import moment from '../../../../node_modules/moment/moment';
+import { subtractDaysFromToday } from 'utils/format-date';
 
 const initialState = {
   stats: {},
@@ -10,8 +11,8 @@ const initialState = {
   error: null,
   startPeriod: moment(new Date()).startOf('day').format('YYYY-MM-DDTHH:MM'),
   endPeriod: moment(new Date()).endOf('day').format('YYYY-MM-DDTHH:MM'),
-  compareStartPeriod: null,
-  compareEndPeriod: null
+  compareStartPeriod: moment(subtractDaysFromToday(1)).startOf('day').format('YYYY-MM-DDTHH:MM'),
+  compareEndPeriod: moment(subtractDaysFromToday(1)).endOf('day').format('YYYY-MM-DDTHH:MM')
 };
 
 const dashboardSlice = createSlice({
