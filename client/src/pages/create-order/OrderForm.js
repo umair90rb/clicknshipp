@@ -146,8 +146,8 @@ const CreateOrderForm = () => {
     }
   };
 
-  const addItem = (id, name, quantity, unit, price, discount, sku, grams) => {
-    setItems((items) => [...items, { product_id: id, name, quantity, unit, price, discount, sku, grams }]);
+  const addItem = (id, name, quantity, unit_price, price, discount, sku, grams) => {
+    setItems((items) => [...items, { product_id: id, name, quantity, unit: unit_price, price, discount, sku, grams }]);
   };
 
   const searchCustomer = (phone) => {
@@ -800,9 +800,6 @@ const CreateOrderForm = () => {
                       <Button
                         style={{ height: 41 }}
                         onClick={() => {
-                          console.log(errors);
-                          console.log(touched.quantity, errors.quantity);
-                          console.log(touched.item, errors.item);
                           if (!values.item) {
                             setFieldError('item', 'Please add item name');
                             return;
@@ -812,7 +809,6 @@ const CreateOrderForm = () => {
                           } else {
                             let price = values.price;
                             if (values?.discount > 0) {
-                              const discount = (values.discount / 100) * values.price;
                               price -= discount;
                             }
                             addItem(
@@ -820,7 +816,7 @@ const CreateOrderForm = () => {
                               values.item,
                               values.quantity,
                               values.price,
-                              price,
+                              price * values.quantity,
                               values.discount,
                               values.sku,
                               values.grams
@@ -867,7 +863,7 @@ const CreateOrderForm = () => {
                       {items.map((row, index) => (
                         <TableRow key={index}>
                           <TableCell>{row.name}</TableCell>
-                          <TableCell align="right">{row.unit_price || 'Unknown'}</TableCell>
+                          <TableCell align="right">{row?.unit || row?.unit_price || 'Unknown'}</TableCell>
                           <TableCell align="right">
                             <IconButton
                               onClick={() => {
@@ -895,9 +891,11 @@ const CreateOrderForm = () => {
                               <PlusOutlined />
                             </IconButton>
                           </TableCell>
-                          <TableCell align="right">{(row.unit_price * row.quantity).toFixed(2)}</TableCell>
-                          <TableCell align="right">{row.discount || 0}%</TableCell>
-                          <TableCell align="right">{row.price.toFixed(2)}</TableCell>
+                          <TableCell align="right">{((row?.unit || row?.unit_price) * row.quantity).toFixed(0)}</TableCell>
+                          <TableCell align="right">{row.discount || 0}</TableCell>
+                          <TableCell align="right">
+                            {((row?.unit || row?.unit_price) * row.quantity - (row?.discount || 0)).toFixed(0)}
+                          </TableCell>
                           <TableCell align="right">
                             <IconButton onClick={() => showUpdatePriceModal(index, row)} aria-label="update price">
                               <PriceChangeIcon />
@@ -965,7 +963,9 @@ const CreateOrderForm = () => {
                           Net Total
                         </TableCell>
                         <TableCell align="right">
-                          {(Array.isArray(items) && items.length > 0 && items.reduce((pre, item) => item.price + pre, 0)) -
+                          {(Array.isArray(items) &&
+                            items.length > 0 &&
+                            items.reduce((pre, item) => (item?.unit * item.quantity - item.discount || item.price) + pre, 0)) -
                             (payments.length > 0
                               ? payments.reduce((pre, payment) => (payment.type === 'received' ? payment.amount + pre : pre), 0)
                               : 0)}
