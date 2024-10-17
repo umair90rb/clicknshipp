@@ -63,12 +63,12 @@ const CreateOrderForm = () => {
   const orderForm = useRef();
   const { state } = useLocation();
   const { order } = state || {};
-  const { items: orderItems, customer, address, id, chanel, brand_id, remarks, status } = order || {};
+  const { items: orderItems, payments: orderPayments, customer, address, id, chanel, brand_id, remarks, status } = order || {};
   const { first_name, last_name, email, phone, note, id: customerId } = customer || {};
   const { address1, address2, city, zip, province, id: addressId } = address || {};
   const { id: chanel_id } = chanel || {};
   const [items, setItems] = useState(orderItems || []);
-  const [payments, setPayments] = useState([]);
+  const [payments, setPayments] = useState(orderPayments || []);
   const [itemForUpdate, setItemForUpdate] = useState({ index: null, item: null });
 
   const [showTransactionModal, setShowTransactionModal] = useState(false);
@@ -867,7 +867,7 @@ const CreateOrderForm = () => {
                       {items.map((row, index) => (
                         <TableRow key={index}>
                           <TableCell>{row.name}</TableCell>
-                          <TableCell align="right">{row.unit || 'Unknown'}</TableCell>
+                          <TableCell align="right">{row.unit_price || 'Unknown'}</TableCell>
                           <TableCell align="right">
                             <IconButton
                               onClick={() => {
@@ -895,9 +895,9 @@ const CreateOrderForm = () => {
                               <PlusOutlined />
                             </IconButton>
                           </TableCell>
-                          <TableCell align="right">{(row.unit * row.quantity).toFixed(2)}</TableCell>
-                          <TableCell align="right">{row.discount}%</TableCell>
-                          <TableCell align="right">{(row.price * row.quantity).toFixed(2)}</TableCell>
+                          <TableCell align="right">{(row.unit_price * row.quantity).toFixed(2)}</TableCell>
+                          <TableCell align="right">{row.discount || 0}%</TableCell>
+                          <TableCell align="right">{row.price.toFixed(2)}</TableCell>
                           <TableCell align="right">
                             <IconButton onClick={() => showUpdatePriceModal(index, row)} aria-label="update price">
                               <PriceChangeIcon />
@@ -911,7 +911,7 @@ const CreateOrderForm = () => {
                           </TableCell>
                         </TableRow>
                       ))}
-                      <TableRow>
+                      {/* <TableRow>
                         <TableCell></TableCell>
                         <TableCell colSpan={4} align="right">
                           Sub Total
@@ -919,11 +919,11 @@ const CreateOrderForm = () => {
                         <TableCell align="right">
                           {Array.isArray(items) &&
                             items.length > 0 &&
-                            items.reduce((pre, item) => parseFloat((item.unit || 0) * item.quantity) + pre, 0)}
+                            items.reduce((pre, item) => parseInt((item.unit_price || 0) * item.quantity) + pre, 0)}
                         </TableCell>
                         <TableCell></TableCell>
-                      </TableRow>
-                      <TableRow>
+                      </TableRow> */}
+                      {/* <TableRow>
                         <TableCell></TableCell>
                         <TableCell colSpan={4} align="right">
                           Discount Amount
@@ -931,10 +931,10 @@ const CreateOrderForm = () => {
                         <TableCell align="right">
                           {Array.isArray(items) &&
                             items.length > 0 &&
-                            items.reduce((pre, item) => (item.unit - item.price) * item.quantity + pre, 0)}
+                            items.reduce((pre, item) => (item.unit_price - item.price) * item.quantity + pre, 0)}
                         </TableCell>
                         <TableCell></TableCell>
-                      </TableRow>
+                      </TableRow> */}
                       <TableRow>
                         <TableCell></TableCell>
                         <TableCell colSpan={4} align="right">
@@ -947,7 +947,7 @@ const CreateOrderForm = () => {
                         </TableCell>
                         <TableCell></TableCell>
                       </TableRow>
-                      <TableRow>
+                      {/* <TableRow>
                         <TableCell></TableCell>
                         <TableCell colSpan={4} align="right">
                           Pending Payment
@@ -958,17 +958,14 @@ const CreateOrderForm = () => {
                             : 0}
                         </TableCell>
                         <TableCell></TableCell>
-                      </TableRow>
+                      </TableRow> */}
                       <TableRow>
                         <TableCell></TableCell>
                         <TableCell colSpan={4} align="right">
                           Net Total
                         </TableCell>
                         <TableCell align="right">
-                          {(Array.isArray(items) && items.length > 0 && items.reduce((pre, item) => item.price * item.quantity + pre, 0)) +
-                            (payments.length > 0
-                              ? payments.reduce((pre, payment) => (payment.type == 'pending' ? payment.amount + pre : pre), 0)
-                              : 0) -
+                          {(Array.isArray(items) && items.length > 0 && items.reduce((pre, item) => item.price + pre, 0)) -
                             (payments.length > 0
                               ? payments.reduce((pre, payment) => (payment.type === 'received' ? payment.amount + pre : pre), 0)
                               : 0)}

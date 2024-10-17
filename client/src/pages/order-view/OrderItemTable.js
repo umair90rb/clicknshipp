@@ -6,12 +6,12 @@ const OrderItemRow = ({ item, onDelete }) => {
   return (
     <TableRow hover>
       <TableCell>
-        <Typography variant="body1">{item.name}</Typography>
+        <Typography variant="body1">
+          {item.name}(Qty.{item.quantity})
+        </Typography>
       </TableCell>
       <TableCell align="right">
-        <Typography variant="body1">
-          {item.quantity} x {item.price} = Rs.{item.quantity * item.price}
-        </Typography>
+        <Typography variant="body1">Rs.{item.price}</Typography>
       </TableCell>
     </TableRow>
   );

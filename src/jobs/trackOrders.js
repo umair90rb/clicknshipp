@@ -6,7 +6,7 @@ import { getEndOfDay, subtractDaysFromToday } from '../helpers/pgDateFormat';
 import deliveryStatusSyncQueue from '../queues/deliveryStatusSyncQueue';
 const { Delivery } = model;
 
-const yesterday = getEndOfDay(subtractDaysFromToday(1));
+const yesterdayTillDayEnd = getEndOfDay(subtractDaysFromToday(1));
 
 const every15Sec = '*/15 * * * * *';
 const every20Min = ' */20 * * * *';
@@ -16,6 +16,10 @@ const everyMorningAt8Am = '0 8 * * *';
 schedule(every15Sec, async () => {
   // schedule(every10Min, async () => {
   try {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('In development');
+      return;
+    }
     console.log('Order track job started at ' + new Date().toISOString());
     const pendingJobs = await deliveryStatusSyncQueue.count();
     console.log(
@@ -33,17 +37,15 @@ schedule(every15Sec, async () => {
         status: {
           [Op.notIn]: ['Delivered'],
         },
-        tracking_status: {
-          [Op.notIn]: ['Success'],
-        },
         createdAt: {
-          [Op.lte]: yesterday,
+          [Op.lt]: yesterdayTillDayEnd,
         },
         updatedAt: {
-          [Op.lte]: yesterday,
+          [Op.lt]: yesterdayTillDayEnd,
         },
       },
       attributes: ['id', 'cn', 'account_id'],
+      order: [['createdAt', 'DESC']],
       limit: 10,
     });
     console.log(`No of orders for tracking: ${deliveriesToTrack.length} `);
