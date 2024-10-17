@@ -501,13 +501,14 @@ class OrderService {
         status,
         'data received in updateOrderDeliveryStatus'
       );
-      const ur = await Delivery.update(
+      await Delivery.update(
         isSuccess
           ? {
               tracking_status: 'Success',
               updatedAt: new Date().toISOString(),
-              tracking: history,
-              status,
+              tracking: JSON.stringify(history),
+              status:
+                typeof status === 'string' ? status : JSON.stringify(status),
             }
           : {
               tracking_status: 'Failed',
@@ -515,7 +516,6 @@ class OrderService {
             },
         { where: { id: deliveryId } }
       );
-      console.log(ur.get(), 'update delivery response');
     } catch (error) {
       console.log(error, 'in updating delivery');
     }

@@ -16,10 +16,10 @@ const everyMorningAt8Am = '0 8 * * *';
 schedule(every15Sec, async () => {
   // schedule(every10Min, async () => {
   try {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('In development');
-      return;
-    }
+    // if (process.env.NODE_ENV === 'development') {
+    //   console.log('In development');
+    //   return;
+    // }
     console.log('Order track job started at ' + new Date().toISOString());
     const pendingJobs = await deliveryStatusSyncQueue.count();
     console.log(
