@@ -13,9 +13,13 @@ const getLink = (cn, courier) => {
     case 'callcourier':
       return `https://callcourier.com.pk/tracking/?tc=${cn}`;
     case 'trax':
-      return `https://sonic.pk/api/shipment/track/consignee/public?tracking_number=${cn}`;
+      return `https://sonic.pk/tracking?tracking_number=${cn}`;
+    case 'mnp':
+      return `https://www.mulphilog.com/tracking/${cn}`;
+    case 'manual':
+      return '';
     default:
-      break;
+      return '';
   }
 };
 

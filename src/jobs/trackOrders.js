@@ -31,11 +31,10 @@ schedule(every15Sec, async () => {
       );
       return;
     }
-    console.log('Moving on');
     const deliveriesToTrack = await Delivery.findAll({
       where: {
         status: {
-          [Op.notIn]: ['Delivered'],
+          [Op.notIn]: ['Delivered', 'Manual Booking'],
         },
         createdAt: {
           [Op.lt]: yesterdayTillDayEnd,

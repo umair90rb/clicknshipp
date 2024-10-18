@@ -59,6 +59,7 @@ import PaymentsModal from './PaymentsModal';
 import { chanelFetchStatusSelector } from 'store/slices/chanel/chanelSelector';
 import { fetchAllChanel } from 'store/slices/chanel/fetchChanel';
 import { GridDateFilter } from './GridDateFilter';
+import GridDeliveryStatus from './GridDeliveryStatus';
 const columns = (
   apiRef,
   rowModesModel,
@@ -327,7 +328,8 @@ const columns = (
     headerName: 'Delivery',
     flex: 1,
     sortable: false,
-    valueGetter: ({ value }) => `${value?.tracking_status || ''} ${value?.cn || ''} `
+    // valueGetter: ({ value }) => `${value?.tracking_status || ''} ${value?.cn || ''} `,
+    renderCell: (params) => <GridDeliveryStatus delivery={params?.row?.delivery} />
   },
   {
     field: 'createdAt',

@@ -13,10 +13,28 @@ const bookingWorker = new Worker(
     );
     if (!account_id) {
       console.log(`tracking delivery stopped, no delivery account id provided`);
+      await _orderService.updateOrderDeliveryStatus(
+        {
+          isSuccess: false,
+          error: 'No courier id provided',
+          history: null,
+          status: null,
+        },
+        id
+      );
       return;
     }
     if (!cn || typeof parseInt(cn) !== 'number') {
       console.log(`tracking delivery stopped, no cn provided`);
+      await _orderService.updateOrderDeliveryStatus(
+        {
+          isSuccess: false,
+          error: 'No CN provided',
+          history: null,
+          status: null,
+        },
+        id
+      );
       return;
     }
     const deliveryAccount =
