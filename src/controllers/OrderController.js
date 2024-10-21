@@ -170,6 +170,7 @@ export default {
             value[0] === 'No Pick'
           ) {
             delete query.where.user_id;
+            delete query.where.assigned_at;
           }
         }
         const _query = { ...query, where: { ...query.where, ..._filters } };
