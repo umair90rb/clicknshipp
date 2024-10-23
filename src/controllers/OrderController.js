@@ -1004,7 +1004,11 @@ export default {
       }
       if (delivery_account_id) {
         orderUpdateData['delivery_account_id'] = delivery_account_id;
-        if (status === 'Confirmed' && !order.account_id) {
+        //!order.account_id
+        if (
+          (status === 'Confirmed' && !order.delivery_account_id) ||
+          (order.status === 'Booking Error' && status === 'Confirmed')
+        ) {
           await bookingQueue.add(
             'bookingJob',
             {

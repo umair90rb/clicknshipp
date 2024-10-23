@@ -228,14 +228,15 @@ class OrderService {
         cn,
         slip_link: slip,
         status: 'Booked',
+        createdAt: new Date().toISOString(),
       },
       event = `order booked with ${deliveryAccount?.service}, tracking number: ${cn}`,
       orderStatus = 'Booked';
     if (!isSuccess) {
       deliveryData = {
         ...deliveryData,
-        cn: error,
-        slip_link: JSON.stringify(response),
+        cn: null,
+        slip_link: JSON.stringify(error),
         status: 'Booking Error',
       };
       event = `error in order booking with ${
