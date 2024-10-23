@@ -51,7 +51,7 @@ export default function GridDeliveryStatus({ delivery }) {
         case 'postex':
           return history.map((h) => ({ date: formatDate('MMM d', h.updatedAt), status: h.transactionStatusMessage }));
         case 'tcs':
-          return history.map((h) => ({ date: formatDate('MMM d', h.updatedAt), status: h.transactionStatusMessage }));
+          return history.map((h) => ({ date: parseAndFormatDate(h.datetime, 'EEEE MMM d, yyyy HH:mm', 'MMM d'), status: h.status }));
         case 'callcourier':
           return {};
         case 'trax':

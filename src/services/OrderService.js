@@ -493,7 +493,7 @@ class OrderService {
     }
   }
 
-  async updateOrderDeliveryStatus(parcelStatusRes, deliveryId) {
+  async updateOrderDeliveryStatus(parcelStatusRes, deliveryId, order_id) {
     try {
       const { isSuccess, error, history, status } = parcelStatusRes;
       console.log(
@@ -517,6 +517,17 @@ class OrderService {
             },
         { where: { id: deliveryId } }
       );
+      if (
+        order_id &&
+        isSuccess &&
+        status &&
+        status.toLowerCase().indexOf('delivered') > -1
+      ) {
+        await Order.update(
+          { status: 'Delivered', updatedAt: new Date().toISOString() },
+          { where: { id: order_id } }
+        );
+      }
     } catch (error) {
       console.log(error, 'in updating delivery');
     }

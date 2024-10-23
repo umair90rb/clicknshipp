@@ -1,15 +1,15 @@
-import CourierInterface from "../../interfaces/courierInterface";
-import getAxiosInstance from "../AxiosService";
-import models from "../../models";
-import logger from "../../middleware/logger";
-import { Op } from "sequelize";
-import { isToday } from "date-fns";
+import CourierInterface from '../../interfaces/courierInterface';
+import getAxiosInstance from '../AxiosService';
+import models from '../../models';
+import logger from '../../middleware/logger';
+import { Op } from 'sequelize';
+import { isToday } from 'date-fns';
 const { CityNameMaping } = models;
 
 class TCSCourier extends CourierInterface {
   constructor() {
     super();
-    this.baseURL = "https://connect.tcscourier.com";
+    this.baseURL = 'https://connect.tcscourier.com';
     // this.baseURL = "https://devconnect.tcscourier.com";
     // dev env url => https://devconnect.tcscourier.com/
     this.http = getAxiosInstance(this.baseURL, {});
@@ -18,7 +18,7 @@ class TCSCourier extends CourierInterface {
     let res, reqOptions;
     try {
       let headersList = {
-        Accept: "*/*",
+        Accept: '*/*',
       };
 
       reqOptions = {
@@ -27,7 +27,7 @@ class TCSCourier extends CourierInterface {
           id
         )}&ClientSecret=${encodeURIComponent(secret)}`,
         // url: "https://devconnect.tcscourier.com/auth/api/auth?ClientID=215610059&ClientSecret=9FL9ytYL4aM18RJJpYsn%2FroB9bFXVDqPfSzfTggJz4yWM6zcgSvaiVNfC%2BTh7NABGwT1tXusCAZpFw79jLDP6kWO4BWgXWeL26U5C0qCdWZ7TepwOPxyTdzVhz5OIPPz",
-        method: "GET",
+        method: 'GET',
         headers: headersList,
       };
 
@@ -37,7 +37,7 @@ class TCSCourier extends CourierInterface {
         expiry: res?.data?.result?.expiry,
       };
     } catch (error) {
-      logger.log("error", error.message, {
+      logger.log('error', error.message, {
         reqOptions,
         error: error?.data,
       });
@@ -49,7 +49,7 @@ class TCSCourier extends CourierInterface {
     let res, reqOptions;
     try {
       let headersList = {
-        Accept: "*/*",
+        Accept: '*/*',
         Authorization: `Bearer ${token}`,
       };
 
@@ -59,14 +59,14 @@ class TCSCourier extends CourierInterface {
         }/ecom/api/authentication/token?username=${encodeURIComponent(
           username
         )}&password=${encodeURIComponent(password)}`,
-        method: "GET",
+        method: 'GET',
         headers: headersList,
       };
 
       res = await this.http.request(reqOptions);
       return { token: res?.data?.accesstoken, expiry: res?.data?.expiry };
     } catch (error) {
-      logger.log("error", "tcs get body token api response", {
+      logger.log('error', 'tcs get body token api response', {
         reqOptions,
         error: error?.data,
       });
@@ -76,18 +76,18 @@ class TCSCourier extends CourierInterface {
 
   getTokensFromAccount(deliveryAccount) {
     if (!deliveryAccount.tokens || deliveryAccount.tokens.length === 0) {
-      throw new Error("TCS tokens not found!");
+      throw new Error('TCS tokens not found!');
     }
     const tokens = deliveryAccount.tokens;
     const { token: headerToken, expiry: headerTokenExpiry } = tokens.find(
-      (token) => token.type === "header"
+      (token) => token.type === 'header'
     );
     const { token: bodyToken, expiry: bodyTokenExpiry } = tokens.find(
-      (token) => token.type === "body"
+      (token) => token.type === 'body'
     );
     if (isToday(headerTokenExpiry) || isToday(bodyTokenExpiry)) {
       throw new Error(
-        "TCS tokens are expired, add account again to get new token!"
+        'TCS tokens are expired, add account again to get new token!'
       );
     }
     return { headerToken, bodyToken };
@@ -110,8 +110,8 @@ class TCSCourier extends CourierInterface {
           cn: null,
           slip: null,
           isSuccess: false,
-          error: "City not found in the database, contact admin",
-          response: "destination not found in the db",
+          error: 'City not found in the database, contact admin',
+          response: 'destination not found in the db',
         };
       }
 
@@ -120,19 +120,19 @@ class TCSCourier extends CourierInterface {
 
       const body = {
         accessToken: bodyToken,
-        consignmentno: "",
+        consignmentno: '',
         shipperinfo: {
-          tcsaccount: "759776",
-          shippername: "Sukoon welness",
-          address1: "madina town faislabad",
-          address2: "",
-          address3: "",
-          zip: "38000",
-          countrycode: "PK",
-          countryname: "Pakistan",
-          citycode: "",
-          cityname: "FAISALABAD",
-          mobile: "03227276200",
+          tcsaccount: '759776',
+          shippername: 'Sukoon welness',
+          address1: 'madina town faislabad',
+          address2: '',
+          address3: '',
+          zip: '38000',
+          countrycode: 'PK',
+          countryname: 'Pakistan',
+          citycode: '',
+          cityname: 'FAISALABAD',
+          mobile: '03227276200',
           // tcsaccount: "04011K1",
           // shippername: "Test",
           // address1: "Test address 1",
@@ -146,35 +146,35 @@ class TCSCourier extends CourierInterface {
           // mobile: "03451234567",
         },
         consigneeinfo: {
-          consigneecode: "",
+          consigneecode: '',
           firstname: order.customer.first_name,
-          middlename: "",
+          middlename: '',
           lastname: order.customer.last_name,
           address1: order.address.address1,
-          address2: "",
-          address3: "",
-          zip: order.address.zip || "",
-          countrycode: "PK",
-          countryname: "Pakistan",
-          citycode: "",
+          address2: '',
+          address3: '',
+          zip: order.address.zip || '',
+          countrycode: 'PK',
+          countryname: 'Pakistan',
+          citycode: '',
           cityname: destinationCity.maped,
-          email: order.customer.email || "",
-          areacode: "",
-          areaname: "",
-          blockcode: "",
-          blockname: "",
-          lat: "",
-          lng: "",
+          email: order.customer.email || '',
+          areacode: '',
+          areaname: '',
+          blockcode: '',
+          blockname: '',
+          lat: '',
+          lng: '',
           mobile: `0${order.customer.phone || order.address.phone}`,
         },
         vendorinfo: {
-          name: "SUKOON WELLNESS & CO",
-          address1: "madina town faislabad",
-          address2: "",
-          address3: "",
-          citycode: "FSD",
-          cityname: "FAISALABAD",
-          mobile: "03227276200",
+          name: 'SUKOON WELLNESS & CO',
+          address1: 'madina town faislabad',
+          address2: '',
+          address3: '',
+          citycode: 'FSD',
+          cityname: 'FAISALABAD',
+          mobile: '03227276200',
         },
         shipmentinfo: {
           costcentercode: deliveryAccount.cost_center,
@@ -184,21 +184,21 @@ class TCSCourier extends CourierInterface {
               i > 0
                 ? `${c.name}/${c.quantity}-${p}`
                 : `${c.name}/${c.quantity}`,
-            ""
+            ''
           ),
-          servicecode: "O",
-          parametertype: "",
+          servicecode: 'O',
+          parametertype: '',
           shipmentdate: `${new Date()
-            .toLocaleString("en-GB", { hour12: false })
-            .replace(",", "")}`,
-          shippingtype: "",
-          currency: "PKR",
+            .toLocaleString('en-GB', { hour12: false })
+            .replace(',', '')}`,
+          shippingtype: '',
+          currency: 'PKR',
           codamount: order.total_price,
-          declaredvalue: "",
-          insuredvalue: "",
-          transactiontype: "",
-          dsflag: "",
-          carrierslug: "",
+          declaredvalue: '',
+          insuredvalue: '',
+          transactiontype: '',
+          dsflag: '',
+          carrierslug: '',
           weightinkg: 0.5,
           pieces: order.items.length,
           fragile: false,
@@ -207,7 +207,7 @@ class TCSCourier extends CourierInterface {
               i > 0
                 ? `${c.name}/${c.quantity}-${p}`
                 : `${c.name}/${c.quantity}`,
-            ""
+            ''
           ),
           skus: [],
         },
@@ -281,10 +281,10 @@ class TCSCourier extends CourierInterface {
       //     skus: [],
       //   },
       // };
-      response = await this.http.post("ecom/api/booking/create", body, {
+      response = await this.http.post('ecom/api/booking/create', body, {
         headers: { Authorization: `Bearer ${headerToken}` },
       });
-      logger.log("info", "tcs book parcel api response", {
+      logger.log('info', 'tcs book parcel api response', {
         res: response?.data,
         body,
       });
@@ -292,15 +292,15 @@ class TCSCourier extends CourierInterface {
       return {
         cn: consignmentNo,
         slip: JSON.stringify({ traceid }),
-        isSuccess: message === "SUCCESS",
-        error: message !== "SUCCESS" ? message : null,
+        isSuccess: message === 'SUCCESS',
+        error: message !== 'SUCCESS' ? message : null,
         response: message,
       };
     } catch (error) {
-      logger.log("error", error.message, {
+      logger.log('error', error.message, {
         body,
         res: response?.data,
-        stack: "in tcs booking function",
+        stack: 'in tcs booking function',
       });
       const { message } = response?.data || {};
       return {
@@ -319,13 +319,13 @@ class TCSCourier extends CourierInterface {
       const { headerToken, bodyToken } =
         this.getTokensFromAccount(deliveryAccount);
       let headersList = {
-        Accept: "*/*",
+        Accept: '*/*',
         Authorization: `Bearer ${headerToken}`,
       };
 
       let reqOptions = {
         url: `${this.baseURL}/tracking/api/Tracking/GetDynamicTrackDetail?consignee=${trackingNumber}`,
-        method: "GET",
+        method: 'GET',
         headers: headersList,
       };
 
@@ -339,17 +339,17 @@ class TCSCourier extends CourierInterface {
         traceid,
       } = response.data;
       return {
-        isSuccess: message === "SUCCESS",
-        error: message === "SUCCESS" ? null : message,
+        isSuccess: message === 'SUCCESS',
+        error: message === 'SUCCESS' ? null : message,
         history: checkpoints,
-        status: deliveryinfo,
+        status: checkpoints[0]?.status,
         date: null,
         remarks: shipmentsummary,
         data: { shipmentinfo },
-        response: "Current Booking status!",
+        response: 'Current Booking status!',
       };
     } catch (error) {
-      logger.log("error", "tcs booking status api response", {
+      logger.log('error', 'tcs booking status api response', {
         res: response?.data,
       });
       return {
@@ -360,7 +360,7 @@ class TCSCourier extends CourierInterface {
         date: null,
         remarks: null,
         error,
-        response: "Error in getting booking status!",
+        response: 'Error in getting booking status!',
       };
     }
   }
@@ -374,21 +374,21 @@ class TCSCourier extends CourierInterface {
         consignmentnumber: trackingNumber,
         accesstoken: bodyToken,
       };
-      response = await this.http.post("ecom/api/booking/cancel", body, {
+      response = await this.http.post('ecom/api/booking/cancel', body, {
         headers: { Authorization: `Bearer ${headerToken}` },
       });
-      logger.log("info", "tcs cancel booking parcel api response", {
+      logger.log('info', 'tcs cancel booking parcel api response', {
         body,
         res: response.data,
       });
       const { message, traceid } = response?.data;
       return {
-        isSuccess: Boolean(message === "SUCCESS"),
-        error: message !== "SUCCESS" ? message : null,
+        isSuccess: Boolean(message === 'SUCCESS'),
+        error: message !== 'SUCCESS' ? message : null,
         response: message,
       };
     } catch (error) {
-      logger.log("error", "tcs cancel booking parcel api error", {
+      logger.log('error', 'tcs cancel booking parcel api error', {
         body,
         res: response.data,
       });

@@ -18,8 +18,8 @@ export const getDate = (date) => date.split('T')[0];
 export const getStartOfDay = (date = new Date()) => startOfDay(format(date, 'yyyy-MM-dd HH:mm:ss.SSS XXX"'));
 export const getEndOfDay = (date = new Date()) => endOfDay(format(date, 'yyyy-MM-dd HH:mm:ss.SSS XXX"'));
 export const formatDate = (formatStr = 'dd/MM/yyyy', date = new Date()) => format(date, formatStr);
-export const parseAndFormatDate = (date, formatStr = 'dd/MM/yyyy') =>
-  formatDate(formatStr, parse(date, 'dd/MM/yyyy hh:mm:ss a', new Date()));
+export const parseAndFormatDate = (date, from = 'dd/MM/yyyy hh:mm:ss a', to = 'dd/MM/yyyy') =>
+  formatDate(to, parse(date, from, new Date()));
 export const formatDistance = (date) => formatDistanceToNow(date, { addSuffix: true });
 export const isItToday = (date) => isToday(date);
 

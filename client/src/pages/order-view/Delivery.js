@@ -26,7 +26,6 @@ const getLink = (cn, courier) => {
 export default function Delivery({ delivery }) {
   const { courier, cn, status } = delivery || {};
   const link = getLink(cn, courier);
-  console.log(link);
   return (
     <Card sx={{ minWidth: 275, mt: 1 }}>
       <CardContent>

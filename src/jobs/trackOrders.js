@@ -16,10 +16,6 @@ const everyMorningAt8Am = '0 8 * * *';
 schedule(every15Sec, async () => {
   // schedule(every10Min, async () => {
   try {
-    // if (process.env.NODE_ENV === 'development') {
-    //   console.log('In development');
-    //   return;
-    // }
     console.log('Order track job started at ' + new Date().toISOString());
     const pendingJobs = await deliveryStatusSyncQueue.count();
     console.log(
@@ -31,7 +27,7 @@ schedule(every15Sec, async () => {
       );
       return;
     }
-    const deliveriesToTrack = await Delivery.findAll({
+    let deliveriesToTrack = await Delivery.findAll({
       where: {
         status: {
           [Op.notIn]: ['Delivered', 'Manual Booking'],
@@ -43,11 +39,29 @@ schedule(every15Sec, async () => {
           [Op.lt]: yesterdayTillDayEnd,
         },
       },
-      attributes: ['id', 'cn', 'account_id'],
+      attributes: ['id', 'cn', 'account_id', 'order_id'],
       order: [['createdAt', 'DESC']],
       limit: 10,
     });
     console.log(`No of orders for tracking: ${deliveriesToTrack.length} `);
+    if (!deliveriesToTrack?.length) {
+      deliveriesToTrack = await Delivery.findAll({
+        where: {
+          status: {
+            [Op.notIn]: ['Delivered', 'Manual Booking'],
+          },
+          createdAt: {
+            [Op.lt]: yesterdayTillDayEnd,
+          },
+          updatedAt: {
+            [Op.lt]: literal("NOW() - INTERVAL '6 HOURS'"),
+          },
+        },
+        attributes: ['id', 'cn', 'account_id', 'order_id'],
+        order: [['createdAt', 'DESC']],
+        limit: 10,
+      });
+    }
     if (!deliveriesToTrack?.length) {
       console.warn('No order to track!');
       return;
