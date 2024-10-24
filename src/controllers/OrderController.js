@@ -911,7 +911,7 @@ export default {
       );
       await OrderHistory.create({
         user_id: req.user.id,
-        event: `order updated with data: ${JSON.stringify(req.body)}`,
+        event: `order updated`,
         order_id: order.id,
       });
       const completeOrder = await _orderService.loadFullOrder(order.id);
@@ -1034,7 +1034,7 @@ export default {
       await order.update(orderUpdateData);
       await OrderHistory.create({
         user_id: req.user.id,
-        event: `order updated with data: ${JSON.stringify(req.body)}`,
+        event: `order updated with ${status}`,
         order_id: order.id,
       });
       const completeOrder = await _orderService.loadFullOrder(order.id);
