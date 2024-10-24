@@ -909,9 +909,10 @@ export default {
           return { ...item, order_id: order.id };
         })
       );
-      await order.createHistory({
+      await OrderHistory.create({
         user_id: req.user.id,
-        event: 'order update',
+        event: `order updated with data: ${JSON.stringify(req.body)}`,
+        order_id: order.id,
       });
       const completeOrder = await _orderService.loadFullOrder(order.id);
       return sendSuccessResponse(
@@ -1033,7 +1034,7 @@ export default {
       await order.update(orderUpdateData);
       await OrderHistory.create({
         user_id: req.user.id,
-        event: 'order updated',
+        event: `order updated with data: ${JSON.stringify(req.body)}`,
         order_id: order.id,
       });
       const completeOrder = await _orderService.loadFullOrder(order.id);
