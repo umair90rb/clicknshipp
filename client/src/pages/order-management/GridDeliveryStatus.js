@@ -47,7 +47,7 @@ export default function GridDeliveryStatus({ delivery }) {
         case 'leopard':
           return history.map((h) => ({ date: formatDate('MMM d', h.Activity_Date), status: h.Status }));
         case 'deawoo':
-          return history.map((h) => ({ date: parseAndFormatDate(h.Date, 'MMM d'), status: h.Status }));
+          return history.map((h) => ({ date: parseAndFormatDate(h.Date, 'dd/MM/yyyy hh:mm:ss a', 'MMM d'), status: h.Status }));
         case 'postex':
           return history.map((h) => ({ date: formatDate('MMM d', h.updatedAt), status: h.transactionStatusMessage }));
         case 'tcs':
@@ -55,9 +55,12 @@ export default function GridDeliveryStatus({ delivery }) {
         case 'callcourier':
           return {};
         case 'trax':
-          return history.map((h) => ({ date: formatDate('MMM d', h.timestamp), status: h.status }));
+          return history.map((h) => ({ date: parseAndFormatDate(h.date_time, 'dd/MM/yyyy hh:mm a', 'MMM d'), status: h.status }));
         case 'mnp':
-          return history.map((h) => ({ date: parseAndFormatDate(h.DateTime, 'MMM d'), status: `${h.Status} at ${h.Location}` }));
+          return history.map((h) => ({
+            date: parseAndFormatDate(h.DateTime, 'dd/MM/yyyy hh:mm:ss a', 'MMM d'),
+            status: `${h.Status} at ${h.Location}`
+          }));
         case 'manual':
           return '';
         default:

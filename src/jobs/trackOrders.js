@@ -1,5 +1,5 @@
 import { schedule } from 'node-cron';
-const { Op } = require('sequelize');
+const { Op, literal } = require('sequelize');
 import model from '../models';
 import logger from '../middleware/logger';
 import { getEndOfDay, subtractDaysFromToday } from '../helpers/pgDateFormat';
