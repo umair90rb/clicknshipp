@@ -312,9 +312,6 @@ class ReportingService {
         [Op.gte]: startPeriod,
         [Op.lte]: endPeriod,
       },
-      user_id: {
-        [Op.ne]: null,
-      },
     };
     if (reportBrand && reportBrand.length) {
       where['brand_id'] = {
@@ -334,7 +331,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'No Pick\' OR "Order"."status" = \'Payment Pending\' OR "Order"."status" = \'Booked\' OR "Order"."status" = \'Booking Error\' OR "Order"."status" = \'Assigned\' THEN 1 ELSE 0 END'
+              `CASE WHEN "Order"."status" IN ('Confirmed', 'No Pick', 'Payment Pending', 'Booked', 'Booking Error', 'Assigned') THEN 1 ELSE 0 END`
             )
           ),
           'generated',
@@ -343,7 +340,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'Booked\' OR "Order"."status" = \'Booking Error\' THEN 1 ELSE 0 END'
+              `CASE WHEN "Order"."status" IN ('Confirmed', 'Booked', 'Booking Error', 'Delivered', 'Returned') THEN 1 ELSE 0 END`
             )
           ),
           'confirmed',
@@ -352,7 +349,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'No Pick\' OR "Order"."status" = \'Payment Pending\' OR "Order"."status" = \'Booked\' OR "Order"."status" = \'Booking Error\' OR "Order"."status" = \'Assigned\' THEN "items"."quantity" ELSE 0 END'
+              `CASE WHEN "Order"."status" IN ('Confirmed', 'No Pick', 'Payment Pending', 'Booked', 'Booking Error', 'Assigned') THEN "items"."quantity" ELSE 0 END`
             )
           ),
           'unit_generated',
@@ -361,7 +358,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'Booked\' OR "Order"."status" = \'Booking Error\' THEN "items"."quantity" ELSE 0 END'
+              `CASE WHEN "Order"."status" IN ('Confirmed', 'Booked', 'Booking Error', 'Delivered', 'Returned')  THEN "items"."quantity" ELSE 0 END`
             )
           ),
           'unit_confirmed',
@@ -370,10 +367,19 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              'CASE WHEN  "Order"."status" = \'Booked\' THEN "items"."quantity" ELSE 0 END'
+              'CASE WHEN  "Order"."status" = \'Booked\' OR "delivery"."status" IS NOT NULL THEN "items"."quantity" ELSE 0 END'
             )
           ),
           'unit_booked',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              'CASE WHEN  "Order"."status" = \'Booking Error\' THEN "items"."quantity" ELSE 0 END'
+            )
+          ),
+          'unit_booking_error',
         ],
         [
           fn(
@@ -397,7 +403,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              `CASE WHEN "delivery"."courier" = 'postex' THEN "items"."quantity" ELSE 0 END`
+              `CASE WHEN "delivery"."status" != 'Booking Error' AND "delivery"."courier" = 'postex' THEN "items"."quantity" ELSE 0 END`
             )
           ),
           'postex',
@@ -406,7 +412,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              `CASE WHEN "delivery"."courier" = 'tcs' THEN "items"."quantity" ELSE 0 END`
+              `CASE WHEN "delivery"."status" != 'Booking Error' AND "delivery"."courier" = 'tcs' THEN "items"."quantity" ELSE 0 END`
             )
           ),
           'tcs',
@@ -415,7 +421,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              `CASE WHEN "delivery"."courier" = 'trax' THEN "items"."quantity" ELSE 0 END`
+              `CASE WHEN "delivery"."status" != 'Booking Error' AND "delivery"."courier" = 'trax' THEN "items"."quantity" ELSE 0 END`
             )
           ),
           'trax',
@@ -424,7 +430,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              `CASE WHEN "delivery"."courier" = 'deawoo' THEN "items"."quantity" ELSE 0 END`
+              `CASE WHEN "delivery"."status" != 'Booking Error' AND "delivery"."courier" = 'deawoo' THEN "items"."quantity" ELSE 0 END`
             )
           ),
           'deawoo',
@@ -433,7 +439,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              `CASE WHEN "delivery"."courier" = 'leopard' THEN "items"."quantity" ELSE 0 END`
+              `CASE WHEN "delivery"."status" != 'Booking Error' AND "delivery"."courier" = 'leopard' THEN "items"."quantity" ELSE 0 END`
             )
           ),
           'leopard',
@@ -442,7 +448,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              `CASE WHEN "delivery"."courier" = 'callcourier' THEN "items"."quantity" ELSE 0 END`
+              `CASE WHEN "delivery"."status" != 'Booking Error' AND "delivery"."courier" = 'callcourier' THEN "items"."quantity" ELSE 0 END`
             )
           ),
           'callcourier',
@@ -451,7 +457,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              `CASE WHEN "delivery"."courier" = 'mnp' THEN "items"."quantity" ELSE 0 END`
+              `CASE WHEN "delivery"."status" != 'Booking Error' AND "delivery"."courier" = 'mnp' THEN "items"."quantity" ELSE 0 END`
             )
           ),
           'mnp',
@@ -460,7 +466,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              `CASE WHEN "delivery"."courier" = 'manual' THEN "items"."quantity" ELSE 0 END`
+              `CASE WHEN "delivery"."status" != 'Booking Error' AND "delivery"."courier" = 'manual' THEN "items"."quantity" ELSE 0 END`
             )
           ),
           'manual',

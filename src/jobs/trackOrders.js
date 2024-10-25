@@ -8,12 +8,12 @@ const { Delivery } = model;
 
 const yesterdayTillDayEnd = getEndOfDay(subtractDaysFromToday(1));
 
-const every15Sec = '*/15 * * * * *';
+const every30Sec = '*/30 * * * * *';
 const every20Min = ' */20 * * * *';
 const every10Min = ' */10 * * * *';
 const everyMorningAt8Am = '0 8 * * *';
 
-schedule(every15Sec, async () => {
+schedule(every30Sec, async () => {
   // schedule(every10Min, async () => {
   try {
     console.log('Order track job started at ' + new Date().toISOString());

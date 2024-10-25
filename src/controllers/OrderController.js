@@ -1008,7 +1008,7 @@ export default {
         //!order.account_id
         if (
           (status === 'Confirmed' && !order.delivery_account_id) ||
-          (order.status === 'Booking Error' && status === 'Confirmed')
+          permissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS)
         ) {
           await bookingQueue.add(
             'bookingJob',

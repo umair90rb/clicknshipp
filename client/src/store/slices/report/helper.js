@@ -76,6 +76,7 @@ export function addTotalRow(report, data) {
           totalConfirmed: data.reduce((acc, row) => acc + (parseInt(row.confirmed) || 0), 0),
           totalUnitGenerated: data.reduce((acc, row) => acc + (parseInt(row.unit_generated) || 0), 0),
           totalUnitBooked: data.reduce((acc, row) => acc + (parseInt(row.unit_booked) || 0), 0),
+          totalUnitBookingError: data.reduce((acc, row) => acc + (parseInt(row.unit_booking_error) || 0), 0),
           totalUnitConfirmed: data.reduce((acc, row) => acc + (parseInt(row.unit_confirmed) || 0), 0),
           totalUnitNoPick: data.reduce((acc, row) => acc + (parseInt(row.unit_no_pick) || 0), 0),
           totalUnitCancel: data.reduce((acc, row) => acc + (parseInt(row.unit_cancel) || 0), 0),

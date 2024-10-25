@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { Typography, LinearProgress } from '@mui/material';
 import styled from '@mui/system/styled';
@@ -87,7 +87,17 @@ const columns = [
       return params.value;
     }
   },
-
+  {
+    field: 'unit_booking_error',
+    headerName: 'Unit Error',
+    flex: 0.5,
+    valueGetter: (params) => {
+      if (params.row.id === 'TOTAL') {
+        return params.row.totalUnitBookingError;
+      }
+      return params.value;
+    }
+  },
   {
     field: 'unit_no_pick',
     headerName: 'Unit No Pick',
@@ -204,6 +214,13 @@ const columns = [
 export default function BookingUnitReport() {
   const reportIsLoading = useSelector(reportIsLoadingSelector);
   const data = useSelector(reportDataSelector);
+  const [columnVisibilityModel, setColumnVisibilityModel] = useState({
+    generated: false,
+    confirmed: false,
+    unit_generated: false,
+    unit_no_pick: false,
+    unit_cancel: false
+  });
 
   const renderToolbar = () => <GridToolbarWithHeading heading="Products in orders" />;
 
@@ -214,9 +231,12 @@ export default function BookingUnitReport() {
   return (
     <div style={{ width: '100%', height: '75vh' }}>
       <DataGrid
+        disableRowSelectionOnClick
         hideFooterPagination
-        checkboxSelection
+        checkboxSelection={false}
         loading={reportIsLoading}
+        columnVisibilityModel={columnVisibilityModel}
+        onColumnVisibilityModelChange={setColumnVisibilityModel}
         getRowId={(row) => `${row.name}`}
         slots={{ toolbar: renderToolbar, noRowsOverlay: CustomNoRowsOverlay }}
         rows={data}

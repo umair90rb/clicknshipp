@@ -249,7 +249,8 @@ class OrderService {
       defaults: deliveryData,
     });
     if (!created && delivery) {
-      await delivery.update(deliveryData);
+      // await delivery.update(deliveryData);
+      await Delivery.update(deliveryData, { where: { id: delivery.id } });
     }
     // await order.update({ status: orderStatus });
     await Order.update({ status: orderStatus }, { where: { id: order.id } });
