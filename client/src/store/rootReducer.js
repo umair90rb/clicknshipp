@@ -22,18 +22,23 @@ import dashboard from './slices/dashboard/dashboardSlice';
 import deliveryServiceAccounts from './slices/deliveryServicesAccounts/deliveryServicesAccountsSlice';
 import search from './slices/search/searchSlice';
 import report from './slices/report/reportSlice';
+import location from './slices/location/locationSlice';
+import unitOfMeasure from './slices/unitOfMeasure/unitOfMeasureSlice';
+import rawMaterial from './slices/rawMaterial/rawMaterialSlice';
 
 const reducers = combineReducers(
   {
-    menu,
     auth,
     user,
-    util,
+    acl,
     order,
     customer,
     supplier,
     item,
     stock,
+    location,
+    unitOfMeasure,
+    rawMaterial,
     brand,
     category,
     chanel,
@@ -46,7 +51,8 @@ const reducers = combineReducers(
     designation,
     allowance,
     employee,
-    acl
+    menu,
+    util
   },
   composeWithDevTools()
 );

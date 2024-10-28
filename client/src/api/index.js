@@ -19,3 +19,6 @@ export { dashboardService } from './dashboardService';
 export { reportService } from './reportService';
 export { deliveryServiceAccountsService } from './deliveryServiceAccountsService';
 export { searchService } from './searchService';
+export { locationService } from './locationService';
+export { unitOfMeasureService } from './unitOfMeasureService';
+export { rawMaterialService } from './rawMaterialService';
