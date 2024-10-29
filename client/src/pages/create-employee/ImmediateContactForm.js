@@ -24,7 +24,6 @@ const ImmediateContactForm = ({ employeeId, setStep, employeeDataToUpdate }) => 
 
   useEffect(() => {
     if (employeeDataToUpdate) {
-      console.log(employeeDataToUpdate);
       const { contacts } = employeeDataToUpdate;
       formRef.current.setValues({ contact: contacts });
     }

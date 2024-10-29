@@ -36,7 +36,6 @@ export default function RawMaterialManagement() {
 
   const uploadFile = (event) => {
     setImporting(true);
-    console.log(event.target.files, 'event.target.files');
     if (event.target.files === '') {
       return;
     }

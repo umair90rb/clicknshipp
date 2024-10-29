@@ -24,7 +24,6 @@ const EducationHistoryForm = ({ employeeId, setStep, employeeDataToUpdate }) => 
 
   useEffect(() => {
     if (employeeDataToUpdate) {
-      console.log(employeeDataToUpdate);
       const { education } = employeeDataToUpdate;
       if (education.length) {
         formRef.current.setValues({ education });

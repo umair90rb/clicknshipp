@@ -23,7 +23,6 @@ const AddUpdateForm = ({ type = '', data }) => {
     setLoadingAccounts(true);
     const { type, payload } = await dispatch(fetchDeliveryServiceAccounts());
     if (type === 'accounts/fetch/fulfilled') {
-      console.log(payload.data.accounts);
       setAccounts(payload.data.accounts);
     }
     setLoadingAccounts(false);

@@ -36,7 +36,6 @@ const AllowanceForm = ({ employeeId, employeeDataToUpdate }) => {
 
   useEffect(() => {
     if (employeeDataToUpdate) {
-      console.log(employeeDataToUpdate);
       const { allowances } = employeeDataToUpdate;
       if (allowances.length) {
         formRef.current.setValues({ allowance: allowances.map((a) => ({ type: a.type, amount: a.amount, employee_id: a.employee_id })) });

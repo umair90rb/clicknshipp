@@ -458,7 +458,6 @@ const OrderTable = memo(() => {
     // dispatch(setOrder({ order: { ...newRow, address1: newRow.address1 || newRow?.address?.address1 } }));
     const id = newRow.id;
     const [first, second, ...rest] = newRow.name.split(' ');
-    console.log(rest);
     const body = {
       status: newRow?.status,
       customerId: newRow?.customer?.id,
@@ -486,7 +485,6 @@ const OrderTable = memo(() => {
   };
 
   const handleProcessRowUpdateError = (error) => {
-    console.log(error, 'new error in handleProcessRowUpdateError');
     dispatch(setMessage({ type: 'error', message: 'Failed! Order not updated!' }));
     return;
   };

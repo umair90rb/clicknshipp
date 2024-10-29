@@ -16,15 +16,8 @@ const everyMorningAt8Am = '0 8 * * *';
 schedule(every30Sec, async () => {
   // schedule(every10Min, async () => {
   try {
-    console.log('Order track job started at ' + new Date().toISOString());
     const pendingJobs = await deliveryStatusSyncQueue.count();
-    console.log(
-      `Order track job in process, currently pending ${pendingJobs} ${new Date().toISOString()}`
-    );
     if (pendingJobs) {
-      console.log(
-        'Job stopped due to pending work ' + new Date().toISOString()
-      );
       return;
     }
     let deliveriesToTrack = await Delivery.findAll({
@@ -43,7 +36,6 @@ schedule(every30Sec, async () => {
       order: [['createdAt', 'DESC']],
       limit: 10,
     });
-    console.log(`No of orders for tracking: ${deliveriesToTrack.length} `);
     if (!deliveriesToTrack?.length) {
       deliveriesToTrack = await Delivery.findAll({
         where: {

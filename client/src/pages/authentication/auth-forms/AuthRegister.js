@@ -44,8 +44,6 @@ const AuthRegister = () => {
     setShowPassword(!showPassword);
   };
 
-  console.log(userUpdateData, 'userUpdateDatauserUpdateDatauserUpdateData');
-
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
@@ -121,7 +119,6 @@ const AuthRegister = () => {
 
   useEffect(() => {
     if (userUpdateData) {
-      console.log(userUpdateData, 'userUpdateData');
       const { email, name, phone, roles, brands } = userUpdateData;
       setInitialValues({ name, email, phone, roles, brands: brands.map((b) => b.name) });
     }

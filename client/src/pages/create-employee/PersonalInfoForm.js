@@ -61,7 +61,6 @@ const PersonalInfoForm = ({ setStep, setEmployeeId, employeeDataToUpdate }) => {
 
   useEffect(() => {
     if (employeeDataToUpdate) {
-      console.log(employeeDataToUpdate);
       const {
         name,
         email,

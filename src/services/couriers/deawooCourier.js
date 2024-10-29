@@ -173,12 +173,10 @@ class DeawooCourier extends CourierInterface {
       response = await this.http.post(
         `${urlWithApi}&trackingNo=${trackingNumber}`
       );
-      console.log(response.data, 'response.data');
       logger.log('info', 'deawoo cancel booking parcel api response', {
         body: null,
         res: response.data,
       });
-      console.log(response.data, 'response.data');
       const { Error, Success, Response } = response?.data || {};
       return {
         isSuccess: Success,

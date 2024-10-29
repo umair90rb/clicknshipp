@@ -30,7 +30,6 @@ const BookingManagement = () => {
   const orderImportFetchStatus = useSelector(orderImportFetchStatusSelector);
 
   const uploadFile = (event) => {
-    console.log(event.target.files, 'event.target.files');
     if (event.target.files === '') {
       return;
     }

@@ -25,7 +25,6 @@ export default function StatusModal({ visible, onClose, orderId, setOrderStatus 
   const formRef = useRef();
 
   const updateOrderStatus = async (values, { setErrors, setStatus, setSubmitting }) => {
-    console.log(values);
     setSubmitting(true);
     return dispatch(fetchUpdateStatusOrder({ body: { orderId, ...values } })).then(({ type, payload }) => {
       setSubmitting(false);

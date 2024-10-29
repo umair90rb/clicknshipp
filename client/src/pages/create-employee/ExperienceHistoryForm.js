@@ -24,7 +24,6 @@ const ExperienceHistoryForm = ({ employeeId, setStep, employeeDataToUpdate }) =>
 
   useEffect(() => {
     if (employeeDataToUpdate) {
-      console.log(employeeDataToUpdate);
       const { experiences } = employeeDataToUpdate;
       if (experiences.length) {
         formRef.current.setValues({ experience: experiences });

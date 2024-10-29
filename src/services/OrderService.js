@@ -247,7 +247,6 @@ class OrderService {
     }
     let delivery = await Delivery.findOne({ where: { order_id: order.id } });
     if (delivery) {
-      console.log(deliveryData, '===================deliveryData');
       delivery.set(deliveryData);
       await delivery.save();
     } else {
@@ -497,12 +496,6 @@ class OrderService {
   async updateOrderDeliveryStatus(parcelStatusRes, deliveryId, order_id) {
     try {
       const { isSuccess, error, history, status } = parcelStatusRes;
-      console.log(
-        isSuccess,
-        error,
-        status,
-        'data received in updateOrderDeliveryStatus'
-      );
       await Delivery.update(
         isSuccess
           ? {

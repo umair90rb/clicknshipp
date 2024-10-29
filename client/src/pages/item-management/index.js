@@ -45,7 +45,6 @@ const ItemsManagement = () => {
 
   const uploadFile = (event) => {
     setImportingItems(true);
-    console.log(event.target.files, 'event.target.files');
     if (event.target.files === '') {
       return;
     }
@@ -53,7 +52,6 @@ const ItemsManagement = () => {
     formData.append('file', event.target.files[0], event.target.value.split(/(\\|\/)/g).pop());
 
     dispatch(fetchImportItems({ body: formData })).then((action) => {
-      console.log(action);
       if (action.type === 'items/import/fetch/fulfilled') {
         dispatch(fetchAllItem());
         dispatch(setMessage({ message: 'Items imported successfully.', type: 'success' }));

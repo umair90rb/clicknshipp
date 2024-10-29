@@ -82,10 +82,6 @@ export default function CustomerTable({ openViewForm }) {
     dispatch(fetchAllCustomer({ body: { sort: sortModel, page, pageSize } }));
   }, [page, pageSize, sortModel]);
 
-  useEffect(() => {
-    console.log(filterModel);
-  }, [filterModel]);
-
   return (
     <div style={{ width: '100%' }}>
       <DataGrid

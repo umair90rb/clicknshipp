@@ -28,8 +28,6 @@ export default function IncentiveReport() {
 
   const renderToolbar = () => <GridToolbarWithHeading heading="Incentive Report" />;
 
-  console.log(data);
-
   if (data && data.length) {
     const { name, quantity, ...restColumns } = data[0];
     const columnArray = Object.keys(restColumns);
