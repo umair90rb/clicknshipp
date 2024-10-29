@@ -1,5 +1,6 @@
 import formatPhone from '../helpers/formatPhone';
 import {
+  getCurrentTimeInTimezone,
   getEndOfDay,
   getStartOfDay,
   subtractDaysFromToday,
@@ -228,7 +229,7 @@ class OrderService {
         cn,
         slip_link: slip,
         status: 'Booked',
-        createdAt: new Date().toISOString(),
+        createdAt: getCurrentTimeInTimezone(),
       },
       event = `order booked with ${deliveryAccount?.service}, tracking number: ${cn}`,
       orderStatus = 'Booked';
@@ -244,15 +245,14 @@ class OrderService {
       }, error: ${error || response}`;
       orderStatus = 'Booking Error';
     }
-    let [delivery, created] = await Delivery.findOrCreate({
-      where: { order_id: order.id },
-      defaults: deliveryData,
-    });
-    if (!created && delivery) {
-      // await delivery.update(deliveryData);
-      await Delivery.update(deliveryData, { where: { id: delivery.id } });
+    let delivery = await Delivery.findOne({ where: { order_id: order.id } });
+    if (delivery) {
+      console.log(deliveryData, '===================deliveryData');
+      delivery.set(deliveryData);
+      await delivery.save();
+    } else {
+      delivery = await Delivery.create(deliveryData);
     }
-    // await order.update({ status: orderStatus });
     await Order.update({ status: orderStatus }, { where: { id: order.id } });
     await OrderHistory.create({
       order_id: order.id,
