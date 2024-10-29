@@ -207,7 +207,7 @@ export default function AgentsReports() {
               onClick={() =>
                 linkClicked(
                   data.map((row) => row.user_id).filter((uid) => uid === null),
-                  ['No Pick', 'Payment Pending']
+                  ['No Pick']
                 )
               }
               variant="text"
@@ -218,8 +218,42 @@ export default function AgentsReports() {
           );
         }
         return (
-          <Button onClick={() => linkClicked([params.row.user.id], ['No Pick', 'Payment Pending'])} variant="text" size="small">
+          <Button onClick={() => linkClicked([params.row.user.id], ['No Pick'])} variant="text" size="small">
             {params.row.no_pick}
+          </Button>
+        );
+      }
+    },
+    {
+      field: 'payment_pending',
+      headerName: 'Payment Pending',
+      flex: 0.5,
+      valueGetter: (params) => {
+        if (params.row.id === 'TOTAL') {
+          return params.row.totalNoPick;
+        }
+        return params.value;
+      },
+      renderCell: (params) => {
+        if (params.row.id === 'TOTAL') {
+          return (
+            <Button
+              onClick={() =>
+                linkClicked(
+                  data.map((row) => row.user_id).filter((uid) => uid === null),
+                  ['Payment Pending']
+                )
+              }
+              variant="text"
+              size="small"
+            >
+              {params.row.totalPaymentPending}
+            </Button>
+          );
+        }
+        return (
+          <Button onClick={() => linkClicked([params.row.user.id], ['Payment Pending'])} variant="text" size="small">
+            {params.row.payment_pending}
           </Button>
         );
       }

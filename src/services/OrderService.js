@@ -247,11 +247,9 @@ class OrderService {
     }
     let delivery = await Delivery.findOne({ where: { order_id: order.id } });
     if (delivery) {
-      delivery.set(deliveryData);
-      await delivery.save();
-    } else {
-      delivery = await Delivery.create(deliveryData);
+      await Delivery.destroy({ where: { id: delivery.id } });
     }
+    delivery = await Delivery.create(deliveryData);
     await Order.update({ status: orderStatus }, { where: { id: order.id } });
     await OrderHistory.create({
       order_id: order.id,

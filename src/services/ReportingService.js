@@ -62,10 +62,19 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              'CASE WHEN "Order"."status" = \'No Pick\' OR "Order"."status" = \'Payment Pending\' THEN 1 ELSE 0 END'
+              'CASE WHEN "Order"."status" = \'No Pick\' THEN 1 ELSE 0 END'
             )
           ),
           'no_pick',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              'CASE WHEN "Order"."status" = \'Payment Pending\' THEN 1 ELSE 0 END'
+            )
+          ),
+          'payment_pending',
         ],
         [
           fn(

@@ -961,7 +961,7 @@ export default {
       }
       if (
         !permissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) &&
-        order?.account_id
+        order?.delivery_account_id
       ) {
         return sendErrorResponse(res, 500, 'Order already booked!');
       }

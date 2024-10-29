@@ -23,6 +23,7 @@ export function addTotalRow(report, data) {
           totalConfirmed: data.reduce((acc, row) => acc + (parseInt(row.confirmed) || 0), 0),
           totalAssigned: data.reduce((acc, row) => acc + (parseInt(row.assigned) || 0), 0),
           totalNoPick: data.reduce((acc, row) => acc + (parseInt(row.no_pick) || 0), 0),
+          totalPaymentPending: data.reduce((acc, row) => acc + (parseInt(row.payment_pending) || 0), 0),
           grandTotal: data.reduce((acc, row) => acc + (parseInt(row.total) || 0), 0)
         }
       ];
