@@ -22,3 +22,4 @@ export { searchService } from './searchService';
 export { locationService } from './locationService';
 export { unitOfMeasureService } from './unitOfMeasureService';
 export { rawMaterialService } from './rawMaterialService';
+export { billOfMaterialService } from './billOfMaterialService';

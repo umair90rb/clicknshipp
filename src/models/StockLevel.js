@@ -4,22 +4,23 @@ module.exports = (sequelize, DataTypes) => {
   class StockLevel extends Model {
     static associate(models) {
       StockLevel.belongsTo(models.Item, {
-        as: 'item',
         foreignKey: 'item_id',
+        constraints: false,
+        as: 'item',
       });
-      StockLevel.hasMany(models.StockHistory, {
-        as: 'history',
-        foreignKey: 'stock_id',
+      StockLevel.belongsTo(models.RawMaterial, {
+        foreignKey: 'item_id',
+        constraints: false,
+        as: 'raw',
       });
       StockLevel.belongsTo(models.Location, {
         foreignKey: 'location_id',
-        as: 'Location',
+        as: 'location',
       });
-      // StockLevel.belongsTo(models.RawMaterial, {
-      //   foreignKey: 'item_id',
-      //   constraints: false,
-      //   as: 'RawMaterial'
-      // });
+      StockLevel.hasMany(models.StockHistory, {
+        foreignKey: 'item_id',
+        as: 'history',
+      });
     }
   }
   StockLevel.init(

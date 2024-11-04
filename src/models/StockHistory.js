@@ -3,23 +3,9 @@ import { Model } from 'sequelize';
 module.exports = (sequelize, DataTypes) => {
   class StockHistory extends Model {
     static associate(models) {
-      // StockHistory.belongsTo(models.RawMaterial, {
-      //   foreignKey: 'item_id',
-      //   constraints: false,
-      // });
       StockHistory.belongsTo(models.Location, {
         foreignKey: 'location_id',
         as: 'location',
-      });
-      // StockHistory.belongsTo(models.GatePasses, {
-      //   foreignKey: 'gate_pass_id',
-      //   as: 'gatePass',
-      // });
-      StockHistory.belongsTo(models.Item, {
-        foreignKey: 'item_id',
-        as: 'item',
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
       });
     }
   }

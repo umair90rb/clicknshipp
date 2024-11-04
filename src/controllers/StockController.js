@@ -1,20 +1,37 @@
-import { Op } from "sequelize";
-import model from "../models";
-import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
-import { hash } from "../utils/hashing";
-
-const { Item, Brand, Category, StockLevel, StockHistory } = model;
+import { Op } from 'sequelize';
+import model from '../models';
+import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
+import _stockService from '../services/StockService';
+const {
+  Item,
+  RawMaterial,
+  Batch,
+  Location,
+  Category,
+  StockLevel,
+  StockHistory,
+} = model;
 
 export default {
   async stocks(req, res) {
     try {
       const stocks = await StockLevel.findAll({
-        attributes: ["id", "level"],
+        attributes: ['id', 'current_level'],
         include: [
           {
             model: Item,
-            as: "item",
-            attributes: ["name", ["id", "item_id"]],
+            as: 'item',
+            attributes: ['name', 'id'],
+          },
+          {
+            model: RawMaterial,
+            as: 'raw',
+            attributes: ['name', 'id', 'unit_of_measure'],
+          },
+          {
+            model: Location,
+            as: 'location',
+            attributes: ['name'],
           },
         ],
       });
@@ -22,94 +39,96 @@ export default {
         res,
         200,
         { stocks },
-        "All items current stock"
+        'All items current stock'
       );
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
   },
 
-  async stock(req, res) {
+  async history(req, res) {
     try {
-      const { id } = req.params;
-      const stock = await StockLevel.findByPk(id, {
-        attributes: ["id", "level"],
-        include: [
-          {
-            model: StockHistory,
-            as: "history",
-            attributes: ["expiry", "amount", "comment", "type", "createdAt"],
-          },
+      const { item_id, item_type } = req.body;
+      const history = await StockHistory.findAll({
+        attributes: [
+          'id',
+          'quantity',
+          'comment',
+          'movement_type',
+          'item_type',
+          'createdAt',
         ],
+        include: {
+          model: Location,
+          as: 'location',
+          attributes: ['name'],
+        },
+        where: { [Op.and]: [{ item_id }, { item_type }] },
       });
-      if (stock) {
+      if (history) {
         return sendSuccessResponse(
           res,
           200,
-          { stock },
-          "Stock level of item with id"
+          { history },
+          'Stock history of item with id'
         );
       }
-      return sendErrorResponse(res, 404, "No data found with this id.");
+      return sendErrorResponse(res, 404, 'No data found with this id.');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
   },
 
   async create(req, res) {
-    const { item, level, expiry, comment } = req.body;
     try {
-      let stock = await StockLevel.findOne({
-        where: { item_id: item },
+      const { item_type, location_id, comment, inventory } = req.body;
+      const batches = [],
+        batchPromises = [],
+        historyPromises = [];
+      inventory.map(({ item_id: item, quantity, ...rest }) => {
+        batches.push({
+          item_type,
+          item_id: item.id,
+          quantity,
+          ...rest,
+        });
+        batchPromises.push(
+          _stockService.increment(item_type, item.id, quantity, location_id)
+        );
+        historyPromises.push(
+          _stockService.createHistory(
+            item_type,
+            item.id,
+            'in',
+            location_id,
+            quantity,
+            comment
+          )
+        );
       });
-      if (stock) {
-        stock = await stock.increment({ level });
-      } else {
-        stock = await StockLevel.create({ level, item_id: item });
-      }
-      //stock history linked to stocklevel via stockId not with item id
-      await StockHistory.create({
-        amount: level,
-        item_id: item,
-        comment,
-        expiry,
-        type: "Stock added",
-      });
-      await stock.reload({
-        attributes: ["level"],
-        include: [
-          {
-            model: Item,
-            as: "item",
-            attributes: ["name", "id"],
-          },
-        ],
-      });
-      return sendSuccessResponse(
-        res,
-        201,
-        {
-          stock,
-        },
-        "Stock added successfully"
-      );
+      return Batch.bulkCreate(batches)
+        .then(() => Promise.all(batchPromises))
+        .then(() => Promise.all(historyPromises))
+        .then(() =>
+          sendSuccessResponse(res, 201, {}, 'Stock added successfully')
+        );
     } catch (error) {
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         error
       );
     }

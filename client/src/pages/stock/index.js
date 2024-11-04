@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Grid, Typography, Modal, Box } from '@mui/material';
+import { Button, Grid, Typography } from '@mui/material';
 import MainCard from 'components/MainCard';
-import { ArrowLeftOutlined } from '@ant-design/icons';
+import KeyboardBackspaceOutlinedIcon from '@mui/icons-material/KeyboardBackspaceOutlined';
 import StockTable from './StockTable';
 import AddStockForm from './AddStockForm';
 import { useSelector } from 'react-redux';
@@ -10,37 +10,12 @@ import StockHistory from './StockHistory';
 import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 
-const addModalStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4
-};
-
-const historyModalStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 800,
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4
-};
-
-const StockManamgement = () => {
+const StockManagement = () => {
   const [addFormModal, setAddFormModal] = useState(false);
   const [historyModal, setHistoryModal] = useState(false);
-
   const [itemId, setItemId] = useState();
-  const [stockId, setStockId] = useState();
-
+  const [itemIdAndType, setItemIdAndType] = useState({});
   const stocks = useSelector(stockStocksSelector);
-
   const { hasPermission } = useAccess();
 
   useEffect(() => {
@@ -55,13 +30,9 @@ const StockManamgement = () => {
     }
   }, [addFormModal]);
 
-  const receiveStock = (item) => {
-    setItemId(item);
-    setAddFormModal(true);
-  };
-
-  const showHistory = (stockId) => {
-    setStockId(stockId);
+  const getItemIdAndType = (item_id, item_type) => {
+    console.log(item_id, item_type);
+    setItemIdAndType({ item_id, item_type });
     setHistoryModal(true);
   };
 
@@ -74,38 +45,20 @@ const StockManamgement = () => {
           </Grid>
           {hasPermission(PERMISSIONS.PERMISSION_RECEIVE_STOCK) && (
             <Grid item>
-              <Button variant="contained" startIcon={<ArrowLeftOutlined />} onClick={() => setAddFormModal(true)}>
+              <Button variant="contained" startIcon={<KeyboardBackspaceOutlinedIcon />} onClick={() => setAddFormModal(true)}>
                 Receive Inventory
               </Button>
             </Grid>
           )}
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>
-          <StockTable receiveStock={receiveStock} showHistory={showHistory} />
+          <StockTable showHistory={getItemIdAndType} />
         </MainCard>
       </Grid>
-      <Modal
-        open={addFormModal}
-        onClose={() => setAddFormModal(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={addModalStyle}>
-          <AddStockForm item={itemId} />
-        </Box>
-      </Modal>
-      <Modal
-        open={historyModal}
-        onClose={() => setHistoryModal(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={historyModalStyle}>
-          <StockHistory id={stockId} />
-        </Box>
-      </Modal>
+      <AddStockForm item={itemId} visible={addFormModal} onClose={() => setAddFormModal(false)} />
+      <StockHistory itemIdAndType={itemIdAndType} visible={historyModal} onClose={() => setHistoryModal(false)} />
     </>
   );
 };
 
-export default StockManamgement;
+export default StockManagement;

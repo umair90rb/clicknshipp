@@ -26,6 +26,7 @@ import log from './log';
 import location from './location';
 import uom from './unitOfMeasure';
 import rawMaterial from './rawMaterial';
+import bom from './billOfMaterial';
 
 const rootDir = path.dirname(process.argv[1]);
 
@@ -41,6 +42,7 @@ export default (app) => {
   app.use('/api/v1/user', user);
   app.use('/api/v1/item', item);
   app.use('/api/v1/stock', stock);
+  app.use('/api/v1/bom', bom);
   app.use('/api/v1/location', location);
   app.use('/api/v1/uom', uom);
   app.use('/api/v1/raw-material', rawMaterial);

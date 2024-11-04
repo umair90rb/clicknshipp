@@ -5,7 +5,7 @@ class StockService extends Ajax {
 
   fetchAllStock = () => this.getJson(`${this.pathname}/all`);
 
-  fetchStock = (id) => this.getJson(`${this.pathname}/${id}`);
+  fetchStockHistory = (data) => this.post(`${this.pathname}/history`, data);
 
   fetchCreateStock = (data) => this.post(`${this.pathname}`, data);
 

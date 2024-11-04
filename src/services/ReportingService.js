@@ -44,7 +44,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'Booked\' THEN 1 ELSE 0 END'
+              `CASE WHEN "Order"."status" IN ('Confirmed', 'Booked', 'Booking Error') THEN 1 ELSE 0 END`
             )
           ),
           'confirmed',

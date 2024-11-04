@@ -1,34 +1,33 @@
-import express from "express";
-import StockController from "../controllers/StockController";
-import { PERMISSIONS } from "../constants/constants";
+import express from 'express';
+import StockController from '../controllers/StockController';
+import { PERMISSIONS } from '../constants/constants';
 
-import can from "../middleware/canAccess";
-import Auth from "../middleware/auth";
-import { createStockSchema } from "../schemas/stockSchema";
-import { idSchema } from "../schemas/commonSchema";
-import schemaValidator from "../middleware/schemaValidator";
-import { createValidator } from "express-joi-validation";
+import can from '../middleware/canAccess';
+import Auth from '../middleware/auth';
+import { stockHistorySchema, createStockSchema } from '../schemas/stockSchema';
+import schemaValidator from '../middleware/schemaValidator';
+import { createValidator } from 'express-joi-validation';
 
 const router = express.Router();
 const validator = createValidator();
 
 router.get(
-  "/all",
+  '/all',
   Auth,
   can(PERMISSIONS.PERMISSION_VIEW_STOCK),
   StockController.stocks
 );
 
-router.get(
-  "/:id",
+router.post(
+  '/history',
   Auth,
   can(PERMISSIONS.PERMISSION_VIEW_STOCK),
-  validator.params(idSchema),
-  StockController.stock
+  schemaValidator(stockHistorySchema),
+  StockController.history
 );
 
 router.post(
-  "/",
+  '/',
   Auth,
   can(PERMISSIONS.PERMISSION_RECEIVE_STOCK),
   schemaValidator(createStockSchema),

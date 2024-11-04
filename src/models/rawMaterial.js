@@ -2,7 +2,16 @@ import { Model } from 'sequelize';
 
 module.exports = (sequelize, DataTypes) => {
   class RawMaterial extends Model {
-    static associate(models) {}
+    static associate(models) {
+      RawMaterial.hasOne(models.StockLevel, {
+        foreignKey: 'item_id',
+        constraints: false,
+        as: 'stock',
+        scope: {
+          item_type: 'raw_material',
+        },
+      });
+    }
   }
 
   RawMaterial.init(

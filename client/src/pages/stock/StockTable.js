@@ -1,29 +1,34 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import RestoreIcon from '@mui/icons-material/Restore';
-import CallReceivedIcon from '@mui/icons-material/CallReceived';
 import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
 import { stockIsLoadingSelector, stockStocksSelector } from 'store/slices/stock/stockSelector';
 import { fetchAllStock } from 'store/slices/stock/fetchStock';
 import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
-const columns = (showHistory, receiveStock) => [
+const columns = (showHistory) => [
   {
-    field: 'item',
+    field: 'id',
     headerName: 'ID',
-    flex: 1,
-    valueGetter: ({ value }) => value.item_id
+    flex: 0.25
   },
   {
-    field: 'item',
+    field: 'name',
     headerName: 'Item Name',
-    flex: 1,
-    valueGetter: ({ value }) => value.name
+    flex: 1.75,
+    valueGetter: (value) => `${value.row.item?.name || value.row.raw?.name}`
   },
   {
-    field: 'level',
+    field: 'current_level',
     headerName: 'Current Stock',
-    flex: 1
+    flex: 1,
+    valueGetter: (value) => `${value?.value} ${value.row.raw?.unit_of_measure || ''}`
+  },
+  {
+    field: 'location',
+    headerName: 'Store',
+    flex: 1,
+    valueGetter: (value) => `${value?.value.name}`
   },
   {
     field: 'actions',
@@ -31,28 +36,18 @@ const columns = (showHistory, receiveStock) => [
     flex: 1,
     type: 'actions',
     cellClassName: 'actions',
-    getActions: ({ id, row }) => {
+    getActions: (value) => {
       const actions = [];
       if (showHistory) {
         actions.push(
           <GridActionsCellItem
-            key={id}
+            key={value.row?.id}
             icon={<RestoreIcon />}
             label="View"
             className="textPrimary"
-            onClick={() => showHistory(row.id)}
-            color="inherit"
-          />
-        );
-      }
-      if (receiveStock) {
-        actions.push(
-          <GridActionsCellItem
-            key={id}
-            icon={<CallReceivedIcon />}
-            label="Disable"
-            className="textPrimary"
-            onClick={() => receiveStock(row.item.item_id)}
+            onClick={() =>
+              showHistory(value.row?.raw?.id || value.row?.item?.id, value?.row?.item === null ? 'raw_material' : 'finished_product')
+            }
             color="inherit"
           />
         );
@@ -62,7 +57,7 @@ const columns = (showHistory, receiveStock) => [
   }
 ];
 
-export default function StockTable({ receiveStock, showHistory }) {
+export default function StockTable({ showHistory }) {
   const dispatch = useDispatch();
   const stockIsLoading = useSelector(stockIsLoadingSelector);
   const stock = useSelector(stockStocksSelector);
@@ -84,10 +79,7 @@ export default function StockTable({ receiveStock, showHistory }) {
         loading={stockIsLoading}
         pageSizeOptions={[25, 50, 75, 100]}
         rows={stock}
-        columns={columns(
-          hasPermission(PERMISSIONS.PERMISSION_VIEW_STOCK_HISTORY) ? showHistory : undefined,
-          hasPermission(PERMISSIONS.PERMISSION_RECEIVE_STOCK) ? receiveStock : undefined
-        )}
+        columns={columns(hasPermission(PERMISSIONS.PERMISSION_VIEW_STOCK_HISTORY) ? showHistory : undefined)}
       />
     </div>
   );

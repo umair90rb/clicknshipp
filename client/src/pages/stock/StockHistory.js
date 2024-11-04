@@ -1,57 +1,95 @@
-import CustomView from 'components/CustomTable';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { fetchStock } from 'store/slices/stock/fetchStock';
+import { Modal, Box } from '@mui/material';
+import CustomView from 'components/CustomTable';
+import { DataGrid } from '@mui/x-data-grid';
+import { fetchStockHistory } from 'store/slices/stock/fetchStock';
+import { splitAndToUpperCase } from 'utils/string-utils';
+import { getDate } from 'utils/format-date';
+import CustomDialog from 'components/CustomDialog';
 
-const stockHistoryCell = [
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '75vw',
+  maxHeight: '75vh',
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4
+};
+
+const columns = [
   {
-    id: 'amount',
-    label: 'Quantity'
+    field: 'id',
+    headerName: 'ID#'
   },
   {
-    id: 'expiry',
-    label: 'Expiry'
+    field: 'quantity',
+    headerName: 'Quantity'
   },
   {
-    id: 'comment',
-    label: 'Comment'
+    field: 'movement_type',
+    headerName: 'Movement'
   },
   {
-    id: 'comment',
-    label: 'Comment'
+    field: 'location',
+    headerName: 'Store',
+    flex: 1.25,
+    valueGetter: (value) => value?.row?.location?.name
   },
   {
-    id: 'createdAt',
-    label: 'Added at'
+    field: 'comment',
+    headerName: 'Comment',
+    flex: 1.5
+  },
+  {
+    field: 'item_type',
+    headerName: 'Type',
+    flex: 1.25,
+    valueGetter: (value) => splitAndToUpperCase(value?.row?.item_type)
+  },
+  {
+    field: 'createdAt',
+    headerName: 'Added at',
+    valueGetter: (value) => getDate(value?.row?.createdAt)
   }
 ];
 
-const StockHistory = ({ id }) => {
+export default function StockHistory({ itemIdAndType, visible, onClose }) {
   const dispatch = useDispatch();
   const [history, setHistory] = useState({
     loading: true,
     error: null,
-    data: {}
+    rows: []
   });
 
   useEffect(() => {
-    dispatch(fetchStock({ id })).then((action) => {
-      console.log(action, 'valueeeeeee');
-      if (action.type === 'stock/fetch/fulfilled') {
-        setHistory({ loading: false, data: action.payload.data.stock, error: null });
+    if (!visible) return;
+    dispatch(fetchStockHistory({ body: itemIdAndType })).then((action) => {
+      if (action.type === 'stock/history/fetch/fulfilled') {
+        setHistory({ loading: false, rows: action.payload.data?.history, error: null });
       } else {
-        setHistory({ loading: false, data: {}, error: action.payload.data.error });
+        setHistory({ loading: false, rows: [], error: action.payload.error });
       }
     });
-  }, []);
 
-  console.log(history, 'history.loading');
+    return () => {
+      setHistory({ loading: true, error: null, rows: [] });
+    };
+  }, [visible]);
 
-  if (history.loading) {
-    return null;
-  }
-
-  return <CustomView headCells={stockHistoryCell} order="asc" orderBy="id" data={history?.data?.history || []} />;
-};
-
-export default StockHistory;
+  return (
+    <CustomDialog visible={visible} onClose={onClose} maxWidth="xl" dividers={false} title="Stock History" enableBackdrop>
+      <DataGrid
+        autoHeight
+        hideFooterPagination={true}
+        loading={history.loading}
+        hidePagination={true}
+        rows={history?.rows}
+        columns={columns}
+      />
+    </CustomDialog>
+  );
+}

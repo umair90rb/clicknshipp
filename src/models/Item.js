@@ -22,10 +22,12 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'CASCADE',
       });
       Item.hasOne(models.StockLevel, {
-        as: 'stock',
         foreignKey: 'item_id',
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
+        constraints: false,
+        as: 'stock',
+        scope: {
+          item_type: 'finished_product',
+        },
       });
       Item.hasMany(models.StockHistory, {
         as: 'stock_history',

@@ -71,4 +71,7 @@ npx sequelize-cli migration:generate --name add-cost-center-column-in-delivery-s
 npx sequelize-cli migration:generate --name add-account-id-column-in-order-table
 
 
+npx sequelize-cli migration:generate --name create-batches-table
+
+
 

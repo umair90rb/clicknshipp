@@ -1,9 +1,10 @@
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
-import RawOnOutlinedIcon from '@mui/icons-material/RawOnOutlined';
+import DeviceHubOutlinedIcon from '@mui/icons-material/DeviceHubOutlined';
 import InventoryOutlinedIcon from '@mui/icons-material/InventoryOutlined';
 import BusinessCenterOutlinedIcon from '@mui/icons-material/BusinessCenterOutlined';
 import WarehouseOutlinedIcon from '@mui/icons-material/WarehouseOutlined';
+import ReceiptOutlinedIcon from '@mui/icons-material/ReceiptOutlined';
 
 const store = {
   id: 'group-store',
@@ -21,11 +22,20 @@ const store = {
     },
     {
       id: 'raw-material',
-      title: 'Raw Materials',
+      title: 'Materials',
       type: 'item',
       url: '/raw-material',
       permission: PERMISSIONS.PERMISSION_VIEW_ITEMS,
-      icon: RawOnOutlinedIcon,
+      icon: DeviceHubOutlinedIcon,
+      breadcrumbs: false
+    },
+    {
+      id: 'bom',
+      title: 'Bill of Material',
+      type: 'item',
+      url: '/bom',
+      permission: PERMISSIONS.PERMISSION_VIEW_ITEMS,
+      icon: ReceiptOutlinedIcon,
       breadcrumbs: false
     },
     {
