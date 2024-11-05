@@ -69,7 +69,7 @@ class CallCourier extends CourierInterface {
         order.address.address1
       }&Origin=FAISALABAD&DestCityId=${
         destinationCity.assigned_id
-      }&ServiceTypeId=7&Pcs=1&Weight=${0.5}&Description=${order.items.reduce(
+      }&ServiceTypeId=7&Pcs=1&Weight=${0.25}&Description=${order.items.reduce(
         (p, c, i) =>
           i > 0 ? `${c.name}/${c.quantity}-${p}` : `${c.name}/${c.quantity}`,
         ''

@@ -136,24 +136,24 @@ export default {
   async material(req, res) {
     try {
       const { id, quantity } = req.params;
-      if (quantity === 0) {
-        const bomItem = await BOMItem.findByPk(id);
-        if (bomItem) {
-          await bomItem.destroy();
-          return sendSuccessResponse(
-            res,
-            200,
-            { bomItem },
-            'Material removed from bill of material successfully'
-          );
-        }
-        return sendErrorResponse(
-          res,
-          404,
-          'Material in bill of material not found!',
-          null
-        );
-      }
+      // if (quantity === 0) {
+      //   const bomItem = await BOMItem.findByPk(id);
+      //   if (bomItem) {
+      //     await bomItem.destroy();
+      //     return sendSuccessResponse(
+      //       res,
+      //       200,
+      //       { bomItem },
+      //       'Material removed from bill of material successfully'
+      //     );
+      //   }
+      //   return sendErrorResponse(
+      //     res,
+      //     404,
+      //     'Material in bill of material not found!',
+      //     null
+      //   );
+      // }
       const [isUpdated, bomItem] = await BOMItem.update(
         { quantity },
         {

@@ -199,7 +199,7 @@ class TCSCourier extends CourierInterface {
           transactiontype: '',
           dsflag: '',
           carrierslug: '',
-          weightinkg: 0.5,
+          weightinkg: 0.25,
           pieces: order.items.length,
           fragile: false,
           remarks: order.items.reduce(

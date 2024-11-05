@@ -42,7 +42,7 @@ class MnpCourier extends CourierInterface {
         consigneeEmail: order.customer.email || '',
         destinationCityName: destinationCity.maped,
         pieces: order.items.length,
-        weight: 0.5,
+        weight: 0.25,
         codAmount: order.total_price,
         custRefNo: `Sukooonx${order.order_number}`,
         productDetails: order.items.reduce(

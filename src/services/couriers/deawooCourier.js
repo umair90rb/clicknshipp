@@ -49,7 +49,7 @@ class DeawooCourier extends CourierInterface {
         remarks: 'rush delivery',
         category_id: '0',
         qty: order.items.length,
-        weight: '0.5',
+        weight: '0.25',
         barcode: '0',
         cod_amount: order.total_price,
         source_location_point: '0.0',

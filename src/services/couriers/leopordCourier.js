@@ -39,7 +39,7 @@ class LeapordCourier extends CourierInterface {
       body = {
         api_key: deliveryAccount.key,
         api_password: deliveryAccount.password,
-        booked_packet_weight: 500,
+        booked_packet_weight: 250,
         // booked_packet_vol_weight_w: 0,
         // booked_packet_vol_weight_h: 0,
         // booked_packet_vol_weight_l: 0,

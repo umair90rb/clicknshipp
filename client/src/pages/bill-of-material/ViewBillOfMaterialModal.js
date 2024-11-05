@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { DataGrid } from '@mui/x-data-grid';
 import { formatDistance } from 'utils/format-date';
@@ -63,7 +63,6 @@ const bomColumn = [
 
 export default function ViewBillOfMaterialModal({ id, visible, onClose }) {
   const dispatch = useDispatch();
-  const materialTableRef = useRef(null);
   const [billOfMaterial, setBillOfMaterial] = useState({
     loading: true,
     error: null,
@@ -92,7 +91,7 @@ export default function ViewBillOfMaterialModal({ id, visible, onClose }) {
     }
     const { type, payload } = await dispatch(fetchUpdateMaterialQuantity({ id, quantity })).then((action) => {
       if (type === 'bom/material/update/fetch/fulfilled') {
-        materialTableRef.current.updateRows([{ ...action.payload?.data?.bomItem, _action: 'delete' }]);
+        return action.payload?.data?.bomItem;
       } else {
         dispatch(setMessage({ type: 'error', message: payload?.data?.error || 'Failed! Quantity not updated!' }));
         return oldRow;
@@ -115,7 +114,6 @@ export default function ViewBillOfMaterialModal({ id, visible, onClose }) {
       {!billOfMaterial.loading && <DataGrid autoHeight density="compact" hideFooter rows={[billOfMaterial?.data]} columns={bomColumn} />}
       {!billOfMaterial.loading && (
         <DataGrid
-          apiRef={materialTableRef}
           autoHeight
           disableRowSelectionOnClick
           showCellVerticalBorder

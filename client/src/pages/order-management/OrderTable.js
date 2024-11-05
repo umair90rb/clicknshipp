@@ -614,7 +614,7 @@ const OrderTable = memo(() => {
         <GridDropdownFilter
           multiple
           label="filter by status"
-          options={[...ORDER_STATUSES, 'Booked', 'Booking Error']}
+          options={ORDER_STATUSES}
           value={filters.find((filter) => filter.column === 'status' && filter.op !== 'Text not in')?.value || []}
           onChange={(e) => {
             if (e.target.value.length === 0) {
