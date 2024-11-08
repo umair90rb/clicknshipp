@@ -219,31 +219,55 @@ class DigiCourier extends CourierInterface {
   }
 
   async checkParcelStatus(trackingNumber, deliveryAccount) {
-    let response;
+    let res, url, headersList, reqOptions;
     try {
-      response = await this.http.get(`GetTackingHistory?cn=${trackingNumber}`);
-      logger.log('info', 'leopard booking status,s api response', {
-        res: response.data,
-      });
-      const history = response.data.revers();
-      return {
-        isSuccess: true,
-        error: null,
-        history,
-        status: history[0]?.ProcessDescForPortal,
-        date: history[0]?.TransactionDate,
-        remarks: null,
-        data: {},
-        response: 'Current Booking status!',
+      const token = await this.getToken(deliveryAccount);
+      headersList = {
+        Accept: '*/*',
+        Authorization: `Bearer ${token}`,
       };
+      url = `get-order-tracking?tracking_no=${trackingNumber}`;
+      reqOptions = {
+        url: `${this.baseURL}${url}`,
+        method: 'POST',
+        headers: headersList,
+      };
+      res = await this.http.request(reqOptions);
+      logger.log('info', 'digi booking status,s api res', {
+        res: res.data,
+      });
+      const { code, msg, tracking_number, data, error } = res.data;
+      if (code === 200) {
+        return {
+          isSuccess: true,
+          error: null,
+          history: JSON.stringify(data),
+          status: '',
+          date: new Date(),
+          remarks: null,
+          data,
+          response: msg,
+        };
+      } else {
+        return {
+          isSuccess: false,
+          error,
+          history: [],
+          status: '',
+          date: new Date(),
+          remarks: null,
+          data,
+          response: msg,
+        };
+      }
     } catch (error) {
       logger.log('error', error.message, {
-        res: response.data,
+        res: res.data,
       });
       return {
         isSuccess: false,
         error,
-        history: response.data,
+        history: res.data,
         status: null,
         date: null,
         remarks: null,
@@ -256,7 +280,7 @@ class DigiCourier extends CourierInterface {
   cancelBooking(trackingNumber, deliveryAccount) {
     return {
       isSuccess: false,
-      error: 'Cancel booking not available for Call Courier',
+      error: 'Cancel booking not available for Digi Courier',
       response: trackingNumber,
     };
   }
