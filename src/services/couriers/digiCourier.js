@@ -156,7 +156,9 @@ class DigiCourier extends CourierInterface {
         deliveryAccount.key
       }&shipper_address=shop%20no%20SF%2015%20second%20floor%20lavish%20mall%20tariq%20road%20opposite%20rabi%20cente&shipper_name=Sukooon&shipper_phone=${
         deliveryAccount.username
-      }&shipment_type=1&pickup_id=${deliveryAccount.cost_center}`;
+      }&shipment_type=1&pickup_id=${
+        deliveryAccount.cost_center
+      }&source=sukooon`;
 
       reqOptions = {
         url: `${this.baseURL}${url}`,
@@ -168,7 +170,7 @@ class DigiCourier extends CourierInterface {
       logger.log('info', 'digi book parcel api res', {
         res: res.data,
       });
-      console.log(res.data, '+++++++++++++++=');
+
       const { code, msg, data, message, status } = res.data;
       if (code === 200) {
         const {
