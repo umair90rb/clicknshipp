@@ -1,5 +1,5 @@
 'use strict';
-const mappedCities = require('../../data/mappedCities');
+const mappedCities = require('../../data/output-digi');
 
 module.exports = {
   async up(queryInterface, Sequelize) {

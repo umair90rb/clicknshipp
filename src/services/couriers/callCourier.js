@@ -75,7 +75,7 @@ class CallCourier extends CourierInterface {
         ''
       )}&SelOrigin=Domestic&CodAmount=${
         order.total_price
-      }&SpecialHandling=false&MyBoxId=1&Holiday=false&remarks=Rush Delivery&ShipperName=SWAP&ShipperCellNo=03005444103&ShipperArea=1&ShipperCity=1&ShipperAddress=286-K, GULISTAN COLONY NO.1,NEAR GIRLS HIGH SCHOOL, FAISALABAD"
+      }&SpecialHandling=false&MyBoxId=1&Holiday=false&remarks=Rush Delivery&ShipperName=SWAP&ShipperCellNo=03005444103&ShipperArea=1&ShipperCity=1&ShipperAddress=Plot no. 61 Sajjad Industrial State Millat Road Faisalabad"
       &ShipperLandLineNo=03005444103&ShipperEmail=SWAPNEARN@GMAIL.COM`;
       response = await this.http.get(url);
       logger.log('info', 'leopard book parcel api response', {

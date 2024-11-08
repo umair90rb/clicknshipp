@@ -3,7 +3,7 @@ import getAxiosInstance from '../AxiosService';
 import models from '../../models';
 import logger from '../../middleware/logger';
 import { Op } from 'sequelize';
-import { isToday } from 'date-fns';
+import { isDateToday } from '../../helpers/pgDateFormat';
 const { CityNameMaping } = models;
 
 class TCSCourier extends CourierInterface {
@@ -85,7 +85,7 @@ class TCSCourier extends CourierInterface {
     const { token: bodyToken, expiry: bodyTokenExpiry } = tokens.find(
       (token) => token.type === 'body'
     );
-    if (isToday(headerTokenExpiry) || isToday(bodyTokenExpiry)) {
+    if (isDateToday(headerTokenExpiry) || isDateToday(bodyTokenExpiry)) {
       throw new Error(
         'TCS tokens are expired, add account again to get new token!'
       );

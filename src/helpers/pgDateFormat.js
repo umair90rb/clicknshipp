@@ -1,5 +1,21 @@
-import { startOfDay, endOfDay, subDays, formatISO } from 'date-fns';
+import {
+  startOfDay,
+  endOfDay,
+  subDays,
+  formatISO,
+  addDays,
+  isToday,
+  isBefore,
+} from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
+
+export function isExpired(date) {
+  return isBefore(date, new Date());
+}
+
+export function isDateToday(date) {
+  return isToday(date);
+}
 
 export function getDate(date = new Date()) {
   return formatISO(date, {
@@ -23,6 +39,11 @@ export const subtractDaysFromToday = (days) => subtractDays(days);
 
 export function subtractDays(days, date = new Date()) {
   return subDays(date, days);
+}
+
+export const addDaysToCurrentDate = (days) => addDaysTo(days);
+export function addDaysTo(days, date = new Date()) {
+  return addDays(date, days);
 }
 
 export const getCurrentTimeInTimezone = (timeZone = 'Etc/GMT-5') =>

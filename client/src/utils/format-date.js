@@ -1,4 +1,4 @@
-import { startOfDay, endOfDay, format, formatDistanceToNow, isToday, subDays, parse } from 'date-fns';
+import { startOfDay, endOfDay, format, formatDistanceToNow, isToday, subDays, addDays, parse } from 'date-fns';
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 export default (date = new Date().toISOString()) => {
@@ -26,6 +26,11 @@ export const isItToday = (date) => isToday(date);
 export const subtractDaysFromToday = (days) => subtractDays(days);
 export function subtractDays(days, date = new Date()) {
   return subDays(date, days);
+}
+
+export const addDaysToCurrentDate = (days) => addDaysTo(days);
+export function addDaysTo(days, date = new Date()) {
+  return addDays(date, days);
 }
 
 export function formatDateTime(dateTimeString, omitYearAndSec = false) {

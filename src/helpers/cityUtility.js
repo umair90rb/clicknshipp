@@ -1,4 +1,4 @@
-const data = require('../data/index');
+const data = require('../data/digi-index');
 const fs = require('fs');
 
 // const capitalizeWord = (word) => word[0] + word.substring(1).toLowerCase();
@@ -78,7 +78,7 @@ function mapCities(
         assigned_id: maped[0][listIdKey] || null,
         active_as_origin: maped[0][listOriginKey] || true,
         active_as_destination: maped[0][listDestinationKey] || true,
-        code: maped[0][listCodeKey] || null,
+        code: maped[0][listCodeKey] || '1',
         courier,
       };
     }
@@ -106,7 +106,7 @@ mappedCities.forEach((list) => {
   });
 });
 const result = JSON.stringify(singleArr);
-const filePath = __dirname + '/output-mnp.json';
+const filePath = __dirname + '/output-digi.json';
 fs.writeFile(filePath, result, 'utf8', (err) => {
   if (err) {
     console.error('Error writing JSON to file:', err);

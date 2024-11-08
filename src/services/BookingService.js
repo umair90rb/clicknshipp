@@ -6,6 +6,7 @@ import TCSCourier from './couriers/tcsCourier';
 import CallCourier from './couriers/callCourier';
 import MnpCourier from './couriers/mnpCourier';
 import ManualCourier from './couriers/manualCourier';
+import DigiCourier from './couriers/digiCourier';
 
 class BookingService {
   constructor() {
@@ -17,6 +18,11 @@ class BookingService {
       tcs: new TCSCourier(),
       callcourier: new CallCourier(),
       mnp: new MnpCourier(),
+      digi_mnp: new DigiCourier(),
+      digi_swift: new DigiCourier(),
+      digi_trax: new DigiCourier(),
+      digi_leopard: new DigiCourier(),
+      digi_bluex: new DigiCourier(),
       manual: new ManualCourier(),
     };
   }

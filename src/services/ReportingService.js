@@ -4,6 +4,9 @@ import model from '../models';
 import { PERMISSIONS } from '../constants/constants';
 const { Order, OrderItem, Delivery, User, Chanel, Role, Permission } = model;
 
+const GENERATED = `('Assigned', 'Confirmed', 'No Pick', 'Payment Pending', 'Booked', 'Booking Error')`;
+const CONFIRMED = `('Confirmed', 'Booked', 'Booking Error', 'Delivered', 'Returned')`;
+const BOOKED = `('Booked', 'Booking Error')`;
 class ReportingService {
   constructor() {}
 
@@ -44,7 +47,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              `CASE WHEN "Order"."status" IN ('Confirmed', 'Booked', 'Booking Error') THEN 1 ELSE 0 END`
+              `CASE WHEN "Order"."status" IN ${CONFIRMED} THEN 1 ELSE 0 END`
             )
           ),
           'confirmed',
@@ -124,7 +127,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'No Pick\' OR "Order"."status" = \'Payment Pending\' OR "Order"."status" = \'Booked\' OR "Order"."status" = \'Booking Error\' OR "Order"."status" = \'Assigned\' THEN 1 ELSE 0 END'
+              `CASE WHEN "Order"."status" IN ${GENERATED} THEN 1 ELSE 0 END`
             )
           ),
           'generated',
@@ -133,7 +136,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'Booked\' OR "Order"."status" = \'Booking Error\' THEN 1 ELSE 0 END'
+              `CASE WHEN "Order"."status" IN ${CONFIRMED} THEN 1 ELSE 0 END`
             )
           ),
           'confirmed',
@@ -142,7 +145,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'No Pick\' OR "Order"."status" = \'Payment Pending\' OR "Order"."status" = \'Booked\' OR "Order"."status" = \'Booking Error\' OR "Order"."status" = \'Assigned\' THEN "items"."quantity" ELSE 0 END'
+              `CASE WHEN "Order"."status" IN ${GENERATED} THEN "items"."quantity" ELSE 0 END`
             )
           ),
           'unit_generated',
@@ -151,7 +154,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'Booked\' OR "Order"."status" = \'Booking Error\' THEN "items"."quantity" ELSE 0 END'
+              `CASE WHEN "Order"."status" IN ${CONFIRMED} THEN "items"."quantity" ELSE 0 END`
             )
           ),
           'unit_confirmed',
@@ -160,7 +163,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              'CASE WHEN  "Order"."status" = \'Booked\' THEN "items"."quantity" ELSE 0 END'
+              'CASE WHEN "Order"."status" = \'Booked\' THEN "items"."quantity" ELSE 0 END'
             )
           ),
           'unit_booked',
@@ -340,7 +343,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              `CASE WHEN "Order"."status" IN ('Confirmed', 'No Pick', 'Payment Pending', 'Booked', 'Booking Error', 'Assigned') THEN 1 ELSE 0 END`
+              `CASE WHEN "Order"."status" IN ${GENERATED} THEN 1 ELSE 0 END`
             )
           ),
           'generated',
@@ -349,7 +352,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              `CASE WHEN "Order"."status" IN ('Confirmed', 'Booked', 'Booking Error', 'Delivered', 'Returned') THEN 1 ELSE 0 END`
+              `CASE WHEN "Order"."status" IN ${CONFIRMED} THEN 1 ELSE 0 END`
             )
           ),
           'confirmed',
@@ -358,7 +361,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              `CASE WHEN "Order"."status" IN ('Confirmed', 'No Pick', 'Payment Pending', 'Booked', 'Booking Error', 'Assigned') THEN "items"."quantity" ELSE 0 END`
+              `CASE WHEN "Order"."status" IN ${GENERATED} THEN "items"."quantity" ELSE 0 END`
             )
           ),
           'unit_generated',
@@ -367,7 +370,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              `CASE WHEN "Order"."status" IN ('Confirmed', 'Booked', 'Booking Error', 'Delivered', 'Returned')  THEN "items"."quantity" ELSE 0 END`
+              `CASE WHEN "Order"."status" IN ${CONFIRMED}  THEN "items"."quantity" ELSE 0 END`
             )
           ),
           'unit_confirmed',
@@ -530,7 +533,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              'CASE WHEN "Order"."status" = \'Confirmed\' OR "Order"."status" = \'Booked\' THEN 1 ELSE 0 END'
+              `CASE WHEN "Order"."status" IN ${CONFIRMED} THEN 1 ELSE 0 END`
             )
           ),
           'confirmed',
@@ -572,6 +575,7 @@ class ReportingService {
       ],
       where,
       group: ['Order.chanel_id', 'chanel.name', 'user.name'],
+      group: ['Order.chanel_id', 'chanel.name'],
       raw: true,
     });
   }
