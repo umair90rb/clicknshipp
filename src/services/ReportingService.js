@@ -575,7 +575,7 @@ class ReportingService {
       ],
       where,
       group: ['Order.chanel_id', 'chanel.name', 'user.name'],
-      group: ['Order.chanel_id', 'chanel.name'],
+      // group: ['Order.chanel_id', 'chanel.name'],
       raw: true,
     });
   }
