@@ -87,7 +87,11 @@ class DigiCourier extends CourierInterface {
   }
 
   getToken(deliveryAccount) {
-    if (!deliveryAccount.tokens || deliveryAccount.tokens.length === 0) {
+    if (
+      !deliveryAccount.tokens ||
+      deliveryAccount.tokens.length === 0 ||
+      isExpired(deliveryAccount.tokens[0]?.expiry)
+    ) {
       return this.login(deliveryAccount.username, deliveryAccount.password)
         .then(({ token, expiry }) =>
           this.saveToken(deliveryAccount.id, token, expiry)
@@ -97,17 +101,18 @@ class DigiCourier extends CourierInterface {
           throw error;
         });
     }
+
     const { token, expiry } = deliveryAccount.tokens[0];
-    if (isExpired(expiry)) {
-      return this.refreshToken(token)
-        .then(({ token, expiry }) =>
-          this.saveToken(deliveryAccount.id, token, expiry)
-        )
-        .then(({ token }) => token)
-        .catch((error) => {
-          throw error;
-        });
-    }
+    // if (isExpired(expiry)) {
+    //   return this.login(token)
+    //     .then(({ token, expiry }) =>
+    //       this.saveToken(deliveryAccount.id, token, expiry)
+    //     )
+    //     .then(({ token }) => token)
+    //     .catch((error) => {
+    //       throw error;
+    //     });
+    // }
     return token;
   }
 
@@ -128,6 +133,7 @@ class DigiCourier extends CourierInterface {
         },
         raw: true,
       });
+      console.log(destinationCity, 'destinationCity');
       if (!destinationCity) {
         return {
           cn: null,
@@ -144,11 +150,13 @@ class DigiCourier extends CourierInterface {
         order.customer.phone
       }&buyer_name=${encodeURIComponent(
         order.customer.first_name + ' ' + order.customer.last_name || ''
-      )}&buyer_address=${order.address.address1}&buyer_city=${
-        destinationCity.assigned_id
-      }&piece=1&amount=${order.total_price}&external_reference_no=Sukooonx${
-        order.order_number
-      }&weight=0.25&product_name=${order.items.reduce(
+      )}&buyer_address=${encodeURIComponent(
+        order.address.address1
+      )}&buyer_city=${destinationCity.assigned_id}&piece=1&amount=${
+        order.total_price
+      }&external_reference_no=Sukooonx${order.order_number}&weight=${
+        deliveryAccount.key == '17' ? '0.5' : '0.25'
+      }&product_name=${order.items.reduce(
         (p, c, i) =>
           i > 0 ? `${c.name}/${c.quantity}-${p}` : `${c.name}/${c.quantity}`,
         ''
@@ -158,7 +166,7 @@ class DigiCourier extends CourierInterface {
         deliveryAccount.username
       }&shipment_type=1&pickup_id=${
         deliveryAccount.cost_center
-      }&source=sukooon`;
+      }&source=sukooon&new_destination_city_check=1`;
 
       reqOptions = {
         url: `${this.baseURL}${url}`,
@@ -171,7 +179,7 @@ class DigiCourier extends CourierInterface {
         res: res.data,
       });
 
-      const { code, msg, data, message, status } = res.data;
+      const { code, msg, data, message, status, error } = res.data;
       if (code === 200) {
         const {
           tracking_no,
@@ -198,15 +206,17 @@ class DigiCourier extends CourierInterface {
       } else {
         return {
           cn: null,
-          slip: null,
+          slip: JSON.stringify({
+            error,
+          }),
           isSuccess: false,
-          error: message,
-          response: status,
+          error: error,
+          response: message || msg || code,
         };
       }
-    } catch (error) {
-      const { Response, ...rest } = res.data;
-      logger.log('error', error.message, {
+    } catch (e) {
+      const { code, msg, data, message, status, error } = res.data;
+      logger.log('error', e.message, {
         data: res.data,
         stack: 'in call courier booking function',
       });
@@ -214,8 +224,8 @@ class DigiCourier extends CourierInterface {
         cn: null,
         slip: null,
         isSuccess: false,
-        error: Response,
-        response: Response,
+        error: error,
+        response: message || msg || code,
       };
     }
   }
@@ -286,6 +296,8 @@ class DigiCourier extends CourierInterface {
       response: trackingNumber,
     };
   }
+
+  getCities(gateway_id) {}
 
   downloadReceipt(trackingNumber, deliveryAccount) {
     // Implementation for downloading receipt via TCS

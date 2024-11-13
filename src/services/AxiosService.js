@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 const getAxiosInstance = (baseURL, headers) => {
   const http = axios.create({
@@ -9,29 +9,16 @@ const getAxiosInstance = (baseURL, headers) => {
 
   http.interceptors.request.use((request) => {
     console.log(
-      "request",
-      "url:",
+      'request',
       request.url,
-      "headers:",
-      request.headers,
-      "params:",
-      request.params,
-      "data:",
-      request.data
+      'data:',
+      request.data || request.params
     );
     return request;
   });
 
   http.interceptors.response.use((response) => {
-    console.log(
-      "response",
-      "url:",
-      response.url,
-      "headers:",
-      response.headers,
-      "data:",
-      response.data
-    );
+    console.log('response:', response.status, response.data);
     return response;
   });
   return http;

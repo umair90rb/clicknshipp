@@ -92,10 +92,13 @@ export default function GridDeliveryStatus({ delivery }) {
       <Box>
         <Typography>
           {delivery?.status} {delivery?.updatedAt && '(updated ' + formatDistance(delivery?.updatedAt) + ')'}
+          {(!delivery?.cn && delivery?.slip_link) || ''}
         </Typography>
-        <Link target="_blank" href={getLink(delivery?.cn, delivery?.courier)}>
-          {delivery?.cn}
-        </Link>
+        {delivery?.cn && (
+          <Link target="_blank" href={getLink(delivery?.cn, delivery?.courier)}>
+            {delivery?.cn}
+          </Link>
+        )}
         {'\n'}
         {delivery?.tracking && (
           <HtmlTooltip placement="left" title={renderHistory()}>

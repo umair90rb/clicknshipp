@@ -100,7 +100,7 @@ export default {
             model: Delivery,
             as: 'delivery',
             attributes: {
-              exclude: ['slip_link', 'order_id', 'account_id'],
+              exclude: ['order_id', 'account_id'],
             },
           },
           {

@@ -18,11 +18,7 @@ class BookingService {
       tcs: new TCSCourier(),
       callcourier: new CallCourier(),
       mnp: new MnpCourier(),
-      digi_mnp: new DigiCourier(),
-      digi_swift: new DigiCourier(),
-      digi_trax: new DigiCourier(),
-      digi_leopard: new DigiCourier(),
-      digi_bluex: new DigiCourier(),
+      digi: new DigiCourier(),
       manual: new ManualCourier(),
     };
   }

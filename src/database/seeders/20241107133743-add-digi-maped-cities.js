@@ -1,5 +1,5 @@
 'use strict';
-const mappedCities = require('../../data/output-digi');
+const mappedCities = require('../../data/output-digi-all');
 
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -7,6 +7,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    return queryInterface.bulkDelete('CityNameMapings', null, {});
+    // return queryInterface.bulkDelete('CityNameMapings', null, {});
   },
 };
