@@ -26,7 +26,16 @@ import { fetchAllChanel } from 'store/slices/chanel/fetchChanel';
 import BookingUnitReport from './BookingUnitReport';
 import FOCReport from './FOCReport';
 
-const REPORT_TYPES = ['Agent Report', 'Unit Report', 'Booking Unit Report', 'FOC Report', 'Channel Report', 'Incentive Report'];
+// const REPORT_TYPES = ['Agent Report', 'Unit Report', 'Booking Unit Report', 'FOC Report', 'Channel Report', 'Incentive Report'];
+
+const REPORT_TYPES = [
+  { label: 'Agent Report', value: 'Agent Report' },
+  { label: 'Product Report', value: 'Unit Report' },
+  { label: 'Booking Report', value: 'Booking Unit Report' },
+  { label: 'FOC Report', value: 'FOC Report' },
+  { label: 'Channel Report', value: 'Channel Report' },
+  { label: 'Incentive Report', value: 'Incentive Report' }
+];
 
 const Reporting = () => {
   const dispatch = useDispatch();
@@ -108,9 +117,9 @@ const Reporting = () => {
               label="Select report"
               onChange={(e) => dispatch(setReportType(e.target.value))}
             >
-              {REPORT_TYPES.map((rt, index) => (
-                <MenuItem key={index} value={rt}>
-                  {rt}
+              {REPORT_TYPES.map(({ label, value }, index) => (
+                <MenuItem key={index} value={value}>
+                  {label}
                 </MenuItem>
               ))}
             </Select>

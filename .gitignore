@@ -6,6 +6,8 @@ shopifyWebhookData.json
 compose.yml
 .env
 package-lock.json
+deliveryAccountData.sql
+shopifyWebhookData.json
 
 logs
 *.log

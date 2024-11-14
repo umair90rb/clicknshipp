@@ -1,23 +1,32 @@
 import React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import { Typography, LinearProgress } from '@mui/material';
+// import { Typography, LinearProgress } from '@mui/material';
 import styled from '@mui/system/styled';
 import { useSelector } from 'react-redux';
 import GridToolbarWithHeading from 'components/GridToolbarWithHeading';
 import CustomNoRowsOverlay from 'components/GridNoRowCustomOverlay';
 import { reportDataSelector, reportIsLoadingSelector } from 'store/slices/report/reportSelector';
 
-const BorderLinearProgress = styled(LinearProgress)(() => ({
-  height: '14px',
-  width: '88px',
-  borderRadius: '7px',
-  backgroundColor: ' #ebf5fb',
-  '& .MuiLinearProgress-bar': {
-    backgroundColor: '#2196f3',
-    transition: 'none',
-    transformOrigin: 'left'
+const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
+  '& .MuiDataGrid-row:nth-of-type(even)': {
+    backgroundColor: theme.palette.action.hover // Light gray for even rows
+  },
+  '& .MuiDataGrid-row:nth-of-type(odd)': {
+    backgroundColor: '#ffffff' // White for odd rows
   }
 }));
+
+// const BorderLinearProgress = styled(LinearProgress)(() => ({
+//   height: '14px',
+//   width: '88px',
+//   borderRadius: '7px',
+//   backgroundColor: ' #ebf5fb',
+//   '& .MuiLinearProgress-bar': {
+//     backgroundColor: '#2196f3',
+//     transition: 'none',
+//     transformOrigin: 'left'
+//   }
+// }));
 
 const columns = [
   {
@@ -144,9 +153,9 @@ export default function FOCReport() {
 
   return (
     <div style={{ width: '100%', height: '75vh' }}>
-      <DataGrid
+      <StyledDataGrid
         hideFooterPagination
-        checkboxSelection
+        checkboxSelection={false}
         loading={reportIsLoading}
         getRowId={(row) => `${row.name}`}
         slots={{ toolbar: renderToolbar, noRowsOverlay: CustomNoRowsOverlay }}

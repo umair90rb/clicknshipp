@@ -4,9 +4,9 @@ import model from '../models';
 import { PERMISSIONS } from '../constants/constants';
 const { Order, OrderItem, Delivery, User, Chanel, Role, Permission } = model;
 
-const GENERATED = `('Assigned', 'Confirmed', 'No Pick', 'Payment Pending', 'Booked', 'Booking Error')`;
+const GENERATED = `('Assigned', 'Confirmed', 'No Pick', 'Cancel', 'Payment Pending', 'Booked', 'Booking Error')`;
 const CONFIRMED = `('Confirmed', 'Booked', 'Booking Error', 'Delivered', 'Returned')`;
-const BOOKED = `('Booked', 'Booking Error')`;
+const BOOKED = `('Booked')`;
 class ReportingService {
   constructor() {}
 
@@ -163,7 +163,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              'CASE WHEN "Order"."status" = \'Booked\' THEN "items"."quantity" ELSE 0 END'
+              `CASE WHEN "Order"."status" IN ${BOOKED} THEN "items"."quantity" ELSE 0 END`
             )
           ),
           'unit_booked',
@@ -186,78 +186,78 @@ class ReportingService {
           ),
           'unit_cancel',
         ],
-        [
-          fn(
-            'SUM',
-            literal(
-              `CASE WHEN "delivery"."courier" = 'postex' THEN "items"."quantity" ELSE 0 END`
-            )
-          ),
-          'postex',
-        ],
-        [
-          fn(
-            'SUM',
-            literal(
-              `CASE WHEN "delivery"."courier" = 'tcs' THEN "items"."quantity" ELSE 0 END`
-            )
-          ),
-          'tcs',
-        ],
-        [
-          fn(
-            'SUM',
-            literal(
-              `CASE WHEN "delivery"."courier" = 'trax' THEN "items"."quantity" ELSE 0 END`
-            )
-          ),
-          'trax',
-        ],
-        [
-          fn(
-            'SUM',
-            literal(
-              `CASE WHEN "delivery"."courier" = 'deawoo' THEN "items"."quantity" ELSE 0 END`
-            )
-          ),
-          'deawoo',
-        ],
-        [
-          fn(
-            'SUM',
-            literal(
-              `CASE WHEN "delivery"."courier" = 'leopard' THEN "items"."quantity" ELSE 0 END`
-            )
-          ),
-          'leapard',
-        ],
-        [
-          fn(
-            'SUM',
-            literal(
-              `CASE WHEN "delivery"."courier" = 'callcourier' THEN "items"."quantity" ELSE 0 END`
-            )
-          ),
-          'callcourier',
-        ],
-        [
-          fn(
-            'SUM',
-            literal(
-              `CASE WHEN "delivery"."courier" = 'mnp' THEN "items"."quantity" ELSE 0 END`
-            )
-          ),
-          'mnp',
-        ],
-        [
-          fn(
-            'SUM',
-            literal(
-              `CASE WHEN "delivery"."courier" = 'manual' THEN "items"."quantity" ELSE 0 END`
-            )
-          ),
-          'manual',
-        ],
+        // [
+        //   fn(
+        //     'SUM',
+        //     literal(
+        //       `CASE WHEN "delivery"."courier" = 'postex' THEN "items"."quantity" ELSE 0 END`
+        //     )
+        //   ),
+        //   'postex',
+        // ],
+        // [
+        //   fn(
+        //     'SUM',
+        //     literal(
+        //       `CASE WHEN "delivery"."courier" = 'tcs' THEN "items"."quantity" ELSE 0 END`
+        //     )
+        //   ),
+        //   'tcs',
+        // ],
+        // [
+        //   fn(
+        //     'SUM',
+        //     literal(
+        //       `CASE WHEN "delivery"."courier" = 'trax' THEN "items"."quantity" ELSE 0 END`
+        //     )
+        //   ),
+        //   'trax',
+        // ],
+        // [
+        //   fn(
+        //     'SUM',
+        //     literal(
+        //       `CASE WHEN "delivery"."courier" = 'deawoo' THEN "items"."quantity" ELSE 0 END`
+        //     )
+        //   ),
+        //   'deawoo',
+        // ],
+        // [
+        //   fn(
+        //     'SUM',
+        //     literal(
+        //       `CASE WHEN "delivery"."courier" = 'leopard' THEN "items"."quantity" ELSE 0 END`
+        //     )
+        //   ),
+        //   'leapard',
+        // ],
+        // [
+        //   fn(
+        //     'SUM',
+        //     literal(
+        //       `CASE WHEN "delivery"."courier" = 'callcourier' THEN "items"."quantity" ELSE 0 END`
+        //     )
+        //   ),
+        //   'callcourier',
+        // ],
+        // [
+        //   fn(
+        //     'SUM',
+        //     literal(
+        //       `CASE WHEN "delivery"."courier" = 'mnp' THEN "items"."quantity" ELSE 0 END`
+        //     )
+        //   ),
+        //   'mnp',
+        // ],
+        // [
+        //   fn(
+        //     'SUM',
+        //     literal(
+        //       `CASE WHEN "delivery"."courier" = 'manual' THEN "items"."quantity" ELSE 0 END`
+        //     )
+        //   ),
+        //   'manual',
+        // ],
       ],
       include: [
         {
@@ -554,7 +554,24 @@ class ReportingService {
           ),
           'cancel',
         ],
-        [fn('SUM', col('items.quantity')), 'units'],
+        [
+          fn(
+            'SUM',
+            literal(
+              `CASE WHEN "Order"."status" IN ${GENERATED} THEN "items"."quantity" ELSE 0 END`
+            )
+          ),
+          'unit_generated',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              `CASE WHEN "Order"."status" IN ${CONFIRMED} THEN "items"."quantity" ELSE 0 END`
+            )
+          ),
+          'unit_confirmed',
+        ],
       ],
       include: [
         {

@@ -5,6 +5,16 @@ import GridToolbarWithHeading from 'components/GridToolbarWithHeading';
 import CustomNoRowsOverlay from 'components/GridNoRowCustomOverlay';
 import { reportDataSelector, reportIsLoadingSelector } from 'store/slices/report/reportSelector';
 import { toSentence } from 'utils/string-utils';
+import { styled } from '@mui/material/styles';
+
+const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
+  '& .MuiDataGrid-row:nth-of-type(even)': {
+    backgroundColor: theme.palette.action.hover // Light gray for even rows
+  },
+  '& .MuiDataGrid-row:nth-of-type(odd)': {
+    backgroundColor: '#ffffff' // White for odd rows
+  }
+}));
 
 const columns = [
   {
@@ -68,7 +78,7 @@ export default function IncentiveReport() {
 
   return (
     <div style={{ width: '100%', height: '75vh' }}>
-      <DataGrid
+      <StyledDataGrid
         hideFooterPagination
         checkboxSelection
         loading={reportIsLoading}

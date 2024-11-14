@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { Typography, Button, LinearProgress } from '@mui/material';
 import styled from '@mui/system/styled';
@@ -17,6 +17,15 @@ import CustomNoRowsOverlay from 'components/GridNoRowCustomOverlay';
 import { setOrderFilters } from 'store/slices/order/orderSlice';
 import { useNavigate } from 'react-router-dom';
 import fetchStatus from 'constants/fetchStatuses';
+
+const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
+  '& .MuiDataGrid-row:nth-of-type(even)': {
+    backgroundColor: theme.palette.action.hover // Light gray for even rows
+  },
+  '& .MuiDataGrid-row:nth-of-type(odd)': {
+    backgroundColor: '#ffffff' // White for odd rows
+  }
+}));
 
 const BorderLinearProgress = styled(LinearProgress)(() => ({
   height: '14px',
@@ -40,6 +49,10 @@ export default function AgentsReports() {
   const reportChanelFilter = useSelector(reportChanelSelector);
   const reportBrandFilter = useSelector(reportBrandSelector);
   const data = useSelector(reportDataSelector);
+  const [columnVisibilityModel, setColumnVisibilityModel] = useState({
+    user_id: false
+  });
+
   // const _data = data;
 
   const renderToolBar = () => <GridToolbarWithHeading heading="Agent Report" />;
@@ -323,10 +336,12 @@ export default function AgentsReports() {
 
   return (
     <div style={{ width: '100%', height: '75vh' }}>
-      <DataGrid
+      <StyledDataGrid
         disableRowSelectionOnClick
         hideFooterPagination
-        checkboxSelection
+        checkboxSelection={false}
+        columnVisibilityModel={columnVisibilityModel}
+        onColumnVisibilityModelChange={setColumnVisibilityModel}
         loading={reportIsLoading}
         slots={{
           toolbar: renderToolBar,

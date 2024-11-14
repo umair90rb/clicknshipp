@@ -10,7 +10,8 @@ export function addTotalRow(report, data) {
           totalCancelOrders: data.reduce((acc, row) => acc + (parseInt(row.cancel) || 0), 0),
           totalNoPickOrders: data.reduce((acc, row) => acc + (parseInt(row.no_pick) || 0), 0),
           totalConfirmedOrders: data.reduce((acc, row) => acc + (parseInt(row.confirmed) || 0), 0),
-          totalUnits: data.reduce((acc, row) => acc + (parseInt(row.units) || 0), 0)
+          totalUnitGenerated: data.reduce((acc, row) => acc + (parseInt(row.unit_generated) || 0), 0),
+          totalUnitConfirmed: data.reduce((acc, row) => acc + (parseInt(row.unit_confirmed) || 0), 0)
         }
       ];
     case 'Agent Report':
