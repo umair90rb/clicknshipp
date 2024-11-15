@@ -89,6 +89,7 @@ export function addTotalRow(report, data) {
           totalLeopard: data.reduce((acc, row) => acc + (parseInt(row.leopard) || 0), 0),
           totalCallCourier: data.reduce((acc, row) => acc + (parseInt(row.callcourier) || 0), 0),
           totalMNP: data.reduce((acc, row) => acc + (parseInt(row.mnp) || 0), 0),
+          totalDigi: data.reduce((acc, row) => acc + (parseInt(row.digi) || 0), 0),
           totalManual: data.reduce((acc, row) => acc + (parseInt(row.manual) || 0), 0)
         }
       ];

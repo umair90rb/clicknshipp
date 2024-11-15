@@ -479,6 +479,15 @@ class ReportingService {
           fn(
             'SUM',
             literal(
+              `CASE WHEN "delivery"."status" != 'Booking Error' AND "delivery"."courier" = 'digi' THEN "items"."quantity" ELSE 0 END`
+            )
+          ),
+          'digi',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
               `CASE WHEN "delivery"."status" != 'Booking Error' AND "delivery"."courier" = 'manual' THEN "items"."quantity" ELSE 0 END`
             )
           ),

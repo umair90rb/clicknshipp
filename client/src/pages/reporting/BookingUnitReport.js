@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import { styled } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
 import GridToolbarWithHeading from 'components/GridToolbarWithHeading';
 import CustomNoRowsOverlay from 'components/GridNoRowCustomOverlay';
 import { reportDataSelector, reportIsLoadingSelector } from 'store/slices/report/reportSelector';
+import { styled } from '@mui/material/styles';
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   '& .MuiDataGrid-row:nth-of-type(even)': {
@@ -190,6 +190,17 @@ const columns = [
     valueGetter: (params) => {
       if (params.row.id === 'TOTAL') {
         return params.row.totalMNP;
+      }
+      return params.value;
+    }
+  },
+  {
+    field: 'digi',
+    headerName: 'Digi',
+    flex: 0.5,
+    valueGetter: (params) => {
+      if (params.row.id === 'TOTAL') {
+        return params.row.totalDigi;
       }
       return params.value;
     }
