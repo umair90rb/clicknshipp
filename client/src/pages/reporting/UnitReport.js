@@ -32,7 +32,7 @@ const columns = [
   {
     field: 'name',
     headerName: 'Name',
-    flex: 3,
+    flex: 1,
     valueGetter: (params) => {
       if (params.row.id === 'TOTAL') {
         return params.row.label;
@@ -85,17 +85,17 @@ const columns = [
     }
   },
 
-  {
-    field: 'unit_booked',
-    headerName: 'Unit Booked',
-    flex: 0.5,
-    valueGetter: (params) => {
-      if (params.row.id === 'TOTAL') {
-        return params.row.totalUnitBooked;
-      }
-      return params.value;
-    }
-  },
+  // {
+  //   field: 'unit_booked',
+  //   headerName: 'Unit Booked',
+  //   flex: 0.5,
+  //   valueGetter: (params) => {
+  //     if (params.row.id === 'TOTAL') {
+  //       return params.row.totalUnitBooked;
+  //     }
+  //     return params.value;
+  //   }
+  // },
 
   {
     field: 'unit_no_pick',

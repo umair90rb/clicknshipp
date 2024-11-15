@@ -1,3 +1,5 @@
+import Sequelize, { Op } from 'sequelize';
+import { BOOKED_LIST } from '../constants/orderStatuses';
 import formatPhone from '../helpers/formatPhone';
 import {
   getCurrentTimeInTimezone,
@@ -7,7 +9,6 @@ import {
 } from '../helpers/pgDateFormat';
 import splitName from '../helpers/splitName';
 import model from '../models';
-import Sequelize, { Op } from 'sequelize';
 const {
   Order,
   OrderItem,
@@ -531,6 +532,10 @@ class OrderService {
       return false;
     }
     return true;
+  }
+
+  async isOrderBooked(orderId) {
+    return Boolean(Order.findOne({ where: { id: orderId, status: 'Booked' } }));
   }
 }
 

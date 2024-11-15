@@ -2,11 +2,12 @@ import { Op, QueryTypes, literal, fn, col, Sequelize } from 'sequelize';
 import { sequelize } from '../models';
 import model from '../models';
 import { PERMISSIONS } from '../constants/constants';
+import {
+  CONFIRMED_LIST,
+  CONFIRMED,
+  GENERATED,
+} from '../constants/orderStatuses';
 const { Order, OrderItem, Delivery, User, Chanel, Role, Permission } = model;
-
-const GENERATED = `('Assigned', 'Confirmed', 'No Pick', 'Cancel', 'Payment Pending', 'Booked', 'Booking Error')`;
-const CONFIRMED = `('Confirmed', 'Booked', 'Booking Error', 'Delivered', 'Returned')`;
-const BOOKED = `('Booked')`;
 class ReportingService {
   constructor() {}
 
@@ -159,15 +160,15 @@ class ReportingService {
           ),
           'unit_confirmed',
         ],
-        [
-          fn(
-            'SUM',
-            literal(
-              `CASE WHEN "Order"."status" IN ${BOOKED} THEN "items"."quantity" ELSE 0 END`
-            )
-          ),
-          'unit_booked',
-        ],
+        // [
+        //   fn(
+        //     'SUM',
+        //     literal(
+        //       `CASE WHEN "Order"."status" IN ${BOOKED} THEN "items"."quantity" ELSE 0 END`
+        //     )
+        //   ),
+        //   'unit_booked',
+        // ],
         [
           fn(
             'SUM',
@@ -528,7 +529,16 @@ class ReportingService {
       attributes: [
         [col('chanel.name'), 'chanel'],
         [col('user.name'), 'agent'],
-        [fn('COUNT', col('Order.id')), 'orders'],
+        // [fn('COUNT', col('Order.id')), 'orders'],
+        [
+          fn(
+            'SUM',
+            literal(
+              `CASE WHEN "Order"."status" IN ${GENERATED} THEN 1 ELSE 0 END`
+            )
+          ),
+          'orders',
+        ],
         [
           fn(
             'SUM',
@@ -606,7 +616,7 @@ class ReportingService {
         [Op.ne]: null,
       },
       status: {
-        [Op.in]: ['Confirmed', 'Booked'],
+        [Op.in]: CONFIRMED_LIST,
       },
     };
     if (reportBrand && reportBrand.length) {
@@ -650,7 +660,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              `CASE WHEN "Order"."user_id" = ${user.id} AND "Order"."status" IN ('Confirmed', 'Booked') THEN "items"."quantity" ELSE 0 END`
+              `CASE WHEN "Order"."user_id" = ${user.id} AND "Order"."status" IN ${CONFIRMED} THEN "items"."quantity" ELSE 0 END`
             )
           ),
           `${user.name.toLowerCase().split(' ').join('_')}_confirmed`,
@@ -659,7 +669,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              `CASE WHEN "Order"."user_id" = ${user.id} AND "Order"."status" = 'Booked' THEN "items"."quantity" ELSE 0 END`
+              `CASE WHEN "Order"."user_id" = ${user.id} AND "Order"."status" = 'Delivered' THEN "items"."quantity" ELSE 0 END`
             )
           ),
           `${user.name.toLowerCase().split(' ').join('_')}_delivered`,
