@@ -9,13 +9,13 @@ const bookingWorker = new Worker(
   'bookingQueue',
   async (job) => {
     const { orderId, deliveryAccountId } = job.data;
-    if (await _orderService.isOrderBooked(orderId)) {
-      logger.log(
-        'error',
-        `order with id:${orderId} is already booked. Cannot book with delivery service id:${deliveryAccountId}`
-      );
-      return;
-    }
+    // if (await _orderService.isOrderBooked(orderId)) {
+    //   logger.log(
+    //     'error',
+    //     `order with id:${orderId} is already booked. Cannot book with delivery service id:${deliveryAccountId}`
+    //   );
+    //   return;
+    // }
     const order = await _orderService.loadOrderForBooking(orderId);
     const deliveryAccount =
       await deliveryServiceAccountService.getAccountWithToken(
