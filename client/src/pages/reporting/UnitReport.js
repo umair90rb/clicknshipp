@@ -40,28 +40,28 @@ const columns = [
       return params.value;
     }
   },
-  {
-    field: 'generated',
-    headerName: 'Generated',
-    flex: 0.5,
-    valueGetter: (params) => {
-      if (params.row.id === 'TOTAL') {
-        return params.row.totalGenerated;
-      }
-      return params.value;
-    }
-  },
-  {
-    field: 'confirmed',
-    headerName: 'Confirmed',
-    flex: 0.5,
-    valueGetter: (params) => {
-      if (params.row.id === 'TOTAL') {
-        return params.row.totalConfirmed;
-      }
-      return params.value;
-    }
-  },
+  // {
+  //   field: 'generated',
+  //   headerName: 'Generated',
+  //   flex: 0.5,
+  //   valueGetter: (params) => {
+  //     if (params.row.id === 'TOTAL') {
+  //       return params.row.totalGenerated;
+  //     }
+  //     return params.value;
+  //   }
+  // },
+  // {
+  //   field: 'confirmed',
+  //   headerName: 'Confirmed',
+  //   flex: 0.5,
+  //   valueGetter: (params) => {
+  //     if (params.row.id === 'TOTAL') {
+  //       return params.row.totalConfirmed;
+  //     }
+  //     return params.value;
+  //   }
+  // },
   {
     field: 'unit_generated',
     headerName: 'Unit Generated',
@@ -235,10 +235,10 @@ const columns = [
 export default function UnitReport() {
   const reportIsLoading = useSelector(reportIsLoadingSelector);
   const data = useSelector(reportDataSelector);
-  const [columnVisibilityModel, setColumnVisibilityModel] = useState({
-    generated: false,
-    confirmed: false
-  });
+  // const [columnVisibilityModel, setColumnVisibilityModel] = useState({
+  //   generated: false,
+  //   confirmed: false
+  // });
 
   const renderToolbar = () => <GridToolbarWithHeading heading="Products in orders" />;
 
@@ -252,8 +252,8 @@ export default function UnitReport() {
         disableRowSelectionOnClick
         hideFooterPagination
         checkboxSelection={false}
-        columnVisibilityModel={columnVisibilityModel}
-        onColumnVisibilityModelChange={setColumnVisibilityModel}
+        // columnVisibilityModel={columnVisibilityModel}
+        // onColumnVisibilityModelChange={setColumnVisibilityModel}
         loading={reportIsLoading}
         slots={{ toolbar: renderToolbar, noRowsOverlay: CustomNoRowsOverlay }}
         rows={data}

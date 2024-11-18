@@ -39,7 +39,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              'CASE WHEN "Order"."status" != \'Duplicate\' THEN 1 ELSE 0 END'
+              `CASE WHEN "Order"."status" IN ${GENERATED} THEN 1 ELSE 0 END`
             )
           ),
           'total',
@@ -124,24 +124,24 @@ class ReportingService {
     return Order.findAll({
       attributes: [
         [col('items.name'), 'name'],
-        [
-          fn(
-            'SUM',
-            literal(
-              `CASE WHEN "Order"."status" IN ${GENERATED} THEN 1 ELSE 0 END`
-            )
-          ),
-          'generated',
-        ],
-        [
-          fn(
-            'SUM',
-            literal(
-              `CASE WHEN "Order"."status" IN ${CONFIRMED} THEN 1 ELSE 0 END`
-            )
-          ),
-          'confirmed',
-        ],
+        // [
+        //   fn(
+        //     'COUNT',
+        //     literal(
+        //       `DISTINCT CASE WHEN "Order"."status" IN ${GENERATED} THEN "Order"."id" ELSE NULL END`
+        //     )
+        //   ),
+        //   'generated',
+        // ],
+        // [
+        //   fn(
+        //     'COUNT',
+        //     literal(
+        //       `DISTINCT CASE WHEN "Order"."status" IN ${CONFIRMED} THEN "Order"."id" ELSE NULL END`
+        //     )
+        //   ),
+        //   'confirmed',
+        // ],
         [
           fn(
             'SUM',
@@ -541,35 +541,37 @@ class ReportingService {
         // [fn('COUNT', col('Order.id')), 'orders'],
         [
           fn(
-            'SUM',
+            'COUNT',
             literal(
-              `CASE WHEN "Order"."status" IN ${GENERATED} THEN 1 ELSE 0 END`
+              `DISTINCT CASE WHEN "Order"."status" IN ${GENERATED} THEN "Order"."id" ELSE NULL END`
             )
           ),
           'orders',
         ],
         [
           fn(
-            'SUM',
+            'COUNT',
             literal(
-              `CASE WHEN "Order"."status" IN ${CONFIRMED} THEN 1 ELSE 0 END`
+              `DISTINCT CASE WHEN "Order"."status" IN ${CONFIRMED} THEN "Order"."id" ELSE NULL END`
             )
           ),
           'confirmed',
         ],
         [
           fn(
-            'SUM',
+            'COUNT',
             literal(
-              'CASE WHEN "Order"."status" = \'No Pick\' THEN 1 ELSE 0 END'
+              'DISTINCT CASE WHEN "Order"."status" = \'No Pick\' THEN "Order"."id" ELSE NULL END'
             )
           ),
           'no_pick',
         ],
         [
           fn(
-            'SUM',
-            literal('CASE WHEN "Order"."status" = \'Cancel\' THEN 1 ELSE 0 END')
+            'COUNT',
+            literal(
+              'DISTINCT CASE WHEN "Order"."status" = \'Cancel\' THEN "Order"."id" ELSE NULL END'
+            )
           ),
           'cancel',
         ],
