@@ -85,11 +85,12 @@ class DeawooCourier extends CourierInterface {
         body,
         res: response.data,
       });
+
       return {
         cn: TrackNo,
         slip: JSON.stringify({ Validations, Barcode, CashCollection, OrderId }),
         isSuccess: Success,
-        error: Error ? Response : null,
+        error: Error,
         response: Response,
       };
     } catch (error) {
@@ -109,8 +110,8 @@ class DeawooCourier extends CourierInterface {
       return {
         cn: null,
         slip: null,
-        isSuccess: Success,
-        error: Error ? Response : null,
+        isSuccess: false,
+        error: Error || Response,
         response: Response,
       };
     }

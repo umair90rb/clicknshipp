@@ -68,11 +68,13 @@ const AddUpdateForm = ({ chanelToUpdate }) => {
         initialValues={{
           name: chanelToUpdate?.name || '',
           source: chanelToUpdate?.source || '',
+          token: '',
           brand_id: chanelToUpdate?.brand?.id || ''
         }}
         validationSchema={Yup.object().shape({
           name: Yup.string().max(255).required('Chanel name is required'),
           source: Yup.string().max(255).required('Source is required'),
+          token: Yup.string(),
           brand_id: Yup.number().required('Brand is required')
         })}
         onSubmit={handleSubmit}
@@ -101,6 +103,7 @@ const AddUpdateForm = ({ chanelToUpdate }) => {
                   )}
                 </Stack>
               </Grid>
+
               <Grid item xs={12}>
                 <Stack spacing={1}>
                   <InputLabel htmlFor="source-signup">Source</InputLabel>
@@ -112,12 +115,31 @@ const AddUpdateForm = ({ chanelToUpdate }) => {
                     name="source"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="exmaple.com"
-                    inputProps={{}}
+                    placeholder="store.myshopify.com"
                   />
                   {touched.source && errors.source && (
                     <FormHelperText error id="helper-text-source-signup">
                       {errors.source}
+                    </FormHelperText>
+                  )}
+                </Stack>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="token-signup">Shopify API Token(For order fulfillment)</InputLabel>
+                  <OutlinedInput
+                    fullWidth
+                    error={Boolean(touched.token && errors.token)}
+                    id="token-signup"
+                    value={values.token}
+                    name="token"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                  />
+                  {touched.token && errors.token && (
+                    <FormHelperText error id="helper-text-token-signup">
+                      {errors.token}
                     </FormHelperText>
                   )}
                 </Stack>
@@ -135,7 +157,6 @@ const AddUpdateForm = ({ chanelToUpdate }) => {
                       name="brand_id"
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      inputProps={{}}
                       labelId="brand_id-signup"
                       // renderValue={(selected) => (
                       //   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>

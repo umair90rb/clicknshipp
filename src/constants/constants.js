@@ -9,6 +9,7 @@ export const PERMISSIONS = {
   PERMISSION_UPDATE_ORDER: 'update-order',
   PERMISSION_DELETE_ORDER: 'delete-order',
   PERMISSION_BULK_ORDER_DELETE: 'bulk-order-delete',
+  PERMISSION_BULK_ORDER_BOOKING: 'bulk-order-booking',
   PERMISSION_ASSIGN_ORDERS: 'assign-orders',
 
   PERMISSION_VIEW_ITEMS: 'view-items',
@@ -73,6 +74,11 @@ export const PERMISSIONS = {
   PERMISSION_CREATE_RAW_MATERIAL: 'create-raw-material',
   PERMISSION_UPDATE_RAW_MATERIAL: 'update-raw-material',
   PERMISSION_DELETE_RAW_MATERIAL: 'delete-raw-material',
+
+  PERMISSION_VIEW_BATCHES: 'view-batches',
+  PERMISSION_CREATE_BATCH: 'create-batch',
+  PERMISSION_UPDATE_BATCH: 'update-batch',
+  PERMISSION_DELETE_BATCH: 'delete-batch',
 };
 
 export const ROLES = {
@@ -130,6 +136,7 @@ export const FILTER_COLUMNS = {
   tags: 'tags',
   customer: '$customer.first_name$',
   phone: '$customer.phone$',
+  items: '$items.name$',
   agent: 'user_id',
   address: '$address.address1$',
   city: '$address.city$',

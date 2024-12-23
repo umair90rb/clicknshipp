@@ -68,7 +68,7 @@ export default function AddStockForm({ visible, onClose }) {
     }
   }, []);
 
-  const handleSubmit = async (values, { setErrors, setStatus, setSubmitting }) => {
+  const handleSubmit = async (values, { setErrors }) => {
     dispatch(fetchCreateStock({ body: values })).then((action) => {
       if (action.type === 'stock/create/fetch/fulfilled') {
         dispatch(fetchAllStock());
@@ -83,7 +83,7 @@ export default function AddStockForm({ visible, onClose }) {
     <CustomDialog
       visible={visible}
       onClose={onClose}
-      maxWidth="lg"
+      maxWidth="xl"
       title="Receive Inventory"
       actions={[
         <Button key="1" onClick={() => formRef?.current.submitForm()} variant="contained">
@@ -383,37 +383,6 @@ export default function AddStockForm({ visible, onClose }) {
 
                       <Grid item xs={2}>
                         <FormControl fullWidth margin="normal">
-                          <FormLabel id={`inventory.${index}.expiry_date`}>Expiry Date</FormLabel>
-                          <TextField
-                            error={
-                              receiveInventory.touched.inventory &&
-                              receiveInventory.touched.inventory[index] &&
-                              receiveInventory.touched.inventory[index].expiry_date &&
-                              !!receiveInventory.errors.inventory &&
-                              !!receiveInventory.errors.inventory[index] &&
-                              !!receiveInventory.errors.inventory[index].expiry_date
-                            }
-                            size="small"
-                            value={item.expiry_date}
-                            onChange={receiveInventory.handleChange}
-                            type="date"
-                            id={`inventory.${index}.expiry_date`}
-                            name={`inventory.${index}.expiry_date`}
-                            variant="outlined"
-                          />
-                          <ErrorMessage
-                            name={`inventory.${index}.expiry_date`}
-                            render={(msg) => (
-                              <FormHelperText sx={{ m: 0 }} error id="helper-text-expiry_date">
-                                {msg}
-                              </FormHelperText>
-                            )}
-                          />
-                        </FormControl>
-                      </Grid>
-
-                      <Grid item xs={2}>
-                        <FormControl fullWidth margin="normal">
                           <FormLabel id={`inventory.${index}.production_date`}>Production Date</FormLabel>
                           <TextField
                             error={
@@ -436,6 +405,37 @@ export default function AddStockForm({ visible, onClose }) {
                             name={`inventory.${index}.production_date`}
                             render={(msg) => (
                               <FormHelperText sx={{ m: 0 }} error id="helper-text-production_date">
+                                {msg}
+                              </FormHelperText>
+                            )}
+                          />
+                        </FormControl>
+                      </Grid>
+
+                      <Grid item xs={2}>
+                        <FormControl fullWidth margin="normal">
+                          <FormLabel id={`inventory.${index}.expiry_date`}>Expiry Date</FormLabel>
+                          <TextField
+                            error={
+                              receiveInventory.touched.inventory &&
+                              receiveInventory.touched.inventory[index] &&
+                              receiveInventory.touched.inventory[index].expiry_date &&
+                              !!receiveInventory.errors.inventory &&
+                              !!receiveInventory.errors.inventory[index] &&
+                              !!receiveInventory.errors.inventory[index].expiry_date
+                            }
+                            size="small"
+                            value={item.expiry_date}
+                            onChange={receiveInventory.handleChange}
+                            type="date"
+                            id={`inventory.${index}.expiry_date`}
+                            name={`inventory.${index}.expiry_date`}
+                            variant="outlined"
+                          />
+                          <ErrorMessage
+                            name={`inventory.${index}.expiry_date`}
+                            render={(msg) => (
+                              <FormHelperText sx={{ m: 0 }} error id="helper-text-expiry_date">
                                 {msg}
                               </FormHelperText>
                             )}

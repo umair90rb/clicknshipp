@@ -2,7 +2,36 @@
 import { Model } from 'sequelize';
 module.exports = (sequelize, DataTypes) => {
   class Batch extends Model {
-    static associate(models) {}
+    static associate(models) {
+      Batch.belongsTo(models.Location, {
+        foreignKey: 'location_id',
+        as: 'store',
+      });
+      Batch.belongsTo(models.RawMaterial, {
+        foreignKey: 'item_id',
+        constraints: false,
+        as: 'raw',
+        scope: {
+          item_type: 'raw_material',
+        },
+      });
+      Batch.belongsTo(models.RawMaterial, {
+        foreignKey: 'item_id',
+        constraints: false,
+        as: 'of_material',
+        scope: {
+          item_type: 'raw_material',
+        },
+      });
+      Batch.hasOne(models.Item, {
+        foreignKey: 'item_id',
+        constraints: false,
+        as: 'of_item',
+        scope: {
+          item_type: 'finished_product',
+        },
+      });
+    }
   }
 
   Batch.init(
@@ -17,6 +46,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       item_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      location_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },

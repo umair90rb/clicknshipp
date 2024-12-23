@@ -25,6 +25,10 @@ const fetchBookOrder = createAsyncThunk('order/book/fetch', ({ body }, { rejectW
   orderService.fetchBookOrder(body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
+const fetchOrderBulkBook = createAsyncThunk('order/bulkBook/fetch', ({ body }, { rejectWithValue }) =>
+  orderService.fetchOrderBulkBook(body).catch((error) => rejectWithValue(error.response.data || error.message))
+);
+
 const fetchDownloadBookedOrderReceipts = createAsyncThunk('order/downloadReceipts/fetch', ({ body }, { rejectWithValue }) =>
   orderService.fetchDownloadBookedOrderReceipts(body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
@@ -76,6 +80,7 @@ export {
   fetchAddPaymentInOrder,
   fetchUpdateItemsInOrder,
   fetchBookOrder,
+  fetchOrderBulkBook,
   fetchDownloadBookedOrderReceipts,
   fetchCancelOrderBooking,
   fetchOrderBookingStatus,

@@ -16,6 +16,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import FilterListOffIcon from '@mui/icons-material/FilterListOff';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
+import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
@@ -60,6 +61,9 @@ import { chanelFetchStatusSelector } from 'store/slices/chanel/chanelSelector';
 import { fetchAllChanel } from 'store/slices/chanel/fetchChanel';
 import { GridDateFilter } from './GridDateFilter';
 import GridDeliveryStatus from './GridDeliveryStatus';
+import { itemFetchStatusSelector, itemItemsSelector } from 'store/slices/item/itemSelector';
+import { fetchAllItem } from 'store/slices/item/fetchItem';
+import OrderBulkBookModal from './OrderBulkBookModal';
 const columns = (
   apiRef,
   rowModesModel,
@@ -367,6 +371,10 @@ const OrderTable = memo(() => {
 
   const citiesList = useSelector(cityCitiesSelector);
   const citiesFetchStatus = useSelector(cityFetchStatusSelector);
+
+  const itemsList = useSelector(itemItemsSelector);
+  const itemsFetchStatus = useSelector(itemFetchStatusSelector);
+
   const deliveryServiceAccountsList = useSelector(deliveryServiceAccountsListSelector);
   const deliveryServiceAccountsFetchStatus = useSelector(deliveryServiceAccountsFetchStatusSelector);
   // const chanel = useSelector(chanelChanelsSelector);
@@ -418,6 +426,10 @@ const OrderTable = memo(() => {
     setAddPaymentOrderId(null);
     setAddPaymentVisible(false);
   };
+
+  const [orderBulkBookModalVisible, setOrderBulkBookModalVisible] = useState(false);
+  const showOrderBulkBookModal = () => setOrderBulkBookModalVisible(true);
+  const hideOrderBulkBookModal = () => setOrderBulkBookModalVisible(false);
 
   const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false);
   const [partialUpdateOrderLoading, setPartialUpdateOrderLoading] = useState(false);
@@ -493,6 +505,9 @@ const OrderTable = memo(() => {
     if (citiesFetchStatus !== fetchStatus.SUCCESS) {
       dispatch(fetchAllCities());
     }
+    if (itemsFetchStatus !== fetchStatus.SUCCESS) {
+      dispatch(fetchAllItem());
+    }
     if (deliveryServiceAccountsFetchStatus !== fetchStatus.SUCCESS) {
       dispatch(fetchDeliveryServiceAccounts());
     }
@@ -567,6 +582,11 @@ const OrderTable = memo(() => {
         {userPermissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) && rowSelectionModel.length > 0 && (
           <Button onClick={displayShowAssignSelectedModal} size="small" startIcon={<AssignmentIndIcon />}>
             Assign
+          </Button>
+        )}
+        {userPermissions.includes(PERMISSIONS.PERMISSION_BULK_ORDER_DELETE) && rowSelectionModel.length > 0 && (
+          <Button onClick={showOrderBulkBookModal} size="small" startIcon={<LocalShippingOutlinedIcon />}>
+            Book
           </Button>
         )}
         {userPermissions.includes(PERMISSIONS.PERMISSION_BULK_ORDER_DELETE) && rowSelectionModel.length > 0 && (
@@ -685,6 +705,26 @@ const OrderTable = memo(() => {
           }}
         />
 
+        <GridDropdownFilter
+          multiple
+          label="filter by items"
+          options={itemsList.map((item) => item.name)}
+          value={filters.find((filter) => filter.column === 'items')?.value || []}
+          onChange={(e) => {
+            if (!e.target.value || e.target.value === 'All') {
+              dispatch(setOrderFilters([...filters.filter((filter) => filter.column !== 'items')]));
+              return;
+            }
+            console.log(e.target.value);
+            dispatch(
+              setOrderFilters([
+                ...filters.filter((filter) => filter.column !== 'items'),
+                { column: 'items', op: 'Text is any', value: e.target.value }
+              ])
+            );
+          }}
+        />
+
         <Box sx={{ flexGrow: 1 }} />
         <GridToolbarQuickFilter />
       </GridToolbarContainer>
@@ -756,6 +796,12 @@ const OrderTable = memo(() => {
       />
       <AssignSelectedOrderModal visible={showAssignSelectedModal} onClose={hideAssignSelectedModal} selectedRows={rowSelectionModel} />
       <PaymentsModal visible={addPaymentVisible} onClose={hideAddPaymentVisible} orderId={addPaymentOrderId} />
+      <OrderBulkBookModal
+        key={rowSelectionModel}
+        visible={orderBulkBookModalVisible}
+        onClose={hideOrderBulkBookModal}
+        orderIds={rowSelectionModel}
+      />
       {/* <FilterModal
         visible={showFilterModal}
         onClose={hideFilterModal}

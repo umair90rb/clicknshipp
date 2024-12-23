@@ -67,7 +67,7 @@ export default function BulkUploadModal({ visible, onClose }) {
       dispatch(setMessage({ message: payload?.data?.message || 'Order created successfully.', type: 'success' }));
       onClose();
       bulkOrderUploadForm.handleReset();
-    } else if (type === 'order/import/fetch/failed') {
+    } else if (type === 'order/import/fetch/rejected') {
       dispatch(setMessage({ message: payload?.error || 'Error! Something goes wrong!', type: 'error' }));
     }
   };

@@ -11,6 +11,7 @@ const CategoriesAndBrands = Loadable(lazy(() => import('pages/categories-and-bra
 const ItemsManagement = Loadable(lazy(() => import('pages/item-management')));
 const RawMaterialManagement = Loadable(lazy(() => import('pages/raw-material-management')));
 const BOM = Loadable(lazy(() => import('pages/bill-of-material')));
+const SalesOrder = Loadable(lazy(() => import('pages/sales-order')));
 const StockRoutes = {
   //   path: '',
   element: <MainLayout />,
@@ -36,6 +37,14 @@ const StockRoutes = {
       element: (
         <PrivateRoute permission={PERMISSIONS.PERMISSION_VIEW_STOCK}>
           <BOM />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'sales-order',
+      element: (
+        <PrivateRoute permission={PERMISSIONS.PERMISSION_VIEW_STOCK}>
+          <SalesOrder />
         </PrivateRoute>
       )
     },

@@ -23,32 +23,35 @@ const style = {
 const columns = [
   {
     field: 'id',
-    headerName: 'ID#'
+    headerName: 'ID#',
+    flex: 0.25
   },
   {
     field: 'quantity',
-    headerName: 'Quantity'
+    headerName: 'Quantity',
+    flex: 1.25
   },
   {
     field: 'movement_type',
-    headerName: 'Movement'
+    headerName: 'Movement',
+    flex: 0.25
   },
   {
     field: 'location',
     headerName: 'Store',
-    flex: 1.25,
-    valueGetter: (value) => value?.row?.location?.name
+    valueGetter: (value) => value?.row?.location?.name,
+    flex: 1.25
   },
   {
     field: 'comment',
     headerName: 'Comment',
-    flex: 1.5
+    flex: 1.25
   },
   {
     field: 'item_type',
     headerName: 'Type',
-    flex: 1.25,
-    valueGetter: (value) => splitAndToUpperCase(value?.row?.item_type)
+    valueGetter: (value) => splitAndToUpperCase(value?.row?.item_type),
+    flex: 1.25
   },
   {
     field: 'createdAt',
@@ -81,9 +84,10 @@ export default function StockHistory({ itemIdAndType, visible, onClose }) {
   }, [visible]);
 
   return (
-    <CustomDialog visible={visible} onClose={onClose} maxWidth="xl" dividers={false} title="Stock History" enableBackdrop>
+    <CustomDialog visible={visible} onClose={onClose} maxWidth="lg" dividers={false} title="Stock History" enableBackdrop>
       <DataGrid
         autoHeight
+        getRowHeight={() => 'auto'}
         hideFooterPagination={true}
         loading={history.loading}
         hidePagination={true}

@@ -24,9 +24,19 @@ const createBillOfMaterialSchema = Joi.object({
     .required(),
 });
 
-const materialIdAndQuantityParamsSchema = Joi.object({
-  id: Joi.number().integer().required(),
+const materialQuantityUpdateSchema = Joi.object({
   quantity: Joi.number().integer().required(),
+  reason: Joi.string().required(),
+  previousQuantity: Joi.number().integer().required(),
 });
 
-export { createBillOfMaterialSchema, materialIdAndQuantityParamsSchema };
+const idAndLocationIdSchema = Joi.object({
+  id: Joi.number().integer().required(),
+  locationId: Joi.number().integer().required(),
+});
+
+export {
+  createBillOfMaterialSchema,
+  materialQuantityUpdateSchema,
+  idAndLocationIdSchema,
+};

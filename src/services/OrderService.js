@@ -1,4 +1,5 @@
 import Sequelize, { Op } from 'sequelize';
+import _chanelService from '../services/ChanelService';
 import { BOOKED_LIST } from '../constants/orderStatuses';
 import formatPhone from '../helpers/formatPhone';
 import {
@@ -9,6 +10,7 @@ import {
 } from '../helpers/pgDateFormat';
 import splitName from '../helpers/splitName';
 import model from '../models';
+import ShopifyAdminService from './ShopifyAdminService';
 const {
   Order,
   OrderItem,
@@ -528,7 +530,7 @@ class OrderService {
 
   async canUpdateOrder(orderId) {
     const order = await Order.findByPk(orderId);
-    if ('account_id' in order && order.account_id !== null) {
+    if ('delivery_account_id' in order && order.delivery_account_id !== null) {
       return false;
     }
     return true;
@@ -536,6 +538,18 @@ class OrderService {
 
   async isOrderBooked(orderId) {
     return Boolean(Order.findOne({ where: { id: orderId, status: 'Booked' } }));
+  }
+
+  async fulfillOrder(orderId, chanelId) {
+    try {
+      const { source, token } = await _chanelService.getChanelTokenAndUrl(
+        chanelId
+      );
+      const shopifyAdminService = new ShopifyAdminService(source, token);
+      await shopifyAdminService.fulfillOrder(orderId);
+    } catch (error) {
+      console.log(error?.message, 'in fulfillOrder');
+    }
   }
 }
 

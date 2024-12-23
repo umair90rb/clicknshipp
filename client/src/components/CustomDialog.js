@@ -19,7 +19,7 @@ const getWidthHeight = (size) => {
     case 'lg':
       return { height: '65vh', width: '65vw' };
     case 'xl':
-      return { height: '100vh', width: '100vw' };
+      return { height: '100%', width: '100%' };
     default:
       return { height: '25vh', width: '25vw' };
   }

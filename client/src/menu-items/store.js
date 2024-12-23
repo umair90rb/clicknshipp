@@ -5,6 +5,7 @@ import InventoryOutlinedIcon from '@mui/icons-material/InventoryOutlined';
 import BusinessCenterOutlinedIcon from '@mui/icons-material/BusinessCenterOutlined';
 import WarehouseOutlinedIcon from '@mui/icons-material/WarehouseOutlined';
 import ReceiptOutlinedIcon from '@mui/icons-material/ReceiptOutlined';
+import AttachMoneyOutlinedIcon from '@mui/icons-material/AttachMoneyOutlined';
 
 const store = {
   id: 'group-store',
@@ -36,6 +37,15 @@ const store = {
       url: '/bom',
       permission: PERMISSIONS.PERMISSION_VIEW_ITEMS,
       icon: ReceiptOutlinedIcon,
+      breadcrumbs: false
+    },
+    {
+      id: 'sales-order',
+      title: 'Sales Order',
+      type: 'item',
+      url: '/sales-order',
+      permission: PERMISSIONS.PERMISSION_VIEW_ITEMS,
+      icon: AttachMoneyOutlinedIcon,
       breadcrumbs: false
     },
     {
