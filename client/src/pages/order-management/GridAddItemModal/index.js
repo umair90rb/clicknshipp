@@ -54,13 +54,14 @@ export default function GridAddItemModal({ visible, onClose, orderId, items: ord
         <Formik
           initialValues={{
             items: orderItems.length
-              ? orderItems.map(({ id, name, price, quantity }) => ({
+              ? orderItems.map(({ id, name, unit_price, price, quantity }) => ({
                   id,
                   name,
                   price,
+                  unit_price,
                   quantity
                 }))
-              : [{ id: '', name: '', price: 0, quantity: 0 }],
+              : [{ id: '', name: '', price: 0, unit_price: 0, quantity: 0 }],
             orderId
           }}
           validationSchema={Yup.object().shape({
@@ -127,6 +128,7 @@ export default function GridAddItemModal({ visible, onClose, orderId, items: ord
                             addItemForm.setFieldValue(`items.${index}.name`, value.label);
                             addItemForm.setFieldValue(`items.${index}.id`, value.id);
                             addItemForm.setFieldValue(`items.${index}.price`, value.price);
+                            addItemForm.setFieldValue(`items.${index}.unit_price`, value.price);
                           }}
                           options={items.map((item) => ({
                             id: item.id,
@@ -183,7 +185,7 @@ export default function GridAddItemModal({ visible, onClose, orderId, items: ord
                               const quantity = e.target.value;
                               addItemForm.setFieldValue(`items.${index}.quantity`, quantity);
                               if (quantity) {
-                                addItemForm.setFieldValue(`items.${index}.price`, addItemForm.values.items[index].price * quantity);
+                                addItemForm.setFieldValue(`items.${index}.price`, addItemForm.values.items[index].unit_price * quantity);
                               }
                             }}
                             type="number"

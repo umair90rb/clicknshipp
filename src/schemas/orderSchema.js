@@ -1,4 +1,4 @@
-import Joi from "joi";
+import Joi from 'joi';
 
 export const orderFilterSchema = Joi.object({
   page: Joi.number().allow(null),
@@ -10,7 +10,7 @@ export const orderFilterSchema = Joi.object({
         op: Joi.string().required(),
         value: Joi.alternatives(Joi.string(), Joi.number(), Joi.array())
           .required()
-          .allow(""),
+          .allow(''),
       })
     )
     .default([]),
@@ -28,9 +28,9 @@ export const filteredOrderSchema = Joi.object({
   brand: Joi.array().items(Joi.number()).min(0).optional(),
   users: Joi.array().items(Joi.number()).min(0).optional(),
   chanel: Joi.array().items(Joi.number()).min(0).optional(),
-  startPeriod: Joi.string().allow("").optional(),
-  endPeriod: Joi.string().allow("").optional(),
-  type: Joi.string().allow("").optional(),
+  startPeriod: Joi.string().allow('').optional(),
+  endPeriod: Joi.string().allow('').optional(),
+  type: Joi.string().allow('').optional(),
 });
 
 export const orderBookSchema = Joi.object({
@@ -47,11 +47,16 @@ export const orderAssignSchema = Joi.object({
   orderIds: Joi.array().items(Joi.number()).min(1),
 });
 
+export const orderBulkBookSchema = Joi.object({
+  deliveryAccountId: Joi.number().required(),
+  orderIds: Joi.array().items(Joi.number()).min(1),
+});
+
 export const orderStatusUpdateSchema = Joi.object({
   orderId: Joi.number().required(),
   status: Joi.string().required(),
-  reason: Joi.string().allow(""),
-  remarks: Joi.string().allow(""),
+  reason: Joi.string().allow(''),
+  remarks: Joi.string().allow(''),
 });
 
 export const orderAddPaymentSchema = Joi.object({
@@ -61,7 +66,7 @@ export const orderAddPaymentSchema = Joi.object({
   bank: Joi.string().required(),
   tid: Joi.string().required(),
   amount: Joi.number().required(),
-  note: Joi.string().allow(""),
+  note: Joi.string().allow(''),
 });
 
 export const orderItemsAddUpdateSchema = Joi.object({
@@ -77,13 +82,13 @@ export const orderItemsAddUpdateSchema = Joi.object({
 });
 
 export const orderPatchUpdateSchema = Joi.object({
-  customerId: Joi.number().allow(""),
-  addressId: Joi.number().allow(""),
+  customerId: Joi.number().allow(''),
+  addressId: Joi.number().allow(''),
   first_name: Joi.string().required(),
-  last_name: Joi.string().allow(""),
+  last_name: Joi.string().allow(''),
   delivery_account_id: Joi.number().allow(null),
   phone: Joi.string().required(),
-  remarks: Joi.string().allow(""),
+  remarks: Joi.string().allow(''),
   address: Joi.string().required(),
   city: Joi.string().required(),
   status: Joi.string().required(),

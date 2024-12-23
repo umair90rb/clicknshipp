@@ -1,23 +1,23 @@
-import { Op, Sequelize } from "sequelize";
-import model from "../models";
-import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
+import { Op, Sequelize } from 'sequelize';
+import model from '../models';
+import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
 
 const { Chanel, Brand } = model;
 
 export default {
   async chanels(req, res) {
     try {
-      const chanels = await Chanel.scope("clean").findAll({
-        attributes: ["id", "name", "source"],
-        include: { model: Brand, as: "brand", attributes: ["id", "name"] },
+      const chanels = await Chanel.scope('clean').findAll({
+        attributes: ['id', 'name', 'source'],
+        include: { model: Brand, as: 'brand', attributes: ['id', 'name'] },
       });
-      return sendSuccessResponse(res, 200, { chanels }, "All sales chanels");
+      return sendSuccessResponse(res, 200, { chanels }, 'All sales chanels');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
@@ -25,20 +25,20 @@ export default {
   async chanel(req, res) {
     try {
       const { id } = req.params;
-      const chanel = await Chanel.scope("clean").findByPk(id, {
-        attributes: ["id", "name", "source"],
-        include: { model: Brand, as: "brand", attributes: ["id", "name"] },
+      const chanel = await Chanel.scope('clean').findByPk(id, {
+        attributes: ['id', 'name', 'source'],
+        include: { model: Brand, as: 'brand', attributes: ['id', 'name'] },
       });
       if (chanel) {
-        return sendSuccessResponse(res, 200, { chanel }, "Chanel with id");
+        return sendSuccessResponse(res, 200, { chanel }, 'Chanel with id');
       }
-      return sendErrorResponse(res, 404, "No data found with this id");
+      return sendErrorResponse(res, 404, 'No data found with this id');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
@@ -48,7 +48,7 @@ export default {
     try {
       const { brand } = req.body;
       const query = {
-        attributes: ["id", "name"],
+        attributes: ['id', 'name'],
         where: {
           brand_id: {
             [Op.in]: brand,
@@ -60,37 +60,38 @@ export default {
       }
       const chanel = await Chanel.findAll(query);
       if (chanel) {
-        return sendSuccessResponse(res, 200, { chanel }, "Filtered channels");
+        return sendSuccessResponse(res, 200, { chanel }, 'Filtered channels');
       }
-      return sendErrorResponse(res, 404, "No data found!");
+      return sendErrorResponse(res, 404, 'No data found!');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
   },
 
   async create(req, res) {
-    const { name, source, brand_id } = req.body;
+    const { name, source, token, brand_id } = req.body;
     try {
       let chanel = await Chanel.findOne({
         where: { name },
       });
       if (chanel) {
-        return sendErrorResponse(res, 422, "Chanel with name already exists.");
+        return sendErrorResponse(res, 422, 'Chanel with name already exists.');
       }
       chanel = await Chanel.create({
         name,
         source,
+        token,
         brand_id,
       });
       await chanel.reload({
-        attributes: ["id", "name", "source"], // not working as expected. need to figure out how to exclude unnecessary fields from chanel.reload
-        include: { model: Brand, as: "brand", attributes: ["id", "name"] },
+        attributes: ['id', 'name', 'source'], // not working as expected. need to figure out how to exclude unnecessary fields from chanel.reload
+        include: { model: Brand, as: 'brand', attributes: ['id', 'name'] },
       });
       return sendSuccessResponse(
         res,
@@ -98,13 +99,13 @@ export default {
         {
           chanel: chanel.get(),
         },
-        "Chanel created successfully"
+        'Chanel created successfully'
       );
     } catch (error) {
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         error
       );
     }
@@ -124,8 +125,8 @@ export default {
         });
         await chanel.save();
         await chanel.reload({
-          attributes: ["id", "name", "source"], // not working as expected. need to figure out how to exclude unnecessary fields from chanel.reload
-          include: { model: Brand, as: "brand", attributes: ["id", "name"] },
+          attributes: ['id', 'name', 'source'], // not working as expected. need to figure out how to exclude unnecessary fields from chanel.reload
+          include: { model: Brand, as: 'brand', attributes: ['id', 'name'] },
         });
         return sendSuccessResponse(
           res,
@@ -133,16 +134,16 @@ export default {
           {
             chanel: chanel.get(),
           },
-          "Operation successful"
+          'Operation successful'
         );
       }
-      return sendErrorResponse(res, 404, "No data found with this id");
+      return sendErrorResponse(res, 404, 'No data found with this id');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later",
+        'Could not perform operation at this time, kindly try again later',
         e
       );
     }
@@ -154,15 +155,15 @@ export default {
       const chanel = await Chanel.findByPk(id);
       if (chanel) {
         await chanel.destroy();
-        return sendSuccessResponse(res, 200, {}, "Operation successful");
+        return sendSuccessResponse(res, 200, {}, 'Operation successful');
       }
-      return sendErrorResponse(res, 404, "No data found with this id");
+      return sendErrorResponse(res, 404, 'No data found with this id');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later",
+        'Could not perform operation at this time, kindly try again later',
         e
       );
     }

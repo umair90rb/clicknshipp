@@ -6,7 +6,8 @@ import can from '../middleware/canAccess';
 import Auth from '../middleware/auth';
 import {
   createBillOfMaterialSchema,
-  materialIdAndQuantityParamsSchema,
+  materialQuantityUpdateSchema,
+  idAndLocationIdSchema,
 } from '../schemas/billOfMaterialSchema';
 import { idSchema } from '../schemas/commonSchema';
 import schemaValidator from '../middleware/schemaValidator';
@@ -39,11 +40,20 @@ router.post(
 );
 
 router.put(
-  '/material/:id/:quantity',
+  '/material/:id',
   Auth,
   can(PERMISSIONS.PERMISSION_RECEIVE_STOCK),
-  validator.params(materialIdAndQuantityParamsSchema),
+  validator.params(idSchema),
+  schemaValidator(materialQuantityUpdateSchema),
   BillOfMaterialController.material
+);
+
+router.get(
+  '/fullfil/:id/from/:locationId',
+  Auth,
+  can(PERMISSIONS.PERMISSION_RECEIVE_STOCK),
+  validator.params(idAndLocationIdSchema),
+  BillOfMaterialController.fullfil
 );
 
 router.put(

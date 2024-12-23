@@ -17,7 +17,7 @@ const columns = (handleView) => [
     field: 'name',
     headerName: 'Name',
     flex: 1,
-    valueGetter: (value) => `${value.row.item?.name || value.row.raw?.name}`
+    valueGetter: (value) => `${value?.value || value?.row.item?.name || value.row.raw?.name}`
   },
   {
     field: 'item',

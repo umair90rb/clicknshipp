@@ -23,3 +23,4 @@ export { locationService } from './locationService';
 export { unitOfMeasureService } from './unitOfMeasureService';
 export { rawMaterialService } from './rawMaterialService';
 export { billOfMaterialService } from './billOfMaterialService';
+export { batchService } from './batchService';

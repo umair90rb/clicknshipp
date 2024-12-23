@@ -1,11 +1,11 @@
-"use strict";
-import { Model } from "sequelize";
+'use strict';
+import { Model } from 'sequelize';
 module.exports = (sequelize, DataTypes) => {
   class Chanel extends Model {
     static associate(models) {
       Chanel.belongsTo(models.Brand, {
-        as: "brand",
-        foreignKey: "brand_id",
+        as: 'brand',
+        foreignKey: 'brand_id',
       });
     }
   }
@@ -18,16 +18,20 @@ module.exports = (sequelize, DataTypes) => {
       source: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: "Unknown",
+        defaultValue: 'Unknown',
+      },
+      token: {
+        type: DataTypes.STRING,
+        allowNull: true,
       },
     },
     {
       sequelize,
-      modelName: "Chanel",
+      modelName: 'Chanel',
       scopes: {
         clean: {
           attributes: {
-            include: ["id", "name", "source"],
+            include: ['id', 'name', 'source'],
           },
         },
       },

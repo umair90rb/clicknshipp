@@ -1,8 +1,10 @@
 import { Op } from 'sequelize';
-import model from '../models';
+import model, { sequelize } from '../models';
 import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
 import _stockService from '../services/StockService';
-const { Item, RawMaterial, BOM, BOMItem } = model;
+import _billOfMaterialService from '../services/BillOfMaterialService';
+const { Item, RawMaterial, BOM, BOMItem, BOMMaterialQuantityUpdateReason } =
+  model;
 
 export default {
   async billOfMaterials(req, res) {
@@ -54,33 +56,7 @@ export default {
   async billOfMaterial(req, res) {
     try {
       const { id } = req.params;
-      const billOfMaterial = await BOM.findByPk(id, {
-        attributes: [
-          'id',
-          'name',
-          'quantity',
-          'unit_of_measure',
-          'status',
-          'createdAt',
-        ],
-        include: [
-          {
-            model: Item,
-            as: 'item',
-            attributes: ['id', 'name'],
-          },
-          {
-            model: BOMItem,
-            as: 'materials',
-            attributes: ['id', 'quantity', 'unit_of_measure'],
-            include: {
-              model: RawMaterial,
-              as: 'raw',
-              attributes: ['id', 'name'],
-            },
-          },
-        ],
-      });
+      const billOfMaterial = await _billOfMaterialService.get(id);
       return sendSuccessResponse(
         res,
         200,
@@ -135,26 +111,10 @@ export default {
 
   async material(req, res) {
     try {
-      const { id, quantity } = req.params;
-      // if (quantity === 0) {
-      //   const bomItem = await BOMItem.findByPk(id);
-      //   if (bomItem) {
-      //     await bomItem.destroy();
-      //     return sendSuccessResponse(
-      //       res,
-      //       200,
-      //       { bomItem },
-      //       'Material removed from bill of material successfully'
-      //     );
-      //   }
-      //   return sendErrorResponse(
-      //     res,
-      //     404,
-      //     'Material in bill of material not found!',
-      //     null
-      //   );
-      // }
-      const [isUpdated, bomItem] = await BOMItem.update(
+      const { id } = req.params;
+      const { quantity, reason, previousQuantity } = req.body;
+      const t = await sequelize.transaction();
+      const [isUpdated, [bomItem]] = await BOMItem.update(
         { quantity },
         {
           where: { id },
@@ -164,13 +124,70 @@ export default {
             as: 'raw',
             attributes: ['id', 'name'],
           },
+          transaction: t,
         }
       );
+      await BOMMaterialQuantityUpdateReason.create(
+        {
+          bom_id: bomItem.bom_id,
+          bom_item_id: bomItem.id,
+          requested_quantity: previousQuantity,
+          reason,
+        },
+        { transaction: t }
+      );
+      await t.commit();
       return sendSuccessResponse(
         res,
         200,
         { bomItem },
         'Material quantity update successfully'
+      );
+    } catch (error) {
+      return sendErrorResponse(
+        res,
+        500,
+        'Could not perform operation at this time, kindly try again later.',
+        error
+      );
+    }
+  },
+
+  async fullfil(req, res) {
+    try {
+      const { id, locationId } = req.params;
+      const billOfMaterial = await _billOfMaterialService.get(id);
+      if (billOfMaterial && billOfMaterial.materials.length) {
+        const materialBatchPromises = billOfMaterial.materials.map((bom) => {
+          _stockService.decrement(
+            'raw_material',
+            bom.raw.id,
+            bom.quantity,
+            locationId
+          );
+          _stockService.createHistory(
+            'raw_material',
+            bom.raw.id,
+            'out',
+            locationId,
+            bom.quantity,
+            `Stock send to production against BOM# ${billOfMaterial.id}`
+          );
+        });
+        await Promise.allSettled(materialBatchPromises);
+        await _billOfMaterialService.setStatus(id, 'Fulfilled');
+        return sendSuccessResponse(
+          res,
+          200,
+          { billOfMaterial },
+          'Bill of Material fulfilled!'
+        );
+      }
+      return sendErrorResponse(
+        res,
+        500,
+        'Could not perform operation at this time, kindly try again later.',
+        error
       );
     } catch (error) {
       return sendErrorResponse(

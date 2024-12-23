@@ -12,7 +12,7 @@ export default {
         attributes: {
           exclude: ['createdAt', 'updatedAt'],
         },
-        order: [['name', 'ASC']],
+        order: [['createdAt', 'ASC']],
       });
       return sendSuccessResponse(
         res,

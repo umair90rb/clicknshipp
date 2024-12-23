@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { DataGrid } from '@mui/x-data-grid';
-import { formatDistance } from 'utils/format-date';
+import formatDate, { formatDistance } from 'utils/format-date';
 import CustomDialog from 'components/CustomDialog';
-import { fetchBillOfMaterial, fetchUpdateMaterialQuantity } from 'store/slices/billOfMaterial/fetchBillOfMaterial';
-import { Button } from '../../../node_modules/@mui/material/index';
+import {
+  fetchBillOfMaterial,
+  fetchFullfilBillOfMaterial,
+  fetchUpdateMaterialQuantity
+} from 'store/slices/billOfMaterial/fetchBillOfMaterial';
+import { Button } from '@mui/material';
 import { setMessage } from 'store/slices/util/utilSlice';
+import FullfilBillOfMaterialModal from './FullfillBillOfMaterialModal';
 
 const materialColumns = [
   {
@@ -57,41 +62,59 @@ const bomColumn = [
     field: 'createdAt',
     headerName: 'Requested At',
     flex: 1.25,
-    valueGetter: (value) => formatDistance(value?.value)
+    valueGetter: (value) => `${formatDate(value?.value)} ${formatDistance(value?.value)}`
   }
 ];
 
 export default function ViewBillOfMaterialModal({ id, visible, onClose }) {
   const dispatch = useDispatch();
-  const [billOfMaterial, setBillOfMaterial] = useState({
+  const [fetchBillOfMaterialState, setFetchBillOfMaterialState] = useState({
     loading: true,
     error: null,
     data: {}
   });
 
-  useEffect(() => {
-    if (!visible) return;
+  // const [fetchFullfilBillOfMaterialState, setFullfilFetchBillOfMaterialState] = useState({
+  //   loading: true,
+  //   error: null,
+  //   data: {}
+  // });
+
+  const [showFullfilModal, setShowFullfilModal] = useState(false);
+
+  const fetchBOMDetail = () =>
     dispatch(fetchBillOfMaterial({ id })).then((action) => {
       if (action.type === 'bom/fetch/fulfilled') {
-        setBillOfMaterial({ loading: false, data: action.payload.data?.billOfMaterial, error: null });
+        setFetchBillOfMaterialState({ loading: false, data: action.payload.data?.billOfMaterial, error: null });
       } else {
-        setBillOfMaterial({ loading: false, data: {}, error: action.payload.error });
+        setFetchBillOfMaterialState({ loading: false, data: {}, error: action.payload.data?.error });
       }
     });
 
+  useEffect(() => {
+    if (!visible) return;
+    fetchBOMDetail();
+
     return () => {
-      setBillOfMaterial({ loading: true, error: null, data: {} });
+      setFetchBillOfMaterialState({ loading: true, error: null, data: {} });
     };
   }, [visible]);
 
-  const updateMaterialQuantity = async ({ id, quantity, ...rest }, oldRow) => {
-    if (isNaN(parseFloat(quantity))) {
+  const updateMaterialQuantity = async (updatedRow, oldRow) => {
+    if (isNaN(parseFloat(updatedRow.quantity))) {
       dispatch(setMessage({ type: 'error', message: 'Quantity not a number!' }));
       return oldRow;
     }
-    const { type, payload } = await dispatch(fetchUpdateMaterialQuantity({ id, quantity })).then((action) => {
+    const reason = window.prompt('Enter reason to update quantity!');
+    if (!reason) {
+      dispatch(setMessage({ type: 'error', message: 'To update quantity reason should be mentioned!' }));
+      return oldRow;
+    }
+    return dispatch(
+      fetchUpdateMaterialQuantity({ id: updatedRow.id, body: { quantity: updatedRow.quantity, reason, previousQuantity: oldRow.quantity } })
+    ).then(({ type, payload }) => {
       if (type === 'bom/material/update/fetch/fulfilled') {
-        return action.payload?.data?.bomItem;
+        return updatedRow;
       } else {
         dispatch(setMessage({ type: 'error', message: payload?.data?.error || 'Failed! Quantity not updated!' }));
         return oldRow;
@@ -99,31 +122,68 @@ export default function ViewBillOfMaterialModal({ id, visible, onClose }) {
     });
   };
 
+  const onProcessRowUpdateError = (e) => console.log(e);
+
+  const onFulfilled = () => {
+    setShowFullfilModal(false);
+    fetchBOMDetail();
+  };
+
+  // const fullfilBOM = () => {
+  //   return dispatch(fetchFullfilBillOfMaterial({ id })).then(({ type, payload }) => {
+  //     if (type === 'bom/fullfil/fetch/fulfilled') {
+  //       setFullfilFetchBillOfMaterialState({ loading: false, error: null, data: payload.data });
+  //     } else {
+  //       setFullfilFetchBillOfMaterialState({ loading: false, error: payload.error, data: {} });
+  //     }
+  //   });
+  // };
+
   return (
-    <CustomDialog
-      visible={visible}
-      onClose={onClose}
-      maxWidth="lg"
-      title="Bill Of Material"
-      actions={[
-        <Button key="1" onClick={() => {}} variant="contained" color="success">
-          Fulfill Bill of Material
-        </Button>
-      ]}
-    >
-      {!billOfMaterial.loading && <DataGrid autoHeight density="compact" hideFooter rows={[billOfMaterial?.data]} columns={bomColumn} />}
-      {!billOfMaterial.loading && (
-        <DataGrid
-          autoHeight
-          disableRowSelectionOnClick
-          showCellVerticalBorder
-          processRowUpdate={updateMaterialQuantity}
-          density="compact"
-          hideFooter
-          rows={billOfMaterial?.data?.materials}
-          columns={materialColumns}
-        />
-      )}
-    </CustomDialog>
+    <>
+      <CustomDialog
+        visible={visible}
+        onClose={onClose}
+        maxWidth="lg"
+        title="Bill Of Material"
+        actions={[
+          <Button
+            key="1"
+            disabled={fetchBillOfMaterialState.data?.status === 'Fulfilled'}
+            onClick={() => setShowFullfilModal(true)}
+            variant="contained"
+            color="success"
+          >
+            Fulfill Bill of Material
+          </Button>
+        ]}
+      >
+        {!fetchBillOfMaterialState.loading && (
+          <DataGrid autoHeight getRowHeight={() => 'auto'} hideFooter rows={[fetchBillOfMaterialState?.data]} columns={bomColumn} />
+        )}
+        {!fetchBillOfMaterialState.loading && (
+          <DataGrid
+            autoHeight
+            disableRowSelectionOnClick
+            showCellVerticalBorder
+            hideFooter
+            getRowHeight={() => 'auto'}
+            onProcessRowUpdateError={onProcessRowUpdateError}
+            processRowUpdate={updateMaterialQuantity}
+            rows={fetchBillOfMaterialState?.data?.materials}
+            columns={materialColumns}
+          />
+        )}
+      </CustomDialog>
+      {/* fullfil modal */}
+      <FullfilBillOfMaterialModal
+        key={fetchBillOfMaterialState?.data?.materials?.length}
+        id={id}
+        bomMaterials={fetchBillOfMaterialState?.data?.materials}
+        visible={showFullfilModal}
+        onClose={() => setShowFullfilModal(false)}
+        onFulfilled={onFulfilled}
+      />
+    </>
   );
 }

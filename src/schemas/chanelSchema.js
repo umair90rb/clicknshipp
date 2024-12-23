@@ -1,4 +1,4 @@
-import Joi from "joi";
+import Joi from 'joi';
 
 const filteredChanelSchema = Joi.object({
   brand: Joi.array().items(Joi.number()).min(0),
@@ -7,6 +7,7 @@ const filteredChanelSchema = Joi.object({
 const createChanelSchema = Joi.object({
   name: Joi.string().required(),
   source: Joi.string().required(),
+  token: Joi.string(),
   brand_id: Joi.number().required(),
 });
 

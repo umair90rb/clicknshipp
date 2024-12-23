@@ -1,12 +1,12 @@
-import express from "express";
-import { PERMISSIONS } from "../constants/constants";
-
-import can from "../middleware/canAccess";
-import Auth from "../middleware/auth";
-import getUserBrand from "../middleware/getUserBrand";
-import { idSchema } from "../schemas/commonSchema";
+import express from 'express';
+import { PERMISSIONS } from '../constants/constants';
+import can from '../middleware/canAccess';
+import Auth from '../middleware/auth';
+import getUserBrand from '../middleware/getUserBrand';
+import { idSchema } from '../schemas/commonSchema';
 import {
   orderAssignSchema,
+  orderBulkBookSchema,
   orderBookSchema,
   orderReceiptDownloadSchema,
   orderStatusUpdateSchema,
@@ -16,21 +16,21 @@ import {
   bulkOrderDeleteSchema,
   orderFilterSchema,
   filteredOrderSchema,
-} from "../schemas/orderSchema";
-import schemaValidator from "../middleware/schemaValidator";
-import { createValidator } from "express-joi-validation";
-import OrderController from "../controllers/OrderController";
-import AssignOrderController from "../controllers/AssignOrderController";
-import DeliveryController from "../controllers/DeliveryController";
-import OrderManagementController from "../controllers/OrderManagementController";
-import multer from "multer";
+} from '../schemas/orderSchema';
+import schemaValidator from '../middleware/schemaValidator';
+import { createValidator } from 'express-joi-validation';
+import OrderController from '../controllers/OrderController';
+import AssignOrderController from '../controllers/AssignOrderController';
+import DeliveryController from '../controllers/DeliveryController';
+import OrderManagementController from '../controllers/OrderManagementController';
+import multer from 'multer';
 
 const upload = multer({ storage: multer.memoryStorage() });
 const router = express.Router();
 const validator = createValidator();
 
 router.post(
-  "/all",
+  '/all',
   Auth,
   can([
     PERMISSIONS.PERMISSION_VIEW_ORDERS,
@@ -42,7 +42,7 @@ router.post(
 );
 
 router.get(
-  "/:id",
+  '/:id',
   Auth,
   can(PERMISSIONS.PERMISSION_VIEW_ORDERS),
   validator.params(idSchema),
@@ -50,7 +50,7 @@ router.get(
 );
 
 router.post(
-  "/book",
+  '/book',
   Auth,
   can(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS),
   schemaValidator(orderBookSchema),
@@ -58,7 +58,7 @@ router.post(
 );
 
 router.post(
-  "/download-receipts",
+  '/download-receipts',
   Auth,
   can(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS),
   schemaValidator(orderReceiptDownloadSchema),
@@ -66,7 +66,7 @@ router.post(
 );
 
 router.get(
-  "/cancel-booking/:id",
+  '/cancel-booking/:id',
   Auth,
   can(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS),
   validator.params(idSchema),
@@ -74,7 +74,7 @@ router.get(
 );
 
 router.get(
-  "/get-delivery-status/:id",
+  '/get-delivery-status/:id',
   Auth,
   can(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS),
   validator.params(idSchema),
@@ -82,7 +82,7 @@ router.get(
 );
 
 router.post(
-  "/filtered",
+  '/filtered',
   Auth,
   can(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS),
   schemaValidator(filteredOrderSchema),
@@ -90,24 +90,24 @@ router.post(
 );
 
 router.post(
-  "/",
+  '/',
   Auth,
   can(PERMISSIONS.PERMISSION_CREATE_ORDER),
   //   schemaValidator(createRoleSchema),
   OrderController.create
 );
 
-router.post("/shopify", OrderController.createShopifyOrder);
+router.post('/shopify', OrderController.createShopifyOrder);
 router.post(
-  "/import",
+  '/import',
   Auth,
   can(PERMISSIONS.PERMISSION_CREATE_BULK_ORDER),
-  upload.single("file"),
+  upload.single('file'),
   OrderController.importOrders
 );
 
 router.post(
-  "/assign",
+  '/assign',
   Auth,
   can(PERMISSIONS.PERMISSION_UPDATE_ORDER),
   schemaValidator(orderAssignSchema),
@@ -115,7 +115,15 @@ router.post(
 );
 
 router.post(
-  "/status",
+  '/bulk-book',
+  Auth,
+  can(PERMISSIONS.PERMISSION_BULK_ORDER_BOOKING),
+  schemaValidator(orderBulkBookSchema),
+  DeliveryController.bulkBook
+);
+
+router.post(
+  '/status',
   Auth,
   can(PERMISSIONS.PERMISSION_UPDATE_ORDER),
   schemaValidator(orderStatusUpdateSchema),
@@ -123,7 +131,7 @@ router.post(
 );
 
 router.post(
-  "/add-payment",
+  '/add-payment',
   Auth,
   can(PERMISSIONS.PERMISSION_UPDATE_ORDER),
   schemaValidator(orderAddPaymentSchema),
@@ -131,7 +139,7 @@ router.post(
 );
 
 router.post(
-  "/update-items",
+  '/update-items',
   Auth,
   can(PERMISSIONS.PERMISSION_UPDATE_ORDER),
   schemaValidator(orderItemsAddUpdateSchema),
@@ -139,7 +147,7 @@ router.post(
 );
 
 router.put(
-  "/:id",
+  '/:id',
   Auth,
   can(PERMISSIONS.PERMISSION_UPDATE_ORDER),
   validator.params(idSchema),
@@ -148,7 +156,7 @@ router.put(
 );
 
 router.patch(
-  "/partial/:id",
+  '/partial/:id',
   Auth,
   can(PERMISSIONS.PERMISSION_UPDATE_ORDER),
   validator.params(idSchema),
@@ -157,7 +165,7 @@ router.patch(
 );
 
 router.post(
-  "/remove",
+  '/remove',
   Auth,
   can(PERMISSIONS.PERMISSION_CREATE_BULK_ORDER),
   schemaValidator(bulkOrderDeleteSchema),
@@ -165,7 +173,7 @@ router.post(
 );
 
 router.delete(
-  "/:id",
+  '/:id',
   Auth,
   can(PERMISSIONS.PERMISSION_DELETE_ORDER),
   validator.params(idSchema),

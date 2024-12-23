@@ -102,6 +102,7 @@ export default {
           item_type,
           item_id: item.id,
           quantity,
+          location_id,
           ...rest,
         });
         batchPromises.push(

@@ -17,6 +17,7 @@ import {
 import logger from '../middleware/logger';
 import _orderService from '../services/OrderService';
 import bookingQueue from '../queues/bookingQueue';
+import orderFulfillQueue from '../queues/orderFulfillQueue';
 
 const {
   Order,
@@ -144,6 +145,17 @@ export default {
         let _filters = {};
         for (let i = 0; i < filters.length; i++) {
           const { column, op, value } = filters[i];
+          if (column === 'items') {
+            const itemsIncludeIndex = query.include.findIndex(
+              (inc) => inc.as === 'items'
+            );
+            const itemsInclude = query.include[itemsIncludeIndex];
+            query.include[itemsIncludeIndex] = {
+              ...itemsInclude,
+              where: { name: { [Op.in]: value } },
+            };
+            continue;
+          }
           if (FILTER_COLUMNS[column] in _filters) {
             const previousFilter = _filters[FILTER_COLUMNS[column]];
             delete _filters[FILTER_COLUMNS[column]];
@@ -176,6 +188,7 @@ export default {
         const _query = { ...query, where: { ...query.where, ..._filters } };
         query = _query;
       }
+      console.log(query);
       const count = await Order.count(query);
       const rows = await Order.findAll(query);
       return sendSuccessResponse(res, 200, {
@@ -386,7 +399,7 @@ export default {
         total_price: total_price.toFixed(2),
         total_tax,
         total_discounts: total_discount.toFixed(2),
-        order_number: Math.random().toString().split('.')[1].slice(0, 4),
+        order_number: Math.random().toString().split('.')[1].slice(0, 6),
       });
       if (paymentsArray && paymentsArray.length) {
         await Payments.bulkCreate(
@@ -597,6 +610,15 @@ export default {
           assignedAt: new Date().toISOString(),
           user_id: req.user.id,
         };
+        await orderFulfillQueue.add(
+          'orderFulfillQueue',
+          { orderId: order.id, chanelId: order.chanel_id },
+          {
+            jobId: `${order.id}${order.chanel_id}`,
+            removeOnComplete: true,
+            removeOnFail: true,
+          }
+        );
       }
       await order.update(ud);
       await order.createHistory({
@@ -1005,19 +1027,26 @@ export default {
       }
       if (delivery_account_id) {
         orderUpdateData['delivery_account_id'] = delivery_account_id;
-        //!order.account_id
         if (
           (status === 'Confirmed' && !order.delivery_account_id) ||
           permissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS)
         ) {
-          await bookingQueue.add(
-            'bookingJob',
-            {
-              orderId,
-              deliveryAccountId: delivery_account_id,
-            },
-            { removeOnComplete: true, removeOnFail: true }
-          );
+          const jobId = `${orderId}-${delivery_account_id}`;
+          const job = await bookingQueue.getJob(jobId);
+          if (!job) {
+            await bookingQueue.add(
+              'bookingJob',
+              {
+                orderId,
+                deliveryAccountId: delivery_account_id,
+              },
+              {
+                jobId,
+                removeOnComplete: true,
+                removeOnFail: true,
+              }
+            );
+          }
         }
       }
       if (status === 'Duplicate') {
@@ -1030,6 +1059,26 @@ export default {
           assignedAt: new Date().toISOString(),
           user_id: req.user.id,
         };
+        await orderFulfillQueue.add(
+          'orderFulfillQueue',
+          { orderId: order.id, chanelId: order.chanel_id },
+          {
+            jobId: `${order.id}${order.chanel_id}`,
+            removeOnComplete: true,
+            removeOnFail: true,
+          }
+        );
+      }
+      if (status === 'Confirmed') {
+        await orderFulfillQueue.add(
+          'orderFulfillQueue',
+          { orderId: order.id, chanelId: order.chanel_id },
+          {
+            jobId: `${order.id}${order.chanel_id}`,
+            removeOnComplete: true,
+            removeOnFail: true,
+          }
+        );
       }
       await order.update(orderUpdateData);
       await OrderHistory.create({
@@ -1090,7 +1139,7 @@ export default {
       await Payments.destroy(
         {
           where: {
-            order_id: orderIds,
+            order_id: { [Op.in]: orderIds },
           },
         },
         { transaction: t }
@@ -1098,7 +1147,7 @@ export default {
       await OrderHistory.destroy(
         {
           where: {
-            order_id: orderIds,
+            order_id: { [Op.in]: orderIds },
           },
         },
         { transaction: t }
@@ -1106,7 +1155,7 @@ export default {
       await OrderItem.destroy(
         {
           where: {
-            order_id: orderIds,
+            order_id: { [Op.in]: orderIds },
           },
         },
         { transaction: t }
@@ -1114,7 +1163,7 @@ export default {
       await Order.destroy(
         {
           where: {
-            id: orderIds,
+            id: { [Op.in]: orderIds },
           },
         },
         { transaction: t }

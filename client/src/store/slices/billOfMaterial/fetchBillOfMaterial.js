@@ -13,8 +13,12 @@ const fetchCreateBillOfMaterial = createAsyncThunk('bom/create/fetch', ({ body }
   billOfMaterialService.fetchCreateBillOfMaterial(body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
-const fetchUpdateMaterialQuantity = createAsyncThunk('bom/material/update/fetch', ({ id, quantity }, { rejectWithValue }) =>
-  billOfMaterialService.fetchUpdateMaterialQuantity(id, quantity).catch((error) => rejectWithValue(error.response.data || error.message))
+const fetchUpdateMaterialQuantity = createAsyncThunk('bom/material/update/fetch', ({ id, body }, { rejectWithValue }) =>
+  billOfMaterialService.fetchUpdateMaterialQuantity(id, body).catch((error) => rejectWithValue(error.response.data || error.message))
+);
+
+const fetchFullfilBillOfMaterial = createAsyncThunk('bom/fullfil/fetch', ({ id, locationId }, { rejectWithValue }) =>
+  billOfMaterialService.fetchFullfilBillOfMaterial(id, locationId).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
 const fetchUpdateMaterial = createAsyncThunk('bom/update/fetch', ({ body }, { rejectWithValue }) =>
@@ -30,6 +34,7 @@ export {
   fetchBillOfMaterial,
   fetchCreateBillOfMaterial,
   fetchUpdateMaterialQuantity,
+  fetchFullfilBillOfMaterial,
   fetchUpdateMaterial,
   fetchDeleteBillOfMaterial
 };

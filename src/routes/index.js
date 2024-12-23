@@ -5,6 +5,7 @@ import admin from './admin';
 import user from './user';
 import item from './item';
 import stock from './stock';
+import batch from './batch';
 import supplier from './supplier';
 import category from './category';
 import brand from './brand';
@@ -42,6 +43,7 @@ export default (app) => {
   app.use('/api/v1/user', user);
   app.use('/api/v1/item', item);
   app.use('/api/v1/stock', stock);
+  app.use('/api/v1/batch', batch);
   app.use('/api/v1/bom', bom);
   app.use('/api/v1/location', location);
   app.use('/api/v1/uom', uom);

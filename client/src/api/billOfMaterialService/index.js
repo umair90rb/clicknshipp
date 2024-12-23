@@ -9,7 +9,9 @@ class BillOfMaterialService extends Ajax {
 
   fetchCreateBillOfMaterial = (data) => this.post(`${this.pathname}`, data);
 
-  fetchUpdateMaterialQuantity = (id, quantity) => this.put(`${this.pathname}/material/${id}/${quantity}`);
+  fetchUpdateMaterialQuantity = (id, data) => this.put(`${this.pathname}/material/${id}`, data);
+
+  fetchFullfilBillOfMaterial = (id, locationId) => this.getJson(`${this.pathname}/fullfil/${id}/from/${locationId}`);
 
   fetchUpdateBillOfMaterial = (id, data) => this.put(`${this.pathname}/${id}`, data);
 
