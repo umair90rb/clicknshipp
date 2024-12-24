@@ -44,7 +44,7 @@ class MnpCourier extends CourierInterface {
         pieces: order.items.length,
         weight: 0.25,
         codAmount: order.total_price,
-        custRefNo: `Sukooonx${order.order_number}`,
+        custRefNo: `${order.order_number}`,
         productDetails: order.items.reduce(
           (p, c, i) =>
             i > 0 ? `${c.name}/${c.quantity}-${p}` : `${c.name}/${c.quantity}`,

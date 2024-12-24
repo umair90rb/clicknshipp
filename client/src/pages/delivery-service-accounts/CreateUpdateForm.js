@@ -174,7 +174,6 @@ const CreateUpdateForm = ({ account }) => {
                     name="cost_center"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="SUKOOON.COM"
                   />
                   {touched.cost_center && errors.cost_center && (
                     <FormHelperText error id="helper-text-cost_center">

@@ -154,7 +154,7 @@ class DigiCourier extends CourierInterface {
         order.address.address1
       )}&buyer_city=${destinationCity.assigned_id}&piece=1&amount=${
         order.total_price
-      }&external_reference_no=Sukooonx${order.order_number}&weight=${
+      }&external_reference_no=${order.order_number}&weight=${
         deliveryAccount.key == '17' ? '0.5' : '0.25'
       }&product_name=${order.items.reduce(
         (p, c, i) =>
