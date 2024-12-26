@@ -12,7 +12,7 @@ export default class ShopifyAdminService {
     this.http = getAxiosInstance(url, headers);
   }
 
-  getOrderFulfillments(orderId) {
+  async getOrderFulfillments(orderId) {
     try {
       if (!orderId) {
         throw new Error('Order id is required!');

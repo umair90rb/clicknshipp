@@ -540,13 +540,33 @@ class OrderService {
     return Boolean(Order.findOne({ where: { id: orderId, status: 'Booked' } }));
   }
 
-  async fulfillOrder(orderId, chanelId) {
+  async getKeyFromShopifyData(orderId, key) {
     try {
-      const { source, token } = await _chanelService.getChanelTokenAndUrl(
+      const { data } = await Order.findByPk(orderId, {
+        attributes: ['data'],
+      });
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (key in parsed) return parsed[key];
+      }
+    } catch (error) {
+      console.log(error, 'in getKeyFromShopifyData');
+    }
+  }
+
+  async fulfillOrder({ orderId, chanelId }) {
+    try {
+      console.log('in fullfil order service');
+      const { token, source } = await _chanelService.getChanelTokenAndUrl(
         chanelId
       );
-      const shopifyAdminService = new ShopifyAdminService(source, token);
-      await shopifyAdminService.fulfillOrder(orderId);
+      if (token && source) {
+        const shopifyAdminService = new ShopifyAdminService(source, token);
+        const orderShopifyId = await this.getKeyFromShopifyData(orderId, 'id');
+        if (orderShopifyId) {
+          return shopifyAdminService.fulfillOrder(orderShopifyId);
+        }
+      }
     } catch (error) {
       console.log(error?.message, 'in fulfillOrder');
     }

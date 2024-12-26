@@ -63,7 +63,7 @@ class CallCourier extends CourierInterface {
       }
       url = `SaveBooking?loginId=${deliveryAccount.key}&ConsigneeName="${
         order.customer.first_name
-      } ${order.customer.last_name || ''}"&ConsigneeRefNo="Sukooonx${
+      } ${order.customer.last_name || ''}"&ConsigneeRefNo="${
         order.order_number
       }"&ConsigneeCellNo=0${order.customer.phone}&Address=${
         order.address.address1

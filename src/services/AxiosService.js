@@ -4,7 +4,7 @@ const getAxiosInstance = (baseURL, headers) => {
   const http = axios.create({
     baseURL: baseURL,
     timeout: 30000,
-    headers: { ...headers },
+    headers: { ...(headers ? headers : {}) },
   });
 
   http.interceptors.request.use((request) => {

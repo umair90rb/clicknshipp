@@ -13,7 +13,7 @@ class ReportingService {
 
   getAgentReport(startPeriod, endPeriod, reportBrand, reportChanel) {
     let where = {
-      assigned_at: {
+      [process.env.REPORTING_BASED_ON || 'assigned_at']: {
         [Op.gte]: startPeriod,
         [Op.lte]: endPeriod,
       },
@@ -102,7 +102,7 @@ class ReportingService {
 
   getUnitReport(startPeriod, endPeriod, reportBrand, reportChanel) {
     let where = {
-      assigned_at: {
+      [process.env.REPORTING_BASED_ON || 'assigned_at']: {
         [Op.gte]: startPeriod,
         [Op.lte]: endPeriod,
       },
@@ -516,7 +516,7 @@ class ReportingService {
 
   getChannelReport(startPeriod, endPeriod, reportBrand, reportChanel) {
     let where = {
-      assigned_at: {
+      [process.env.REPORTING_BASED_ON || 'assigned_at']: {
         [Op.gte]: startPeriod,
         [Op.lte]: endPeriod,
       },
@@ -619,7 +619,7 @@ class ReportingService {
 
   async getIncentiveReport(startPeriod, endPeriod, reportBrand, reportChanel) {
     let where = {
-      assigned_at: {
+      [process.env.REPORTING_BASED_ON || 'assigned_at']: {
         [Op.gte]: startPeriod,
         [Op.lte]: endPeriod,
       },

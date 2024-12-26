@@ -12,6 +12,7 @@ import swaggerConfig from './swaggerConfig.js';
 import 'dotenv/config';
 import './workers/bookingWorker';
 import './workers/deliveryStatusSyncWorker';
+import './workers/orderFulfillWorker.js';
 import './jobs/assignOrders';
 import './jobs/trackOrders';
 import { dirname } from 'node:path';
