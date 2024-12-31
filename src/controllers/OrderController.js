@@ -1064,26 +1064,6 @@ export default {
           assignedAt: new Date().toISOString(),
           user_id: req.user.id,
         };
-        await orderFulfillQueue.add(
-          'orderFulfillQueue',
-          { orderId: order.id, chanelId: order.chanel_id },
-          {
-            jobId: `${order.id}${order.chanel_id}`,
-            removeOnComplete: true,
-            removeOnFail: true,
-          }
-        );
-      }
-      if (status === 'Confirmed') {
-        await orderFulfillQueue.add(
-          'orderFulfillQueue',
-          { orderId: order.id, chanelId: order.chanel_id },
-          {
-            jobId: `${order.id}${order.chanel_id}`,
-            removeOnComplete: true,
-            removeOnFail: true,
-          }
-        );
       }
       if (status === 'Confirmed') {
         addToOrderFulfillQueue({
