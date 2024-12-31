@@ -15,6 +15,8 @@ const App = () => {
 
   useFetchProfile();
 
+  document.title = `${process.env.COMPANY_NAME} | Click n Ship`;
+
   return (
     <ThemeCustomization>
       <ScrollTop>
