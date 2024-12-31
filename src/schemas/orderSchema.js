@@ -77,7 +77,9 @@ export const orderItemsAddUpdateSchema = Joi.object({
       name: Joi.string().required(),
       quantity: Joi.number().min(1).required(),
       price: Joi.alternatives(Joi.string(), Joi.number()).required(),
-      unit_price: Joi.alternatives(Joi.string(), Joi.number()),
+      unit_price: Joi.alternatives(Joi.string(), Joi.number())
+        .allow('')
+        .allow(null),
     })
     .min(1),
 });
