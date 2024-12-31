@@ -7,6 +7,7 @@ import { Stack, Chip } from '@mui/material';
 // project import
 import DrawerHeaderStyled from './DrawerHeaderStyled';
 import Logo from 'components/Logo';
+const { HEROKU_RELEASE_VERSION } = getEnvs();
 
 // ==============================|| DRAWER HEADER ||============================== //
 
@@ -19,7 +20,7 @@ const DrawerHeader = ({ open }) => {
       <Stack direction="row" spacing={1} alignItems="center">
         <Logo />
         <Chip
-          label={process.env.HEROKU_RELEASE_VERSION || 'v0.0.1'}
+          label={HEROKU_RELEASE_VERSION || 'v0.0.1'}
           size="small"
           sx={{ height: 16, '& .MuiChip-label': { fontSize: '0.625rem', py: 0.25 } }}
           component="a"

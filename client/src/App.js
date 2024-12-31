@@ -7,6 +7,7 @@ import { Typography, Snackbar, Alert } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { utilMessageSelector } from 'store/slices/util/utilSelector';
 import useFetchProfile from 'hooks/useFetchProfile';
+const { COMPANY_NAME } = getEnvs();
 
 const App = () => {
   const dispatch = useDispatch();
@@ -15,7 +16,7 @@ const App = () => {
 
   useFetchProfile();
 
-  document.title = `${process.env.COMPANY_NAME} | Click n Ship`;
+  document.title = `${COMPANY_NAME} | Click n Ship`;
 
   return (
     <ThemeCustomization>
