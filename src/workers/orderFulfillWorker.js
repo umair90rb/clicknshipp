@@ -3,9 +3,12 @@ import connection from '../config/redis';
 import _orderService from '../services/OrderService';
 
 const orderFulfillWorker = new Worker(
-  'bookingQueue',
+  'orderFulfillQueue',
   async (job) => {
-    await _orderService.fulfillOrder(...job.data);
+    console.log(`${job.id} started with ${JSON.stringify(job)}`);
+    return _orderService
+      .fulfillOrder(job.data)
+      .catch((e) => console.log(e, 'in fullfil worker'));
   },
   {
     connection,

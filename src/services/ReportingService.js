@@ -12,15 +12,19 @@ class ReportingService {
   constructor() {}
 
   getAgentReport(startPeriod, endPeriod, reportBrand, reportChanel) {
-    let where = {
-      assigned_at: {
+    let where = {};
+    if (process.env.REPORTING_BASED_ON === 'created_at') {
+      where['created_at'] = {
         [Op.gte]: startPeriod,
         [Op.lte]: endPeriod,
-      },
-      user_id: {
-        [Op.ne]: null,
-      },
-    };
+      };
+    } else {
+      where['assigned_at'] = {
+        [Op.gte]: startPeriod,
+        [Op.lte]: endPeriod,
+      };
+      where['user_id'] = { [Op.ne]: null };
+    }
     if (reportBrand && reportBrand.length) {
       where['brand_id'] = {
         [Op.in]: reportBrand,
@@ -101,15 +105,19 @@ class ReportingService {
   }
 
   getUnitReport(startPeriod, endPeriod, reportBrand, reportChanel) {
-    let where = {
-      assigned_at: {
+    let where = {};
+    if (process.env.REPORTING_BASED_ON === 'created_at') {
+      where['created_at'] = {
         [Op.gte]: startPeriod,
         [Op.lte]: endPeriod,
-      },
-      user_id: {
-        [Op.ne]: null,
-      },
-    };
+      };
+    } else {
+      where['assigned_at'] = {
+        [Op.gte]: startPeriod,
+        [Op.lte]: endPeriod,
+      };
+      where['user_id'] = { [Op.ne]: null };
+    }
     if (reportBrand && reportBrand.length) {
       where['brand_id'] = {
         [Op.in]: reportBrand,
@@ -515,15 +523,19 @@ class ReportingService {
   }
 
   getChannelReport(startPeriod, endPeriod, reportBrand, reportChanel) {
-    let where = {
-      assigned_at: {
+    let where = {};
+    if (process.env.REPORTING_BASED_ON === 'created_at') {
+      where['created_at'] = {
         [Op.gte]: startPeriod,
         [Op.lte]: endPeriod,
-      },
-      user_id: {
-        [Op.ne]: null,
-      },
-    };
+      };
+    } else {
+      where['assigned_at'] = {
+        [Op.gte]: startPeriod,
+        [Op.lte]: endPeriod,
+      };
+      where['user_id'] = { [Op.ne]: null };
+    }
     if (reportBrand && reportBrand.length) {
       where['brand_id'] = {
         [Op.in]: reportBrand,
@@ -619,17 +631,22 @@ class ReportingService {
 
   async getIncentiveReport(startPeriod, endPeriod, reportBrand, reportChanel) {
     let where = {
-      assigned_at: {
-        [Op.gte]: startPeriod,
-        [Op.lte]: endPeriod,
-      },
-      user_id: {
-        [Op.ne]: null,
-      },
       status: {
         [Op.in]: CONFIRMED_LIST,
       },
     };
+    if (process.env.REPORTING_BASED_ON === 'created_at') {
+      where['created_at'] = {
+        [Op.gte]: startPeriod,
+        [Op.lte]: endPeriod,
+      };
+    } else {
+      where['assigned_at'] = {
+        [Op.gte]: startPeriod,
+        [Op.lte]: endPeriod,
+      };
+      where['user_id'] = { [Op.ne]: null };
+    }
     if (reportBrand && reportBrand.length) {
       where['brand_id'] = {
         [Op.in]: reportBrand,

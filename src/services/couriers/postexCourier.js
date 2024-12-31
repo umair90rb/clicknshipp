@@ -1,17 +1,17 @@
-import logger from "../../middleware/logger";
-import CourierInterface from "../../interfaces/courierInterface";
-import getAxiosInstance from "../AxiosService";
-import models from "../../models";
-import { Op } from "sequelize";
+import logger from '../../middleware/logger';
+import CourierInterface from '../../interfaces/courierInterface';
+import getAxiosInstance from '../AxiosService';
+import models from '../../models';
+import { Op } from 'sequelize';
 const { CityNameMaping } = models;
 
 class PostexCourier extends CourierInterface {
   constructor() {
     super();
     this.http = getAxiosInstance(
-      "https://api.postex.pk/services/integration/api/order/v3/",
+      'https://api.postex.pk/services/integration/api/order/v3/',
       {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       }
     );
   }
@@ -33,15 +33,15 @@ class PostexCourier extends CourierInterface {
           cn: null,
           slip: null,
           isSuccess: false,
-          error: "City not found in the database, contact admin",
-          response: "destination not found in the db",
+          error: 'City not found in the database, contact admin',
+          response: 'destination not found in the db',
         };
       }
       body = {
         cityName: destinationCity.maped,
         customerName: order.customer.name,
         customerPhone: `0${order.customer.phone}`,
-        customerEmail: order.customer.email || "customer@mail.com",
+        customerEmail: order.customer.email || 'customer@mail.com',
         deliveryAddress: `${order.address.address1}, ${order.address.city}`,
         invoiceDivision: 0,
         invoicePayment: order.total_price,
@@ -49,18 +49,18 @@ class PostexCourier extends CourierInterface {
         orderDetail: order.items.reduce(
           (p, c, i) =>
             i > 0 ? `${c.name}/${c.quantity}-${p}` : `${c.name}/${c.quantity}`,
-          ""
+          ''
         ),
-        orderRefNumber: `Sukooonx${order.order_number}`,
-        orderType: "Normal",
-        transactionNotes: "Rush Delivery",
-        pickupAddressCode: "001", //required
+        orderRefNumber: `${order.order_number}`,
+        orderType: 'Normal',
+        transactionNotes: 'Rush Delivery',
+        pickupAddressCode: '001', //required
         // storeAddressCode: "001", //required
       };
-      const response = await this.http.post("create-order", body, {
+      const response = await this.http.post('create-order', body, {
         headers: { token: deliveryAccount.key },
       });
-      logger.log("info", "postex book api response", {
+      logger.log('info', 'postex book api response', {
         data: response.data,
       });
       const { statusCode, statusMessage, dist } = response.data || {};
@@ -68,23 +68,23 @@ class PostexCourier extends CourierInterface {
       return {
         cn: trackingNumber,
         slip: JSON.stringify({ orderDate, orderStatus }),
-        isSuccess: statusCode !== "400",
-        error: statusCode === "400" ? statusMessage : null,
+        isSuccess: statusCode !== '400',
+        error: statusCode === '400' ? statusMessage : null,
         response: statusMessage,
       };
     } catch (error) {
       const { statusMessage } = response || {};
-      logger.log("error", error.message, {
+      logger.log('error', error.message, {
         body,
         res: response?.data,
-        stack: "in postex booking function",
+        stack: 'in postex booking function',
       });
       return {
         cn: null,
         slip: null,
         isSuccess: false,
         error: error,
-        response: statusMessage || "Error: Something goes wrong!",
+        response: statusMessage || 'Error: Something goes wrong!',
       };
     }
   }
@@ -106,7 +106,7 @@ class PostexCourier extends CourierInterface {
         transactionDate,
         ...rest
       } = dist || {};
-      logger.log("info", "postex booking status,s api response", {
+      logger.log('info', 'postex booking status,s api response', {
         res: response.data,
       });
       return {
@@ -117,15 +117,15 @@ class PostexCourier extends CourierInterface {
         data: {
           ...rest,
         },
-        isSuccess: statusCode !== "400",
-        error: statusCode === "400" ? statusMessage : null,
+        isSuccess: statusCode !== '400',
+        error: statusCode === '400' ? statusMessage : null,
         response: statusMessage,
       };
     } catch (error) {
-      logger.log("error", "postex booking status api response", {
+      logger.log('error', 'postex booking status api response', {
         body,
         res: response.data,
-        stack: "in postex checkparcel status function",
+        stack: 'in postex checkparcel status function',
       });
       const { statusCode, statusMessage, dist } = response.data || {};
       return {
@@ -136,7 +136,7 @@ class PostexCourier extends CourierInterface {
         date: null,
         remarks: null,
         error,
-        response: statusMessage || "Error in getting booking status!",
+        response: statusMessage || 'Error in getting booking status!',
       };
     }
   }
@@ -146,28 +146,28 @@ class PostexCourier extends CourierInterface {
     try {
       const body = { trackingNumber };
       response = await this.http.put(
-        "https://api.postex.pk/services/integration/api/order/v1/cancel-order",
+        'https://api.postex.pk/services/integration/api/order/v1/cancel-order',
         body,
         {
           headers: { token: deliveryAccount.key },
         }
       );
-      console.log(response, "postex cancel response");
-      logger.log("info", "postex cancel booking parcel api response", {
+      console.log(response, 'postex cancel response');
+      logger.log('info', 'postex cancel booking parcel api response', {
         body,
         res: response?.data,
       });
       const { statusCode, statusMessage } = response?.data || {};
       return {
-        isSuccess: statusCode == "200" ? true : false,
-        error: statusCode != "200" ? statusMessage : null,
+        isSuccess: statusCode == '200' ? true : false,
+        error: statusCode != '200' ? statusMessage : null,
         response: statusMessage,
       };
     } catch (error) {
-      console.log(error, "postex cancel error");
-      logger.log("error", "postex cancel booking parcel api error", {
+      console.log(error, 'postex cancel error');
+      logger.log('error', 'postex cancel booking parcel api error', {
         res: response?.data,
-        stack: "in postex cancel booking function",
+        stack: 'in postex cancel booking function',
       });
       return {
         isSuccess: false,
@@ -178,7 +178,7 @@ class PostexCourier extends CourierInterface {
   }
 
   async downloadReceipt(trackingNumbers, deliveryAccount) {
-    let trackingNumbersStr = "";
+    let trackingNumbersStr = '';
     try {
       if (trackingNumbers && trackingNumbers.length === 1) {
         trackingNumbersStr = `${trackingNumbers[0]}`;
@@ -186,13 +186,13 @@ class PostexCourier extends CourierInterface {
       if (trackingNumbers && trackingNumbers.length > 1) {
         trackingNumbersStr = trackingNumbers.reduce(
           (numbers, trackingNo) => `${trackingNo}, ${numbers}`,
-          ""
+          ''
         );
       }
       if (!trackingNumbersStr) {
         return {
           isSuccess: false,
-          error: "Empty tracking no! Enter at least one tracking id.",
+          error: 'Empty tracking no! Enter at least one tracking id.',
           response: null,
         };
       }
@@ -200,7 +200,7 @@ class PostexCourier extends CourierInterface {
         `https://api.postex.pk/services/integration/api/order/v1/get-invoice?trackingNumbers=${trackingNumbersStr}`,
         {
           headers: { token: deliveryAccount.key },
-          responseType: "arraybuffer",
+          responseType: 'arraybuffer',
         }
       );
       // logger.log("info", "postex airways bill download response");
@@ -211,7 +211,7 @@ class PostexCourier extends CourierInterface {
       //   response: statusMessage,
       // };
     } catch (error) {
-      logger.log("error", "postex airways bill api error", {
+      logger.log('error', 'postex airways bill api error', {
         stack: error.stack,
       });
       throw error;

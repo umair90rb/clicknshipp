@@ -178,7 +178,7 @@ class TCSCourier extends CourierInterface {
         },
         shipmentinfo: {
           costcentercode: deliveryAccount.cost_center,
-          referenceno: `Sukooonx${order.order_number}`,
+          referenceno: `${order.order_number}`,
           contentdesc: order.items.reduce(
             (p, c, i) =>
               i > 0

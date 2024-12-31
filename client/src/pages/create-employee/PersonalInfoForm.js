@@ -133,7 +133,7 @@ const PersonalInfoForm = ({ setStep, setEmployeeId, employeeDataToUpdate }) => {
                     name="email"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="ali@sukooon.com"
+                    placeholder="ali@example.com"
                     fullWidth
                     error={Boolean(touched.email && errors.email)}
                   />

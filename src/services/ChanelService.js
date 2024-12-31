@@ -4,9 +4,13 @@ const { Chanel } = model;
 
 class ChanelService {
   getChanelTokenAndUrl(id) {
-    return Chanel.findByPk(id, {
-      attributes: ['source'],
-    });
+    try {
+      return Chanel.findByPk(id, {
+        attributes: ['source', 'token'],
+      });
+    } catch (error) {
+      console.log(error, 'error in chanel service');
+    }
   }
 }
 

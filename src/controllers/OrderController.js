@@ -18,6 +18,7 @@ import logger from '../middleware/logger';
 import _orderService from '../services/OrderService';
 import bookingQueue from '../queues/bookingQueue';
 import orderFulfillQueue from '../queues/orderFulfillQueue';
+import addToOrderFulfillQueue from '../queues/orderFulfillQueue';
 
 const {
   Order,
@@ -610,15 +611,19 @@ export default {
           assignedAt: new Date().toISOString(),
           user_id: req.user.id,
         };
-        await orderFulfillQueue.add(
-          'orderFulfillQueue',
-          { orderId: order.id, chanelId: order.chanel_id },
-          {
-            jobId: `${order.id}${order.chanel_id}`,
-            removeOnComplete: true,
-            removeOnFail: true,
-          }
-        );
+        addToOrderFulfillQueue({
+          orderId: order.id,
+          chanelId: order.chanel_id,
+        });
+        // await orderFulfillQueue.add(
+        //   'orderFulfillQueue',
+        //   { orderId: order.id, chanelId: order.chanel_id },
+        //   {
+        //     jobId: `orderFulfillQueue-${order.id}${order.chanel_id}`,
+        //     removeOnComplete: true,
+        //     removeOnFail: true,
+        //   }
+        // );
       }
       await order.update(ud);
       await order.createHistory({
@@ -1031,7 +1036,7 @@ export default {
           (status === 'Confirmed' && !order.delivery_account_id) ||
           permissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS)
         ) {
-          const jobId = `${orderId}-${delivery_account_id}`;
+          const jobId = `bookingJob-${orderId}${delivery_account_id}`;
           const job = await bookingQueue.getJob(jobId);
           if (!job) {
             await bookingQueue.add(
@@ -1079,6 +1084,12 @@ export default {
             removeOnFail: true,
           }
         );
+      }
+      if (status === 'Confirmed') {
+        addToOrderFulfillQueue({
+          orderId: order.id,
+          chanelId: order.chanel_id,
+        });
       }
       await order.update(orderUpdateData);
       await OrderHistory.create({
