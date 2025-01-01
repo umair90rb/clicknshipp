@@ -20,7 +20,7 @@ const MainCard = forwardRef(
   (
     {
       border = true,
-      boxShadow,
+      boxShadow = true,
       children,
       content = true,
       contentSX = {},
@@ -47,9 +47,10 @@ const MainCard = forwardRef(
           border: border ? '1px solid' : 'none',
           borderRadius: 2,
           borderColor: theme.palette.mode === 'dark' ? theme.palette.divider : theme.palette.grey.A800,
-          boxShadow: boxShadow && (!border || theme.palette.mode === 'dark') ? shadow || theme.customShadows.z1 : 'inherit',
+          // boxShadow: boxShadow && (!border || theme.palette.mode === 'dark') ? shadow || theme.customShadows.z1 : 'inherit',
+          boxShadow: boxShadow ? shadow || theme.customShadows.z1 : 'inherit',
           ':hover': {
-            boxShadow: boxShadow ? shadow || theme.customShadows.z1 : 'inherit'
+            boxShadow: boxShadow ? shadow || theme.customShadows.z10 : 'inherit'
           },
           '& pre': {
             m: 0,

@@ -1,30 +1,35 @@
-import { Op, QueryTypes, literal, fn, col, Sequelize } from 'sequelize';
+import { Op, QueryTypes, literal, fn, col } from 'sequelize';
 import { sequelize } from '../models';
 import model from '../models';
 import { PERMISSIONS } from '../constants/constants';
 import {
   CONFIRMED_LIST,
   CONFIRMED,
+  CANCELED,
   GENERATED,
+  BOOKED,
+  BOOKING_ERROR,
+  DELIVERED,
+  RETURNED,
 } from '../constants/orderStatuses';
-const { Order, OrderItem, Delivery, User, Chanel, Role, Permission } = model;
+const {
+  Order,
+  OrderItem,
+  Delivery,
+  User,
+  Chanel,
+  Role,
+  Permission,
+  DeliveryServiceAccounts,
+} = model;
 class ReportingService {
   constructor() {}
 
   getAgentReport(startPeriod, endPeriod, reportBrand, reportChanel) {
-    let where = {};
-    if (process.env.REPORTING_BASED_ON === 'created_at') {
-      where['created_at'] = {
-        [Op.gte]: startPeriod,
-        [Op.lte]: endPeriod,
-      };
-    } else {
-      where['assigned_at'] = {
-        [Op.gte]: startPeriod,
-        [Op.lte]: endPeriod,
-      };
-      where['user_id'] = { [Op.ne]: null };
-    }
+    let where = {
+      assigned_at: { [Op.gte]: startPeriod, [Op.lte]: endPeriod },
+      user_id: { [Op.ne]: null },
+    };
     if (reportBrand && reportBrand.length) {
       where['brand_id'] = {
         [Op.in]: reportBrand,
@@ -105,19 +110,10 @@ class ReportingService {
   }
 
   getUnitReport(startPeriod, endPeriod, reportBrand, reportChanel) {
-    let where = {};
-    if (process.env.REPORTING_BASED_ON === 'created_at') {
-      where['created_at'] = {
-        [Op.gte]: startPeriod,
-        [Op.lte]: endPeriod,
-      };
-    } else {
-      where['assigned_at'] = {
-        [Op.gte]: startPeriod,
-        [Op.lte]: endPeriod,
-      };
-      where['user_id'] = { [Op.ne]: null };
-    }
+    let where = {
+      assigned_at: { [Op.gte]: startPeriod, [Op.lte]: endPeriod },
+      user_id: { [Op.ne]: null },
+    };
     if (reportBrand && reportBrand.length) {
       where['brand_id'] = {
         [Op.in]: reportBrand,
@@ -523,19 +519,10 @@ class ReportingService {
   }
 
   getChannelReport(startPeriod, endPeriod, reportBrand, reportChanel) {
-    let where = {};
-    if (process.env.REPORTING_BASED_ON === 'created_at') {
-      where['created_at'] = {
-        [Op.gte]: startPeriod,
-        [Op.lte]: endPeriod,
-      };
-    } else {
-      where['assigned_at'] = {
-        [Op.gte]: startPeriod,
-        [Op.lte]: endPeriod,
-      };
-      where['user_id'] = { [Op.ne]: null };
-    }
+    let where = {
+      assigned_at: { [Op.gte]: startPeriod, [Op.lte]: endPeriod },
+      user_id: { [Op.ne]: null },
+    };
     if (reportBrand && reportBrand.length) {
       where['brand_id'] = {
         [Op.in]: reportBrand,
@@ -634,19 +621,9 @@ class ReportingService {
       status: {
         [Op.in]: CONFIRMED_LIST,
       },
+      assigned_at: { [Op.gte]: startPeriod, [Op.lte]: endPeriod },
+      user_id: { [Op.ne]: null },
     };
-    if (process.env.REPORTING_BASED_ON === 'created_at') {
-      where['created_at'] = {
-        [Op.gte]: startPeriod,
-        [Op.lte]: endPeriod,
-      };
-    } else {
-      where['assigned_at'] = {
-        [Op.gte]: startPeriod,
-        [Op.lte]: endPeriod,
-      };
-      where['user_id'] = { [Op.ne]: null };
-    }
     if (reportBrand && reportBrand.length) {
       where['brand_id'] = {
         [Op.in]: reportBrand,
@@ -721,6 +698,86 @@ class ReportingService {
       ],
       where,
       group: ['items.name'],
+      raw: true,
+    });
+  }
+
+  getDeliveryReport(startPeriod, endPeriod, reportBrand, reportChanel) {
+    let where = {
+      assigned_at: { [Op.gte]: startPeriod, [Op.lte]: endPeriod },
+      delivery_account_id: { [Op.ne]: null },
+    };
+    if (reportBrand && reportBrand.length) {
+      where['brand_id'] = {
+        [Op.in]: reportBrand,
+      };
+    }
+
+    if (reportChanel && reportChanel.length) {
+      where['chanel_id'] = {
+        [Op.in]: reportChanel,
+      };
+    }
+
+    return Order.findAll({
+      attributes: [
+        ['delivery_account_id', 'id'],
+        [fn('COUNT', 'Order.id'), 'total'],
+        [
+          fn(
+            'COUNT',
+            literal(
+              `DISTINCT CASE WHEN "Order"."status" IN ${DELIVERED} THEN "Order"."id" ELSE NULL END`
+            )
+          ),
+          'delivered',
+        ],
+        [
+          fn(
+            'COUNT',
+            literal(
+              `DISTINCT CASE WHEN "Order"."status" IN ${RETURNED} THEN "Order"."id" ELSE NULL END`
+            )
+          ),
+          'returned',
+        ],
+        [
+          fn(
+            'COUNT',
+            literal(
+              `DISTINCT CASE WHEN "Order"."status" IN ${BOOKED} THEN "Order"."id" ELSE NULL END`
+            )
+          ),
+          'in_progress',
+        ],
+        [
+          fn(
+            'COUNT',
+            literal(
+              `DISTINCT CASE WHEN "Order"."status" IN ${BOOKING_ERROR} THEN "Order"."id" ELSE NULL END`
+            )
+          ),
+          'in_error',
+        ],
+        [
+          fn(
+            'COUNT',
+            literal(
+              `DISTINCT CASE WHEN "Order"."status" IN ${CANCELED} THEN "Order"."id" ELSE NULL END`
+            )
+          ),
+          'canceled',
+        ],
+      ],
+      include: [
+        {
+          model: DeliveryServiceAccounts,
+          as: 'courier',
+          attributes: ['name'],
+        },
+      ],
+      where,
+      group: ['Order.delivery_account_id', 'courier.name'],
       raw: true,
     });
   }

@@ -25,6 +25,7 @@ import { chanelChanelsSelector, chanelFetchStatusSelector } from 'store/slices/c
 import { fetchAllChanel } from 'store/slices/chanel/fetchChanel';
 import BookingUnitReport from './BookingUnitReport';
 import FOCReport from './FOCReport';
+import DeliveryReport from './DeliveryReport';
 
 // const REPORT_TYPES = ['Agent Report', 'Unit Report', 'Booking Unit Report', 'FOC Report', 'Channel Report', 'Incentive Report'];
 
@@ -34,7 +35,8 @@ const REPORT_TYPES = [
   { label: 'Booking Report', value: 'Booking Unit Report' },
   { label: 'FOC Report', value: 'FOC Report' },
   { label: 'Channel Report', value: 'Channel Report' },
-  { label: 'Incentive Report', value: 'Incentive Report' }
+  { label: 'Incentive Report', value: 'Incentive Report' },
+  { label: 'Courier Delivery Report', value: 'Delivery Report' }
 ];
 
 const Reporting = () => {
@@ -92,6 +94,8 @@ const Reporting = () => {
         return <ChannelReport />;
       case 'Incentive Report':
         return <IncentiveReport />;
+      case 'Delivery Report':
+        return <DeliveryReport />;
     }
   };
 

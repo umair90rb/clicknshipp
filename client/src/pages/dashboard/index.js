@@ -75,7 +75,7 @@ const DashboardDefault = () => {
         </Grid>
       ) : (
         <>
-          <Grid item xs={12} sm={6} md={4} lg={3}>
+          <Grid item xs={12} sm={6} md={3} lg={2}>
             <AnalyticEcommerce
               title="Total Orders"
               count={stats.totalOrders || 0}
@@ -83,7 +83,7 @@ const DashboardDefault = () => {
               extra={compare?.totalOrders}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={3}>
+          <Grid item xs={12} sm={6} md={3} lg={2}>
             <AnalyticEcommerce
               title="Total Sales(Rs)"
               count={stats.totalSalesValue || 0}
@@ -94,7 +94,7 @@ const DashboardDefault = () => {
               extra={compare?.totalSalesValue}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={3}>
+          <Grid item xs={12} sm={6} md={3} lg={2}>
             <AnalyticEcommerce
               title="Confirm Orders"
               count={stats.confirmedOrders || 0}
@@ -105,7 +105,7 @@ const DashboardDefault = () => {
               extra={compare?.confirmedOrders}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={3}>
+          <Grid item xs={12} sm={6} md={3} lg={2}>
             <AnalyticEcommerce
               title="Confirm Orders Value(Rs)"
               count={stats.confirmedOrdersSalesValue || 0}
@@ -118,7 +118,7 @@ const DashboardDefault = () => {
               extra={compare?.confirmedOrdersSalesValue}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={3}>
+          <Grid item xs={12} sm={6} md={3} lg={2}>
             <AnalyticEcommerce
               title="Orders Average Value(Rs)"
               count={stats.confirmedOrdersAverageValue || 0}
@@ -131,7 +131,7 @@ const DashboardDefault = () => {
               extra={compare?.confirmedOrdersAverageValue}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={3}>
+          <Grid item xs={12} sm={6} md={3} lg={2}>
             <AnalyticEcommerce
               title="Confirm Orders Units"
               count={stats.confirmedOrdersUnits || 0}
@@ -142,7 +142,7 @@ const DashboardDefault = () => {
               extra={compare?.confirmedOrdersUnits}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={3}>
+          <Grid item xs={12} sm={6} md={3} lg={2}>
             <AnalyticEcommerce
               title="Booked Orders"
               count={stats.bookedOrders || 0}
@@ -150,7 +150,7 @@ const DashboardDefault = () => {
               percentage={compare?.bookedOrders && Math.round(((stats.bookedOrders - compare?.bookedOrders) / compare?.bookedOrders) * 100)}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={3}>
+          <Grid item xs={12} sm={6} md={3} lg={2}>
             <AnalyticEcommerce
               title="No Picked Orders"
               count={stats.noPickOrders || 0}
@@ -158,7 +158,7 @@ const DashboardDefault = () => {
               percentage={compare?.noPickOrders && Math.round(((stats.noPickOrders - compare?.noPickOrders) / compare?.noPickOrders) * 100)}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={3}>
+          <Grid item xs={12} sm={6} md={3} lg={2}>
             <AnalyticEcommerce
               title="Cancel Orders"
               count={stats.cancelOrders || 0}
@@ -166,7 +166,7 @@ const DashboardDefault = () => {
               percentage={compare?.cancelOrders && Math.round(((stats.cancelOrders - compare?.cancelOrders) / compare?.cancelOrders) * 100)}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={3}>
+          <Grid item xs={12} sm={6} md={3} lg={2}>
             <AnalyticEcommerce
               title="Un-attempted Orders"
               count={stats.assignedOrders || 0}
@@ -177,7 +177,7 @@ const DashboardDefault = () => {
             />
           </Grid>
           <Grid item container rowSpacing={1} columnSpacing={0.75}>
-            <Grid item xs={12} sm={12} md={6} lg={6}>
+            <Grid item xs={12} sm={12} md={4} lg={4}>
               <MainCard content={false}>
                 <BarChart
                   yAxis={[{ scaleType: 'band', data: (stats.topItems || []).map((i) => i.item) }]}
@@ -201,7 +201,7 @@ const DashboardDefault = () => {
                 />
               </MainCard>
             </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={6}>
+            <Grid item xs={12} sm={12} md={4} lg={4}>
               <MainCard content={false}>
                 <BarChart
                   borderRadius={5}
@@ -229,7 +229,7 @@ const DashboardDefault = () => {
                 />
               </MainCard>
             </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={6}>
+            <Grid item xs={12} sm={12} md={4} lg={4}>
               <MainCard content={false}>
                 <BarChart
                   borderRadius={5}
