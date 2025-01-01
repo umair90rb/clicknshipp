@@ -26,6 +26,7 @@ const Input = styled.input`
   font-size: 14px;
   width: 300px;
   border: 1px solid #ccc;
+  background: none;
   border-radius: 4px;
   margin: 0 0px;
 `;

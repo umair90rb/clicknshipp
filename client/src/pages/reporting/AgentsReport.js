@@ -1,49 +1,21 @@
 import React, { useState } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
-import { Typography, Button, LinearProgress } from '@mui/material';
-import styled from '@mui/system/styled';
+import Button from '@mui/material/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   reportBrandSelector,
   reportChanelSelector,
   reportDataSelector,
   reportEndPeriodSelector,
-  reportFetchStatusSelector,
-  reportIsLoadingSelector,
   reportStartPeriodSelector
 } from 'store/slices/report/reportSelector';
-import GridToolbarWithHeading from 'components/GridToolbarWithHeading';
-import CustomNoRowsOverlay from 'components/GridNoRowCustomOverlay';
 import { setOrderFilters } from 'store/slices/order/orderSlice';
 import { useNavigate } from 'react-router-dom';
-import fetchStatus from 'constants/fetchStatuses';
-
-const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
-  '& .MuiDataGrid-row:nth-of-type(even)': {
-    backgroundColor: theme.palette.action.hover // Light gray for even rows
-  },
-  '& .MuiDataGrid-row:nth-of-type(odd)': {
-    backgroundColor: '#ffffff' // White for odd rows
-  }
-}));
-
-const BorderLinearProgress = styled(LinearProgress)(() => ({
-  height: '14px',
-  width: '88px',
-  borderRadius: '7px',
-  backgroundColor: ' #ebf5fb',
-  '& .MuiLinearProgress-bar': {
-    backgroundColor: '#2196f3',
-    transition: 'none',
-    transformOrigin: 'left'
-  }
-}));
+import ReportingGrid from './components/ReportingGrid';
+import GridLinearProgress from './components/GridLinearProgress';
 
 export default function AgentsReports() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const reportIsLoading = useSelector(reportIsLoadingSelector);
-  const reportFetchStatus = useSelector(reportFetchStatusSelector);
   const startPeriod = useSelector(reportStartPeriodSelector);
   const endPeriod = useSelector(reportEndPeriodSelector);
   const reportChanelFilter = useSelector(reportChanelSelector);
@@ -53,9 +25,6 @@ export default function AgentsReports() {
     user_id: false
   });
 
-  // const _data = data;
-
-  const renderToolBar = () => <GridToolbarWithHeading heading="Agent Report" />;
   const linkClicked = (id, status) => {
     const _filters = [
       { column: 'assignedAt', op: 'Greater than or equal to', value: startPeriod },
@@ -309,48 +278,25 @@ export default function AgentsReports() {
       field: 'percentage',
       headerName: 'Percentage%',
       flex: 0.5,
-      valueGetter: (params) => `${(params.row.confirmed / params.row.total) * 100}%`,
       renderCell: (params) => {
+        let percentage = ((params.row.confirmed / params.row.total) * 100).toFixed(2);
         if (params.row.id === 'TOTAL') {
-          const percentage = ((params.row.totalConfirmed / params.row.grandTotal) * 100).toFixed(2);
-          return (
-            <>
-              <BorderLinearProgress color="success" variant="determinate" value={percentage} />
-              <Typography variant="body2" color="text.secondary">{`${percentage}%`}</Typography>
-            </>
-          );
+          percentage = ((params.row.totalConfirmed / params.row.grandTotal) * 100).toFixed(2);
+          return <GridLinearProgress percentage={percentage} />;
         }
-        const percentage = ((params.row.confirmed / params.row.total) * 100).toFixed(2);
-        return (
-          <>
-            <BorderLinearProgress color="success" variant="determinate" value={percentage} />
-            <Typography variant="body2" color="text.secondary">{`${percentage}%`}</Typography>
-          </>
-        );
+        return <GridLinearProgress percentage={percentage} />;
       }
     }
   ];
-  if (reportIsLoading || reportFetchStatus === fetchStatus.IDLE) {
-    return null;
-  }
 
   return (
-    <div style={{ width: '100%', height: '75vh' }}>
-      <StyledDataGrid
-        disableRowSelectionOnClick
-        hideFooterPagination
-        checkboxSelection={false}
-        columnVisibilityModel={columnVisibilityModel}
-        onColumnVisibilityModelChange={setColumnVisibilityModel}
-        loading={reportIsLoading}
-        slots={{
-          toolbar: renderToolBar,
-          noRowsOverlay: CustomNoRowsOverlay
-        }}
-        rows={data || []}
-        getRowId={(row) => `${row.user_id}-${row.confirmed}-${row.no_pick}-${row.assigned}`}
-        columns={columns}
-      />
-    </div>
+    <ReportingGrid
+      heading="Agent Report"
+      description="Agent report provide you details about agent performance"
+      rows={data || []}
+      columnVisibilityModel={columnVisibilityModel}
+      onColumnVisibilityModelChange={setColumnVisibilityModel}
+      columns={columns}
+    />
   );
 }

@@ -56,6 +56,7 @@ export default {
             reportBrand,
             reportChanel
           );
+          break;
         case 'Delivery Report':
           report = await reportingService.getDeliveryReport(
             startPeriod,

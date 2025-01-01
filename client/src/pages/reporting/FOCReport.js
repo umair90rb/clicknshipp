@@ -1,38 +1,14 @@
 import React from 'react';
-import { DataGrid } from '@mui/x-data-grid';
-// import { Typography, LinearProgress } from '@mui/material';
-import styled from '@mui/system/styled';
 import { useSelector } from 'react-redux';
-import GridToolbarWithHeading from 'components/GridToolbarWithHeading';
-import CustomNoRowsOverlay from 'components/GridNoRowCustomOverlay';
-import { reportDataSelector, reportIsLoadingSelector } from 'store/slices/report/reportSelector';
-
-const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
-  '& .MuiDataGrid-row:nth-of-type(even)': {
-    backgroundColor: theme.palette.action.hover // Light gray for even rows
-  },
-  '& .MuiDataGrid-row:nth-of-type(odd)': {
-    backgroundColor: '#ffffff' // White for odd rows
-  }
-}));
-
-// const BorderLinearProgress = styled(LinearProgress)(() => ({
-//   height: '14px',
-//   width: '88px',
-//   borderRadius: '7px',
-//   backgroundColor: ' #ebf5fb',
-//   '& .MuiLinearProgress-bar': {
-//     backgroundColor: '#2196f3',
-//     transition: 'none',
-//     transformOrigin: 'left'
-//   }
-// }));
+import { reportDataSelector } from 'store/slices/report/reportSelector';
+import ReportingGrid from './components/ReportingGrid';
 
 const columns = [
   {
     field: 'name',
     headerName: 'Name',
-    flex: 3,
+    description: 'Name of product',
+    flex: 1,
     valueGetter: (params) => {
       if (params.row.id === 'TOTAL') {
         return params.row.label;
@@ -43,6 +19,7 @@ const columns = [
   {
     field: 'foc',
     headerName: 'FOC',
+    description: 'No of FOC(Free of Cost) items that dispatched in selected period',
     flex: 0.5,
     valueGetter: (params) => {
       if (params.row.id === 'TOTAL') {
@@ -54,6 +31,7 @@ const columns = [
   {
     field: 'postex',
     headerName: 'POSTEX',
+    description: 'Name of courier service',
     flex: 0.5,
     valueGetter: (params) => {
       if (params.row.id === 'TOTAL') {
@@ -65,6 +43,7 @@ const columns = [
   {
     field: 'tcs',
     headerName: 'TCS',
+    description: 'Name of courier service',
     flex: 0.5,
     valueGetter: (params) => {
       if (params.row.id === 'TOTAL') {
@@ -76,6 +55,7 @@ const columns = [
   {
     field: 'deawoo',
     headerName: 'Daewoo',
+    description: 'Name of courier service',
     flex: 0.5,
     valueGetter: (params) => {
       if (params.row.id === 'TOTAL') {
@@ -87,6 +67,7 @@ const columns = [
   {
     field: 'trax',
     headerName: 'TRAX',
+    description: 'Name of courier service',
     flex: 0.5,
     valueGetter: (params) => {
       if (params.row.id === 'TOTAL') {
@@ -98,6 +79,7 @@ const columns = [
   {
     field: 'leopard',
     headerName: 'LCS',
+    description: 'Name of courier service',
     flex: 0.5,
     valueGetter: (params) => {
       if (params.row.id === 'TOTAL') {
@@ -109,6 +91,7 @@ const columns = [
   {
     field: 'mnp',
     headerName: 'M&P',
+    description: 'Name of courier service',
     flex: 0.5,
     valueGetter: (params) => {
       if (params.row.id === 'TOTAL') {
@@ -120,6 +103,7 @@ const columns = [
   {
     field: 'manual',
     headerName: 'Manual',
+    description: 'Name of courier service',
     flex: 0.5,
     valueGetter: (params) => {
       if (params.row.id === 'TOTAL') {
@@ -131,6 +115,7 @@ const columns = [
   {
     field: 'callcourier',
     headerName: 'Call Courier',
+    description: 'Name of courier service',
     flex: 0.5,
     valueGetter: (params) => {
       if (params.row.id === 'TOTAL') {
@@ -142,26 +127,14 @@ const columns = [
 ];
 
 export default function FOCReport() {
-  const reportIsLoading = useSelector(reportIsLoadingSelector);
   const data = useSelector(reportDataSelector);
 
-  const renderToolbar = () => <GridToolbarWithHeading heading="Products in orders" />;
-
-  if (reportIsLoading) {
-    return null;
-  }
-
   return (
-    <div style={{ width: '100%', height: '75vh' }}>
-      <StyledDataGrid
-        hideFooterPagination
-        checkboxSelection={false}
-        loading={reportIsLoading}
-        getRowId={(row) => `${row.name}`}
-        slots={{ toolbar: renderToolbar, noRowsOverlay: CustomNoRowsOverlay }}
-        rows={data}
-        columns={columns}
-      />
-    </div>
+    <ReportingGrid
+      heading="FOC Products"
+      description="FOC is a list of free of cost products that dispatched with orders without any cost"
+      rows={data}
+      columns={columns}
+    />
   );
 }

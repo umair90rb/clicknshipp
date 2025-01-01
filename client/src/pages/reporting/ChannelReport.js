@@ -1,19 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import GridToolbarWithHeading from 'components/GridToolbarWithHeading';
-import CustomNoRowsOverlay from 'components/GridNoRowCustomOverlay';
-import { reportDataSelector, reportIsLoadingSelector } from 'store/slices/report/reportSelector';
-import { styled } from '@mui/material/styles';
-
-const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
-  '& .MuiDataGrid-row:nth-of-type(even)': {
-    backgroundColor: theme.palette.action.hover // Light gray for even rows
-  },
-  '& .MuiDataGrid-row:nth-of-type(odd)': {
-    backgroundColor: '#ffffff' // White for odd rows
-  }
-}));
+import { reportDataSelector } from 'store/slices/report/reportSelector';
+import ReportingGrid from './components/ReportingGrid';
 
 const columns = [
   {
@@ -108,28 +96,20 @@ const columns = [
 ];
 
 export default function ChannelReport() {
-  const reportIsLoading = useSelector(reportIsLoadingSelector);
   const data = useSelector(reportDataSelector);
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({
     cancel: false,
     no_pick: false
   });
 
-  const renderToolbar = () => <GridToolbarWithHeading heading="Channel Report" />;
-
   return (
-    <div style={{ width: '100%', height: '75vh' }}>
-      <StyledDataGrid
-        hideFooterPagination
-        disableRowSelectionOnClick
-        checkboxSelection={false}
-        columnVisibilityModel={columnVisibilityModel}
-        onColumnVisibilityModelChange={setColumnVisibilityModel}
-        loading={reportIsLoading}
-        slots={{ toolbar: renderToolbar, noRowsOverlay: CustomNoRowsOverlay }}
-        rows={data}
-        columns={columns}
-      />
-    </div>
+    <ReportingGrid
+      heading="Chanel Report"
+      description="Chanel report provide detail about orders processed by each chanel"
+      columnVisibilityModel={columnVisibilityModel}
+      onColumnVisibilityModelChange={setColumnVisibilityModel}
+      rows={data}
+      columns={columns}
+    />
   );
 }

@@ -1,19 +1,7 @@
 import React, { useState } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
 import { useSelector } from 'react-redux';
-import GridToolbarWithHeading from 'components/GridToolbarWithHeading';
-import CustomNoRowsOverlay from 'components/GridNoRowCustomOverlay';
-import { reportDataSelector, reportIsLoadingSelector } from 'store/slices/report/reportSelector';
-import { styled } from '@mui/material/styles';
-
-const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
-  '& .MuiDataGrid-row:nth-of-type(even)': {
-    backgroundColor: theme.palette.action.hover // Light gray for even rows
-  },
-  '& .MuiDataGrid-row:nth-of-type(odd)': {
-    backgroundColor: '#ffffff' // White for odd rows
-  }
-}));
+import { reportDataSelector } from 'store/slices/report/reportSelector';
+import ReportingGrid from './components/ReportingGrid';
 
 const columns = [
   {
@@ -219,7 +207,6 @@ const columns = [
 ];
 
 export default function BookingUnitReport() {
-  const reportIsLoading = useSelector(reportIsLoadingSelector);
   const data = useSelector(reportDataSelector);
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({
     generated: false,
@@ -230,26 +217,14 @@ export default function BookingUnitReport() {
     callcourier: false
   });
 
-  const renderToolbar = () => <GridToolbarWithHeading heading="Products in orders" />;
-
-  if (reportIsLoading) {
-    return null;
-  }
-
   return (
-    <div style={{ width: '100%', height: '75vh' }}>
-      <StyledDataGrid
-        disableRowSelectionOnClick
-        hideFooterPagination
-        checkboxSelection={false}
-        loading={reportIsLoading}
-        columnVisibilityModel={columnVisibilityModel}
-        onColumnVisibilityModelChange={setColumnVisibilityModel}
-        getRowId={(row) => `${row.name}`}
-        slots={{ toolbar: renderToolbar, noRowsOverlay: CustomNoRowsOverlay }}
-        rows={data}
-        columns={columns}
-      />
-    </div>
+    <ReportingGrid
+      heading="Booking Unit Report"
+      description="Booking unit report provide total no of an item and on which courier services they are booked"
+      columnVisibilityModel={columnVisibilityModel}
+      onColumnVisibilityModelChange={setColumnVisibilityModel}
+      rows={data}
+      columns={columns}
+    />
   );
 }

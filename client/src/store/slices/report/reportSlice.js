@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import fetchStatus from 'constants/fetchStatuses';
-import { fetchAgentReport } from './fetchReport';
+import { fetchReport } from './fetchReport';
 import { addTotalRow } from './helper';
 import { getEndOfDay, getStartOfDay } from 'utils/format-date';
 
@@ -38,16 +38,16 @@ const reportSlice = createSlice({
     clearReportState: () => initialState
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchAgentReport.pending, (state, _action) => {
+    builder.addCase(fetchReport.pending, (state, _action) => {
       state.fetchStatus = fetchStatus.REQUEST;
     });
-    builder.addCase(fetchAgentReport.fulfilled, (state, action) => {
+    builder.addCase(fetchReport.fulfilled, (state, action) => {
       const { data } = action.payload;
       state.fetchStatus = fetchStatus.SUCCESS;
       state.data = addTotalRow(state.type, data.report);
       state.error = null;
     });
-    builder.addCase(fetchAgentReport.rejected, (state, action) => {
+    builder.addCase(fetchReport.rejected, (state, action) => {
       state.data = [];
       state.fetchStatus = fetchStatus.FAILURE;
       state.error = action.payload;
