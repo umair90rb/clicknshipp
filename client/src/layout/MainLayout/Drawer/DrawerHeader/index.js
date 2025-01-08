@@ -24,10 +24,7 @@ const DrawerHeader = ({ open }) => {
           label={HEROKU_RELEASE_VERSION || 'v0.0.1'}
           size="small"
           sx={{ height: 16, '& .MuiChip-label': { fontSize: '0.625rem', py: 0.25 } }}
-          component="a"
-          // href="https://github.com/codedthemes/mantis-free-react-admin-template"
-          target="_blank"
-          clickable
+          component="span"
         />
       </Stack>
     </DrawerHeaderStyled>

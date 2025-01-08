@@ -132,4 +132,54 @@ export default {
       );
     }
   },
+
+  async graph(req, res) {
+    try {
+      const { startPeriod, endPeriod } = req.query;
+      const deliveryRatio = await sequelize.query(
+        `select
+          COUNT(distinct "Order"."id") as "total",
+          COUNT(distinct case when "Order"."status" in ('Booked') then "Order"."id" else null end) as "in_progress",
+          COUNT(distinct case when "Order"."status" in ('Delivered') then "Order"."id" else null end) as "delivered"
+        from
+          "Orders" as "Order"
+        where
+          ("Order"."deleted_at" is null
+            and (("Order"."assigned_at" >= :startPeriod
+              and "Order"."assigned_at" <= :endPeriod)
+            and "Order"."delivery_account_id" is not null));`,
+        { replacements: { startPeriod, endPeriod }, type: QueryTypes.SELECT }
+      );
+
+      const salesTrend = await sequelize.query(
+        `select
+        date_part('day',
+        o.assigned_at::date) as "day",
+        COUNT(*) as "received_orders",
+        COUNT(distinct case when "o"."status" in ('Confirmed', 'Booked', 'Delivered', 'Booking Error') then "o"."id" else null end) as "confirmed_orders"
+        from
+          "Orders" o
+        where
+          o.assigned_at::date between :startPeriod and :endPeriod
+        group by
+          o.assigned_at::date;`,
+        { replacements: { startPeriod, endPeriod }, type: QueryTypes.SELECT }
+      );
+
+      return sendSuccessResponse(
+        res,
+        201,
+        { deliveryRatio: deliveryRatio[0], salesTrend: salesTrend },
+        'Dashboard graph'
+      );
+    } catch (e) {
+      console.error(e);
+      return sendErrorResponse(
+        res,
+        500,
+        'Could not perform operation at this time, kindly try again later.',
+        e
+      );
+    }
+  },
 };

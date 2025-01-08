@@ -1,11 +1,25 @@
 import { createSlice } from '@reduxjs/toolkit';
 import fetchStatus from 'constants/fetchStatuses';
-import { fetchDashboardStats, fetchDashboardCompareStats } from './fetchDashboard';
+import { fetchDashboardGraph, fetchDashboardStats, fetchDashboardCompareStats } from './fetchDashboard';
 import moment from '../../../../node_modules/moment/moment';
 import { subtractDaysFromToday } from 'utils/format-date';
 
 const initialState = {
   stats: {},
+  graph: {
+    deliveryRatio: 0,
+    salesTrend: {
+      xLabels: [],
+      data: [
+        { data: [], label: 'Confirmed Orders' },
+        { data: [], label: 'Generated Orders' }
+      ]
+    },
+    fetchStatus: fetchStatus.IDLE,
+    error: null,
+    startPeriod: moment(subtractDaysFromToday(30)).startOf('day').format('YYYY-MM-DDTHH:MM'),
+    endPeriod: moment(new Date()).endOf('day').format('YYYY-MM-DDTHH:MM')
+  },
   compare: null,
   fetchStatus: fetchStatus.IDLE,
   error: null,
@@ -54,6 +68,33 @@ const dashboardSlice = createSlice({
       state.compare = null;
       state.fetchStatus = fetchStatus.FAILURE;
       state.error = action.payload;
+    });
+
+    builder.addCase(fetchDashboardGraph.pending, (state, _action) => {
+      state.graph.fetchStatus = fetchStatus.REQUEST;
+    });
+    builder.addCase(fetchDashboardGraph.fulfilled, (state, action) => {
+      const { data } = action.payload;
+      state.graph.fetchStatus = fetchStatus.SUCCESS;
+      state.graph.deliveryRatio = ((data?.deliveryRatio.delivered / data?.deliveryRatio.total) * 100).toFixed(0) || 0;
+      state.graph.salesTrend = {
+        xLabels: data?.salesTrend.map((trend) => `${trend.day}`),
+        data: [
+          {
+            data: data?.salesTrend.map((trend) => Number(trend.confirmed_orders)),
+            label: 'Confirmed Orders'
+          },
+          {
+            data: data?.salesTrend.map((trend) => Number(trend.received_orders)),
+            label: 'Generated Orders'
+          }
+        ]
+      };
+    });
+    builder.addCase(fetchDashboardGraph.rejected, (state, action) => {
+      state.graph.data = {};
+      state.graph.fetchStatus = fetchStatus.FAILURE;
+      state.graph.error = action.payload;
     });
   }
 });

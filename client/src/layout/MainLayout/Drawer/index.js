@@ -34,7 +34,7 @@ const MainDrawer = ({ open, handleDrawerToggle, window }) => {
       ) : (
         <Drawer
           container={container}
-          variant="temporary"
+          variant="permanent"
           open={open}
           onClose={handleDrawerToggle}
           ModalProps={{ keepMounted: true }}

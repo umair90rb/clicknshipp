@@ -49,8 +49,8 @@ const AnalyticEcommerce = ({ color, title, count, percentage, extra }) => {
       {extra && (
         <Box sx={{ pt: 2.25 }}>
           <Typography variant="caption" color="textSecondary">
-            Compared value is{' '}
-            <Typography component="span" variant="caption" sx={{ color: `${color || 'primary'}.main` }}>
+            Comparing value is{' '}
+            <Typography component="span" variant="h6" sx={{ color: `${color || 'primary'}.main` }}>
               {extra}
             </Typography>
           </Typography>

@@ -3,7 +3,7 @@ import { Grid, Typography } from '@mui/material';
 import { BarChart } from '@mui/x-charts/BarChart';
 import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchDashboardCompareStats, fetchDashboardStats } from 'store/slices/dashboard/fetchDashboard';
+import { fetchDashboardCompareStats, fetchDashboardGraph, fetchDashboardStats } from 'store/slices/dashboard/fetchDashboard';
 import {
   dashboardStartPeriodSelector,
   dashboardEndPeriodSelector,
@@ -11,11 +11,16 @@ import {
   dashboardStatsSelector,
   dashboardCompareStartPeriodSelector,
   dashboardCompareEndPeriodSelector,
-  dashboardCompareStatsSelector
+  dashboardCompareStatsSelector,
+  dashboardGraphDataSelector,
+  dashboardGraphStartPeriodSelector,
+  dashboardGraphEndPeriodSelector
 } from 'store/slices/dashboard/dashboardSelector';
 import { setDashboardStatPeriod } from 'store/slices/dashboard/dashboardSlice';
 import DateRangePicker from 'components/DatePicker';
 import MainCard from 'components/MainCard';
+import SalesTrend from './components/SalesTrend';
+import DeliveryRatio from './components/DeliveryRatio';
 
 const DashboardDefault = () => {
   const dispatch = useDispatch();
@@ -27,6 +32,17 @@ const DashboardDefault = () => {
   const compare = useSelector(dashboardCompareStatsSelector);
   const compareStartPeriod = useSelector(dashboardCompareStartPeriodSelector);
   const compareEndPeriod = useSelector(dashboardCompareEndPeriodSelector);
+
+  const graphStartPeriod = useSelector(dashboardGraphStartPeriodSelector);
+  const graphEndPeriod = useSelector(dashboardGraphEndPeriodSelector);
+
+  useEffect(() => {
+    dispatch(fetchDashboardGraph({ startPeriod: graphStartPeriod, endPeriod: graphEndPeriod }));
+  }, [graphStartPeriod, graphEndPeriod]);
+
+  useEffect(() => {
+    dispatch(fetchDashboardStats({ startPeriod, endPeriod }));
+  }, [startPeriod, endPeriod]);
 
   useEffect(() => {
     dispatch(fetchDashboardStats({ startPeriod, endPeriod }));
@@ -75,6 +91,18 @@ const DashboardDefault = () => {
         </Grid>
       ) : (
         <>
+          <Grid item container rowSpacing={1} columnSpacing={0.75}>
+            <Grid item xs={12} sm={6} md={5} lg={3}>
+              <MainCard content={false} title="Delivery Ratio (Last 30 Days)">
+                <DeliveryRatio />
+              </MainCard>
+            </Grid>
+            <Grid item xs={12} sm={6} md={7} lg={9}>
+              <MainCard content={false} title="Sales Trend (Last 30 Days)">
+                <SalesTrend />
+              </MainCard>
+            </Grid>
+          </Grid>
           <Grid item xs={12} sm={6} md={3} lg={2}>
             <AnalyticEcommerce
               title="Total Orders"
