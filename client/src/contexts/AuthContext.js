@@ -1,5 +1,4 @@
-import { createContext, useEffect, useState } from 'react';
-import { http } from 'api/ajax';
+import { createContext, useState } from 'react';
 
 export const AuthContext = createContext(null);
 

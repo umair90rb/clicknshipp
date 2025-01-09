@@ -16,19 +16,19 @@ const columns = (showHistory) => [
     field: 'name',
     headerName: 'Item Name',
     flex: 1.75,
-    valueGetter: (value) => `${value.row.item?.name || value.row.raw?.name}`
+    valueGetter: (value) => `${value?.row?.item?.name || value?.row.raw?.name}`
   },
   {
     field: 'current_level',
     headerName: 'Current Stock',
     flex: 1,
-    valueGetter: (value) => `${value?.value} ${value.row.raw?.unit_of_measure || ''}`
+    valueGetter: (value) => `${value?.value} ${value?.row.raw?.unit_of_measure || ''}`
   },
   {
     field: 'location',
     headerName: 'Store',
     flex: 1,
-    valueGetter: (value) => `${value?.value.name}`
+    valueGetter: (value) => `${value?.value?.name || ''}`
   },
   {
     field: 'actions',
@@ -46,7 +46,7 @@ const columns = (showHistory) => [
             label="View"
             className="textPrimary"
             onClick={() =>
-              showHistory(value.row?.raw?.id || value.row?.item?.id, value?.row?.item === null ? 'raw_material' : 'finished_product')
+              showHistory(value?.row?.raw?.id || value?.row?.item?.id, value?.row?.item === null ? 'raw_material' : 'finished_product')
             }
             color="inherit"
           />
