@@ -9,7 +9,7 @@ const bookingWorker = new Worker(
   'bookingQueue',
   async (job) => {
     if (process.env.NODE_ENV !== 'production') {
-      console.log(job, 'booking completed in development');
+      console.log('booking completed in development');
       return;
     }
     const { orderId, deliveryAccountId } = job.data;

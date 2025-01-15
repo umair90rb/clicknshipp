@@ -38,6 +38,11 @@ const columns = (handleEditAction, handleDeleteAction) => [
     headerName: 'Price',
     flex: 1
   },
+  {
+    field: 're_order_level',
+    headerName: 'Re Order Level',
+    flex: 1
+  },
   // {
   //   field: 'category',
   //   headerName: 'Category',

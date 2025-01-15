@@ -15,25 +15,44 @@ const {
 export default {
   async stocks(req, res) {
     try {
+      const type = req.query.type || 'finished_product';
+      const includes = [
+        {
+          model: Location,
+          as: 'location',
+          attributes: ['name'],
+        },
+      ];
+      if (type === 'raw_material' || type === 'packaging_material') {
+        includes.push({
+          model: RawMaterial,
+          as: 'raw',
+          attributes: ['name', 'id', 'unit_of_measure'],
+          where: { type },
+        });
+      }
+      if (type === 'finished_product') {
+        includes.push({
+          model: Item,
+          as: 'item',
+          attributes: ['name', 'id'],
+        });
+      }
+      if (type === 'all') {
+        includes.push({
+          model: RawMaterial,
+          as: 'raw',
+          attributes: ['name', 'id', 'unit_of_measure'],
+        });
+        includes.push({
+          model: Item,
+          as: 'item',
+          attributes: ['name', 'id'],
+        });
+      }
       const stocks = await StockLevel.findAll({
         attributes: ['id', 'current_level'],
-        include: [
-          {
-            model: Item,
-            as: 'item',
-            attributes: ['name', 'id'],
-          },
-          {
-            model: RawMaterial,
-            as: 'raw',
-            attributes: ['name', 'id', 'unit_of_measure'],
-          },
-          {
-            model: Location,
-            as: 'location',
-            attributes: ['name'],
-          },
-        ],
+        include: includes,
       });
       return sendSuccessResponse(
         res,

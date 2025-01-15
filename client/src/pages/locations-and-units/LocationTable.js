@@ -8,6 +8,7 @@ import { fetchAllLocation, fetchDeleteLocation } from 'store/slices/location/fet
 import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 import { deleteLocation } from 'store/slices/location/locationSlice';
+import { splitAndToUpperCase } from 'utils/string-utils';
 const columns = (handleUpdate, handleDelete) => [
   {
     field: 'id',
@@ -23,6 +24,12 @@ const columns = (handleUpdate, handleDelete) => [
     field: 'address',
     headerName: 'Address',
     flex: 1.25
+  },
+  {
+    field: 'type',
+    headerName: 'Store Type',
+    flex: 1,
+    valueGetter: (params) => splitAndToUpperCase(params.row.type) || ''
   },
   {
     field: 'actions',

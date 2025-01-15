@@ -6,7 +6,7 @@ const orderFulfillWorker = new Worker(
   'orderFulfillQueue',
   async (job) => {
     if (process.env.NODE_ENV !== 'production') {
-      console.log(job, 'order fulfill stopped due to development');
+      console.log('order fulfill stopped due to development');
       return;
     }
     console.log(`${job.id} started with ${JSON.stringify(job)}`);

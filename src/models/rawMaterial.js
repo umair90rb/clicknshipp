@@ -25,6 +25,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      type: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      re_order_level: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
       cost_price: {
         type: DataTypes.INTEGER,
         allowNull: true,

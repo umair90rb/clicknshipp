@@ -8,12 +8,7 @@ export default {
   async all(req, res) {
     try {
       const rawMaterials = await RawMaterial.findAll();
-      return sendSuccessResponse(
-        res,
-        200,
-        { rawMaterials },
-        'All raw materials'
-      );
+      return sendSuccessResponse(res, 200, { rawMaterials }, 'All materials');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
@@ -34,7 +29,7 @@ export default {
           res,
           200,
           { rawMaterial },
-          'Raw material with id'
+          'Material with id'
         );
       }
       return sendErrorResponse(res, 404, 'No data found with this id');
@@ -50,22 +45,32 @@ export default {
   },
 
   async create(req, res) {
-    const { name, description, unit_of_measure, code, cost_price } = req.body;
+    const {
+      name,
+      description,
+      type,
+      re_order_level,
+      unit_of_measure,
+      code,
+      cost_price,
+    } = req.body;
     try {
       let rawMaterial = await RawMaterial.findOne({
-        where: { name },
+        where: { name, type },
       });
       if (rawMaterial) {
         return sendErrorResponse(
           res,
           422,
-          'Raw material with this name already exists.'
+          'Material with this name already exists.'
         );
       }
       rawMaterial = await RawMaterial.create({
         name,
         description,
         unit_of_measure,
+        re_order_level,
+        type,
         code,
         cost_price,
       });
@@ -73,7 +78,7 @@ export default {
         res,
         201,
         { rawMaterial },
-        'Raw material created successfully'
+        'Material created successfully'
       );
     } catch (error) {
       console.error(error);
@@ -88,14 +93,18 @@ export default {
 
   async import(req, res) {
     try {
+      const { type } = req.body;
       const json = await excelToJson(req.file.buffer);
-      console.log(json);
-      await RawMaterial.bulkCreate(json);
+      console.log(json, type);
+      if (!json.length) {
+        return sendErrorResponse(res, 500, 'Seems like file is empty!', null);
+      }
+      await RawMaterial.bulkCreate(json.map((item) => ({ ...item, type })));
       return sendSuccessResponse(
         res,
         200,
         {},
-        'Raw materials imported successfully!'
+        'Materials imported successfully!'
       );
     } catch (error) {
       console.error(error);
@@ -111,13 +120,23 @@ export default {
   async update(req, res) {
     try {
       const { id } = req.params;
-      const { name, description, unit_of_measure, code, cost_price } = req.body;
+      const {
+        name,
+        description,
+        unit_of_measure,
+        re_order_level,
+        type,
+        code,
+        cost_price,
+      } = req.body;
       const rawMaterial = await RawMaterial.findByPk(id);
       if (rawMaterial) {
         rawMaterial.set({
           name,
           description,
           unit_of_measure,
+          re_order_level,
+          type,
           code,
           cost_price,
           updatedAt: new Date().toISOString(),
@@ -152,7 +171,7 @@ export default {
           res,
           200,
           {},
-          'Raw material deleted successfully'
+          'Material deleted successfully'
         );
       }
       return sendErrorResponse(res, 404, 'No data found with this id');

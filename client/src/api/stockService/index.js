@@ -3,7 +3,7 @@ import Ajax from 'api/ajax';
 class StockService extends Ajax {
   pathname = 'stock';
 
-  fetchAllStock = () => this.getJson(`${this.pathname}/all`);
+  fetchAllStock = (type) => this.getJson(`${this.pathname}/all?type=${type}`);
 
   fetchStockHistory = (data) => this.post(`${this.pathname}/history`, data);
 

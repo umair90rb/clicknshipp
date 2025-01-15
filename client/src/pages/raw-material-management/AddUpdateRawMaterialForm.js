@@ -33,7 +33,7 @@ const style = {
   p: 4
 };
 
-export default function AddUpdateRawMaterial({ rawMaterial, visible, onClose }) {
+export default function AddUpdateRawMaterial({ rawMaterial, type, visible, onClose }) {
   const dispatch = useDispatch();
   const formRef = useRef();
 
@@ -105,7 +105,9 @@ export default function AddUpdateRawMaterial({ rawMaterial, visible, onClose }) 
             description: rawMaterial?.description || '',
             code: rawMaterial?.code || '',
             cost_price: rawMaterial?.cost_price || '',
-            unit_of_measure: rawMaterial?.unit_of_measure || ''
+            re_order_level: rawMaterial?.re_order_level || '',
+            unit_of_measure: rawMaterial?.unit_of_measure || '',
+            type: rawMaterial?.type || type || 'raw_material'
             // supplier: rawMaterial?.supplier?.id || '',
             // category: rawMaterial?.category?.id || '',
             // brand: rawMaterial?.brand?.id || ''
@@ -115,7 +117,8 @@ export default function AddUpdateRawMaterial({ rawMaterial, visible, onClose }) 
             description: Yup.string().max(255),
             code: Yup.string().max(255).required('Code is required'),
             unit_of_measure: Yup.string().required('Unit is required'),
-            cost_price: Yup.number().required()
+            cost_price: Yup.number().required(),
+            re_order_level: Yup.number().required()
             // supplier: Yup.number().required(),
             // category: Yup.number().required(),
             // brand: Yup.number().required()
@@ -127,7 +130,7 @@ export default function AddUpdateRawMaterial({ rawMaterial, visible, onClose }) 
               <Grid container spacing={3}>
                 <Grid item xs={12}>
                   <Stack spacing={1}>
-                    <InputLabel htmlFor="name-signup">Raw Material Name</InputLabel>
+                    <InputLabel htmlFor="name-signup">Name</InputLabel>
                     <OutlinedInput
                       id="name-login"
                       type="text"
@@ -148,7 +151,7 @@ export default function AddUpdateRawMaterial({ rawMaterial, visible, onClose }) 
                 </Grid>
                 <Grid item xs={12}>
                   <Stack spacing={1}>
-                    <InputLabel htmlFor="description-signup">Raw Material Description</InputLabel>
+                    <InputLabel htmlFor="description-signup">Description</InputLabel>
                     <OutlinedInput
                       id="description-login"
                       type="text"
@@ -208,6 +211,29 @@ export default function AddUpdateRawMaterial({ rawMaterial, visible, onClose }) 
                     {touched.cost_price && errors.cost_price && (
                       <FormHelperText error id="helper-text-cost_price-signup">
                         {errors.cost_price}
+                      </FormHelperText>
+                    )}
+                  </Stack>
+                </Grid>
+                <Grid item xs={12}>
+                  <Stack spacing={1}>
+                    <InputLabel htmlFor="re_order_level-signup">Re Order Level</InputLabel>
+                    <OutlinedInput
+                      fullWidth
+                      error={Boolean(touched.re_order_level && errors.re_order_level)}
+                      id="re_order_level-signup"
+                      type="number"
+                      value={values.re_order_level}
+                      name="re_order_level"
+                      onBlur={handleBlur}
+                      onChange={(e) => {
+                        handleChange(e);
+                      }}
+                      placeholder="1000"
+                    />
+                    {touched.re_order_level && errors.re_order_level && (
+                      <FormHelperText error id="helper-text-re_order_level-signup">
+                        {errors.re_order_level}
                       </FormHelperText>
                     )}
                   </Stack>
@@ -345,7 +371,7 @@ export default function AddUpdateRawMaterial({ rawMaterial, visible, onClose }) 
                       variant="contained"
                       color="primary"
                     >
-                      {rawMaterial ? 'Update Raw Material' : 'Create Raw Material'}
+                      {rawMaterial ? 'Update Material' : 'Create Material'}
                     </Button>
                   </AnimateButton>
                 </Grid>

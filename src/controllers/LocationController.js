@@ -44,7 +44,7 @@ export default {
   },
 
   async create(req, res) {
-    const { name, address } = req.body;
+    const { name, type, address } = req.body;
     try {
       let location = await Location.findOne({
         where: { name },
@@ -58,6 +58,7 @@ export default {
       }
       location = await Location.create({
         name,
+        type,
         address,
       });
       return sendSuccessResponse(

@@ -532,6 +532,13 @@ const OrderTable = memo(() => {
   const handleViewClick = (id) => () => navigate(location.viewOrder(id));
 
   const handleBulkDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete selected orders?')) {
+      return;
+    }
+    if (window.prompt('Enter "delete all" to confirm') !== 'delete all') {
+      window.alert('Invalid input! Orders not deleted!');
+      return;
+    }
     setBulkDeleteLoading(true);
     const { type, payload } = await dispatch(fetchBulkOrdersDelete({ body: { orderIds: rowSelectionModel } }));
     if (type === 'order/bulk/delete/fetch/fulfilled') {

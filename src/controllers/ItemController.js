@@ -1,7 +1,7 @@
-import { Op } from "sequelize";
-import model from "../models";
-import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
-import excelToJson from "../helpers/excelToJson";
+import { Op } from 'sequelize';
+import model from '../models';
+import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
+import excelToJson from '../helpers/excelToJson';
 
 const { Item, Category, Brand, Supplier } = model;
 
@@ -9,32 +9,32 @@ export default {
   async items(req, res) {
     try {
       const items = await Item.findAll({
-        attributes: ["id", "name", "code", "unit_price", "cost_price"],
+        attributes: ['id', 'name', 'code', 'unit_price', 'cost_price'],
         include: [
           {
             model: Category,
-            as: "category",
-            attributes: ["id", "name"],
+            as: 'category',
+            attributes: ['id', 'name'],
           },
           {
             model: Brand,
-            as: "brand",
-            attributes: ["id", "name"],
+            as: 'brand',
+            attributes: ['id', 'name'],
           },
           {
             model: Supplier,
-            as: "supplier",
-            attributes: ["id", "name"],
+            as: 'supplier',
+            attributes: ['id', 'name'],
           },
         ],
       });
-      return sendSuccessResponse(res, 200, { items }, "All items");
+      return sendSuccessResponse(res, 200, { items }, 'All items');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
@@ -43,35 +43,35 @@ export default {
     try {
       const { id } = req.params;
       const item = await Item.findByPk(id, {
-        attributes: ["id", "code", "name", ["unit_price", "price"]],
+        attributes: ['id', 'code', 'name', ['unit_price', 'price']],
         include: [
           {
             model: Category,
-            as: "category",
-            attributes: ["id", "name"],
+            as: 'category',
+            attributes: ['id', 'name'],
           },
           {
             model: Brand,
-            as: "brand",
-            attributes: ["id", "name"],
+            as: 'brand',
+            attributes: ['id', 'name'],
           },
           {
             model: Supplier,
-            as: "supplier",
-            attributes: ["id", "name"],
+            as: 'supplier',
+            attributes: ['id', 'name'],
           },
         ],
       });
       if (item) {
-        return sendSuccessResponse(res, 200, { item }, "Item with id");
+        return sendSuccessResponse(res, 200, { item }, 'Item with id');
       }
-      return sendErrorResponse(res, 404, "No data found with this id.");
+      return sendErrorResponse(res, 404, 'No data found with this id.');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
@@ -82,13 +82,14 @@ export default {
       req.body;
     try {
       let item = await Item.findOne({
+        attributes: ['id'],
         where: { [Op.or]: [{ name }, { code }] },
       });
       if (item) {
         return sendErrorResponse(
           res,
           422,
-          "Item with name or code already exists."
+          'Item with name or code already exists.'
         );
       }
       item = await Item.create({
@@ -106,18 +107,18 @@ export default {
         include: [
           {
             model: Category,
-            as: "category",
-            attributes: ["id", "name"],
+            as: 'category',
+            attributes: ['id', 'name'],
           },
           {
             model: Brand,
-            as: "brand",
-            attributes: ["id", "name"],
+            as: 'brand',
+            attributes: ['id', 'name'],
           },
           {
             model: Supplier,
-            as: "supplier",
-            attributes: ["id", "name"],
+            as: 'supplier',
+            attributes: ['id', 'name'],
           },
         ],
       });
@@ -135,13 +136,14 @@ export default {
             supplier: item.supplier,
           },
         },
-        "Item created successfully"
+        'Item created successfully'
       );
     } catch (error) {
+      console.log(error.message, error.stack);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         error
       );
     }
@@ -153,25 +155,25 @@ export default {
       const nameWithSKUAndVolume = json.map((item) => {
         const itemCopy = { ...item };
         const { sku, volume } = itemCopy;
-        if (volume && volume !== "") {
+        if (volume && volume !== '') {
           itemCopy.name += ` (${volume})`;
         }
-        if (sku && sku !== "") {
+        if (sku && sku !== '') {
           itemCopy.name += ` ${sku}`;
         }
-        itemCopy.code = sku || "";
+        itemCopy.code = sku || '';
         delete itemCopy.volume;
         delete itemCopy.sku;
         return itemCopy;
       });
       await Item.bulkCreate(nameWithSKUAndVolume);
-      return sendSuccessResponse(res, 200, {}, "Items imported successfully!");
+      return sendSuccessResponse(res, 200, {}, 'Items imported successfully!');
     } catch (error) {
       console.error(error);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         error
       );
     }
@@ -205,18 +207,18 @@ export default {
           include: [
             {
               model: Category,
-              as: "category",
-              attributes: ["id", "name"],
+              as: 'category',
+              attributes: ['id', 'name'],
             },
             {
               model: Brand,
-              as: "brand",
-              attributes: ["id", "name"],
+              as: 'brand',
+              attributes: ['id', 'name'],
             },
             {
               model: Supplier,
-              as: "supplier",
-              attributes: ["id", "name"],
+              as: 'supplier',
+              attributes: ['id', 'name'],
             },
           ],
         });
@@ -235,16 +237,16 @@ export default {
               supplier: item.supplier,
             },
           },
-          "Operation successful"
+          'Operation successful'
         );
       }
-      return sendErrorResponse(res, 404, "No data found with this id");
+      return sendErrorResponse(res, 404, 'No data found with this id');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later",
+        'Could not perform operation at this time, kindly try again later',
         e
       );
     }
@@ -256,15 +258,15 @@ export default {
       const item = await Item.findByPk(id);
       if (item) {
         await item.destroy();
-        return sendSuccessResponse(res, 200, {}, "Operation successful.");
+        return sendSuccessResponse(res, 200, {}, 'Operation successful.');
       }
-      return sendErrorResponse(res, 404, "No data found with this id.");
+      return sendErrorResponse(res, 404, 'No data found with this id.');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }

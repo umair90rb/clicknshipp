@@ -29,25 +29,27 @@ const VisuallyHiddenInput = styled('input')({
 export default function RawMaterialManagement() {
   const dispatch = useDispatch();
   const [openModal, setOpenModal] = useState(false);
+  const [rawMaterialType, setRawMaterialType] = useState('');
   const items = useSelector(itemItemsSelector);
   const [importing, setImporting] = useState(false);
   const [itemToUpdate, setItemToUpdate] = useState();
   const { hasPermission } = useAccess();
 
-  const uploadFile = (event) => {
+  const uploadFile = (event, type) => {
     setImporting(true);
     if (event.target.files === '') {
       return;
     }
     let formData = new FormData();
     formData.append('file', event.target.files[0], event.target.value.split(/(\\|\/)/g).pop());
+    formData.append('type', type);
 
     dispatch(fetchImportRawMaterial({ body: formData })).then((action) => {
       if (action.type === 'rawMaterial/import/fetch/fulfilled') {
         dispatch(fetchAllRawMaterial());
         dispatch(setMessage({ message: 'Raw materials imported successfully.', type: 'success' }));
       } else if (action.type === 'rawMaterial/import/fetch/rejected') {
-        dispatch(setMessage({ message: 'Something goes wrong! Raw material not imported', type: 'error' }));
+        dispatch(setMessage({ message: action.payload.error || 'Something goes wrong! Raw material not imported', type: 'error' }));
       }
       event.target.value = '';
       setImporting(false);
@@ -59,8 +61,9 @@ export default function RawMaterialManagement() {
     setOpenModal(true);
   };
 
-  const addHandler = () => {
+  const addRawMaterialHandler = (type) => {
     setItemToUpdate(undefined);
+    setRawMaterialType(type);
     setOpenModal(true);
   };
 
@@ -75,7 +78,7 @@ export default function RawMaterialManagement() {
       <Grid item xs={12} md={7} lg={8}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
-            <Typography variant="h5">Raw Materials</Typography>
+            <Typography variant="h5">Materials</Typography>
           </Grid>
           <Grid item>
             <Grid container spacing={2}>
@@ -88,7 +91,36 @@ export default function RawMaterialManagement() {
                     startIcon={importing ? <RefreshOutlinedIcon /> : <CloudUploadOutlinedIcon />}
                   >
                     Import Raw Materials
-                    <VisuallyHiddenInput type="file" onChange={uploadFile} />
+                    <VisuallyHiddenInput type="file" onChange={(e) => uploadFile(e, 'raw_material')} />
+                  </Button>
+                  <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
+                    <Link
+                      target="_blank"
+                      href="https://spreadsheets.google.com/feeds/download/spreadsheets/Export?key=1RwPbZuWD8Xs7vwbvbvITQtuHwPc2_-PZK4miXd2XoXk&exportFormat=xlsx"
+                    >
+                      Download Excel Format
+                    </Link>
+                  </Grid>
+                </Grid>
+              )}
+
+              {hasPermission(PERMISSIONS.PERMISSION_CREATE_ITEM) && (
+                <Grid item>
+                  <Button variant="contained" startIcon={<AddOutlinedIcon />} onClick={() => addRawMaterialHandler('raw_material')}>
+                    Add Raw Material
+                  </Button>
+                </Grid>
+              )}
+              {hasPermission(PERMISSIONS.PERMISSION_BULK_CREATE_ITEMS) && (
+                <Grid item>
+                  <Button
+                    component="label"
+                    variant="contained"
+                    disabled={importing ? true : undefined}
+                    startIcon={importing ? <RefreshOutlinedIcon /> : <CloudUploadOutlinedIcon />}
+                  >
+                    Import Packaging Materials
+                    <VisuallyHiddenInput type="file" onChange={(e) => uploadFile(e, 'packaging_material')} />
                   </Button>
                   <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
                     <Link
@@ -102,8 +134,8 @@ export default function RawMaterialManagement() {
               )}
               {hasPermission(PERMISSIONS.PERMISSION_CREATE_ITEM) && (
                 <Grid item>
-                  <Button variant="contained" startIcon={<AddOutlinedIcon />} onClick={addHandler}>
-                    Add Raw Material
+                  <Button variant="contained" startIcon={<AddOutlinedIcon />} onClick={() => addRawMaterialHandler('packaging_material')}>
+                    Add Packaging Material
                   </Button>
                 </Grid>
               )}
@@ -114,7 +146,7 @@ export default function RawMaterialManagement() {
           <RawMaterialTable order="desc" orderBy="id" updateHandler={updateHandler} />
         </MainCard>
       </Grid>
-      <AddUpdateRawMaterialForm rawMaterial={itemToUpdate} visible={openModal} onClose={() => setOpenModal(false)} />
+      <AddUpdateRawMaterialForm rawMaterial={itemToUpdate} type={rawMaterialType} visible={openModal} onClose={() => setOpenModal(false)} />
     </>
   );
 }
