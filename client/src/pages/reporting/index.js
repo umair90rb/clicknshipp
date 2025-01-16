@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Grid, FormControl, Select, InputLabel, MenuItem, Typography, Button } from '@mui/material';
+import { Grid, FormGroup, Checkbox, FormControlLabel, FormControl, Select, InputLabel, MenuItem, Typography, Button } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import DateRangePicker from 'components/DatePicker';
-// import DateTimePicker from 'components/DateTimePicker';
+import DateTimePicker from 'components/DateTimePicker';
 import {
   reportBrandSelector,
   reportChanelSelector,
@@ -49,7 +49,7 @@ const Reporting = () => {
   const chanels = useSelector(chanelChanelsSelector);
   const chanelsFetchStatus = useSelector(chanelFetchStatusSelector);
   const [filteredChanels, setFilteredChanels] = useState([]);
-  // const [withTime, setWithTime] = useState(false);
+  const [withTime, setWithTime] = useState(false);
 
   const handleFetchReport = () => {
     if (!reportType) {
@@ -194,7 +194,7 @@ const Reporting = () => {
             </Select>
           </FormControl>
         </Grid>
-        {/* <Grid item xs={1} md={1} lg={1}>
+        <Grid item xs={1} md={1} lg={1}>
           <FormGroup>
             <FormControlLabel control={<Checkbox onChange={() => setWithTime((wT) => !wT)} />} label="With Time" />
           </FormGroup>
@@ -215,14 +215,6 @@ const Reporting = () => {
               onEndDateSelect={(date) => dispatch(setReportPeriod({ period: 'endPeriod', value: date }))}
             />
           )}
-        </Grid> */}
-        <Grid item xs={3.5} md={3.5} lg={3.5}>
-          <DateRangePicker
-            startPeriod={startPeriod}
-            endPeriod={endPeriod}
-            onStartDateSelect={(date) => dispatch(setReportPeriod({ period: 'startPeriod', value: date }))}
-            onEndDateSelect={(date) => dispatch(setReportPeriod({ period: 'endPeriod', value: date }))}
-          />
         </Grid>
       </Grid>
       {reportIsLoading ? (
