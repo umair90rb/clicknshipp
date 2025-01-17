@@ -8,9 +8,8 @@ compose.yml
 package-lock.json
 deliveryAccountData.sql
 shopifyWebhookData.json
-
-logs
-*.log
+src/logs/*.log
+src/logs/*.json
 npm-debug.log*
 
 

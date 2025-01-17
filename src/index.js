@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import path from 'path';
+import * as Sentry from '@sentry/node';
 import route from './routes';
 import logErrors from './middleware/logError';
 import clientErrorHandler from './middleware/clientErrorHandler';
@@ -10,6 +11,7 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import swaggerConfig from './swaggerConfig.js';
 import 'dotenv/config';
+import './config/instrument.js';
 import './workers/bookingWorker';
 import './workers/deliveryStatusSyncWorker';
 import './workers/orderFulfillWorker.js';
@@ -21,6 +23,7 @@ const swaggerSpec = swaggerJSDoc(swaggerConfig);
 
 const app = express();
 
+Sentry.setupExpressErrorHandler(app);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
