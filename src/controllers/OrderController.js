@@ -189,7 +189,6 @@ export default {
         const _query = { ...query, where: { ...query.where, ..._filters } };
         query = _query;
       }
-      console.log(query);
       const count = await Order.count(query);
       const rows = await Order.findAll(query);
       return sendSuccessResponse(res, 200, {
