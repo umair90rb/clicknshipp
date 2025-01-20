@@ -1,3 +1,4 @@
+import './config/instrument.js';
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
@@ -11,7 +12,6 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import swaggerConfig from './config/swagger.js';
 import 'dotenv/config';
-import './config/instrument.js';
 import './workers/bookingWorker';
 import './workers/deliveryStatusSyncWorker';
 import './workers/orderFulfillWorker.js';
