@@ -9,7 +9,7 @@ import clientErrorHandler from './middleware/clientErrorHandler';
 import errorHandler from './middleware/errorHandler';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import swaggerConfig from './swaggerConfig.js';
+import swaggerConfig from './config/swagger.js';
 import 'dotenv/config';
 import './config/instrument.js';
 import './workers/bookingWorker';
@@ -23,14 +23,14 @@ const swaggerSpec = swaggerJSDoc(swaggerConfig);
 
 const app = express();
 
-Sentry.setupExpressErrorHandler(app);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(rootDir, '../client', 'build')));
 
 route(app);
 
+Sentry.setupExpressErrorHandler(app);
 app.use(logErrors);
 app.use(clientErrorHandler);
 app.use(errorHandler);
