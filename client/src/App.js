@@ -6,8 +6,7 @@ import { Typography, Snackbar, Alert } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { utilMessageSelector } from 'store/slices/util/utilSelector';
 import useFetchProfile from 'hooks/useFetchProfile';
-import { getEnvs } from 'api/getEnv';
-const { COMPANY_NAME } = getEnvs();
+import Modals from 'modals/index';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -15,8 +14,6 @@ const App = () => {
   const handleExited = () => dispatch(setMessage({ message: '', type: '' }));
 
   useFetchProfile();
-
-  document.title = `${COMPANY_NAME ? COMPANY_NAME + ' | Click n Ship' : 'Click n Ship'}`;
 
   return (
     <ThemeCustomization>
@@ -35,6 +32,7 @@ const App = () => {
           </Alert>
         </Snackbar>
         <Routes />
+        <Modals />
       </ScrollTop>
     </ThemeCustomization>
   );

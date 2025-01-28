@@ -4,7 +4,7 @@ import EqualizerOutlinedIcon from '@mui/icons-material/EqualizerOutlined';
 
 const dashboard = {
   id: 'group-dashboard',
-  title: 'Reporting',
+  title: 'Analytics',
   type: 'group',
   children: [
     {

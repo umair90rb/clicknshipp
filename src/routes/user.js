@@ -8,6 +8,7 @@ import {
   createUserSchema,
   filteredUsersSchema,
   updateUserSchema,
+  changePasswordSchema,
 } from '../schemas/userSchema';
 import { idSchema } from '../schemas/commonSchema';
 import schemaValidator from '../middleware/schemaValidator';

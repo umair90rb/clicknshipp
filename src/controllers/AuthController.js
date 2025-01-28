@@ -1,8 +1,8 @@
-import models from "../models";
-import { hash, hash_compare } from "../utils/hashing";
-import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import models from '../models';
+import { hash, hash_compare } from '../utils/hashing';
+import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 const { User, Role, Permission, Brand } = models;
 
@@ -11,14 +11,14 @@ export default {
     const { email, password } = req.body;
 
     try {
-      const user = await User.scope("withPassword").findOne({
-        where: { email, status: "active" },
+      const user = await User.scope('withPassword').findOne({
+        where: { email, status: 'active' },
       });
       if (!user)
         return sendErrorResponse(
           res,
           400,
-          "No user with this email. Kindly check credentials and try again"
+          'No user with this email. Kindly check credentials and try again'
         );
 
       const passwordMatch = await bcrypt.compare(password, user.password);
@@ -27,12 +27,12 @@ export default {
         return sendErrorResponse(
           res,
           400,
-          "Incorrect login credentials or account is not active!"
+          'Incorrect login credentials or account is not active!'
         );
       }
 
-      const token = jwt.sign({ userId: user.id }, "your-secret-key", {
-        expiresIn: "12h",
+      const token = jwt.sign({ userId: user.id }, 'your-secret-key', {
+        expiresIn: '12h',
       });
       return sendSuccessResponse(
         res,
@@ -40,13 +40,13 @@ export default {
         {
           token,
         },
-        "Login successfully"
+        'Login successfully'
       );
     } catch (e) {
       return sendErrorResponse(
         res,
         500,
-        "Server error, contact admin to resolve issue",
+        'Server error, contact admin to resolve issue',
         e
       );
     }
@@ -55,24 +55,24 @@ export default {
   async profile(req, res) {
     try {
       const { user } = req;
-      const userData = await User.scope("withPassword").findByPk(user.id, {
-        attributes: ["id", "name", "email", "phone", "settings"],
+      const userData = await User.scope('withPassword').findByPk(user.id, {
+        attributes: ['id', 'name', 'email', 'phone', 'settings'],
         include: [
           {
             model: Brand,
-            as: "brands",
-            attributes: ["id", "name"],
+            as: 'brands',
+            attributes: ['id', 'name'],
             through: {
               attributes: [],
             },
           },
           {
             model: Role,
-            as: "roles",
+            as: 'roles',
             include: [
               {
                 model: Permission,
-                as: "permissions",
+                as: 'permissions',
               },
             ],
           },
@@ -97,15 +97,43 @@ export default {
               permissions: userPermissions,
             },
           },
-          "User profile!"
+          'User profile!'
         );
       }
-      return sendErrorResponse(res, 400, "No user found!");
+      return sendErrorResponse(res, 400, 'No user found!');
     } catch (e) {
       return sendErrorResponse(
         res,
         500,
-        "Server error, contact admin to resolve issue",
+        'Server error, contact admin to resolve issue',
+        e
+      );
+    }
+  },
+
+  async updatePassword(req, res) {
+    const { current_password, password } = req.body;
+
+    try {
+      const user = await User.scope('withPassword').findByPk(req.user.id);
+      if (!user)
+        return sendErrorResponse(res, 400, 'No active user with this email!');
+
+      const passwordMatch = await bcrypt.compare(
+        current_password,
+        user.password
+      );
+      if (!passwordMatch) {
+        return sendErrorResponse(res, 400, 'Incorrect current password!');
+      }
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await user.update({ password: hashedPassword });
+      return sendSuccessResponse(res, 200, {}, 'Password updated successfully');
+    } catch (e) {
+      return sendErrorResponse(
+        res,
+        500,
+        'Server error, contact admin to resolve issue',
         e
       );
     }

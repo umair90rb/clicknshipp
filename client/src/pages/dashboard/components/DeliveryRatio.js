@@ -11,5 +11,5 @@ export default function DeliveryRatio() {
     return null;
   }
 
-  return <PieChart percentage={deliveryRatio} color="orange" width="100%" />;
+  return <PieChart percentage={isNaN(deliveryRatio) ? 0 : deliveryRatio} color="orange" width="100%" />;
 }

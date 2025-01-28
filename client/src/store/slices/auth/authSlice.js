@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import fetchStatus from 'constants/fetchStatuses';
-import { fetchLogin, fetchProfile } from './fetchAuth';
+import { fetchLogin, fetchProfile, fetchUpdatePassword } from './fetchAuth';
 
 const initialState = {
   token: null,
@@ -12,6 +12,11 @@ const initialState = {
   profile: {
     fetchStatus: fetchStatus.IDLE,
     error: null
+  },
+  updatePassword: {
+    visible: false,
+    fetchStatus: fetchStatus.IDLE,
+    error: null
   }
 };
 
@@ -19,8 +24,11 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setUserSetting: (state, action) => {
+    setAuthUserSetting: (state, action) => {
       state.user = { ...state.user, settings: action.payload };
+    },
+    setAuthUpdatePasswordVisible: (state, action) => {
+      state.updatePassword.visible = action.payload;
     },
     clearAuthState: () => initialState
   },
@@ -56,8 +64,21 @@ const authSlice = createSlice({
       state.profile.fetchStatus = fetchStatus.FAILURE;
       state.profile.error = action.payload;
     });
+
+    builder.addCase(fetchUpdatePassword.pending, (state, _action) => {
+      state.updatePassword.fetchStatus = fetchStatus.REQUEST;
+    });
+    builder.addCase(fetchUpdatePassword.fulfilled, (state, _action) => {
+      state.updatePassword.fetchStatus = fetchStatus.SUCCESS;
+      state.updatePassword.error = null;
+      state.updatePassword.visible = false;
+    });
+    builder.addCase(fetchUpdatePassword.rejected, (state, action) => {
+      state.updatePassword.fetchStatus = fetchStatus.FAILURE;
+      state.updatePassword.error = action.payload;
+    });
   }
 });
 
-export const { setUserSetting, clearAuthState } = authSlice.actions;
+export const { setAuthUserSetting, setAuthUpdatePasswordVisible, clearAuthState } = authSlice.actions;
 export default authSlice.reducer;

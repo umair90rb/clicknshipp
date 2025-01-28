@@ -5,6 +5,7 @@ class AuthService extends Ajax {
 
   fetchLogin = (data) => this.post(`${this.pathname}/login`, data);
   fetchProfile = () => this.getJson(`${this.pathname}/profile`);
+  fetchUpdatePassword = (data) => this.post(`${this.pathname}/update-password`, data);
 }
 
 export const authService = new AuthService();

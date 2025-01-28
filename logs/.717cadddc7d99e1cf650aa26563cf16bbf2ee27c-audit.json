@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 7
+    },
+    "auditLog": "/Users/mac/locDev/clicknshipp/clicknshipp/logs/.717cadddc7d99e1cf650aa26563cf16bbf2ee27c-audit.json",
+    "files": [
+        {
+            "date": 1737354413744,
+            "name": "/Users/mac/locDev/clicknshipp/clicknshipp/logs/Jan-20-2025.log",
+            "hash": "bbfb1350093907bb0a145a9f38ef33684d33d2771bad93c463cd4839f1c0f9ff"
+        }
+    ],
+    "hashType": "sha256"
+}

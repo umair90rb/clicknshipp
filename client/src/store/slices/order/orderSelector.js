@@ -20,3 +20,7 @@ export const orderCreateErrorSelector = (state) => state.order.create.error;
 export const orderImportFetchStatusSelector = (state) => state.order.import.fetchStatus;
 export const orderImportIsLoadingSelector = (state) => state.order.import.fetchStatus === fetchStatus.REQUEST;
 export const orderImportErrorSelector = (state) => state.order.import.error;
+
+export const orderReturnFetchStatusSelector = (state) => state.order.return.fetchStatus;
+export const orderReturnIsLoadingSelector = (state) => state.order.return.fetchStatus === fetchStatus.REQUEST;
+export const orderReturnErrorSelector = (state) => state.order.return.error;

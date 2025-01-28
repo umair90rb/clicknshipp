@@ -1,4 +1,4 @@
-import Joi from "joi";
+import Joi from 'joi';
 
 const filteredUsersSchema = Joi.object({
   permissions: Joi.array().items(Joi.string()).min(0),

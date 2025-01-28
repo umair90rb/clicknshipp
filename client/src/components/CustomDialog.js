@@ -13,7 +13,7 @@ const getWidthHeight = (size) => {
     case 'xs':
       return { height: '15vh', width: '15vw' };
     case 'sm':
-      return { height: '30vh', width: '30vw' };
+      return { height: '35vh', width: '35vw' };
     case 'md':
       return { height: '50vh', width: '50vw' };
     case 'lg':

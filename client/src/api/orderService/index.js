@@ -21,6 +21,8 @@ class OrderService extends Ajax {
 
   fetchBookOrder = (data) => this.post(`${this.pathname}/book`, data);
 
+  fetchReturnOrder = (identifier) => this.getJson(`${this.pathname}/return/${identifier}`);
+
   fetchOrderBulkBook = (data) => this.post(`${this.pathname}/bulk-book`, data);
 
   fetchDownloadBookedOrderReceipts = (data) => this.post(`${this.pathname}/download-receipts`, data);

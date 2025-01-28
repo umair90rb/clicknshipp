@@ -10,7 +10,7 @@ const ORDER_STATUSES = [
   'Booking Canceled',
   'Booking Error',
   'Booked',
-  'Return'
+  'Returned'
 ];
 export const ORDER_TAGS = ['All', 'Again', 'Duplicate'];
 export default ORDER_STATUSES;

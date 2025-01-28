@@ -8,6 +8,8 @@ import { PERMISSIONS } from 'constants/permissions-and-roles';
 
 // render - login
 const OrderManagement = Loadable(lazy(() => import('pages/order-management')));
+const ReturnManagement = Loadable(lazy(() => import('pages/return-management')));
+const DeliveredOrder = Loadable(lazy(() => import('pages/delivered-order')));
 const CreateOrder = Loadable(lazy(() => import('pages/create-order')));
 const OrderView = Loadable(lazy(() => import('pages/order-view')));
 const BookingManagement = Loadable(lazy(() => import('pages/booking-management')));
@@ -31,6 +33,22 @@ const OrderRoutes = {
       element: (
         <PrivateRoute permission={PERMISSIONS.PERMISSION_CREATE_ORDER}>
           <CreateOrder />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'delivered',
+      element: (
+        <PrivateRoute permission={PERMISSIONS.PERMISSION_CREATE_ORDER}>
+          <DeliveredOrder />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'return',
+      element: (
+        <PrivateRoute permission={PERMISSIONS.PERMISSION_CREATE_ORDER}>
+          <ReturnManagement />
         </PrivateRoute>
       )
     },

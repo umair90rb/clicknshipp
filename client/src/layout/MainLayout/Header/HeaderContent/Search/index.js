@@ -10,16 +10,18 @@ import OrderRow from './OrderRow';
 import NoResult from './NoResult';
 import { clearSearchState } from 'store/slices/search/searchSlice';
 
-const availableTags = ['Phone', 'Order Number', 'Item'];
+const availableTags = ['Phone', 'Order Number', 'CN', 'Customer Name', 'Item'];
 
 const Search = () => {
   const searchComponentRef = useRef(null);
+  const inputRef = useRef(null);
   const dispatch = useDispatch();
   const loading = useSelector(searchIsLoadingSelector);
   const result = useSelector(searchResultSelector);
   const error = useSelector(searchErrorSelector);
   const [isFocus, setIsFocus] = useState();
   const [tag, setTag] = useState('');
+  const [query, setQuery] = useState('');
   const handleTagDelete = () => setTag('');
   const handleFocus = () => {
     setIsFocus(true);
@@ -33,22 +35,24 @@ const Search = () => {
     setIsFocus(false);
   };
 
+  const handleFetchSearch = (tag, query) => dispatch(fetchSearch({ body: { query, tag } }));
+
   const handleQueryChange = (e) => {
     const query = e.target.value;
+    setQuery(query);
     if ((tag === 'Phone' && query.length >= 10) || (tag === 'Order Number' && query.length >= 3) || (tag === 'Item' && query.length >= 5)) {
-      dispatch(fetchSearch({ body: { query, tag } }));
+      handleFetchSearch(tag, query);
     }
   };
   const handleKeyDown = (event) => {
-    const inputElement = document.getElementById('header-search');
     if (event.ctrlKey && (event.key === 'f' || event.key === 'F')) {
       event.preventDefault();
       handleFocus();
-      inputElement.focus();
+      inputRef.current.focus();
     } else if (event.key === 'Escape' && document.activeElement === inputElement) {
       handleBlur();
-      inputElement.value = '';
-      inputElement.blur();
+      setQuery('');
+      inputRef.current.blur();
     }
   };
   const handleMouseOutsideClick = (event) => {
@@ -58,10 +62,9 @@ const Search = () => {
   };
 
   const clearSearchHandle = () => {
-    const inputElement = document.getElementById('header-search');
     handleBlur();
-    inputElement.value = '';
-    inputElement.blur();
+    setQuery('');
+    inputRef.current.blur();
   };
 
   useEffect(() => {
@@ -99,6 +102,7 @@ const Search = () => {
       >
         <OutlinedInput
           fullWidth
+          ref={inputRef}
           size="small"
           id="header-search"
           startAdornment={
@@ -111,6 +115,11 @@ const Search = () => {
           }
           endAdornment={
             <InputAdornment position="end">
+              {(tag === 'Customer Name' || tag === 'CN') && (
+                <IconButton onClick={() => handleFetchSearch(tag, query)} aria-label="esc">
+                  <SearchIcon />
+                </IconButton>
+              )}
               {isFocus && (
                 <IconButton onClick={clearSearchHandle} aria-label="esc">
                   <CloseIcon />
@@ -124,6 +133,7 @@ const Search = () => {
             autoComplete: 'off'
           }}
           placeholder="Ctrl + F"
+          value={query}
           onChange={handleQueryChange}
           onFocus={handleFocus}
         />
@@ -157,12 +167,12 @@ const Search = () => {
                 overflow: 'auto',
                 overflowX: 'hidden',
                 border: '0px solid black',
-                scrollbarWidth: 'none', // Hide the scrollbar for firefox
+                scrollbarWidth: 'none',
                 '&::-webkit-scrollbar': {
-                  display: 'none' // Hide the scrollbar for WebKit browsers (Chrome, Safari, Edge, etc.)
+                  display: 'none'
                 },
                 '&-ms-overflow-style:': {
-                  display: 'none' // Hide the scrollbar for IE
+                  display: 'none'
                 }
               }}
             >

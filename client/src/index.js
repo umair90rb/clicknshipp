@@ -1,14 +1,14 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import 'simplebar/src/simplebar.css';
 import { Provider as ReduxProvider } from 'react-redux';
-import App from './App';
+import * as Sentry from '@sentry/react';
 import { store } from 'store';
+import App from './App';
 import reportWebVitals from './reportWebVitals';
 import AuthProvider from 'contexts/AuthContext';
-import * as Sentry from '@sentry/react';
 import { getEnvs } from 'api/getEnv';
+import ErrorBoundary from 'components/ErrorBoundary';
 const { REACT_APP_API_PREFIX } = getEnvs();
 
 Sentry.init({
@@ -28,13 +28,15 @@ const container = document.getElementById('root');
 const root = createRoot(container);
 root.render(
   <StrictMode>
-    <AuthProvider>
-      <ReduxProvider store={store}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </ReduxProvider>
-    </AuthProvider>
+    <ErrorBoundary global>
+      <AuthProvider>
+        <ReduxProvider store={store}>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </ReduxProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   </StrictMode>
 );
 reportWebVitals();

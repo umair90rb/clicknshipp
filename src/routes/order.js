@@ -3,7 +3,7 @@ import { PERMISSIONS } from '../constants/constants';
 import can from '../middleware/canAccess';
 import Auth from '../middleware/auth';
 import getUserBrand from '../middleware/getUserBrand';
-import { idSchema } from '../schemas/commonSchema';
+import { idSchema, identifierSchema } from '../schemas/commonSchema';
 import {
   orderAssignSchema,
   orderBulkBookSchema,
@@ -22,6 +22,7 @@ import { createValidator } from 'express-joi-validation';
 import OrderController from '../controllers/OrderController';
 import AssignOrderController from '../controllers/AssignOrderController';
 import DeliveryController from '../controllers/DeliveryController';
+import ReturnController from '../controllers/ReturnController';
 import OrderManagementController from '../controllers/OrderManagementController';
 import multer from 'multer';
 
@@ -42,10 +43,10 @@ router.post(
 );
 
 router.get(
-  '/:id',
+  '/:identifier',
   Auth,
   can(PERMISSIONS.PERMISSION_VIEW_ORDERS),
-  validator.params(idSchema),
+  validator.params(identifierSchema),
   OrderController.order
 );
 
@@ -55,6 +56,14 @@ router.post(
   can(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS),
   schemaValidator(orderBookSchema),
   DeliveryController.book
+);
+
+router.get(
+  '/return/:identifier',
+  Auth,
+  can(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS),
+  validator.params(identifierSchema),
+  ReturnController.return
 );
 
 router.post(

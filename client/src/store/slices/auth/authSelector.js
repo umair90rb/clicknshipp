@@ -14,3 +14,8 @@ export const authRolesSelector = (state) => state.auth.user?.roles;
 export const authPermissionsSelector = (state) => state.auth.user?.permissions;
 export const authBrandsSelector = (state) => state.auth.user?.brands;
 export const authSettingsSelector = (state) => state.auth.user?.settings;
+
+export const authUpdatePasswordVisibleSelector = (state) => state.auth.updatePassword.visible;
+export const authUpdatePasswordFetchStatusSelector = (state) => state.auth.updatePassword.fetchStatus;
+export const authUpdatePasswordIsLoadingSelector = (state) => state.auth.updatePassword.fetchStatus === fetchStatus.REQUEST;
+export const authUpdatePasswordErrorSelector = (state) => state.auth.updatePassword.error?.error;

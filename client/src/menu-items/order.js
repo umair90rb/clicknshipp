@@ -2,6 +2,8 @@ import { PERMISSIONS } from 'constants/permissions-and-roles';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
+import AssignmentReturnOutlinedIcon from '@mui/icons-material/AssignmentReturnOutlined';
+import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
 
 const order = {
   id: 'order-dashboard',
@@ -24,6 +26,24 @@ const order = {
       url: '/order/new',
       permission: PERMISSIONS.PERMISSION_CREATE_ORDER,
       icon: WhatsAppIcon,
+      breadcrumbs: false
+    },
+    {
+      id: 'order/delivered',
+      title: 'Delivered',
+      type: 'item',
+      url: '/order/delivered',
+      permission: PERMISSIONS.PERMISSION_VIEW_ORDERS,
+      icon: CheckBoxOutlinedIcon,
+      breadcrumbs: false
+    },
+    {
+      id: 'order/return',
+      title: 'Return',
+      type: 'item',
+      url: '/order/return',
+      permission: PERMISSIONS.PERMISSION_VIEW_ORDERS,
+      icon: AssignmentReturnOutlinedIcon,
       breadcrumbs: false
     },
     {

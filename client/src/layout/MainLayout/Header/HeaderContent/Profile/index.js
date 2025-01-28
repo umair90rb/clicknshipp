@@ -1,7 +1,4 @@
-import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
-
-// material-ui
 import { useTheme } from '@mui/material/styles';
 import {
   Avatar,
@@ -10,7 +7,7 @@ import {
   CardContent,
   ClickAwayListener,
   Grid,
-  IconButton,
+  Divider,
   Paper,
   Popper,
   Stack,
@@ -20,46 +17,18 @@ import {
   ListItemText,
   Typography
 } from '@mui/material';
-
-// project import
 import MainCard from 'components/MainCard';
 import Transitions from 'components/@extended/Transitions';
-
-// assets
 import LogoutIcon from '@mui/icons-material/Logout';
+import PasswordOutlinedIcon from '@mui/icons-material/PasswordOutlined';
 import { authBrandsSelector, authSettingsSelector, authUserSelector } from 'store/slices/auth/authSelector';
 import { useDispatch, useSelector } from 'react-redux';
-import { clearAuthState, setUserSetting } from 'store/slices/auth/authSlice';
+import { clearAuthState, setAuthUpdatePasswordVisible, setAuthUserSetting } from 'store/slices/auth/authSlice';
 import useAuth from 'hooks/useAuth';
-import { Divider } from '../../../../../../node_modules/@mui/material/index';
 import { fetchSetUserDefaultBrand } from 'store/slices/user/fetchUser';
 import { setMessage } from 'store/slices/util/utilSlice';
 import { fetchAllOrder } from 'store/slices/order/fetchOrder';
 import { clearOrderState } from 'store/slices/order/orderSlice';
-
-// tab panel wrapper
-// function TabPanel({ children, value, index, ...other }) {
-//   return (
-//     <div role="tabpanel" hidden={value !== index} id={`profile-tabpanel-${index}`} aria-labelledby={`profile-tab-${index}`} {...other}>
-//       {value === index && children}
-//     </div>
-//   );
-// }
-
-// TabPanel.propTypes = {
-//   children: PropTypes.node,
-//   index: PropTypes.any.isRequired,
-//   value: PropTypes.any.isRequired
-// };
-
-// function a11yProps(index) {
-//   return {
-//     id: `profile-tab-${index}`,
-//     'aria-controls': `profile-tabpanel-${index}`
-//   };
-// }
-
-// ==============================|| HEADER CONTENT - PROFILE ||============================== //
 
 const ListItem = ({ text, selected, onClick, icon }) => (
   <ListItemButton selected={selected} onClick={onClick}>
@@ -71,11 +40,17 @@ const ListItem = ({ text, selected, onClick, icon }) => (
 const Profile = () => {
   const dispatch = useDispatch();
   const theme = useTheme();
-
+  const anchorRef = useRef(null);
+  const [open, setOpen] = useState(false);
   const { logout } = useAuth();
   const user = useSelector(authUserSelector);
-  const userBrands = useSelector(authBrandsSelector);
-  const userSetting = useSelector(authSettingsSelector);
+  // const userBrands = useSelector(authBrandsSelector);
+  // const userSetting = useSelector(authSettingsSelector);
+
+  const handleUpdatePassword = () => {
+    setOpen(false);
+    dispatch(setAuthUpdatePasswordVisible(true));
+  };
 
   const handleLogout = async () => {
     dispatch(clearAuthState());
@@ -83,8 +58,6 @@ const Profile = () => {
     logout();
   };
 
-  const anchorRef = useRef(null);
-  const [open, setOpen] = useState(false);
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
   };
@@ -102,15 +75,15 @@ const Profile = () => {
   //   setValue(newValue);
   // };
 
-  const handlBrandChange = async (event, brand) => {
-    const { type, payload } = await dispatch(fetchSetUserDefaultBrand({ id: brand.id }));
-    if (type === 'user/setDefaultBrand/fetch/fulfilled') {
-      dispatch(setUserSetting(payload.data.settings));
-      dispatch(fetchAllOrder({ body: {} }));
-    } else {
-      dispatch(setMessage({ message: payload.error || 'Brand not switch! try again.', type: 'error' }));
-    }
-  };
+  // const handlBrandChange = async (event, brand) => {
+  //   const { type, payload } = await dispatch(fetchSetUserDefaultBrand({ id: brand.id }));
+  //   if (type === 'user/setDefaultBrand/fetch/fulfilled') {
+  //     dispatch(setAuthUserSetting(payload.data.settings));
+  //     dispatch(fetchAllOrder({ body: {} }));
+  //   } else {
+  //     dispatch(setMessage({ message: payload.error || 'Brand not switch! try again.', type: 'error' }));
+  //   }
+  // };
 
   const iconBackColorOpen = 'grey.300';
 
@@ -185,23 +158,19 @@ const Profile = () => {
                             </Stack>
                           </Stack>
                         </Grid>
-                        <Grid item>
-                          <IconButton size="large" color="secondary" onClick={handleLogout}>
-                            <LogoutIcon />
-                          </IconButton>
-                        </Grid>
                       </Grid>
                     </CardContent>
-                    <Divider />
                     <List component="nav" sx={{ p: 0, '& .MuiListItemIcon-root': { minWidth: 32, color: theme.palette.grey[500] } }}>
-                      {userBrands?.map((brand, index) => (
+                      {/* {userBrands?.map((brand, index) => (
                         <ListItem
                           selected={brand.id === userSetting?.default_brand_id || (!userSetting?.default_brand_id && index === 0)}
                           key={brand.id}
                           text={brand.name.toUpperCase()}
                           onClick={(event) => handlBrandChange(event, brand)}
                         />
-                      ))}
+                      ))} */}
+                      <Divider />
+                      <ListItem text="Update Password" onClick={handleUpdatePassword} icon={<PasswordOutlinedIcon />} />
                       <Divider />
                       <ListItem text="Logout" onClick={handleLogout} icon={<LogoutIcon />} />
                     </List>

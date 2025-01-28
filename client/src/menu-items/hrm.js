@@ -1,8 +1,8 @@
 import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 
-const user = {
-  id: 'group-user',
+const hrm = {
+  id: 'group-hrm',
   title: 'HRM',
   type: 'group',
   children: [
@@ -18,4 +18,4 @@ const user = {
   ]
 };
 
-export default user;
+export default hrm;

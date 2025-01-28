@@ -13,4 +13,8 @@ const fetchProfile = createAsyncThunk('profile/fetch', (_, { rejectWithValue }) 
   authService.fetchProfile().catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
-export { fetchLogin, fetchRegister, fetchProfile };
+const fetchUpdatePassword = createAsyncThunk('user/updatedPassword/fetch', ({ body }, { rejectWithValue }) =>
+  authService.fetchUpdatePassword(body).catch((error) => rejectWithValue(error.response.data || error.message))
+);
+
+export { fetchLogin, fetchRegister, fetchProfile, fetchUpdatePassword };

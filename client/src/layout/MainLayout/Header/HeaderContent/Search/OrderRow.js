@@ -1,6 +1,18 @@
-import { Typography, Stack, Button, Link } from '@mui/material';
+import { Stack, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import getLink from 'utils/courier';
 import { formatDistance, formatDate, isItToday } from 'utils/format-date';
+
+const TextWithHeading = ({ heading, text }) => {
+  return (
+    text && (
+      <>
+        {heading}
+        <b>{text}</b> |{' '}
+      </>
+    )
+  );
+};
 
 const OrderRow = ({ order, onNavigate }) => {
   const navigate = useNavigate();
@@ -8,7 +20,7 @@ const OrderRow = ({ order, onNavigate }) => {
     navigate(`/order/${id}`);
     onNavigate && onNavigate();
   };
-  const { id, order_number, status, chanel, items, address, customer, user, createdAt } = order || {};
+  const { id, order_number, status, chanel, items, address, delivery, customer, user, createdAt } = order || {};
   return (
     <Stack
       component="div"
@@ -24,27 +36,27 @@ const OrderRow = ({ order, onNavigate }) => {
         border: '0px solid black'
       }}
     >
-      <Typography component="p" variant="h6" ml={1}>
-        #{order_number} | Channel:{' '}
-        <Typography component="span" variant="h5">
-          {chanel?.name}
-        </Typography>{' '}
-        | Status:{' '}
-        <Typography component="span" variant="h5">
-          {status}
-        </Typography>{' '}
-        | {customer?.name || ''} Placed at {formatDate('MMM dd', createdAt)}, {formatDistance(createdAt)} | Assigned to{' '}
-        <Typography component="span" variant="h5">
-          {user?.name || 'None'}
-        </Typography>{' '}
-        Items: {items?.reduce((pv, cv) => `${cv.name}/${cv.quantity} ${pv}`, '')}, Address: {address?.address1}, City:{' '}
-        <Typography component="span" variant="h5">
-          {address?.city}{' '}
-        </Typography>
+      <p>
+        <TextWithHeading heading="#" text={order_number} />
+        <TextWithHeading heading="Channel " text={chanel?.name} />
+        <TextWithHeading heading="Status " text={status} />
+        <TextWithHeading heading="Customer " text={customer?.name || ''} />
+        <TextWithHeading heading="Placed at " text={`${formatDate('MMM dd', createdAt)} (${formatDistance(createdAt)})`} />
+        <TextWithHeading heading="Assigned to " text={user?.name || 'None'} />
+        <TextWithHeading heading="Items " text={items?.reduce((pv, cv) => `${cv.name}/${cv.quantity} ${pv}`, '')} />
+        <TextWithHeading heading="Address " text={address?.address1} />
+        <TextWithHeading heading="City " text={address?.city} />
+        <TextWithHeading heading="Delivery Status " text={delivery?.status} />
+        <TextWithHeading heading="Booked with " text={delivery?.courier} />
+        {delivery?.cn && (
+          <Link target="_blank" href={getLink(delivery?.cn, delivery?.courier)} underline="hover">
+            CN#: {delivery?.cn}
+          </Link>
+        )}
         <Link component="button" onClick={handleNavigate}>
           View Details
         </Link>
-      </Typography>
+      </p>
     </Stack>
   );
 };

@@ -1,16 +1,15 @@
-import Joi from "joi";
-
-const signUpSchema = Joi.object({
-  name: Joi.string().required(),
-  phone: Joi.string().required(),
-  email: Joi.string().email().required(),
-  password: Joi.string().min(8).required(),
-});
+import Joi from 'joi';
 
 const loginSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required(),
-  device_name: Joi.string().allow(""),
+  device_name: Joi.string().allow(''),
 });
 
-export { signUpSchema, loginSchema };
+const updatedPasswordSchema = Joi.object({
+  current_password: Joi.string().required(),
+  password: Joi.string().required(),
+  confirm_password: Joi.string().required(),
+});
+
+export { loginSchema, updatedPasswordSchema };

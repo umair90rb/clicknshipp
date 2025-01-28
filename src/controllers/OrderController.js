@@ -17,7 +17,7 @@ import {
 import logger from '../middleware/logger';
 import _orderService from '../services/OrderService';
 import bookingQueue from '../queues/bookingQueue';
-import orderFulfillQueue from '../queues/orderFulfillQueue';
+// import orderFulfillQueue from '../queues/orderFulfillQueue';
 import addToOrderFulfillQueue from '../queues/orderFulfillQueue';
 
 const {
@@ -206,12 +206,29 @@ export default {
   },
   async order(req, res) {
     try {
-      const { id } = req.params;
-      const orderExisted = await Order.findByPk(id, { raw: true });
+      const { identifier } = req.params;
+      let orderExisted = await Order.findOne(
+        {
+          attributes: ['id'],
+          where: {
+            [Op.or]: [
+              { order_number: identifier },
+              { id: identifier },
+              { '$delivery.cn$': `${identifier}` },
+            ],
+          },
+          include: {
+            model: Delivery,
+            as: 'delivery',
+            attributes: ['id'],
+          },
+        },
+        { raw: true }
+      );
       if (!orderExisted) {
         return sendErrorResponse(res, 404, 'No data found with this id.');
       }
-      const order = await _orderService.loadFullOrder(id);
+      const order = await _orderService.loadFullOrder(orderExisted.id);
       if (order) {
         await _orderService.addDuplicateOrder(order);
       }

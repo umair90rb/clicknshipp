@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import fetchStatus from 'constants/fetchStatuses';
-import { fetchAllOrder, fetchCreateOrder, fetchImportOrder } from './fetchOrder';
+import { fetchAllOrder, fetchCreateOrder, fetchImportOrder, fetchReturnOrder } from './fetchOrder';
 
 const initialState = {
   list: {
@@ -21,6 +21,10 @@ const initialState = {
     error: null
   },
   import: {
+    fetchStatus: fetchStatus.IDLE,
+    error: null
+  },
+  return: {
     fetchStatus: fetchStatus.IDLE,
     error: null
   }
@@ -50,6 +54,9 @@ const orderSlice = createSlice({
       if (index > -1) {
         state.list.orders[index] = updatedOrder;
       }
+    },
+    setOrderReturnState: (state, action) => {
+      state.return = action.payload;
     },
     setNextPreOrder: (state, action) => {
       if (state.list.orders.length) {
@@ -116,8 +123,28 @@ const orderSlice = createSlice({
       state.import.fetchStatus = fetchStatus.FAILURE;
       state.import.error = action.payload;
     });
+
+    builder.addCase(fetchReturnOrder.pending, (state, _action) => {
+      state.return.fetchStatus = fetchStatus.REQUEST;
+    });
+    builder.addCase(fetchReturnOrder.fulfilled, (state, _action) => {
+      state.return.fetchStatus = fetchStatus.SUCCESS;
+      state.return.error = null;
+    });
+    builder.addCase(fetchReturnOrder.rejected, (state, action) => {
+      state.return.fetchStatus = fetchStatus.FAILURE;
+      state.return.error = action.payload;
+    });
   }
 });
-export const { setOrderPagination, setOrderFilters, setOrderChanelFilters, setOrderSort, setOrder, setNextPreOrder, clearOrderState } =
-  orderSlice.actions;
+export const {
+  setOrderPagination,
+  setOrderFilters,
+  setOrderChanelFilters,
+  setOrderSort,
+  setOrder,
+  setOrderReturnState,
+  setNextPreOrder,
+  clearOrderState
+} = orderSlice.actions;
 export default orderSlice.reducer;

@@ -401,6 +401,13 @@ class OrderService {
                 ? {
                     phone: formatPhone(query),
                   }
+                : tag === 'Customer Name'
+                ? {
+                    [Op.or]: [
+                      { first_name: { [Op.iLike]: `%${query}%` } },
+                      { last_name: { [Op.iLike]: `%${query}%` } },
+                    ],
+                  }
                 : undefined,
           },
           {
@@ -411,8 +418,19 @@ class OrderService {
               tag === 'Item'
                 ? {
                     name: {
-                      [Op.iLike]: query,
+                      [Op.iLike]: `%${query}%`,
                     },
+                  }
+                : undefined,
+          },
+          {
+            model: Delivery,
+            as: 'delivery',
+            attributes: ['cn', 'status', 'courier', 'tracking'],
+            where:
+              tag === 'CN'
+                ? {
+                    cn: query,
                   }
                 : undefined,
           },
