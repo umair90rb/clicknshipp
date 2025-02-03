@@ -26,9 +26,11 @@ import { orderNextOrderSelector, orderPreOrderSelector } from 'store/slices/orde
 import Customer from './Customer';
 import Note from './Note';
 import Delivery from './Delivery';
+import useQuery from 'hooks/useQuery';
 
 const OrderView = () => {
   const { orderId } = useParams();
+  const queryObj = useQuery();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -94,6 +96,10 @@ const OrderView = () => {
     getOrderDetails();
     dispatch(setNextPreOrder(orderId));
   }, [orderId]);
+
+  // useEffect(() => {
+  //   console.log(queryObj.entries(), 'queryObj');
+  // }, []);
 
   const trackOrder = async () => {
     if (delivery) {

@@ -207,15 +207,15 @@ export default {
   async order(req, res) {
     try {
       const { identifier } = req.params;
+      const { by } = req.query;
+      console.log(by, '++++++by');
       let orderExisted = await Order.findOne(
         {
-          attributes: ['id'],
+          attributes: ['id', 'order_number'],
           where: {
-            [Op.or]: [
-              { order_number: identifier },
-              { id: identifier },
-              { '$delivery.cn$': `${identifier}` },
-            ],
+            ...(!by && { id: identifier }),
+            ...(by && by === 'order_number' && { order_number: identifier }),
+            ...(by && by === 'cn' && { '$delivery.cn$': `${identifier}` }),
           },
           include: {
             model: Delivery,

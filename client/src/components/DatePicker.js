@@ -1,19 +1,11 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import {
-  format,
-  addMonths,
-  subMonths,
-  startOfMonth,
-  endOfMonth,
-  startOfWeek,
-  endOfWeek,
-  isSameMonth,
-  addDays,
-  isWithinInterval
-} from 'date-fns';
+import { format, addDays } from 'date-fns';
 import moment from 'moment';
 import { dateFormat } from 'constants/index';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 
 const Wrapper = styled.div`
   position: relative;
@@ -67,44 +59,9 @@ const SidebarItem = styled.button`
   }
 `;
 
-const Calendar = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const CalendarHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-`;
-
-const CalendarBody = styled.div`
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
-`;
-
-const Day = styled.div`
-  width: 30px;
-  height: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  border-radius: 4px;
-  background-color: ${(props) => (props.isSelected ? '#007bff' : 'transparent')};
-  color: ${(props) => (props.isSelected ? 'white' : props.isCurrentMonth ? 'black' : '#ccc')};
-
-  &:hover {
-    background-color: ${(props) => (!props.isSelected ? '#f0f0f0' : '')};
-  }
-`;
-
 const DateRangePicker = ({ requiredFormat = dateFormat, startPeriod, endPeriod, onStartDateSelect, onEndDateSelect }) => {
   const [startDate, setStartDate] = useState(startPeriod);
   const [endDate, setEndDate] = useState(endPeriod);
-  const [currentMonth, setCurrentMonth] = useState(new Date());
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedRange, setSelectedRange] = useState('Today');
 
@@ -143,75 +100,6 @@ const DateRangePicker = ({ requiredFormat = dateFormat, startPeriod, endPeriod, 
     setIsPopupOpen(!isPopupOpen);
   };
 
-  const nextMonth = () => {
-    setCurrentMonth(addMonths(currentMonth, 1));
-  };
-
-  const prevMonth = () => {
-    setCurrentMonth(subMonths(currentMonth, 1));
-  };
-
-  const renderHeader = () => {
-    const dateFormat = 'MMMM yyyy';
-    return (
-      <CalendarHeader>
-        <button onClick={prevMonth}>‹</button>
-        <div>{format(currentMonth, dateFormat)}</div>
-        <button onClick={nextMonth}>›</button>
-      </CalendarHeader>
-    );
-  };
-
-  const renderDays = () => {
-    const daysOfWeek = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
-    return (
-      <CalendarBody>
-        {daysOfWeek.map((day, index) => (
-          <div key={index}>{day}</div>
-        ))}
-      </CalendarBody>
-    );
-  };
-
-  const renderCells = () => {
-    const monthStart = startOfMonth(currentMonth);
-    const monthEnd = endOfMonth(monthStart);
-    const startOfWeekDate = startOfWeek(monthStart);
-    const endOfWeekDate = endOfWeek(monthEnd);
-
-    const dateFormat = 'd';
-    const rows = [];
-
-    let days = [];
-    let day = startOfWeekDate;
-    let formattedDate = '';
-
-    while (day <= endOfWeekDate) {
-      for (let i = 0; i < 7; i++) {
-        formattedDate = format(day, dateFormat);
-        const cloneDay = day;
-        days.push(
-          <Day
-            key={day}
-            isSelected={startDate && endDate && isWithinInterval(day, { start: startDate, end: endDate })}
-            isCurrentMonth={isSameMonth(day, monthStart)}
-            onClick={() => handleDateClick(cloneDay)}
-          >
-            {formattedDate}
-          </Day>
-        );
-        day = addDays(day, 1);
-      }
-      rows.push(
-        <div key={day} className="row">
-          {days}
-        </div>
-      );
-      days = [];
-    }
-    return <CalendarBody>{rows}</CalendarBody>;
-  };
-
   const renderSidebar = () => {
     return (
       <Sidebar>
@@ -236,11 +124,15 @@ const DateRangePicker = ({ requiredFormat = dateFormat, startPeriod, endPeriod, 
       {isPopupOpen && (
         <Popup>
           {renderSidebar()}
-          <Calendar>
-            {renderHeader()}
-            {renderDays()}
-            {renderCells()}
-          </Calendar>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <DateCalendar
+              value={startDate}
+              onChange={(newValue) => handleDateClick(newValue)}
+              showDaysOutsideCurrentMonth
+              fixedWeekNumber={6}
+              views={['year', 'month', 'day']}
+            />
+          </LocalizationProvider>
         </Popup>
       )}
     </Wrapper>

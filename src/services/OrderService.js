@@ -368,14 +368,29 @@ class OrderService {
     orderFields = ['id', 'order_number', 'status', 'createdAt']
   ) {
     try {
+      const where = {
+        ...(tag === 'Order Number' && { order_number: query }),
+        ...(tag === 'Phone' && { '$customer.phone$': formatPhone(query) }),
+        ...(tag === 'Customer Name' && {
+          [Op.or]: [
+            { '$customer.last_name$': { [Op.iLike]: `%${query}%` } },
+            {
+              '$customer.first_name$': { [Op.iLike]: `%${query}%` },
+            },
+          ],
+        }),
+        ...(tag === 'Item' && {
+          '$items.name$': {
+            [Op.iLike]: `%${query}%`,
+          },
+        }),
+        ...(tag === 'CN' && {
+          '$delivery.cn$': query,
+        }),
+      };
       const sqlQuery = {
         attributes: orderFields,
-        where:
-          tag === 'Order Number'
-            ? {
-                order_number: query,
-              }
-            : undefined,
+        where,
         include: [
           {
             model: User,
@@ -396,43 +411,16 @@ class OrderService {
             model: Customer,
             as: 'customer',
             attributes: ['first_name', 'last_name', 'name'],
-            where:
-              tag === 'Phone'
-                ? {
-                    phone: formatPhone(query),
-                  }
-                : tag === 'Customer Name'
-                ? {
-                    [Op.or]: [
-                      { first_name: { [Op.iLike]: `%${query}%` } },
-                      { last_name: { [Op.iLike]: `%${query}%` } },
-                    ],
-                  }
-                : undefined,
           },
           {
             model: OrderItem,
             as: 'items',
             attributes: ['id', 'name', 'quantity'],
-            where:
-              tag === 'Item'
-                ? {
-                    name: {
-                      [Op.iLike]: `%${query}%`,
-                    },
-                  }
-                : undefined,
           },
           {
             model: Delivery,
             as: 'delivery',
             attributes: ['cn', 'status', 'courier', 'tracking'],
-            where:
-              tag === 'CN'
-                ? {
-                    cn: query,
-                  }
-                : undefined,
           },
         ],
       };

@@ -5,8 +5,8 @@ const fetchAllOrder = createAsyncThunk('orders/fetch', ({ body }, { rejectWithVa
   orderService.fetchAllOrder(body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
-const fetchOrder = createAsyncThunk('order/fetch', ({ id }, { rejectWithValue }) =>
-  orderService.fetchOrder(id).catch((error) => rejectWithValue(error.response.data || error.message))
+const fetchOrder = createAsyncThunk('order/fetch', ({ id, params }, { rejectWithValue }) =>
+  orderService.fetchOrder(id, params).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
 const fetchUpdateStatusOrder = createAsyncThunk('order/status/fetch', ({ body }, { rejectWithValue }) =>

@@ -16,11 +16,11 @@ const TextWithHeading = ({ heading, text }) => {
 
 const OrderRow = ({ order, onNavigate }) => {
   const navigate = useNavigate();
+  const { id, order_number, status, chanel, items, address, delivery, customer, user, createdAt } = order || {};
   const handleNavigate = () => {
     navigate(`/order/${id}`);
     onNavigate && onNavigate();
   };
-  const { id, order_number, status, chanel, items, address, delivery, customer, user, createdAt } = order || {};
   return (
     <Stack
       component="div"
