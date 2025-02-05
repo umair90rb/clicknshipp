@@ -65,6 +65,14 @@ export default {
             reportChanel
           );
           break;
+        case 'Stock Report':
+          report = await reportingService.getStockReport(
+            startPeriod,
+            endPeriod,
+            reportBrand,
+            reportChanel
+          );
+          break;
       }
 
       return sendSuccessResponse(

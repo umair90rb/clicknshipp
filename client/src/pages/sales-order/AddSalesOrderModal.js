@@ -10,15 +10,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllItem } from 'store/slices/item/fetchItem';
 import { itemFetchStatusSelector, itemItemsSelector } from 'store/slices/item/itemSelector';
 import fetchStatus from 'constants/fetchStatuses';
-import { fetchAllStock, fetchCreateStock } from 'store/slices/stock/fetchStock';
 import { toSentence } from 'utils/string-utils';
 import { locationFetchStatusSelector, locationListSelector } from 'store/slices/location/locationSelector';
 import { fetchAllLocation } from 'store/slices/location/fetchLocation';
 import CustomDialog from 'components/CustomDialog';
+import { fetchCreateSalesOrder } from 'store/slices/salesOrder/fetchSalesOrder';
+import { salesOrderCreateCreateModalVisibleSelector } from 'store/slices/salesOrder/salesOrderSelector';
+import { setSalesOrderCreateModalVisible } from 'store/slices/salesOrder/salesOrderSlice';
 
-export default function AddSalesOrderModal({ visible, onClose }) {
+export default function AddSalesOrderModal() {
   const dispatch = useDispatch();
   const formRef = useRef();
+  const visible = useSelector(salesOrderCreateCreateModalVisibleSelector);
 
   const itemFetchStatus = useSelector(itemFetchStatusSelector);
   const items = useSelector(itemItemsSelector);
@@ -37,15 +40,12 @@ export default function AddSalesOrderModal({ visible, onClose }) {
     }
   }, []);
 
-  const handleSubmit = async (values, { setErrors }) => {
-    dispatch(fetchCreateStock({ body: values })).then((action) => {
-      if (action.type === 'stock/create/fetch/fulfilled') {
-        dispatch(fetchAllStock());
-        onClose();
-      } else {
-        setErrors({ submit: action?.payload?.error || 'Something goes wrong, please try again' });
-      }
-    });
+  const handleSubmit = async (values, _actions) => {
+    dispatch(fetchCreateSalesOrder({ body: values }));
+  };
+
+  const onClose = () => {
+    dispatch(setSalesOrderCreateModalVisible(false));
   };
 
   return (
@@ -65,24 +65,25 @@ export default function AddSalesOrderModal({ visible, onClose }) {
         enableReinitialize
         initialValues={{
           location_id: null,
+          name: '',
           comment: '',
-          inventory: [
+          items: [
             {
-              item_id: { id: null, label: '' },
-              quantity: 0
+              item_id: null,
+              quantity: 0,
+              price: 0
             }
           ]
         }}
         validationSchema={Yup.object().shape({
           location_id: Yup.number().required('Please select store location'),
+          name: Yup.string().required(),
           comment: Yup.string(),
-          inventory: Yup.array().of(
+          items: Yup.array().of(
             Yup.object().shape({
-              item_id: Yup.object().shape({
-                id: Yup.string().required(),
-                label: Yup.string().required()
-              }),
-              quantity: Yup.number().min(1).required('Please enter stock received quantity')
+              item_id: Yup.number().required(),
+              quantity: Yup.number().min(1).required('Please enter stock received quantity'),
+              price: Yup.number().min(0).required('Please enter price')
             })
           )
         })}
@@ -126,7 +127,36 @@ export default function AddSalesOrderModal({ visible, onClose }) {
                   />
                 </FormControl>
               </Grid>
-              <Grid item sx={8} md={8} lg={8}>
+              <Grid item sx={4} md={4} lg={4}>
+                <FormControl fullWidth margin="normal">
+                  <FormLabel id="name">Name</FormLabel>
+                  <TextField
+                    size="small"
+                    labelId="name"
+                    id="name_select"
+                    value={salesOrder.values.name}
+                    name="name"
+                    onChange={salesOrder.handleChange}
+                    error={
+                      salesOrder.touched.name &&
+                      salesOrder.touched.name &&
+                      salesOrder.touched.name &&
+                      !!salesOrder.errors.name &&
+                      !!salesOrder.errors.name &&
+                      !!salesOrder.errors.name
+                    }
+                  />
+                  <ErrorMessage
+                    name="name"
+                    render={(msg) => (
+                      <FormHelperText sx={{ m: 0 }} error id="helper-text-name">
+                        {msg}
+                      </FormHelperText>
+                    )}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item sx={4} md={4} lg={4}>
                 <FormControl fullWidth margin="normal">
                   <FormLabel id="comment">Comment</FormLabel>
                   <TextField
@@ -159,15 +189,15 @@ export default function AddSalesOrderModal({ visible, onClose }) {
             <Grid item sx={12} md={12}>
               <FieldArray
                 validateOnChange={false}
-                name="inventory"
+                name="items"
                 render={(arrayHelper) =>
-                  salesOrder.values.inventory &&
-                  salesOrder.values.inventory.length > 0 &&
-                  salesOrder.values.inventory.map((item, index) => (
+                  salesOrder.values.items &&
+                  salesOrder.values.items.length > 0 &&
+                  salesOrder.values.items.map((item, index) => (
                     <Grid key={index} container spacing={1}>
-                      <Grid item xs={7}>
+                      <Grid item xs={6}>
                         <FormControl fullWidth margin="normal">
-                          <FormLabel id={`inventory.${index}.item_id`}>Select Item</FormLabel>
+                          <FormLabel id={`items.${index}.item_id`}>Select Item</FormLabel>
                           <Autocomplete
                             sx={{
                               height: '100%',
@@ -185,23 +215,23 @@ export default function AddSalesOrderModal({ visible, onClose }) {
                               label: item.name
                             }))}
                             error={
-                              salesOrder.touched.inventory &&
-                              salesOrder.touched.inventory[index] &&
-                              salesOrder.touched.inventory[index].item_id &&
-                              !!salesOrder.errors.inventory &&
-                              !!salesOrder.errors.inventory[index] &&
-                              !!salesOrder.errors.inventory[index].item_id
+                              salesOrder.touched.items &&
+                              salesOrder.touched.items[index] &&
+                              salesOrder.touched.items[index].item_id &&
+                              !!salesOrder.errors.items &&
+                              !!salesOrder.errors.items[index] &&
+                              !!salesOrder.errors.items[index].item_id
                             }
-                            getOptionLabel={(option) => option.label}
-                            value={salesOrder.values.inventory[index].item_id}
+                            // getOptionLabel={(option) => option.label}
+                            value={items.find((item) => item.id === salesOrder.values.items[index].item_id)?.name}
                             // onChange={salesOrder.handleChange}
-                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                            isOptionEqualToValue={(option, value) => option.id === value}
                             onChange={(e, option) => {
-                              salesOrder.setFieldValue(`inventory.${index}.item_id`, option);
+                              salesOrder.setFieldValue(`items.${index}.item_id`, option.id);
                             }}
                             type="text"
-                            id={`inventory.${index}.item_id`}
-                            name={`inventory.${index}.item_id`}
+                            id={`items.${index}.item_id`}
+                            name={`items.${index}.item_id`}
                             autoHighlight
                             renderInput={(params) => (
                               <TextField
@@ -218,7 +248,7 @@ export default function AddSalesOrderModal({ visible, onClose }) {
                             )}
                           />
                           <ErrorMessage
-                            name={`inventory.${index}.item_id`}
+                            name={`items.${index}.item_id`}
                             render={(msg) => (
                               <FormHelperText sx={{ m: 0 }} error id="helper-text-price">
                                 {msg}
@@ -228,28 +258,59 @@ export default function AddSalesOrderModal({ visible, onClose }) {
                         </FormControl>
                       </Grid>
 
-                      <Grid item xs={3}>
+                      <Grid item xs={2}>
                         <FormControl fullWidth margin="normal">
-                          <FormLabel id={`inventory.${index}.quantity`}>Quantity</FormLabel>
+                          <FormLabel id={`items.${index}.price`}>Price (for 1 item)</FormLabel>
                           <TextField
                             error={
-                              salesOrder.touched.inventory &&
-                              salesOrder.touched.inventory[index] &&
-                              salesOrder.touched.inventory[index].quantity &&
-                              !!salesOrder.errors.inventory &&
-                              !!salesOrder.errors.inventory[index] &&
-                              !!salesOrder.errors.inventory[index].quantity
+                              salesOrder.touched.items &&
+                              salesOrder.touched.items[index] &&
+                              salesOrder.touched.items[index].price &&
+                              !!salesOrder.errors.items &&
+                              !!salesOrder.errors.items[index] &&
+                              !!salesOrder.errors.items[index].price
+                            }
+                            size="small"
+                            value={item.price}
+                            onChange={salesOrder.handleChange}
+                            type="number"
+                            id={`items.${index}.price`}
+                            name={`items.${index}.price`}
+                            variant="outlined"
+                          />
+                          <ErrorMessage
+                            name={`items.${index}.price`}
+                            render={(msg) => (
+                              <FormHelperText sx={{ m: 0 }} error id="helper-text-price">
+                                {msg}
+                              </FormHelperText>
+                            )}
+                          />
+                        </FormControl>
+                      </Grid>
+
+                      <Grid item xs={2}>
+                        <FormControl fullWidth margin="normal">
+                          <FormLabel id={`items.${index}.quantity`}>Quantity</FormLabel>
+                          <TextField
+                            error={
+                              salesOrder.touched.items &&
+                              salesOrder.touched.items[index] &&
+                              salesOrder.touched.items[index].quantity &&
+                              !!salesOrder.errors.items &&
+                              !!salesOrder.errors.items[index] &&
+                              !!salesOrder.errors.items[index].quantity
                             }
                             size="small"
                             value={item.quantity}
                             onChange={salesOrder.handleChange}
                             type="number"
-                            id={`inventory.${index}.quantity`}
-                            name={`inventory.${index}.quantity`}
+                            id={`items.${index}.quantity`}
+                            name={`items.${index}.quantity`}
                             variant="outlined"
                           />
                           <ErrorMessage
-                            name={`inventory.${index}.quantity`}
+                            name={`items.${index}.quantity`}
                             render={(msg) => (
                               <FormHelperText sx={{ m: 0 }} error id="helper-text-quantity">
                                 {msg}
@@ -264,11 +325,8 @@ export default function AddSalesOrderModal({ visible, onClose }) {
                           onClick={() =>
                             arrayHelper.push({
                               item_id: null,
-                              batch_number: '',
-                              production_date: null,
-                              expiry_date: null,
-                              quantity: 0,
-                              unit_of_measure: ''
+                              quantity: 1,
+                              price: 0
                             })
                           }
                           color="primary"
@@ -279,7 +337,7 @@ export default function AddSalesOrderModal({ visible, onClose }) {
                       </Grid>
                       <Grid item alignItems="center" justifyContent="center" display="flex" xs={1}>
                         <IconButton
-                          onClick={() => salesOrder.values.inventory.length > 1 && arrayHelper.remove(index)}
+                          onClick={() => salesOrder.values.items.length > 1 && arrayHelper.remove(index)}
                           color="error"
                           variant="outlined"
                         >

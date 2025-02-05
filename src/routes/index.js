@@ -28,6 +28,7 @@ import location from './location';
 import uom from './unitOfMeasure';
 import rawMaterial from './rawMaterial';
 import bom from './billOfMaterial';
+import salesOrder from './salesOrder';
 
 const rootDir = path.dirname(process.argv[1]);
 
@@ -45,6 +46,7 @@ export default (app) => {
   app.use('/api/v1/stock', stock);
   app.use('/api/v1/batch', batch);
   app.use('/api/v1/bom', bom);
+  app.use('/api/v1/sales-order', salesOrder);
   app.use('/api/v1/location', location);
   app.use('/api/v1/uom', uom);
   app.use('/api/v1/raw-material', rawMaterial);

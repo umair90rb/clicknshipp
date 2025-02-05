@@ -71,7 +71,7 @@ export default function AddStockForm({ visible, onClose }) {
   const handleSubmit = async (values, { setErrors }) => {
     dispatch(fetchCreateStock({ body: values })).then((action) => {
       if (action.type === 'stock/create/fetch/fulfilled') {
-        dispatch(fetchAllStock());
+        dispatch(fetchAllStock({ type: 'all' }));
         onClose();
       } else {
         setErrors({ submit: action?.payload?.error || 'Something goes wrong, please try again' });
@@ -142,8 +142,9 @@ export default function AddStockForm({ visible, onClose }) {
                     value={receiveInventory.values.item_type}
                     onChange={receiveInventory.handleChange}
                   >
+                    <FormControlLabel value="finished_product" control={<Radio />} label="Finished Products" />
                     <FormControlLabel value="raw_material" control={<Radio />} label="Raw Material" />
-                    <FormControlLabel value="finished_product" control={<Radio />} label="Finished" />
+                    <FormControlLabel value="packaging_material" control={<Radio />} label="Packaging Material" />
                   </RadioGroup>
                 </FormControl>
               </Grid>
@@ -223,7 +224,9 @@ export default function AddStockForm({ visible, onClose }) {
                     <Grid key={index} container spacing={1}>
                       <Grid item xs={3}>
                         <FormControl fullWidth margin="normal">
-                          <FormLabel id={`inventory.${index}.item_id`}>Select Material</FormLabel>
+                          <FormLabel id={`inventory.${index}.item_id`}>
+                            {receiveInventory.values.item_type === 'finished_product' ? 'Select Product' : 'Select Material'}
+                          </FormLabel>
                           <Autocomplete
                             sx={{
                               height: '100%',
@@ -236,7 +239,7 @@ export default function AddStockForm({ visible, onClose }) {
                                 }
                               }
                             }}
-                            options={(receiveInventory.values.item_type === 'raw_material' ? rawMaterials : items).map((item) => ({
+                            options={(receiveInventory.values.item_type === 'finished_product' ? items : rawMaterials).map((item) => ({
                               id: item.id,
                               label: item.name
                             }))}

@@ -1,9 +1,12 @@
-"use strict";
-import { Model } from "sequelize";
+'use strict';
+import { Model } from 'sequelize';
 module.exports = (sequelize, DataTypes) => {
   class Supplier extends Model {
     static associate(models) {
-      Supplier.hasMany(models.Item);
+      Supplier.hasMany(models.Item, {
+        foreignKey: 'supplier_id',
+        as: 'items',
+      });
     }
   }
   Supplier.init(
@@ -24,12 +27,12 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Supplier",
+      modelName: 'Supplier',
       timestamps: true,
       scopes: {
         clean: {
           attributes: {
-            exclude: ["updatedAt", "createdAt"],
+            exclude: ['updatedAt', 'createdAt'],
           },
         },
       },

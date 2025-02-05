@@ -3,8 +3,14 @@ import model, { sequelize } from '../models';
 import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
 import _stockService from '../services/StockService';
 import _billOfMaterialService from '../services/BillOfMaterialService';
-const { Item, RawMaterial, BOM, BOMItem, BOMMaterialQuantityUpdateReason } =
-  model;
+const {
+  Item,
+  User,
+  RawMaterial,
+  BOM,
+  BOMItem,
+  BOMMaterialQuantityUpdateReason,
+} = model;
 
 export default {
   async billOfMaterials(req, res) {
@@ -22,6 +28,11 @@ export default {
           {
             model: Item,
             as: 'item',
+            attributes: ['id', 'name'],
+          },
+          {
+            model: User,
+            as: 'user',
             attributes: ['id', 'name'],
           },
           // {
@@ -81,6 +92,7 @@ export default {
       // materials[0] => raw_material_id, quantity, unit_of_measure
       const billOfMaterialData = {
         product_id: product_id.id,
+        user_id: req.user.id,
         name,
         quantity,
         unit_of_measure,
@@ -91,7 +103,10 @@ export default {
         })),
       };
       const billOfMaterial = await BOM.create(billOfMaterialData, {
-        include: { model: BOMItem, as: 'materials' },
+        include: [
+          { model: BOMItem, as: 'materials' },
+          { model: User, as: 'user', attributes: ['id', 'name'] },
+        ],
       });
       return sendSuccessResponse(
         res,

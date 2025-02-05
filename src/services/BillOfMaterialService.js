@@ -1,6 +1,12 @@
 import model from '../models';
-const { Item, RawMaterial, BOM, BOMItem, BOMMaterialQuantityUpdateReason } =
-  model;
+const {
+  Item,
+  User,
+  RawMaterial,
+  BOM,
+  BOMItem,
+  BOMMaterialQuantityUpdateReason,
+} = model;
 
 class BillOfMaterialService {
   get(id) {
@@ -17,6 +23,11 @@ class BillOfMaterialService {
         {
           model: Item,
           as: 'item',
+          attributes: ['id', 'name'],
+        },
+        {
+          model: User,
+          as: 'user',
           attributes: ['id', 'name'],
         },
         {

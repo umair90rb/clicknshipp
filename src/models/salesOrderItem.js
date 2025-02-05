@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
         as: 'sales_order',
         onDelete: 'CASCADE',
       });
+      SalesOrderItem.belongsTo(models.Item, {
+        foreignKey: 'item_id',
+        as: 'item',
+      });
     }
   }
 
@@ -23,9 +27,18 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      item_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       quantity: {
         type: DataTypes.FLOAT,
         allowNull: false,
+      },
+      price: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
       },
     },
     {

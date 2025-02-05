@@ -1,31 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Modal, Box } from '@mui/material';
-import CustomView from 'components/CustomTable';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { fetchStockHistory } from 'store/slices/stock/fetchStock';
-import { splitAndToUpperCase } from 'utils/string-utils';
-import { getDate } from 'utils/format-date';
+import formatDate from 'utils/format-date';
 import CustomDialog from 'components/CustomDialog';
 
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '75vw',
-  maxHeight: '75vh',
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4
-};
-
 const columns = [
-  {
-    field: 'id',
-    headerName: 'ID#',
-    flex: 0.25
-  },
   {
     field: 'quantity',
     headerName: 'Quantity',
@@ -34,7 +14,7 @@ const columns = [
   {
     field: 'movement_type',
     headerName: 'Movement',
-    flex: 0.25
+    flex: 0.5
   },
   {
     field: 'location',
@@ -48,15 +28,9 @@ const columns = [
     flex: 1.25
   },
   {
-    field: 'item_type',
-    headerName: 'Type',
-    valueGetter: (value) => splitAndToUpperCase(value?.row?.item_type),
-    flex: 1.25
-  },
-  {
     field: 'createdAt',
-    headerName: 'Added at',
-    valueGetter: (value) => getDate(value?.row?.createdAt)
+    headerName: 'Date',
+    valueGetter: (value) => formatDate(value?.row?.createdAt)
   }
 ];
 
@@ -93,6 +67,7 @@ export default function StockHistory({ itemIdAndType, visible, onClose }) {
         hidePagination={true}
         rows={history?.rows}
         columns={columns}
+        slots={{ toolbar: GridToolbar }}
       />
     </CustomDialog>
   );

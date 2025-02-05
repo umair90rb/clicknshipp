@@ -15,9 +15,15 @@ const columns = (handleView) => [
   },
   {
     field: 'name',
-    headerName: 'Name',
+    headerName: 'Name/Desc',
     flex: 1,
     valueGetter: (value) => `${value?.value || value?.row.item?.name || value.row.raw?.name}`
+  },
+  {
+    field: 'user',
+    headerName: 'Requested by',
+    flex: 1,
+    valueGetter: (value) => `${value?.row.user?.name || ''}`
   },
   {
     field: 'item',
@@ -50,6 +56,7 @@ const columns = (handleView) => [
     cellClassName: 'actions',
     getActions: (value) => {
       const actions = [];
+
       if (handleView) {
         actions.push(
           <GridActionsCellItem

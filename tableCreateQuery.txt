@@ -70,6 +70,14 @@ npx sequelize-cli migration:generate --name add-tracking-column-in-delivery--tab
 npx sequelize-cli migration:generate --name add-cost-center-column-in-delivery-service-account-table
 npx sequelize-cli migration:generate --name add-account-id-column-in-order-table
 
+npx sequelize-cli migration:generate --name add-user-id-column-in-bom-table
+
+npx sequelize-cli migration:generate --name update-stock-level-item-type-column-enum-to-string
+npx sequelize-cli migration:generate --name update-batches-item-type-column-enum-to-string
+npx sequelize-cli migration:generate --name update-stock-histories-item-type-column-enum-to-string
+
+npx sequelize-cli migration:generate --name update-sales-and-sales-item-table
+
 
 npx sequelize-cli migration:generate --name create-batches-table
 

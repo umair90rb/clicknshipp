@@ -26,6 +26,7 @@ import location from './slices/location/locationSlice';
 import unitOfMeasure from './slices/unitOfMeasure/unitOfMeasureSlice';
 import rawMaterial from './slices/rawMaterial/rawMaterialSlice';
 import billOfMaterial from './slices/billOfMaterial/billOfMaterialSlice';
+import salesOrder from './slices/salesOrder/salesOrderSlice';
 
 const reducers = combineReducers(
   {
@@ -54,7 +55,8 @@ const reducers = combineReducers(
     employee,
     menu,
     util,
-    billOfMaterial
+    billOfMaterial,
+    salesOrder
   },
   composeWithDevTools()
 );

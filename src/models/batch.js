@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
           item_type: 'raw_material',
         },
       });
-      Batch.hasOne(models.Item, {
+      Batch.belongsTo(models.Item, {
         foreignKey: 'item_id',
         constraints: false,
         as: 'of_item',

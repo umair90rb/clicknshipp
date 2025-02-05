@@ -25,7 +25,8 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   },
   '& .MuiDataGrid-main': {
     overflow: 'visible'
-  }
+  },
+  '--DataGrid-overlayHeight': '300px'
 }));
 
 function renderToolbar() {
@@ -49,6 +50,18 @@ export default function ReportingGrid({ heading, description, ...rest }) {
       hideFooterRowCount
       checkboxSelection={false}
       loading={reportIsLoading}
+      // slots={{ noRowsOverlay: CustomNoRowsOverlay }}
+      // sx={{ '--DataGrid-overlayHeight': '300px' }}
+      sx={{
+        '& .MuiDataGrid-columnHeaders': {
+          fontSize: '16px',
+          fontWeight: 'bold'
+        },
+        '& .MuiDataGrid-cell': {
+          fontSize: '14px',
+          fontWeight: 'bold'
+        }
+      }}
       slots={{ toolbar: renderToolbar.bind({ heading, description }), noRowsOverlay: CustomNoRowsOverlay }}
       getRowId={(row) => `${Math.random().toString().split('.')[1]}`}
       {...rest}

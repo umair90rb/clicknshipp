@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Dialog from '@mui/material/Dialog';
+import Box from '@mui/material/Box';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
@@ -7,6 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 
 const getWidthHeight = (size) => {
   switch (size) {
@@ -36,7 +38,8 @@ export default function CustomDialog({
   maxWidth,
   fullScreen = false,
   dividers = false,
-  scroll = 'paper'
+  scroll = 'paper',
+  printable = false
 }) {
   return (
     <Dialog
@@ -54,9 +57,16 @@ export default function CustomDialog({
     >
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         {title && <Typography variant="h5">{title}</Typography>}
-        <IconButton aria-label="close" onClick={onClose}>
-          <CloseOutlinedIcon />
-        </IconButton>
+        <Box>
+          {printable && (
+            <IconButton sx={{ displayPrint: 'none' }} aria-label="print" onClick={window.print}>
+              <PrintOutlinedIcon />
+            </IconButton>
+          )}
+          <IconButton sx={{ displayPrint: 'none' }} aria-label="close" onClick={onClose}>
+            <CloseOutlinedIcon />
+          </IconButton>
+        </Box>
       </DialogTitle>
 
       <DialogContent dividers={dividers}>
@@ -65,7 +75,7 @@ export default function CustomDialog({
           {children}
         </div>
       </DialogContent>
-      {actions.length > 0 && <DialogActions>{actions}</DialogActions>}
+      {actions.length > 0 && <DialogActions sx={{ displayPrint: 'none' }}>{actions}</DialogActions>}
     </Dialog>
   );
 }

@@ -255,6 +255,7 @@ export default {
   async destroy(req, res) {
     try {
       const id = req.params.id;
+      console.log(Item.rawAttributes);
       const item = await Item.findByPk(id);
       if (item) {
         await item.destroy();

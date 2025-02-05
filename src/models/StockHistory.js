@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
   StockHistory.init(
     {
       item_type: {
-        type: DataTypes.ENUM('raw_material', 'finished_product'),
+        type: DataTypes.STRING,
         allowNull: false,
       },
       item_id: {

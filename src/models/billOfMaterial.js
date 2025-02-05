@@ -15,6 +15,12 @@ module.exports = (sequelize, DataTypes) => {
         as: 'item',
         onDelete: 'CASCADE',
       });
+      BOM.belongsTo(models.User, {
+        foreignKey: 'user_id',
+        as: 'user',
+        onDelete: 'NO ACTION',
+        onUpdate: 'NO ACTION',
+      });
     }
   }
 
@@ -43,6 +49,10 @@ module.exports = (sequelize, DataTypes) => {
       },
       unit_of_measure: {
         type: DataTypes.STRING,
+        allowNull: false,
+      },
+      user_id: {
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
     },

@@ -16,7 +16,8 @@ export default {
   async stocks(req, res) {
     try {
       const type = req.query.type || 'finished_product';
-      const includes = [
+      console.log('all', req.query.type, req.query.type);
+      const include = [
         {
           model: Location,
           as: 'location',
@@ -24,7 +25,7 @@ export default {
         },
       ];
       if (type === 'raw_material' || type === 'packaging_material') {
-        includes.push({
+        include.push({
           model: RawMaterial,
           as: 'raw',
           attributes: ['name', 'id', 'unit_of_measure'],
@@ -32,19 +33,19 @@ export default {
         });
       }
       if (type === 'finished_product') {
-        includes.push({
+        include.push({
           model: Item,
           as: 'item',
           attributes: ['name', 'id'],
         });
       }
       if (type === 'all') {
-        includes.push({
+        include.push({
           model: RawMaterial,
           as: 'raw',
           attributes: ['name', 'id', 'unit_of_measure'],
         });
-        includes.push({
+        include.push({
           model: Item,
           as: 'item',
           attributes: ['name', 'id'],
@@ -52,7 +53,7 @@ export default {
       }
       const stocks = await StockLevel.findAll({
         attributes: ['id', 'current_level'],
-        include: includes,
+        include,
       });
       return sendSuccessResponse(
         res,

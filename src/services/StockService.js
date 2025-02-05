@@ -68,6 +68,26 @@ class StockService {
       throw error;
     }
   }
+
+  async decreaseAndCreateHistory(
+    item_type,
+    item_id,
+    movement_type,
+    location_id,
+    quantity,
+    comment
+  ) {
+    return this.decrement(item_type, item_id, quantity, location_id).then(() =>
+      this.createHistory(
+        item_type,
+        item_id,
+        movement_type,
+        location_id,
+        quantity,
+        comment
+      )
+    );
+  }
 }
 
 const _stockService = new StockService();

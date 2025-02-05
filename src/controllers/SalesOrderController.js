@@ -1,35 +1,29 @@
-import { Op } from 'sequelize';
-import model, { sequelize } from '../models';
+import model from '../models';
 import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
 import _stockService from '../services/StockService';
-import _billOfMaterialService from '../services/BillOfMaterialService';
 const { Item, SalesOrder, SalesOrderItem } = model;
 
 export default {
   async salesOrders(req, res) {
     try {
-      const billOfMaterials = await BOM.findAll({
-        attributes: [
-          'id',
-          'name',
-          'quantity',
-          'unit_of_measure',
-          'status',
-          'createdAt',
-        ],
-        include: [
-          {
+      const salesOrders = await SalesOrder.findAll({
+        attributes: ['id', 'name', 'comment', 'createdAt'],
+        include: {
+          model: SalesOrderItem,
+          as: 'items',
+          attributes: ['id', 'quantity', 'price'],
+          include: {
             model: Item,
             as: 'item',
-            attributes: ['id', 'name'],
+            attributes: ['name'],
           },
-        ],
+        },
       });
       return sendSuccessResponse(
         res,
         200,
-        { billOfMaterials },
-        'All bill of materials list'
+        { salesOrders },
+        'All sales order list'
       );
     } catch (e) {
       console.error(e);
@@ -44,7 +38,28 @@ export default {
 
   async salesOrder(req, res) {
     try {
-      return sendSuccessResponse(res, 200, {}, 'Empty response');
+      const id = req.params.id;
+      const salesOrder = await SalesOrder.findByPk(id, {
+        include: {
+          model: SalesOrderItem,
+          as: 'items',
+          attributes: ['id', 'price', 'quantity'],
+          include: {
+            model: Item,
+            as: 'item',
+            attributes: ['name'],
+          },
+        },
+      });
+      if (!salesOrder) {
+        return sendErrorResponse(res, 404, 'No data found for this id!', null);
+      }
+      return sendSuccessResponse(
+        res,
+        200,
+        { salesOrder },
+        'Sales order with id'
+      );
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
@@ -58,26 +73,31 @@ export default {
 
   async create(req, res) {
     try {
-      const { product_id, name, quantity, unit_of_measure } = req.body;
-      const billOfMaterialData = {
-        product_id: product_id.id,
+      const { location_id, comment, name, items } = req.body;
+      const salesOrder = await SalesOrder.create({
+        comment,
         name,
-        quantity,
-        unit_of_measure,
-        status: 'Opened',
-        materials: materials.map(({ raw_material_id, ...rest }) => ({
-          ...rest,
-          raw_material_id: raw_material_id.id,
-        })),
-      };
-      const billOfMaterial = await BOM.create(billOfMaterialData, {
-        include: { model: BOMItem, as: 'materials' },
       });
+      await SalesOrderItem.bulkCreate(
+        items.map((item) => ({ ...item, sales_order_id: salesOrder.id }))
+      );
+      await Promise.all(
+        items.map((item) =>
+          _stockService.decreaseAndCreateHistory(
+            'finished_product',
+            item.item_id,
+            'out',
+            location_id,
+            item.quantity,
+            comment || ''
+          )
+        )
+      );
       return sendSuccessResponse(
         res,
         200,
-        { billOfMaterial },
-        'Bill of material created successfully'
+        { salesOrder },
+        'Sales order created successfully'
       );
     } catch (error) {
       return sendErrorResponse(

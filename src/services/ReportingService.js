@@ -21,6 +21,9 @@ const {
   Role,
   Permission,
   DeliveryServiceAccounts,
+  Item,
+  RawMaterial,
+  StockLevel,
 } = model;
 class ReportingService {
   constructor() {}
@@ -191,78 +194,6 @@ class ReportingService {
           ),
           'unit_cancel',
         ],
-        // [
-        //   fn(
-        //     'SUM',
-        //     literal(
-        //       `CASE WHEN "delivery"."courier" = 'postex' THEN "items"."quantity" ELSE 0 END`
-        //     )
-        //   ),
-        //   'postex',
-        // ],
-        // [
-        //   fn(
-        //     'SUM',
-        //     literal(
-        //       `CASE WHEN "delivery"."courier" = 'tcs' THEN "items"."quantity" ELSE 0 END`
-        //     )
-        //   ),
-        //   'tcs',
-        // ],
-        // [
-        //   fn(
-        //     'SUM',
-        //     literal(
-        //       `CASE WHEN "delivery"."courier" = 'trax' THEN "items"."quantity" ELSE 0 END`
-        //     )
-        //   ),
-        //   'trax',
-        // ],
-        // [
-        //   fn(
-        //     'SUM',
-        //     literal(
-        //       `CASE WHEN "delivery"."courier" = 'deawoo' THEN "items"."quantity" ELSE 0 END`
-        //     )
-        //   ),
-        //   'deawoo',
-        // ],
-        // [
-        //   fn(
-        //     'SUM',
-        //     literal(
-        //       `CASE WHEN "delivery"."courier" = 'leopard' THEN "items"."quantity" ELSE 0 END`
-        //     )
-        //   ),
-        //   'leapard',
-        // ],
-        // [
-        //   fn(
-        //     'SUM',
-        //     literal(
-        //       `CASE WHEN "delivery"."courier" = 'callcourier' THEN "items"."quantity" ELSE 0 END`
-        //     )
-        //   ),
-        //   'callcourier',
-        // ],
-        // [
-        //   fn(
-        //     'SUM',
-        //     literal(
-        //       `CASE WHEN "delivery"."courier" = 'mnp' THEN "items"."quantity" ELSE 0 END`
-        //     )
-        //   ),
-        //   'mnp',
-        // ],
-        // [
-        //   fn(
-        //     'SUM',
-        //     literal(
-        //       `CASE WHEN "delivery"."courier" = 'manual' THEN "items"."quantity" ELSE 0 END`
-        //     )
-        //   ),
-        //   'manual',
-        // ],
       ],
       include: [
         {
@@ -780,6 +711,49 @@ class ReportingService {
       group: ['Order.delivery_account_id', 'courier.name'],
       raw: true,
     });
+  }
+
+  getStockReport(startPeriod, endPeriod, reportBrand, reportChanel) {
+    return sequelize.query(
+      `select distinct on (i.id) sl.item_type, sh."createdAt", i.name, coalesce((coalesce(sl.current_level, 0) - coalesce("in".total, 0) + coalesce("out".total, 0)), 0) as "opening", coalesce("in".total, 0) as "in",  coalesce("out".total, 0) as "out", coalesce(sl.current_level, 0) as "closing" from "StockLevels" sl 
+      join "Items" i on sl.item_type  = 'finished_product' and i.id = sl.item_id
+      join "StockHistories" sh on sh.item_id = i.id
+      left join (select sh.item_id as "item_id", sum(sh.quantity) as "total" from "StockHistories" sh where sh.movement_type = 'in' and sh."createdAt" >= :startPeriod and sh."createdAt" <= :endPeriod group by "item_id") "in" on "in"."item_id" = i.id
+      left join (select sh.item_id as "item_id", sum(sh.quantity) as "total" from "StockHistories" sh where sh.movement_type = 'out' and sh."createdAt" >= :startPeriod and sh."createdAt" <= :endPeriod group by "item_id") "out" on "out"."item_id" = i.id
+      where sh."createdAt" >= :startPeriod and sh."createdAt" <= :endPeriod
+      ${
+        reportChanel && reportChanel.length
+          ? 'and i.chanel_id in (:reportChanel)'
+          : ''
+      }
+      ${
+        reportBrand && reportBrand.length
+          ? 'and i.brand_id in (:reportBrand)'
+          : ''
+      }
+      union
+      select distinct on (rm.id) sl.item_type, sh."createdAt", rm.name, coalesce((coalesce(sl.current_level, 0) - coalesce("in".total, 0) + coalesce("out".total, 0)), 0) as "opening", coalesce("in".total, 0) as "in",  coalesce("out".total, 0) as "out", coalesce(sl.current_level, 0) as "closing" from "StockLevels" sl 
+      join "RawMaterials" rm on sl.item_type  in ('raw_material', 'packaging_material') and rm.id = sl.item_id
+      join "StockHistories" sh on sh.item_id = rm.id 
+      left join (select sh.item_id as "item_id", sum(sh.quantity) as "total" from "StockHistories" sh where sh.movement_type = 'in' and sh."createdAt" >= :startPeriod and sh."createdAt" <= :endPeriod group by "item_id") "in" on "in"."item_id" = rm.id
+      left join (select sh.item_id as "item_id", sum(sh.quantity) as "total" from "StockHistories" sh where sh.movement_type = 'out' and sh."createdAt" >= :startPeriod and sh."createdAt" <= :endPeriod group by "item_id") "out" on "out"."item_id" = rm.id
+      where sh."createdAt" >= :startPeriod and sh."createdAt" <= :endPeriod
+      ${
+        reportChanel && reportChanel.length
+          ? 'and rm.chanel_id in (:reportChanel)'
+          : ''
+      }
+      ${
+        reportBrand && reportBrand.length
+          ? 'and rm.brand_id in (:reportBrand)'
+          : ''
+      }
+      `,
+      {
+        replacements: { startPeriod, endPeriod, reportChanel, reportBrand },
+        type: QueryTypes.SELECT,
+      }
+    );
   }
 }
 
