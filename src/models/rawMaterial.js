@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
         constraints: false,
         as: 'stock',
         scope: {
-          item_type: 'raw_material',
+          item_type: ['raw_material', 'packaging_material'],
         },
       });
     }

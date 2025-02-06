@@ -18,6 +18,7 @@ import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 import { GridDropdownFilter } from 'pages/order-management/GridDropdownFilter';
 import storeTypes from 'constants/storeTypes';
+import GridRefreshButton from 'components/GridRefreshButton';
 const columns = (showHistory) => [
   {
     field: 'id',
@@ -86,6 +87,7 @@ export default function StockTable({ showHistory }) {
       <GridToolbarDensitySelector />
       <GridToolbarExport />
       <GridToolbarFilterButton />
+      <GridRefreshButton onClick={() => dispatch(fetchAllStock({ type: stockFor }))} />
       <Box display="flex" alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
         <GridDropdownFilter
           label="filter by status"

@@ -1,4 +1,4 @@
-import { Op } from 'sequelize';
+import { Op, literal, col } from 'sequelize';
 import model from '../models';
 import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
 import _stockService from '../services/StockService';
@@ -16,44 +16,67 @@ export default {
   async stocks(req, res) {
     try {
       const type = req.query.type || 'finished_product';
-      console.log('all', req.query.type, req.query.type);
-      const include = [
-        {
-          model: Location,
-          as: 'location',
-          attributes: ['name'],
-        },
-      ];
-      if (type === 'raw_material' || type === 'packaging_material') {
-        include.push({
-          model: RawMaterial,
-          as: 'raw',
-          attributes: ['name', 'id', 'unit_of_measure'],
-          where: { type },
-        });
-      }
-      if (type === 'finished_product') {
-        include.push({
-          model: Item,
-          as: 'item',
-          attributes: ['name', 'id'],
-        });
-      }
-      if (type === 'all') {
-        include.push({
-          model: RawMaterial,
-          as: 'raw',
-          attributes: ['name', 'id', 'unit_of_measure'],
-        });
-        include.push({
-          model: Item,
-          as: 'item',
-          attributes: ['name', 'id'],
-        });
-      }
+      // if (type === 'raw_material' || type === 'packaging_material') {
+      //   include.push({
+      //     model: RawMaterial,
+      //     as: 'raw',
+      //     attributes: ['name', 'id', 'unit_of_measure'],
+      //   });
+      // }
+      // if (type === 'finished_product') {
+      //   include.push({
+      //     model: Item,
+      //     as: 'item',
+      //     attributes: ['name', 'id'],
+      //   });
+      // }
+      // if (type === 'all') {
+      //   include.push({
+      //     model: RawMaterial,
+      //     as: 'raw',
+      //     attributes: ['name', 'id', 'unit_of_measure'],
+      //   });
+      //   include.push({
+      //     model: Item,
+      //     as: 'item',
+      //     attributes: ['name', 'id'],
+      //   });
+      // }
       const stocks = await StockLevel.findAll({
-        attributes: ['id', 'current_level'],
-        include,
+        attributes: ['id', 'current_level', 'item_id', 'item_type'],
+        include: [
+          {
+            model: Location,
+            as: 'location',
+            attributes: ['id', 'name'],
+          },
+          {
+            model: RawMaterial,
+            as: 'raw',
+            attributes: ['id', 'name', 'id', 'unit_of_measure'],
+            // required: false,
+            // where: {
+            //   [Op.or]: [
+            //     literal(`"StockLevel".item_id = raw.id`),
+            //     literal(
+            //       `"StockLevel".item_type IN ('raw_material', 'packaging_material')`
+            //     ),
+            //   ],
+            // },
+          },
+          {
+            model: Item,
+            as: 'item',
+            attributes: ['name', 'id'],
+            // required: false,
+            // where: {
+            //   [Op.or]: [
+            //     literal(`"StockLevel".item_id = item.id`),
+            //     literal(`'finished_product' = "StockLevel".item_type`),
+            //   ],
+            // },
+          },
+        ],
       });
       return sendSuccessResponse(
         res,

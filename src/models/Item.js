@@ -22,27 +22,20 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'CASCADE',
       });
       Item.hasOne(models.StockLevel, {
-        foreignKey: { name: 'item_id', allowNull: false },
+        foreignKey: 'item_id',
+        constraints: false,
         as: 'stock',
         scope: {
           item_type: 'finished_product',
         },
-        constraints: false,
       });
-      Item.hasMany(models.StockHistory, {
-        as: 'stock_history',
-        foreignKey: 'item_id',
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
-        constraints: false,
-      });
-      Item.hasOne(models.OrderItem, {
-        as: 'OrderItems',
-        foreignKey: 'product_id',
-        onUpdate: 'NO ACTION',
-        onDelete: 'NO ACTION',
-        constraints: false,
-      });
+      // Item.hasOne(models.OrderItem, {
+      //   as: 'OrderItems',
+      //   foreignKey: 'product_id',
+      //   onUpdate: 'NO ACTION',
+      //   onDelete: 'NO ACTION',
+      //   constraints: false,
+      // });
     }
   }
   Item.init(
@@ -61,6 +54,10 @@ module.exports = (sequelize, DataTypes) => {
       },
       cost_price: {
         type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      unit_of_measure: {
+        type: DataTypes.STRING,
         allowNull: true,
       },
       createdAt: { type: DataTypes.DATE, field: 'createdAt' },

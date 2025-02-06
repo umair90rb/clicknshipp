@@ -83,11 +83,12 @@ export default {
   async update(req, res) {
     try {
       const id = req.params.id;
-      const { name, address } = req.body;
+      const { name, type, address } = req.body;
       const location = await Location.findByPk(id);
       if (location) {
         location.set({
           name,
+          type,
           address,
           updatedAt: new Date().toISOString(),
         });

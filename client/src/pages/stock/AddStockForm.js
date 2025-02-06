@@ -33,6 +33,29 @@ import { locationFetchStatusSelector, locationListSelector } from 'store/slices/
 import { fetchAllLocation } from 'store/slices/location/fetchLocation';
 import CustomDialog from 'components/CustomDialog';
 
+function filterItemsAndRaw(type, items, raw) {
+  if (type === 'finished_product') {
+    return items;
+  }
+  if (type === 'raw_material') {
+    return raw.filter((r) => r.type === 'raw_material');
+  }
+  if (type === 'packaging_material') {
+    return raw.filter((r) => r.type === 'packaging_material');
+  }
+  return [];
+}
+
+function getItemsAndRaw(type = '', items = [], raw = []) {
+  const result = filterItemsAndRaw(type, items, raw);
+  console.log(result);
+  return result.map((item) => ({
+    id: item.id,
+    label: item.name,
+    unit: item.unit_of_measure
+  }));
+}
+
 export default function AddStockForm({ visible, onClose }) {
   const dispatch = useDispatch();
   const formRef = useRef();
@@ -239,10 +262,7 @@ export default function AddStockForm({ visible, onClose }) {
                                 }
                               }
                             }}
-                            options={(receiveInventory.values.item_type === 'finished_product' ? items : rawMaterials).map((item) => ({
-                              id: item.id,
-                              label: item.name
-                            }))}
+                            options={getItemsAndRaw(receiveInventory.values.item_type, items, rawMaterials)}
                             error={
                               receiveInventory.touched.inventory &&
                               receiveInventory.touched.inventory[index] &&
@@ -257,6 +277,7 @@ export default function AddStockForm({ visible, onClose }) {
                             isOptionEqualToValue={(option, value) => option.id === value.id}
                             onChange={(e, option) => {
                               receiveInventory.setFieldValue(`inventory.${index}.item_id`, option);
+                              receiveInventory.setFieldValue(`inventory.${index}.unit_of_measure`, option.unit);
                             }}
                             type="text"
                             id={`inventory.${index}.item_id`}

@@ -15,6 +15,12 @@ import { createItem, updateItem } from 'store/slices/item/itemSlice';
 import CenterCircularLoader from 'components/CenterCircularLoader';
 import { setMessage } from 'store/slices/util/utilSlice';
 import fetchStatus from 'constants/fetchStatuses';
+import {
+  unitOfMeasureFetchStatusSelector,
+  unitOfMeasureIsLoadingSelector,
+  unitOfMeasureListSelector
+} from 'store/slices/unitOfMeasure/unitOfMeasureSelector';
+import { fetchAllUnitOfMeasure } from 'store/slices/unitOfMeasure/fetchUnitOfMeasure';
 
 // ============================|| FIREBASE - REGISTER ||============================ //
 
@@ -34,6 +40,10 @@ const AddItemForm = ({ item }) => {
   const brandsFetchStatus = useSelector(brandFetchStatusSelector);
   const brands = useSelector(brandBrandsSelector);
 
+  const unitsIsLoading = useSelector(unitOfMeasureIsLoadingSelector);
+  const unitsFetchStatus = useSelector(unitOfMeasureFetchStatusSelector);
+  const units = useSelector(unitOfMeasureListSelector);
+
   useEffect(function () {
     if (suppliersFetchStatus !== fetchStatus.SUCCESS) {
       dispatch(fetchAllSupplier());
@@ -43,6 +53,9 @@ const AddItemForm = ({ item }) => {
     }
     if (brandsFetchStatus !== fetchStatus.SUCCESS) {
       dispatch(fetchAllBrand());
+    }
+    if (unitsFetchStatus !== fetchStatus.SUCCESS) {
+      dispatch(fetchAllUnitOfMeasure());
     }
   }, []);
 
@@ -80,6 +93,7 @@ const AddItemForm = ({ item }) => {
           code: item?.code || '',
           unit_price: item?.unit_price || '',
           cost_price: item?.cost_price || '',
+          unit_of_measure: item?.unit_of_measure || '',
           supplier: item?.supplier?.id || '',
           category: item?.category?.id || '',
           brand: item?.brand?.id || ''
@@ -186,6 +200,36 @@ const AddItemForm = ({ item }) => {
                   )}
                 </Stack>
               </Grid>
+              {unitsIsLoading ? (
+                <CenterCircularLoader />
+              ) : (
+                <Grid item xs={12}>
+                  <Stack spacing={1}>
+                    <InputLabel htmlFor="unit_of_measure-signup">Unit of Measure</InputLabel>
+                    <Select
+                      fullWidth
+                      error={Boolean(touched.unit_of_measure && errors.unit_of_measure)}
+                      id="unit_of_measure-signup"
+                      value={values.unit_of_measure}
+                      name="unit_of_measure"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      labelId="unit_of_measure-signup"
+                    >
+                      {units.map(({ id, unit }) => (
+                        <MenuItem key={id} value={unit}>
+                          <ListItemText primary={unit} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {touched.unit_of_measure && errors.unit_of_measure && (
+                      <FormHelperText error id="helper-text-unit_of_measure-signup">
+                        {errors.unit_of_measure}
+                      </FormHelperText>
+                    )}
+                  </Stack>
+                </Grid>
+              )}
               {!categoriesIsLoading && (
                 <Grid item xs={12}>
                   <Stack spacing={1}>

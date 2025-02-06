@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -6,6 +6,7 @@ import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
 import { itemIsLoadingSelector, itemItemsSelector } from 'store/slices/item/itemSelector';
 import { fetchAllItem, fetchDeleteItem } from 'store/slices/item/fetchItem';
 import { deleteItem } from 'store/slices/item/itemSlice';
+import GridCustomToolbar from 'components/GridCustomToolbar';
 const columns = (handleEditAction, handleDeleteAction) => [
   {
     field: 'id',
@@ -20,6 +21,11 @@ const columns = (handleEditAction, handleDeleteAction) => [
   {
     field: 'code',
     headerName: 'Code',
+    flex: 1
+  },
+  {
+    field: 'unit_of_measure',
+    headerName: 'Unit',
     flex: 1
   },
   {
@@ -76,9 +82,10 @@ export default function ItemTable({ updateItemHandler }) {
   const dispatch = useDispatch();
   const itemIsLoading = useSelector(itemIsLoadingSelector);
   const items = useSelector(itemItemsSelector);
+  const fetchItems = useCallback(() => dispatch(fetchAllItem()), []);
 
   useEffect(() => {
-    dispatch(fetchAllItem());
+    fetchItems();
   }, []);
 
   const deleteItemHandler = (id) => {
@@ -92,9 +99,10 @@ export default function ItemTable({ updateItemHandler }) {
   return (
     <div style={{ width: '100%' }}>
       <DataGrid
-        slots={{ toolbar: GridToolbar }}
+        slots={{ toolbar: GridCustomToolbar }}
         slotProps={{
           toolbar: {
+            withRefresh: fetchItems,
             showQuickFilter: true
           }
         }}

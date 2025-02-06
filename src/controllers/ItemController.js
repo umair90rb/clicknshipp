@@ -9,7 +9,14 @@ export default {
   async items(req, res) {
     try {
       const items = await Item.findAll({
-        attributes: ['id', 'name', 'code', 'unit_price', 'cost_price'],
+        attributes: [
+          'id',
+          'name',
+          'code',
+          'unit_of_measure',
+          'unit_price',
+          'cost_price',
+        ],
         include: [
           {
             model: Category,
@@ -78,8 +85,16 @@ export default {
   },
 
   async create(req, res) {
-    const { name, code, unit_price, cost_price, supplier, category, brand } =
-      req.body;
+    const {
+      name,
+      code,
+      unit_price,
+      unit_of_measure,
+      cost_price,
+      supplier,
+      category,
+      brand,
+    } = req.body;
     try {
       let item = await Item.findOne({
         attributes: ['id'],
@@ -97,12 +112,11 @@ export default {
         code,
         unit_price,
         cost_price,
+        unit_of_measure,
+        category_id: category,
+        brand_id: brand,
+        ...(supplier ? { supplier_id: supplier } : {}),
       });
-      await item.setCategory(category);
-      await item.setBrand(brand);
-      if (supplier) {
-        await item.setSupplier(supplier);
-      }
       await item.reload({
         include: [
           {
@@ -126,15 +140,7 @@ export default {
         res,
         201,
         {
-          item: {
-            id: item.id,
-            name: item.name,
-            code: item.code,
-            price: item.unit_price,
-            category: item.category,
-            brand: item.brand,
-            supplier: item.supplier,
-          },
+          item,
         },
         'Item created successfully'
       );
@@ -182,27 +188,29 @@ export default {
   async update(req, res) {
     try {
       const id = req.params.id;
-      const { name, code, unit_price, cost_price, supplier, category, brand } =
-        req.body;
+      const {
+        name,
+        code,
+        unit_price,
+        cost_price,
+        unit_of_measure,
+        supplier,
+        category,
+        brand,
+      } = req.body;
       const item = await Item.findByPk(id);
       if (item) {
-        item.set({
+        await item.update({
           name,
           code,
           unit_price,
           cost_price,
+          unit_of_measure,
           updatedAt: new Date().toISOString(),
+          ...(supplier ? { supplier_id: supplier } : {}),
+          ...(brand ? { supplier_id: brand } : {}),
+          ...(category ? { supplier_id: category } : {}),
         });
-        if (supplier) {
-          await item.setSupplier(supplier);
-        }
-        if (brand) {
-          await item.setBrand(brand);
-        }
-        if (category) {
-          await item.setCategory(category);
-        }
-        await item.save();
         await item.reload({
           include: [
             {
@@ -226,16 +234,7 @@ export default {
           res,
           200,
           {
-            item: {
-              id: item.id,
-              name: item.name,
-              code: item.code,
-              unit_price: item.unit_price,
-              cost_price: item.cost_price,
-              category: item.category,
-              brand: item.brand,
-              supplier: item.supplier,
-            },
+            item,
           },
           'Operation successful'
         );
