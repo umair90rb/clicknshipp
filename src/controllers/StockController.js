@@ -15,35 +15,10 @@ const {
 export default {
   async stocks(req, res) {
     try {
-      const type = req.query.type || 'finished_product';
-      // if (type === 'raw_material' || type === 'packaging_material') {
-      //   include.push({
-      //     model: RawMaterial,
-      //     as: 'raw',
-      //     attributes: ['name', 'id', 'unit_of_measure'],
-      //   });
-      // }
-      // if (type === 'finished_product') {
-      //   include.push({
-      //     model: Item,
-      //     as: 'item',
-      //     attributes: ['name', 'id'],
-      //   });
-      // }
-      // if (type === 'all') {
-      //   include.push({
-      //     model: RawMaterial,
-      //     as: 'raw',
-      //     attributes: ['name', 'id', 'unit_of_measure'],
-      //   });
-      //   include.push({
-      //     model: Item,
-      //     as: 'item',
-      //     attributes: ['name', 'id'],
-      //   });
-      // }
+      const type = req.query.type;
       const stocks = await StockLevel.findAll({
         attributes: ['id', 'current_level', 'item_id', 'item_type'],
+        ...(type && type !== 'all' ? { where: { item_type: type } } : {}),
         include: [
           {
             model: Location,
@@ -54,27 +29,11 @@ export default {
             model: RawMaterial,
             as: 'raw',
             attributes: ['id', 'name', 'id', 'unit_of_measure'],
-            // required: false,
-            // where: {
-            //   [Op.or]: [
-            //     literal(`"StockLevel".item_id = raw.id`),
-            //     literal(
-            //       `"StockLevel".item_type IN ('raw_material', 'packaging_material')`
-            //     ),
-            //   ],
-            // },
           },
           {
             model: Item,
             as: 'item',
             attributes: ['name', 'id'],
-            // required: false,
-            // where: {
-            //   [Op.or]: [
-            //     literal(`"StockLevel".item_id = item.id`),
-            //     literal(`'finished_product' = "StockLevel".item_type`),
-            //   ],
-            // },
           },
         ],
       });

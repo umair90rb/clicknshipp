@@ -22,13 +22,13 @@ module.exports = (sequelize, DataTypes) => {
         as: 'history',
       });
     }
-    // getStockable(options) {
-    //   if (!this.item_type) return Promise.resolve(null);
-    //   const mixinMethodName = `get${
-    //     this.item_type === 'finished_product' ? 'Item' : 'Raw'
-    //   }`;
-    //   return this[mixinMethodName](options);
-    // }
+    getStockable(options) {
+      if (!this.item_type) return Promise.resolve(null);
+      const mixinMethodName = `get${
+        this.item_type === 'finished_product' ? 'Item' : 'Raw'
+      }`;
+      return this[mixinMethodName](options);
+    }
   }
   StockLevel.init(
     {
@@ -61,12 +61,10 @@ module.exports = (sequelize, DataTypes) => {
     if (!findResult) return findResult;
     if (!Array.isArray(findResult)) findResult = [findResult];
     for (const instance of findResult) {
-      console.log(instance.get());
       if (
         instance.item_type === 'finished_product' &&
         instance.item !== undefined
       ) {
-        console.log('item condition met!', instance.item);
         instance.stockable = instance.item;
         delete instance.raw;
         delete instance.dataValues.raw;
@@ -75,7 +73,6 @@ module.exports = (sequelize, DataTypes) => {
           instance.item_type === 'packaging_material') &&
         instance.raw !== undefined
       ) {
-        console.log('raw condition met!', instance.raw);
         instance.stockable = instance.raw;
         delete instance.item;
         delete instance.dataValues.item;

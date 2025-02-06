@@ -46,7 +46,7 @@ const StockManagement = () => {
           {hasPermission(PERMISSIONS.PERMISSION_RECEIVE_STOCK) && (
             <Grid item>
               <Button variant="contained" startIcon={<KeyboardBackspaceOutlinedIcon />} onClick={() => setAddFormModal(true)}>
-                Receive Inventory
+                Receive Stock
               </Button>
             </Grid>
           )}
