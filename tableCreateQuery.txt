@@ -78,6 +78,8 @@ npx sequelize-cli migration:generate --name update-stock-histories-item-type-col
 
 npx sequelize-cli migration:generate --name update-sales-and-sales-item-table
 
+npx sequelize-cli migration:generate --name add-unit-column-in-items-table
+
 
 npx sequelize-cli migration:generate --name create-batches-table
 

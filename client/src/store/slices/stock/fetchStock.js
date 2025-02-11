@@ -1,8 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { stockService } from 'api/index';
 
-const fetchAllStock = createAsyncThunk('stocks/fetch', ({ type }, { rejectWithValue }) =>
-  stockService.fetchAllStock(type).catch((error) => rejectWithValue(error.response.data || error.message))
+const fetchAllStock = createAsyncThunk('stocks/fetch', ({ type, lowStock }, { rejectWithValue }) =>
+  stockService.fetchAllStock(type, lowStock).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
 const fetchStockHistory = createAsyncThunk('stock/history/fetch', ({ body }, { rejectWithValue }) =>

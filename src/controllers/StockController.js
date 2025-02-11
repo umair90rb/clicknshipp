@@ -15,10 +15,17 @@ const {
 export default {
   async stocks(req, res) {
     try {
-      const type = req.query.type;
+      const { type, low_stock } = req.query;
+      const where = {};
+      if (type !== 'all') {
+        where.item_type = type;
+      }
+      if (low_stock === 'true') {
+        where.current_level = { [Op.lte]: 5 };
+      }
       const stocks = await StockLevel.findAll({
         attributes: ['id', 'current_level', 'item_id', 'item_type'],
-        ...(type && type !== 'all' ? { where: { item_type: type } } : {}),
+        ...(Object.entries(where).length ? { where } : {}),
         include: [
           {
             model: Location,

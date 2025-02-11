@@ -19,6 +19,7 @@ import { PERMISSIONS } from 'constants/permissions-and-roles';
 import storeTypes from 'constants/storeTypes';
 import GridRefreshButton from 'components/GridRefreshButton';
 import GridChipFilter from 'components/GridChipFilter';
+import GridSingleChipFilter from 'components/GridSingleChipFilter';
 const columns = (showHistory) => [
   {
     field: 'id',
@@ -74,13 +75,14 @@ const columns = (showHistory) => [
 export default function StockTable({ showHistory }) {
   const dispatch = useDispatch();
   const [stockFor, setStockFor] = useState('all');
+  const [lowStock, setLowStock] = useState('false');
   const stockIsLoading = useSelector(stockIsLoadingSelector);
   const stock = useSelector(stockStocksSelector);
   const { hasPermission } = useAccess();
 
   useEffect(() => {
-    dispatch(fetchAllStock({ type: stockFor }));
-  }, [stockFor]);
+    dispatch(fetchAllStock({ type: stockFor, lowStock }));
+  }, [stockFor, lowStock]);
 
   const renderToolbar = () => (
     <GridToolbarContainer>
@@ -91,6 +93,7 @@ export default function StockTable({ showHistory }) {
       <GridRefreshButton onClick={() => dispatch(fetchAllStock({ type: stockFor }))} />
       <Box display="flex" alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
         <GridChipFilter options={[{ label: 'All', value: 'all' }, ...storeTypes]} onClick={setStockFor} value={stockFor} />
+        <GridSingleChipFilter label="Low Stock" onClick={setLowStock} value={lowStock} onClickValue="true" resetValue="false" />
       </Box>
       <GridToolbarQuickFilter />
     </GridToolbarContainer>

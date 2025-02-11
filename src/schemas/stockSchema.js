@@ -9,6 +9,7 @@ const createStockSchema = Joi.object({
       item_id: Joi.object({
         id: Joi.number().integer().required(),
         label: Joi.string().required(),
+        unit: Joi.string(),
       }),
       batch_number: Joi.string().allow(''),
       production_date: Joi.date().allow(null),
