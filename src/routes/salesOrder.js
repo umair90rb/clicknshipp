@@ -14,14 +14,14 @@ const validator = createValidator();
 router.get(
   '/all',
   Auth,
-  can(PERMISSIONS.PERMISSION_VIEW_STOCK),
+  can(PERMISSIONS.PERMISSION_READ_SALES_ORDER),
   SalesOrderController.salesOrders
 );
 
 router.get(
   '/:id',
   Auth,
-  can(PERMISSIONS.PERMISSION_VIEW_STOCK),
+  can(PERMISSIONS.PERMISSION_READ_SALES_ORDER),
   validator.params(idSchema),
   SalesOrderController.salesOrder
 );
@@ -29,7 +29,7 @@ router.get(
 router.post(
   '/',
   Auth,
-  can(PERMISSIONS.PERMISSION_VIEW_STOCK),
+  can(PERMISSIONS.PERMISSION_WRITE_SALES_ORDER),
   schemaValidator(createSalesOrder),
   SalesOrderController.create
 );

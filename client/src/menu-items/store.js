@@ -26,7 +26,7 @@ const store = {
       title: 'Materials',
       type: 'item',
       url: '/raw-material',
-      permission: PERMISSIONS.PERMISSION_VIEW_ITEMS,
+      permission: PERMISSIONS.PERMISSION_READ_MATERIAL,
       icon: DeviceHubOutlinedIcon,
       breadcrumbs: false
     },
@@ -35,7 +35,7 @@ const store = {
       title: 'Bill of Material',
       type: 'item',
       url: '/bom',
-      permission: PERMISSIONS.PERMISSION_VIEW_ITEMS,
+      permission: PERMISSIONS.PERMISSION_READ_BOM,
       icon: ReceiptOutlinedIcon,
       breadcrumbs: false
     },
@@ -44,7 +44,7 @@ const store = {
       title: 'Sales Order',
       type: 'item',
       url: '/sales-order',
-      permission: PERMISSIONS.PERMISSION_VIEW_ITEMS,
+      permission: PERMISSIONS.PERMISSION_READ_SALES_ORDER,
       icon: AttachMoneyOutlinedIcon,
       breadcrumbs: false
     },
@@ -71,7 +71,7 @@ const store = {
       title: 'Locations & Units',
       type: 'item',
       url: '/locations-and-units',
-      permission: PERMISSIONS.PERMISSION_VIEW_SUPPLIERS,
+      permission: PERMISSIONS.PERMISSION_READ_LOCATION_AND_UNITS,
       icon: WarehouseOutlinedIcon,
       breadcrumbs: false
     }

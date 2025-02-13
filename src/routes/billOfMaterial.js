@@ -19,14 +19,14 @@ const validator = createValidator();
 router.get(
   '/all',
   Auth,
-  can(PERMISSIONS.PERMISSION_VIEW_STOCK),
+  can(PERMISSIONS.PERMISSION_READ_BOM),
   BillOfMaterialController.billOfMaterials
 );
 
 router.get(
   '/:id',
   Auth,
-  can(PERMISSIONS.PERMISSION_VIEW_STOCK),
+  can(PERMISSIONS.PERMISSION_READ_BOM),
   validator.params(idSchema),
   BillOfMaterialController.billOfMaterial
 );
@@ -34,7 +34,7 @@ router.get(
 router.post(
   '/',
   Auth,
-  can(PERMISSIONS.PERMISSION_VIEW_STOCK),
+  can(PERMISSIONS.PERMISSION_WRITE_BOM),
   schemaValidator(createBillOfMaterialSchema),
   BillOfMaterialController.create
 );
@@ -42,7 +42,7 @@ router.post(
 router.put(
   '/material/:id',
   Auth,
-  can(PERMISSIONS.PERMISSION_RECEIVE_STOCK),
+  can(PERMISSIONS.PERMISSION_WRITE_BOM),
   validator.params(idSchema),
   schemaValidator(materialQuantityUpdateSchema),
   BillOfMaterialController.material
@@ -51,7 +51,7 @@ router.put(
 router.get(
   '/fullfil/:id/from/:locationId',
   Auth,
-  can(PERMISSIONS.PERMISSION_RECEIVE_STOCK),
+  can(PERMISSIONS.PERMISSION_WRITE_BOM),
   validator.params(idAndLocationIdSchema),
   BillOfMaterialController.fullfil
 );
@@ -59,7 +59,7 @@ router.get(
 router.put(
   '/:id',
   Auth,
-  can(PERMISSIONS.PERMISSION_RECEIVE_STOCK),
+  can(PERMISSIONS.PERMISSION_WRITE_BOM),
   validator.params(idSchema),
   schemaValidator(createBillOfMaterialSchema),
   BillOfMaterialController.update
@@ -68,7 +68,7 @@ router.put(
 router.delete(
   '/:id',
   Auth,
-  can(PERMISSIONS.PERMISSION_RECEIVE_STOCK),
+  can(PERMISSIONS.PERMISSION_WRITE_BOM),
   validator.params(idSchema),
   BillOfMaterialController.destroy
 );

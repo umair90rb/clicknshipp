@@ -42,7 +42,7 @@ const order = {
       title: 'Return',
       type: 'item',
       url: '/order/return',
-      permission: PERMISSIONS.PERMISSION_VIEW_ORDERS,
+      permission: PERMISSIONS.PERMISSION_RETURN_MANAGEMENT,
       icon: AssignmentReturnOutlinedIcon,
       breadcrumbs: false
     },

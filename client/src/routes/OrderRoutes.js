@@ -47,7 +47,7 @@ const OrderRoutes = {
     {
       path: 'return',
       element: (
-        <PrivateRoute permission={PERMISSIONS.PERMISSION_CREATE_ORDER}>
+        <PrivateRoute permission={PERMISSIONS.PERMISSION_RETURN_MANAGEMENT}>
           <ReturnManagement />
         </PrivateRoute>
       )

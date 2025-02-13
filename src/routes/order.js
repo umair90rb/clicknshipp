@@ -61,7 +61,7 @@ router.post(
 router.get(
   '/return/:identifier',
   Auth,
-  can(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS),
+  can(PERMISSIONS.PERMISSION_RETURN_MANAGEMENT),
   validator.params(identifierSchema),
   ReturnController.return
 );

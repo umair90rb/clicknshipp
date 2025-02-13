@@ -35,7 +35,7 @@ const StockRoutes = {
     {
       path: 'bom',
       element: (
-        <PrivateRoute permission={PERMISSIONS.PERMISSION_VIEW_STOCK}>
+        <PrivateRoute permission={PERMISSIONS.PERMISSION_READ_BOM}>
           <BOM />
         </PrivateRoute>
       )
@@ -43,7 +43,7 @@ const StockRoutes = {
     {
       path: 'sales-order',
       element: (
-        <PrivateRoute permission={PERMISSIONS.PERMISSION_VIEW_STOCK}>
+        <PrivateRoute permission={PERMISSIONS.PERMISSION_READ_SALES_ORDER}>
           <SalesOrder />
         </PrivateRoute>
       )
@@ -59,7 +59,7 @@ const StockRoutes = {
     {
       path: 'raw-material',
       element: (
-        <PrivateRoute permission={PERMISSIONS.PERMISSION_VIEW_ITEMS}>
+        <PrivateRoute permission={PERMISSIONS.PERMISSION_READ_MATERIAL}>
           <RawMaterialManagement />
         </PrivateRoute>
       )
@@ -76,7 +76,7 @@ const StockRoutes = {
     {
       path: 'locations-and-units',
       element: (
-        <PrivateRoute permission={PERMISSIONS.PERMISSION_VIEW_SUPPLIERS}>
+        <PrivateRoute permission={PERMISSIONS.PERMISSION_READ_LOCATION_AND_UNITS}>
           <LocationsAndUnits />
         </PrivateRoute>
       )

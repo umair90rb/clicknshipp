@@ -79,6 +79,23 @@ export const PERMISSIONS = {
   PERMISSION_CREATE_BATCH: 'create-batch',
   PERMISSION_UPDATE_BATCH: 'update-batch',
   PERMISSION_DELETE_BATCH: 'delete-batch',
+
+  PERMISSION_READ_MATERIAL: 'read-material',
+  PERMISSION_WRITE_MATERIAL: 'write-material',
+
+  PERMISSION_READ_BOM: 'read-bom',
+  PERMISSION_WRITE_BOM: 'write-bom',
+
+  PERMISSION_READ_SALES_ORDER: 'read-sales-order',
+  PERMISSION_WRITE_SALES_ORDER: 'write-sales-order',
+
+  PERMISSION_READ_SUPPLIER: 'read-supplier',
+  PERMISSION_WRITE_SUPPLIER: 'write-supplier',
+
+  PERMISSION_READ_LOCATION_AND_UNITS: 'read-location-and-units',
+  PERMISSION_WRITE_LOCATION_AND_UNITS: 'write-location-and-units',
+
+  PERMISSION_RETURN_MANAGEMENT: 'return-management',
 };
 
 export const ROLES = {

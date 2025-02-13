@@ -57,7 +57,24 @@ export const PERMISSIONS = {
   PERMISSION_VIEW_DELIVERY_ACCOUNTS: 'view-delivery-accounts',
   PERMISSION_CREATE_DELIVERY_ACCOUNTS: 'create-delivery-accounts',
   PERMISSION_UPDATE_DELIVERY_ACCOUNTS: 'update-delivery-accounts',
-  PERMISSION_DELETE_DELIVERY_ACCOUNTS: 'delete-delivery-accounts'
+  PERMISSION_DELETE_DELIVERY_ACCOUNTS: 'delete-delivery-accounts',
+
+  PERMISSION_READ_MATERIAL: 'read-material',
+  PERMISSION_WRITE_MATERIAL: 'write-material',
+
+  PERMISSION_READ_BOM: 'read-bom',
+  PERMISSION_WRITE_BOM: 'write-bom',
+
+  PERMISSION_READ_SALES_ORDER: 'read-sales-order',
+  PERMISSION_WRITE_SALES_ORDER: 'write-sales-order',
+
+  PERMISSION_READ_SUPPLIER: 'read-supplier',
+  PERMISSION_WRITE_SUPPLIER: 'write-supplier',
+
+  PERMISSION_READ_LOCATION_AND_UNITS: 'read-location-and-units',
+  PERMISSION_WRITE_LOCATION_AND_UNITS: 'write-location-and-units',
+
+  PERMISSION_RETURN_MANAGEMENT: 'return-management'
 };
 
 export const ROLES = {
