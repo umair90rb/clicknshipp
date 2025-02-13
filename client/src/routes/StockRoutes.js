@@ -76,7 +76,7 @@ const StockRoutes = {
     {
       path: 'locations-and-units',
       element: (
-        <PrivateRoute permission={PERMISSIONS.PERMISSION_READ_LOCATION_AND_UNITS}>
+        <PrivateRoute permission={PERMISSIONS.PERMISSION_VIEW_LOCATIONS}>
           <LocationsAndUnits />
         </PrivateRoute>
       )

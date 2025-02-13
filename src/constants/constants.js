@@ -92,9 +92,6 @@ export const PERMISSIONS = {
   PERMISSION_READ_SUPPLIER: 'read-supplier',
   PERMISSION_WRITE_SUPPLIER: 'write-supplier',
 
-  PERMISSION_READ_LOCATION_AND_UNITS: 'read-location-and-units',
-  PERMISSION_WRITE_LOCATION_AND_UNITS: 'write-location-and-units',
-
   PERMISSION_RETURN_MANAGEMENT: 'return-management',
 };
 

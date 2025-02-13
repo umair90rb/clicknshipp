@@ -5,7 +5,7 @@ import useAuth from '../hooks/useAuth';
 import useAccess from 'hooks/useAccess';
 import Unauthorized from 'pages/unauthorized/index';
 
-export const PrivateRoute = ({ children, loader = null, role, permission, ...props }) => {
+export const PrivateRoute = ({ children, loader = null, permission }) => {
   const { authenticated, loading } = useAuth();
   const { hasPermission } = useAccess();
   if (loading) {

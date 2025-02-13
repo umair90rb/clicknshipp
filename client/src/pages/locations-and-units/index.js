@@ -51,21 +51,20 @@ export default function LocationsAndUnits() {
     <>
       <Grid item xs={12} md={7} lg={8}>
         <Grid container alignItems="center" justifyContent="space-between">
-          {hasPermission(PERMISSIONS.PERMISSION_VIEW_CATEGORIES_AND_BRANDS) && (
-            <Grid item>
-              <Typography variant="h5">Store Locations</Typography>
-            </Grid>
-          )}
+          <Grid item>
+            <Typography variant="h5">Store Locations</Typography>
+          </Grid>
+
           <Grid item>
             <Grid container spacing={2}>
-              {hasPermission(PERMISSIONS.PERMISSION_CREATE_CATEGORY) && (
+              {hasPermission(PERMISSIONS.PERMISSION_CREATE_LOCATION) && (
                 <Grid item>
                   <Button variant="contained" startIcon={<AddOutlinedIcon />} onClick={() => openModalHandler('Location')}>
                     Add Store Location
                   </Button>
                 </Grid>
               )}
-              {hasPermission(PERMISSIONS.PERMISSION_CREATE_BRAND) && (
+              {hasPermission(PERMISSIONS.PERMISSION_CREATE_UNIT_OF_MEASURE) && (
                 <Grid item>
                   <Button variant="contained" startIcon={<AddOutlinedIcon />} onClick={() => openModalHandler('Unit')}>
                     Add Unit Of Measure
@@ -75,21 +74,21 @@ export default function LocationsAndUnits() {
             </Grid>
           </Grid>
         </Grid>
-        {hasPermission(PERMISSIONS.PERMISSION_VIEW_CATEGORIES_AND_BRANDS) && (
+        {hasPermission(PERMISSIONS.PERMISSION_VIEW_LOCATIONS) && (
           <MainCard sx={{ mt: 2 }} content={false}>
             <LocationTable handleUpdate={handleUpdate} />
           </MainCard>
         )}
-        {hasPermission(PERMISSIONS.PERMISSION_VIEW_CATEGORIES_AND_BRANDS) && (
-          <Grid item xs={12} md={7} lg={8} sx={{ mt: 3 }}>
-            <Grid container alignItems="center" justifyContent="space-between">
-              <Grid item>
-                <Typography variant="h5">Units</Typography>
-              </Grid>
+
+        <Grid item xs={12} md={7} lg={8} sx={{ mt: 3 }}>
+          <Grid container alignItems="center" justifyContent="space-between">
+            <Grid item>
+              <Typography variant="h5">Units</Typography>
             </Grid>
           </Grid>
-        )}
-        {hasPermission(PERMISSIONS.PERMISSION_VIEW_CATEGORIES_AND_BRANDS) && (
+        </Grid>
+
+        {hasPermission(PERMISSIONS.PERMISSION_VIEW_UNIT_OF_MEASURES) && (
           <MainCard sx={{ mt: 2 }} content={false}>
             <UnitsTable handleUpdate={handleUpdate} />
           </MainCard>
