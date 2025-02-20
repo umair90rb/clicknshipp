@@ -31,8 +31,12 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      gate_pass_id: {
+      gate_pass_no: {
         type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      gate_pass_date: {
+        type: DataTypes.DATE,
         allowNull: true,
       },
       comment: {

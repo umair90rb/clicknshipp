@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
           item_type: ['raw_material', 'packaging_material'],
         },
       });
+      RawMaterial.belongsTo(models.Supplier, {
+        foreignKey: 'supplier_id',
+        as: 'supplier',
+      });
     }
   }
 
@@ -34,6 +38,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       cost_price: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      supplier_id: {
         type: DataTypes.INTEGER,
         allowNull: true,
       },

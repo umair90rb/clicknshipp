@@ -40,7 +40,7 @@ import { setOrder, setOrderFilters, setOrderPagination, setOrderSort } from 'sto
 import { setMessage } from 'store/slices/util/utilSlice';
 import { authPermissionsSelector } from 'store/slices/auth/authSelector';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
-import { formatDateTime, getEndOfDay, getStartOfDay } from 'utils/format-date';
+import { formatDateTime } from 'utils/format-date';
 import { useGridApiRef } from '../../../node_modules/@mui/x-data-grid/index';
 import GridEditTextarea from './GridEditTextarea';
 import ORDER_STATUSES, { ORDER_TAGS } from 'constants/orderStatuses';
@@ -712,7 +712,7 @@ const OrderTable = memo(() => {
           }}
         />
 
-        <GridDropdownFilter
+        {/* <GridDropdownFilter
           multiple
           label="filter by items"
           options={itemsList.map((item) => item.name)}
@@ -730,7 +730,7 @@ const OrderTable = memo(() => {
               ])
             );
           }}
-        />
+        /> */}
 
         <Box sx={{ flexGrow: 1 }} />
         <GridToolbarQuickFilter />

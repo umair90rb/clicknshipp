@@ -89,7 +89,7 @@ export default {
             'out',
             location_id,
             item.quantity,
-            comment || ''
+            comment
           )
         )
       );

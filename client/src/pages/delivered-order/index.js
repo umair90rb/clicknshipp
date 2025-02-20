@@ -13,22 +13,21 @@ import {
 import { fetchAllOrder } from 'store/slices/order/fetchOrder';
 import { setOrderFilters, setOrderPagination, setOrderSort } from 'store/slices/order/orderSlice';
 import CustomNoRowsOverlay from 'components/GridNoRowCustomOverlay';
+import MainCard from 'components/MainCard';
+import { formatDateTime } from 'utils/format-date';
 
 const column = [
   {
     field: 'id',
-    headerName: 'ID',
-    flex: 0.25
+    headerName: 'ID'
   },
   {
     field: 'order_number',
-    headerName: 'Order#',
-    flex: 0.5
+    headerName: 'Order#'
   },
   {
     field: 'name',
     headerName: 'Name',
-    flex: 1,
     sortable: false,
 
     type: 'string',
@@ -37,9 +36,8 @@ const column = [
   {
     field: 'address1',
     headerName: 'Address',
-    flex: 1,
     sortable: false,
-
+    flex: 1,
     type: 'string',
 
     valueGetter: (param) => param.row.address?.address1 || '',
@@ -48,7 +46,7 @@ const column = [
   {
     field: 'city',
     headerName: 'City',
-    flex: 1,
+
     sortable: false,
 
     type: 'string',
@@ -57,7 +55,7 @@ const column = [
   {
     field: 'phone',
     headerName: 'Phone',
-    flex: 1,
+
     sortable: false,
 
     valueGetter: (param) => param.row.customer?.phone || ''
@@ -83,13 +81,12 @@ const column = [
   },
   {
     field: 'total_price',
-    headerName: 'Amount',
-    flex: 0.33
+    headerName: 'Amount'
   },
   {
     field: 'payments',
     headerName: 'Payments',
-    flex: 1,
+
     sortable: false,
     editable: false,
     type: 'string',
@@ -107,23 +104,20 @@ const column = [
   },
   {
     field: 'total_discounts',
-    headerName: 'Discount',
-    flex: 0.33
+    headerName: 'Discount'
   },
   {
     field: 'status',
-    headerName: 'Status',
-    flex: 0.5
+    headerName: 'Status'
   },
   {
     field: 'courier',
-    headerName: 'Courier',
-    flex: 0.5
+    headerName: 'Courier'
   },
   {
     field: 'remarks',
     headerName: 'Remarks',
-    flex: 0.5,
+    flex: 1,
     sortable: false,
     type: 'string',
     valueGetter: (param) => param.row.remarks || '',
@@ -132,7 +126,7 @@ const column = [
   {
     field: 'tags',
     headerName: 'Tags',
-    flex: 0.5,
+
     sortable: false,
     renderCell: (params) => (
       <Box>
@@ -143,33 +137,33 @@ const column = [
   {
     field: 'chanel',
     headerName: 'Channel',
-    flex: 1,
+
     sortable: false,
     valueGetter: ({ value }) => (value ? value.name : '')
   },
   {
     field: 'agent',
     headerName: 'Agent',
-    flex: 0.5,
+
     sortable: false,
     valueGetter: (param) => param.row.user?.name || ''
   },
   {
     field: 'createdAt',
     headerName: 'Created At',
-    flex: 0.5,
+
     valueGetter: ({ value }) => formatDateTime(value, true)
   },
   {
     field: 'assignedAt',
     headerName: 'Assigned At',
-    flex: 0.5,
+
     valueGetter: ({ value }) => formatDateTime(value, true)
   },
   {
     field: 'receivedAt',
     headerName: 'Received At',
-    flex: 0.5,
+
     valueGetter: ({ value }) => formatDateTime(value, true)
   }
 ];
@@ -213,46 +207,34 @@ export default function DeliveredOrder() {
         <Typography variant="h5">Delivered Orders</Typography>
       </Grid>
       <Grid item xs={12} mb={2}>
-        <DataGrid
-          sx={{
-            '& .MuiDataGrid-virtualScroller::-webkit-scrollbar': {
-              display: 'none'
-            },
-            '& .MuiDataGrid-virtualScroller::-webkit-scrollbar-track': {
-              display: 'none'
-            },
-            '& .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb': {
-              display: 'none'
-            },
-            '& .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb:hover': {
-              display: 'none'
-            }
-          }}
-          slots={{
-            noRowsOverlay: CustomNoRowsOverlay
-          }}
-          initialState={{
-            sorting: {
-              sortModel
-            }
-          }}
-          showCellVerticalBorder
-          loading={listIsLoading}
-          checkboxSelection={false}
-          paginationMode="server"
-          pageSizeOptions={[10, 25, 50, 100]}
-          onPaginationModelChange={(paginationModal) => dispatch(setOrderPagination(paginationModal))}
-          paginationModel={{ page, pageSize }}
-          columnVisibilityModel={columnVisibilityModel}
-          onColumnVisibilityModelChange={setColumnVisibilityModel}
-          sortingMode="server"
-          sortModel={sortModel}
-          onSortModelChange={(sortModel) => dispatch(setOrderSort(sortModel))}
-          rowCount={total}
-          getRowHeight={() => 'auto'}
-          rows={orders || []}
-          columns={column}
-        />
+        <MainCard>
+          <DataGrid
+            slots={{
+              noRowsOverlay: CustomNoRowsOverlay
+            }}
+            initialState={{
+              sorting: {
+                sortModel
+              }
+            }}
+            showCellVerticalBorder
+            loading={listIsLoading}
+            checkboxSelection={false}
+            paginationMode="server"
+            pageSizeOptions={[10, 25, 50, 100]}
+            onPaginationModelChange={(paginationModal) => dispatch(setOrderPagination(paginationModal))}
+            paginationModel={{ page, pageSize }}
+            columnVisibilityModel={columnVisibilityModel}
+            onColumnVisibilityModelChange={setColumnVisibilityModel}
+            sortingMode="server"
+            sortModel={sortModel}
+            onSortModelChange={(sortModel) => dispatch(setOrderSort(sortModel))}
+            rowCount={total}
+            getRowHeight={() => 'auto'}
+            rows={orders || []}
+            columns={column}
+          />
+        </MainCard>
       </Grid>
     </Grid>
   );

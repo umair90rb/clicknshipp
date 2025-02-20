@@ -24,6 +24,7 @@ const Search = () => {
   const [query, setQuery] = useState('');
   const handleTagDelete = () => setTag('');
   const handleFocus = () => {
+    inputRef.current.focus();
     setIsFocus(true);
     if (!tag) {
       setTag('Phone');
@@ -32,7 +33,9 @@ const Search = () => {
   const handleBlur = () => {
     handleTagDelete();
     dispatch(clearSearchState());
+    inputRef.current.blur();
     setIsFocus(false);
+    setQuery('');
   };
 
   const handleFetchSearch = (tag, query) => dispatch(fetchSearch({ body: { query, tag } }));
@@ -45,14 +48,13 @@ const Search = () => {
     }
   };
   const handleKeyDown = (event) => {
+    if (event.key === 'Escape' && isFocus) {
+      event.preventDefault();
+      return handleBlur();
+    }
     if (event.ctrlKey && (event.key === 'f' || event.key === 'F')) {
       event.preventDefault();
-      handleFocus();
-      inputRef.current.focus();
-    } else if (event.key === 'Escape' && document.activeElement === inputElement) {
-      handleBlur();
-      setQuery('');
-      inputRef.current.blur();
+      return handleFocus();
     }
   };
   const handleMouseOutsideClick = (event) => {
@@ -72,7 +74,7 @@ const Search = () => {
     document.addEventListener('mousedown', handleMouseOutsideClick);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('mousedown', handleMouseOutsideClick);
+      document.removeEventListener('mousedown', handleMouseOutsideClick);
     };
   }, []);
 
@@ -102,7 +104,7 @@ const Search = () => {
       >
         <OutlinedInput
           fullWidth
-          ref={inputRef}
+          inputRef={inputRef}
           size="small"
           id="header-search"
           startAdornment={
@@ -135,7 +137,6 @@ const Search = () => {
           placeholder="Ctrl + F"
           value={query}
           onChange={handleQueryChange}
-          onFocus={handleFocus}
         />
         {isFocus && (
           <>
@@ -176,7 +177,7 @@ const Search = () => {
                 }
               }}
             >
-              {result && result.map((r, index) => <OrderRow key={index} order={r} onNavigate={handleBlur} />)}
+              {!loading && result && result.map((r, index) => <OrderRow key={index} order={r} onNavigate={handleBlur} />)}
             </Box>
           </>
         )}

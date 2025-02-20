@@ -4,6 +4,8 @@ const createStockSchema = Joi.object({
   item_type: Joi.string().required(),
   comment: Joi.string().allow(''),
   location_id: Joi.number().integer().required(),
+  gate_pass_no: Joi.number().integer().required(),
+  gate_pass_date: Joi.date().required(),
   inventory: Joi.array()
     .items({
       item_id: Joi.object({

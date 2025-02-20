@@ -1,26 +1,21 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { Modal, Box, Button, MenuItem, Select, FormHelperText, Grid, ListItemText, InputLabel, OutlinedInput, Stack } from '@mui/material';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import AnimateButton from 'components/@extended/AnimateButton';
 import { useDispatch, useSelector } from 'react-redux';
-// import { fetchAllSupplier } from 'store/slices/supplier/fetchSupplier';
-// import { supplierFetchStatusSelector, supplierIsLoadingSelector, supplierSuppliersSelector } from 'store/slices/supplier/supplierSelector';
+import { supplierIsLoadingSelector, supplierSuppliersSelector } from 'store/slices/supplier/supplierSelector';
 // import { categoryCategoriesSelector, categoryFetchStatusSelector, categoryIsLoadingSelector } from 'store/slices/category/categorySelector';
 // import { brandBrandsSelector, brandFetchStatusSelector, brandIsLoadingSelector } from 'store/slices/brand/brandSelector';
 // import { fetchAllCategory } from 'store/slices/category/fetchCategory';
 // import { fetchAllBrand } from 'store/slices/brand/fetchBrand';
 import CenterCircularLoader from 'components/CenterCircularLoader';
 import { setMessage } from 'store/slices/util/utilSlice';
-import fetchStatus from 'constants/fetchStatuses';
-import {
-  unitOfMeasureFetchStatusSelector,
-  unitOfMeasureIsLoadingSelector,
-  unitOfMeasureListSelector
-} from 'store/slices/unitOfMeasure/unitOfMeasureSelector';
-import { fetchAllUnitOfMeasure } from 'store/slices/unitOfMeasure/fetchUnitOfMeasure';
+import { unitOfMeasureIsLoadingSelector, unitOfMeasureListSelector } from 'store/slices/unitOfMeasure/unitOfMeasureSelector';
 import { fetchCreateRawMaterial, fetchUpdateRawMaterial } from 'store/slices/rawMaterial/fetchRawMaterial';
 import { createRawMaterial, updateRawMaterial } from 'store/slices/rawMaterial/rawMaterialSlice';
+import useSupplierFetch from 'hooks/useSupplierFetch';
+import useUOMFetch from 'hooks/useUOMFetch';
 
 const style = {
   position: 'absolute',
@@ -38,12 +33,10 @@ export default function AddUpdateRawMaterial({ rawMaterial, type, visible, onClo
   const formRef = useRef();
 
   const unitsIsLoading = useSelector(unitOfMeasureIsLoadingSelector);
-  const unitsFetchStatus = useSelector(unitOfMeasureFetchStatusSelector);
   const units = useSelector(unitOfMeasureListSelector);
 
-  // const suppliersIsLoading = useSelector(supplierIsLoadingSelector);
-  // const suppliersFetchStatus = useSelector(supplierFetchStatusSelector);
-  // const suppliers = useSelector(supplierSuppliersSelector);
+  const suppliersIsLoading = useSelector(supplierIsLoadingSelector);
+  const suppliers = useSelector(supplierSuppliersSelector);
 
   // const categoriesIsLoading = useSelector(categoryIsLoadingSelector);
   // const categoriesFetchStatus = useSelector(categoryFetchStatusSelector);
@@ -53,20 +46,8 @@ export default function AddUpdateRawMaterial({ rawMaterial, type, visible, onClo
   // const brandsFetchStatus = useSelector(brandFetchStatusSelector);
   // const brands = useSelector(brandBrandsSelector);
 
-  useEffect(function () {
-    // if (suppliersFetchStatus !== fetchStatus.SUCCESS) {
-    //   dispatch(fetchAllSupplier());
-    // }
-    // if (categoriesFetchStatus !== fetchStatus.SUCCESS) {
-    //   dispatch(fetchAllCategory());
-    // }
-    // if (brandsFetchStatus !== fetchStatus.SUCCESS) {
-    //   dispatch(fetchAllBrand());
-    // }
-    if (unitsFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllUnitOfMeasure());
-    }
-  }, []);
+  useSupplierFetch();
+  useUOMFetch();
 
   const handleSubmit = async (values, { setErrors }) => {
     if (rawMaterial) {
@@ -107,8 +88,8 @@ export default function AddUpdateRawMaterial({ rawMaterial, type, visible, onClo
             cost_price: rawMaterial?.cost_price || '',
             re_order_level: rawMaterial?.re_order_level || '',
             unit_of_measure: rawMaterial?.unit_of_measure || '',
-            type: rawMaterial?.type || type || 'raw_material'
-            // supplier: rawMaterial?.supplier?.id || '',
+            type: rawMaterial?.type || type || 'raw_material',
+            supplier: rawMaterial?.supplier?.id || ''
             // category: rawMaterial?.category?.id || '',
             // brand: rawMaterial?.brand?.id || ''
           }}
@@ -118,8 +99,8 @@ export default function AddUpdateRawMaterial({ rawMaterial, type, visible, onClo
             code: Yup.string().max(255).required('Code is required'),
             unit_of_measure: Yup.string().required('Unit is required'),
             cost_price: Yup.number().required(),
-            re_order_level: Yup.number().required()
-            // supplier: Yup.number().required(),
+            re_order_level: Yup.number().required(),
+            supplier: Yup.number().required()
             // category: Yup.number().required(),
             // brand: Yup.number().required()
           })}
@@ -268,6 +249,35 @@ export default function AddUpdateRawMaterial({ rawMaterial, type, visible, onClo
                     </Stack>
                   </Grid>
                 )}
+                {!suppliersIsLoading && (
+                  <Grid item xs={12}>
+                    <Stack spacing={1}>
+                      <InputLabel htmlFor="supplier-signup">Suppliers</InputLabel>
+                      <Select
+                        fullWidth
+                        error={Boolean(touched.supplier && errors.supplier)}
+                        id="supplier-signup"
+                        value={values.supplier}
+                        name="supplier"
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        inputProps={{}}
+                        labelId="supplier-signup"
+                      >
+                        {suppliers.map(({ id, name }, index) => (
+                          <MenuItem key={index} value={id}>
+                            <ListItemText primary={name} />
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      {touched.supplier && errors.supplier && (
+                        <FormHelperText error id="helper-text-supplier-signup">
+                          {errors.supplier}
+                        </FormHelperText>
+                      )}
+                    </Stack>
+                  </Grid>
+                )}
                 {/* {!categoriesIsLoading && (
                   <Grid item xs={12}>
                     <Stack spacing={1}>
@@ -325,36 +335,8 @@ export default function AddUpdateRawMaterial({ rawMaterial, type, visible, onClo
                       )}
                     </Stack>
                   </Grid>
-                )}
-                {!suppliersIsLoading && (
-                  <Grid item xs={12}>
-                    <Stack spacing={1}>
-                      <InputLabel htmlFor="supplier-signup">Suppliers</InputLabel>
-                      <Select
-                        fullWidth
-                        error={Boolean(touched.supplier && errors.supplier)}
-                        id="supplier-signup"
-                        value={values.supplier}
-                        name="supplier"
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        inputProps={{}}
-                        labelId="supplier-signup"
-                      >
-                        {suppliers.map(({ id, name }, index) => (
-                          <MenuItem key={index} value={id}>
-                            <ListItemText primary={name} />
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      {touched.supplier && errors.supplier && (
-                        <FormHelperText error id="helper-text-supplier-signup">
-                          {errors.supplier}
-                        </FormHelperText>
-                      )}
-                    </Stack>
-                  </Grid>
                 )} */}
+
                 {errors.submit && (
                   <Grid item xs={12}>
                     <FormHelperText error>{errors.submit}</FormHelperText>

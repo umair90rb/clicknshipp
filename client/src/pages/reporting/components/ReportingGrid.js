@@ -1,7 +1,7 @@
 import { DataGrid } from '@mui/x-data-grid';
 import styled from '@mui/system/styled';
 import { useSelector } from 'react-redux';
-import { reportDataSelector, reportFetchStatusSelector, reportIsLoadingSelector } from 'store/slices/report/reportSelector';
+import { reportDataSelector, reportIsLoadingSelector } from 'store/slices/report/reportSelector';
 import GridToolbarWithHeading from 'components/GridToolbarWithHeading';
 import CustomNoRowsOverlay from 'components/GridNoRowCustomOverlay';
 

@@ -69,6 +69,8 @@ export default {
           'id',
           'quantity',
           'comment',
+          'gate_pass_no',
+          'gate_pass_date',
           'movement_type',
           'item_type',
           'createdAt',
@@ -102,7 +104,14 @@ export default {
 
   async create(req, res) {
     try {
-      const { item_type, location_id, comment, inventory } = req.body;
+      const {
+        item_type,
+        location_id,
+        gate_pass_no,
+        gate_pass_date,
+        comment,
+        inventory,
+      } = req.body;
       const batches = [],
         batchPromises = [],
         historyPromises = [];
@@ -124,7 +133,9 @@ export default {
             'in',
             location_id,
             quantity,
-            comment
+            comment,
+            gate_pass_no,
+            gate_pass_date
           )
         );
       });

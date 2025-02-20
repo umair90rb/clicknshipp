@@ -80,6 +80,9 @@ npx sequelize-cli migration:generate --name update-sales-and-sales-item-table
 
 npx sequelize-cli migration:generate --name add-unit-column-in-items-table
 
+npx sequelize-cli migration:generate --name add-supplier-column-in-raw-materials-table
+npx sequelize-cli migration:generate --name add-gate-pass-date-and-gate-pass-no-column-in-stock-history-table
+
 
 npx sequelize-cli migration:generate --name create-batches-table
 

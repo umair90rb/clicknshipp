@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { fetchStockHistory } from 'store/slices/stock/fetchStock';
-import formatDate from 'utils/format-date';
+import { formatDateTime, parseTimestampToDate } from 'utils/format-date';
 import CustomDialog from 'components/CustomDialog';
 
 const columns = [
@@ -23,6 +23,17 @@ const columns = [
     flex: 1.25
   },
   {
+    field: 'gate_pass_no',
+    headerName: 'IGP No',
+    flex: 1
+  },
+  {
+    field: 'gate_pass_date',
+    headerName: 'IGP Date',
+    flex: 1,
+    valueFormatter: ({ value }) => (value ? parseTimestampToDate(value) : value)
+  },
+  {
     field: 'comment',
     headerName: 'Comment',
     flex: 1.25
@@ -30,7 +41,7 @@ const columns = [
   {
     field: 'createdAt',
     headerName: 'Date',
-    valueGetter: (value) => formatDate(value?.row?.createdAt)
+    valueGetter: (value) => formatDateTime(value?.row?.createdAt)
   }
 ];
 

@@ -23,13 +23,12 @@ import GridSingleChipFilter from 'components/GridSingleChipFilter';
 const columns = (showHistory) => [
   {
     field: 'id',
-    headerName: 'ID',
-    flex: 0.25
+    headerName: 'ID'
   },
   {
     field: 'name',
     headerName: 'Item Name',
-    flex: 1.75,
+    flex: 1,
     valueGetter: (value) => `${value?.row?.item?.name || value?.row.raw?.name}`
   },
   {
@@ -47,7 +46,6 @@ const columns = (showHistory) => [
   {
     field: 'actions',
     headerName: 'Actions',
-    flex: 1,
     type: 'actions',
     cellClassName: 'actions',
     getActions: (value) => {

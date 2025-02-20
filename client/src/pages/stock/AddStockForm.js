@@ -10,7 +10,8 @@ import {
   FormControlLabel,
   Radio,
   Select,
-  MenuItem
+  MenuItem,
+  TextareaAutosize
 } from '@mui/material';
 import Autocomplete, { autocompleteClasses } from '@mui/material/Autocomplete';
 
@@ -48,7 +49,6 @@ function filterItemsAndRaw(type, items, raw) {
 
 function getItemsAndRaw(type = '', items = [], raw = []) {
   const result = filterItemsAndRaw(type, items, raw);
-  console.log(result);
   return result.map((item) => ({
     id: item.id,
     label: item.name,
@@ -120,6 +120,8 @@ export default function AddStockForm({ visible, onClose }) {
         initialValues={{
           item_type: 'raw_material',
           location_id: null,
+          gate_pass_no: null,
+          gate_pass_date: null,
           comment: '',
           inventory: [
             {
@@ -134,8 +136,10 @@ export default function AddStockForm({ visible, onClose }) {
         }}
         validationSchema={Yup.object().shape({
           item_type: Yup.string().required('Please select inventory type'),
-          comment: Yup.string(),
           location_id: Yup.number().required('Please select store location'),
+          gate_pass_no: Yup.number().required('Please add gate pass no'),
+          gate_pass_date: Yup.date().max(new Date(), 'IGP date must not be later than today').required(),
+          comment: Yup.string(),
           inventory: Yup.array().of(
             Yup.object().shape({
               item_id: Yup.object().shape({
@@ -171,69 +175,135 @@ export default function AddStockForm({ visible, onClose }) {
                   </RadioGroup>
                 </FormControl>
               </Grid>
-              <Grid item sx={3} md={3} lg={3}>
-                <FormControl fullWidth margin="normal">
-                  <FormLabel id="location_id">Store Location</FormLabel>
-                  <Select
-                    size="small"
-                    labelId="location_id"
-                    id="location_id_select"
-                    value={receiveInventory.values.location_id}
-                    name="location_id"
-                    onChange={receiveInventory.handleChange}
-                    error={
-                      receiveInventory.touched.location_id &&
-                      receiveInventory.touched.location_id &&
-                      receiveInventory.touched.location_id &&
-                      !!receiveInventory.errors.location_id &&
-                      !!receiveInventory.errors.location_id &&
-                      !!receiveInventory.errors.location_id
-                    }
-                  >
-                    {locations.map(({ id, name }, index) => (
-                      <MenuItem key={index} value={id}>
-                        {name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  <ErrorMessage
-                    name="location_id"
-                    render={(msg) => (
-                      <FormHelperText sx={{ m: 0 }} error id="helper-text-name">
-                        {msg}
-                      </FormHelperText>
-                    )}
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item sx={6} md={6} lg={6}>
-                <FormControl fullWidth margin="normal">
-                  <FormLabel id="comment">Comment</FormLabel>
-                  <TextField
-                    size="small"
-                    labelId="comment"
-                    id="comment_select"
-                    value={receiveInventory.values.comment}
-                    name="comment"
-                    onChange={receiveInventory.handleChange}
-                    error={
-                      receiveInventory.touched.comment &&
-                      receiveInventory.touched.comment &&
-                      receiveInventory.touched.comment &&
-                      !!receiveInventory.errors.comment &&
-                      !!receiveInventory.errors.comment &&
-                      !!receiveInventory.errors.comment
-                    }
-                  />
-                  <ErrorMessage
-                    name="comment"
-                    render={(msg) => (
-                      <FormHelperText sx={{ m: 0 }} error id="helper-text-name">
-                        {msg}
-                      </FormHelperText>
-                    )}
-                  />
-                </FormControl>
+              <Grid item container columnSpacing={1} alignItems="center" justifyContent="center" sx={9} md={9} lg={9}>
+                <Grid item container columnSpacing={1} alignItems="center" justifyContent="center" sx={12} md={12} lg={12}>
+                  <Grid item sx={4} md={4} lg={4}>
+                    <FormControl fullWidth margin="normal">
+                      <FormLabel id="location_id">Store Location</FormLabel>
+                      <Select
+                        size="small"
+                        labelId="location_id"
+                        id="location_id_select"
+                        value={receiveInventory.values.location_id}
+                        name="location_id"
+                        onChange={receiveInventory.handleChange}
+                        error={
+                          receiveInventory.touched.location_id &&
+                          receiveInventory.touched.location_id &&
+                          receiveInventory.touched.location_id &&
+                          !!receiveInventory.errors.location_id &&
+                          !!receiveInventory.errors.location_id &&
+                          !!receiveInventory.errors.location_id
+                        }
+                      >
+                        {locations.map(({ id, name }, index) => (
+                          <MenuItem key={index} value={id}>
+                            {name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      <ErrorMessage
+                        name="location_id"
+                        render={(msg) => (
+                          <FormHelperText sx={{ m: 0 }} error id="helper-text-name">
+                            {msg}
+                          </FormHelperText>
+                        )}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item sx={4} md={4} lg={4}>
+                    <FormControl fullWidth margin="normal">
+                      <FormLabel id="gate_pass_no">IGP No</FormLabel>
+                      <TextField
+                        size="small"
+                        labelId="gate_pass_no"
+                        id="gate_pass_no_select"
+                        value={receiveInventory.values.gate_pass_no}
+                        name="gate_pass_no"
+                        type="number"
+                        onChange={receiveInventory.handleChange}
+                        error={
+                          receiveInventory.touched.gate_pass_no &&
+                          receiveInventory.touched.gate_pass_no &&
+                          receiveInventory.touched.gate_pass_no &&
+                          !!receiveInventory.errors.gate_pass_no &&
+                          !!receiveInventory.errors.gate_pass_no &&
+                          !!receiveInventory.errors.gate_pass_no
+                        }
+                      />
+                      <ErrorMessage
+                        name="gate_pass_no"
+                        render={(msg) => (
+                          <FormHelperText sx={{ m: 0 }} error id="helper-text-name">
+                            {msg}
+                          </FormHelperText>
+                        )}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item sx={4} md={4} lg={4}>
+                    <FormControl fullWidth margin="normal">
+                      <FormLabel id="gate_pass_date">IGP Date</FormLabel>
+                      <TextField
+                        size="small"
+                        labelId="gate_pass_date"
+                        id="gate_pass_date_select"
+                        value={receiveInventory.values.gate_pass_date}
+                        name="gate_pass_date"
+                        type="date"
+                        onChange={receiveInventory.handleChange}
+                        error={
+                          receiveInventory.touched.gate_pass_date &&
+                          receiveInventory.touched.gate_pass_date &&
+                          receiveInventory.touched.gate_pass_date &&
+                          !!receiveInventory.errors.gate_pass_date &&
+                          !!receiveInventory.errors.gate_pass_date &&
+                          !!receiveInventory.errors.gate_pass_date
+                        }
+                      />
+                      <ErrorMessage
+                        name="gate_pass_date"
+                        render={(msg) => (
+                          <FormHelperText sx={{ m: 0 }} error id="helper-text-name">
+                            {msg}
+                          </FormHelperText>
+                        )}
+                      />
+                    </FormControl>
+                  </Grid>
+                </Grid>
+                <Grid item sx={12} md={12} lg={12}>
+                  <FormControl fullWidth margin="normal">
+                    <FormLabel id="comment">Comment</FormLabel>
+                    <TextareaAutosize
+                      maxRows={5}
+                      minRows={3}
+                      size="small"
+                      labelId="comment"
+                      id="comment_select"
+                      value={receiveInventory.values.comment}
+                      name="comment"
+                      onChange={receiveInventory.handleChange}
+                      error={
+                        receiveInventory.touched.comment &&
+                        receiveInventory.touched.comment &&
+                        receiveInventory.touched.comment &&
+                        !!receiveInventory.errors.comment &&
+                        !!receiveInventory.errors.comment &&
+                        !!receiveInventory.errors.comment
+                      }
+                    />
+                    <ErrorMessage
+                      name="comment"
+                      render={(msg) => (
+                        <FormHelperText sx={{ m: 0 }} error id="helper-text-name">
+                          {msg}
+                        </FormHelperText>
+                      )}
+                    />
+                  </FormControl>
+                </Grid>
               </Grid>
             </Grid>
             <Grid item sx={12} md={12}>

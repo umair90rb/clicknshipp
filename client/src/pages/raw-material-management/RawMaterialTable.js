@@ -6,6 +6,7 @@ import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
 import { rawMaterialIsLoadingSelector, rawMaterialListSelector } from 'store/slices/rawMaterial/RawMaterialSelector';
 import { fetchAllRawMaterial, fetchDeleteRawMaterial } from 'store/slices/rawMaterial/fetchRawMaterial';
 import { deleteRawMaterial } from 'store/slices/rawMaterial/rawMaterialSlice';
+import CustomGrid from 'components/CustomGrid';
 
 const columns = (handleEditAction, handleDeleteAction) => [
   {
@@ -55,12 +56,12 @@ const columns = (handleEditAction, handleDeleteAction) => [
   //   valueGetter: ({ value }) => (value ? value.name : ''),
   //   flex: 1
   // },
-  // {
-  //   field: 'supplier',
-  //   headerName: 'Supplier',
-  //   valueGetter: ({ value }) => (value ? value.name : ''),
-  //   flex: 1
-  // },
+  {
+    field: 'supplier',
+    headerName: 'Supplier',
+    valueGetter: ({ value }) => (value ? value?.name : ''),
+    flex: 1
+  },
   {
     field: 'actions',
     headerName: 'Actions',
@@ -93,8 +94,10 @@ export default function RawMaterialTable({ updateHandler }) {
   const rawMaterialIsLoading = useSelector(rawMaterialIsLoadingSelector);
   const rawMaterials = useSelector(rawMaterialListSelector);
 
+  const fetchAll = () => dispatch(fetchAllRawMaterial());
+
   useEffect(() => {
-    dispatch(fetchAllRawMaterial());
+    fetchAll();
   }, []);
 
   const deleteHandler = (id) => {
@@ -107,13 +110,8 @@ export default function RawMaterialTable({ updateHandler }) {
 
   return (
     <div style={{ width: '100%' }}>
-      <DataGrid
-        slots={{ toolbar: GridToolbar }}
-        slotProps={{
-          toolbar: {
-            showQuickFilter: true
-          }
-        }}
+      <CustomGrid
+        withRefresh={fetchAll}
         loading={rawMaterialIsLoading}
         pageSizeOptions={[25, 50, 75, 100]}
         rows={rawMaterials}

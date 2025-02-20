@@ -51,7 +51,9 @@ class StockService {
     movement_type,
     location_id,
     quantity,
-    comment
+    comment = '',
+    gate_pass_no = null,
+    gate_pass_date = null
   ) {
     try {
       const history = await StockHistory.create({
@@ -61,6 +63,8 @@ class StockService {
         location_id,
         quantity,
         comment,
+        gate_pass_no,
+        gate_pass_date,
       });
       return history;
     } catch (error) {
@@ -75,7 +79,9 @@ class StockService {
     movement_type,
     location_id,
     quantity,
-    comment
+    comment,
+    gate_pass_no,
+    gate_pass_date
   ) {
     return this.decrement(item_type, item_id, quantity, location_id).then(() =>
       this.createHistory(
@@ -84,7 +90,9 @@ class StockService {
         movement_type,
         location_id,
         quantity,
-        comment
+        comment,
+        gate_pass_no,
+        gate_pass_date
       )
     );
   }

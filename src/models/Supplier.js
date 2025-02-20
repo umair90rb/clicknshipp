@@ -7,6 +7,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'supplier_id',
         as: 'items',
       });
+      Supplier.hasMany(models.RawMaterial, {
+        foreignKey: 'supplier_id',
+        as: 'materials',
+      });
     }
   }
   Supplier.init(

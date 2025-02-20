@@ -1,13 +1,20 @@
+import { Op } from 'sequelize';
 import excelToJson from '../helpers/excelToJson';
 import model from '../models';
 import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
 
-const { RawMaterial } = model;
+const { RawMaterial, Supplier } = model;
 
 export default {
   async all(req, res) {
     try {
-      const rawMaterials = await RawMaterial.findAll();
+      const rawMaterials = await RawMaterial.findAll({
+        include: {
+          model: Supplier,
+          as: 'supplier',
+          attributes: ['name', 'id'],
+        },
+      });
       return sendSuccessResponse(res, 200, { rawMaterials }, 'All materials');
     } catch (e) {
       console.error(e);
@@ -53,16 +60,17 @@ export default {
       unit_of_measure,
       code,
       cost_price,
+      supplier,
     } = req.body;
     try {
       let rawMaterial = await RawMaterial.findOne({
-        where: { name, type },
+        where: { type, [Op.or]: { name, code } },
       });
       if (rawMaterial) {
         return sendErrorResponse(
           res,
           422,
-          'Material with this name already exists.'
+          'Material with this name or code already exists.'
         );
       }
       rawMaterial = await RawMaterial.create({
@@ -73,6 +81,14 @@ export default {
         type,
         code,
         cost_price,
+        supplier_id: supplier,
+      });
+      await rawMaterial.reload({
+        include: {
+          model: Supplier,
+          as: 'supplier',
+          attributes: ['id', 'name'],
+        },
       });
       return sendSuccessResponse(
         res,

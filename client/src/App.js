@@ -5,7 +5,7 @@ import { setMessage } from 'store/slices/util/utilSlice';
 import { Typography, Snackbar, Alert } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { utilMessageSelector } from 'store/slices/util/utilSelector';
-import useFetchProfile from 'hooks/useFetchProfile';
+import useProfileFetch from 'hooks/useProfileFetch';
 import Modals from 'modals/index';
 
 const App = () => {
@@ -13,7 +13,7 @@ const App = () => {
   const { message, type, sticky } = useSelector(utilMessageSelector);
   const handleExited = () => dispatch(setMessage({ message: '', type: '' }));
 
-  useFetchProfile();
+  useProfileFetch();
 
   return (
     <ThemeCustomization>

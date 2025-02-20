@@ -12,8 +12,7 @@ import { deleteUnitOfMeasure } from 'store/slices/unitOfMeasure/unitOfMeasureSli
 const columns = (handleUpdate, handleDelete) => [
   {
     field: 'id',
-    headerName: 'Serial#',
-    flex: 0.5
+    headerName: 'Serial#'
   },
   {
     field: 'unit',
@@ -24,7 +23,6 @@ const columns = (handleUpdate, handleDelete) => [
     field: 'actions',
     headerName: 'Actions',
     type: 'actions',
-    flex: 0.5,
     cellClassName: 'actions',
     getActions: ({ id, row }) => {
       const actions = [];

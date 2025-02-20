@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { DataGrid } from '@mui/x-data-grid';
-import formatDate, { formatDistance } from 'utils/format-date';
+import { formatDateTime } from 'utils/format-date';
 import CustomDialog from 'components/CustomDialog';
 import {
   fetchBillOfMaterial,
@@ -133,13 +133,13 @@ export default function ViewBillOfMaterialModal({ id, visible, onClose }) {
             <Grid item xs={12} sm={12} md={12} lg={12}>
               <Typography variant="subtitle1">Bill of Material #: BOM-{fetchBillOfMaterialState?.data?.id}</Typography>
               <Typography variant="subtitle1">Description: {fetchBillOfMaterialState?.data?.name}</Typography>
-              <Typography variant="subtitle1">Requested by: {fetchBillOfMaterialState?.data?.user}</Typography>
+              <Typography variant="subtitle1">Requested by: {fetchBillOfMaterialState?.data?.user?.name}</Typography>
               <Typography variant="subtitle1">
                 For Item: {fetchBillOfMaterialState?.data?.item?.name} ({fetchBillOfMaterialState?.data?.quantity}
                 {fetchBillOfMaterialState?.data?.unit_of_measure})
               </Typography>
               <Typography variant="subtitle1">Status: {fetchBillOfMaterialState?.data?.status}</Typography>
-              <Typography variant="subtitle1">Date: {formatDate(fetchBillOfMaterialState?.data?.createdAt)}</Typography>
+              <Typography variant="subtitle1">Date: {formatDateTime(fetchBillOfMaterialState?.data?.createdAt)}</Typography>
             </Grid>
           </Grid>
         )}
