@@ -155,6 +155,88 @@ export default {
     }
   },
 
+  async return(req, res) {
+    try {
+      const { item_type, location_id, comment, inventory } = req.body;
+      const batchPromises = [],
+        historyPromises = [];
+      inventory.map(
+        ({ item_id: item, quantity, batch_number, unit_of_measure }) => {
+          batchPromises.push(
+            _stockService.increment(item_type, item.id, quantity, location_id)
+          );
+          historyPromises.push(
+            _stockService.createHistory(
+              item_type,
+              item.id,
+              'return',
+              location_id,
+              quantity,
+              comment
+            )
+          );
+        }
+      );
+      return Promise.all(batchPromises)
+        .then(() => Promise.all(historyPromises))
+        .then(() =>
+          sendSuccessResponse(res, 201, {}, 'Stock return added successfully')
+        );
+    } catch (error) {
+      return sendErrorResponse(
+        res,
+        500,
+        'Could not perform operation at this time, kindly try again later',
+        error
+      );
+    }
+  },
+
+  async damage(req, res) {
+    try {
+      const { item_type, location_id, comment, inventory } = req.body;
+      const batchPromises = [],
+        historyPromises = [];
+      inventory.map(
+        ({
+          item_id: item,
+          quantity,
+          batch_number,
+          unit_of_measure,
+          deduct_stock,
+        }) => {
+          if (deduct_stock) {
+            batchPromises.push(
+              _stockService.decrement(item_type, item.id, quantity, location_id)
+            );
+          }
+          historyPromises.push(
+            _stockService.createHistory(
+              item_type,
+              item.id,
+              'damage',
+              location_id,
+              quantity,
+              comment
+            )
+          );
+        }
+      );
+      return Promise.all(batchPromises)
+        .then(() => Promise.all(historyPromises))
+        .then(() =>
+          sendSuccessResponse(res, 201, {}, 'Stock return added successfully')
+        );
+    } catch (error) {
+      return sendErrorResponse(
+        res,
+        500,
+        'Could not perform operation at this time, kindly try again later',
+        error
+      );
+    }
+  },
+
   async update(req, res) {},
 
   async destroy(req, res) {},

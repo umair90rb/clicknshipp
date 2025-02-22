@@ -4,6 +4,7 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { fetchStockHistory } from 'store/slices/stock/fetchStock';
 import { formatDateTime, parseTimestampToDate } from 'utils/format-date';
 import CustomDialog from 'components/CustomDialog';
+import DateRangePicker from 'components/DatePicker';
 
 const columns = [
   {
@@ -45,32 +46,41 @@ const columns = [
   }
 ];
 
-export default function ItemStockHistory({ itemIdAndType, visible, onClose }) {
+export default function ItemDamageReport({ itemIdAndType, visible, onClose }) {
   const dispatch = useDispatch();
-  const [history, setHistory] = useState({
-    loading: true,
+  const [startPeriod, setStartPeriod] = useState();
+  const [endPeriod, setEndPeriod] = useState();
+
+  const [report, setReport] = useState({
+    loading: false,
     error: null,
     rows: []
   });
 
   useEffect(() => {
-    if (!visible) return;
-    dispatch(fetchStockHistory({ body: itemIdAndType })).then((action) => {
-      if (action.type === 'stock/history/fetch/fulfilled') {
-        setHistory({ loading: false, rows: action.payload.data?.history, error: null });
-      } else {
-        setHistory({ loading: false, rows: [], error: action.payload.error });
-      }
-    });
+    // if (!visible) return;
+    // dispatch(fetchStockHistory({ body: itemIdAndType })).then((action) => {
+    //   if (action.type === 'stock/history/fetch/fulfilled') {
+    //     setReport({ loading: false, rows: action.payload.data?.history, error: null });
+    //   } else {
+    //     setReport({ loading: false, rows: [], error: action.payload.error });
+    //   }
+    // });
 
     return () => {
-      setHistory({ loading: true, error: null, rows: [] });
+      setReport({ loading: false, error: null, rows: [] });
     };
   }, [visible]);
 
   return (
-    <CustomDialog visible={visible} onClose={onClose} maxWidth="lg" dividers={false} title="Stock History" enableBackdrop>
-      <DataGrid
+    <CustomDialog printable visible={visible} onClose={onClose} maxWidth="lg" dividers={false} title="Item Damage Report" enableBackdrop>
+      <DateRangePicker
+        startPeriod={startPeriod}
+        endPeriod={endPeriod}
+        onStartDateSelect={(date) => setStartPeriod(date)}
+        onEndDateSelect={(date) => setEndPeriod(date)}
+      />
+      {/* <DataGrid
         autoHeight
         getRowHeight={() => 'auto'}
         hideFooterPagination={true}
@@ -79,7 +89,7 @@ export default function ItemStockHistory({ itemIdAndType, visible, onClose }) {
         rows={history?.rows}
         columns={columns}
         slots={{ toolbar: GridToolbar }}
-      />
+      /> */}
     </CustomDialog>
   );
 }

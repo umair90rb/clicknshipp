@@ -84,6 +84,8 @@ npx sequelize-cli migration:generate --name add-supplier-column-in-raw-materials
 npx sequelize-cli migration:generate --name add-gate-pass-date-and-gate-pass-no-column-in-stock-history-table
 
 
+npx sequelize-cli migration:generate --name update-stock-history-movement-column-enum-to-string
+
 npx sequelize-cli migration:generate --name create-batches-table
 
 

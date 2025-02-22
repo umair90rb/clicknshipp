@@ -13,7 +13,7 @@ import { setMessage } from 'store/slices/util/utilSlice';
 // import { useReactToPrint } from 'react-to-print';
 import FullfilBillOfMaterialModal from './FullfillBillOfMaterialModal';
 
-const materialColumns = [
+const materialColumns = (isFulfilled) => [
   {
     field: 'id',
     headerName: 'ID#'
@@ -27,7 +27,7 @@ const materialColumns = [
   {
     field: 'quantity',
     headerName: 'Quantity',
-    editable: true
+    editable: !isFulfilled
   },
   {
     field: 'unit_of_measure',
@@ -42,6 +42,7 @@ export default function ViewBillOfMaterialModal({ id, visible, onClose }) {
     error: null,
     data: {}
   });
+  const isFulfilled = fetchBillOfMaterialState.data?.status === 'Fulfilled';
 
   // const [fetchFullfilBillOfMaterialState, setFullfilFetchBillOfMaterialState] = useState({
   //   loading: true,
@@ -117,13 +118,7 @@ export default function ViewBillOfMaterialModal({ id, visible, onClose }) {
         maxWidth="lg"
         title="Bill Of Material"
         actions={[
-          <Button
-            key="2"
-            disabled={fetchBillOfMaterialState.data?.status === 'Fulfilled'}
-            onClick={() => setShowFullfilModal(true)}
-            variant="contained"
-            color="success"
-          >
+          <Button key="2" disabled={isFulfilled} onClick={() => setShowFullfilModal(true)} variant="contained" color="success">
             Fulfill Bill of Material
           </Button>
         ]}
@@ -163,7 +158,7 @@ export default function ViewBillOfMaterialModal({ id, visible, onClose }) {
             onProcessRowUpdateError={onProcessRowUpdateError}
             processRowUpdate={updateMaterialQuantity}
             rows={fetchBillOfMaterialState?.data?.materials}
-            columns={materialColumns}
+            columns={materialColumns(isFulfilled)}
           />
         )}
       </CustomDialog>

@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       movement_type: {
-        type: DataTypes.ENUM('in', 'out'),
+        type: DataTypes.STRING,
         allowNull: false,
       },
       quantity: {

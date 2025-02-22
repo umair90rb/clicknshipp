@@ -4,7 +4,12 @@ import { PERMISSIONS } from '../constants/constants';
 
 import can from '../middleware/canAccess';
 import Auth from '../middleware/auth';
-import { stockHistorySchema, createStockSchema } from '../schemas/stockSchema';
+import {
+  stockHistorySchema,
+  createStockSchema,
+  returnStockSchema,
+  addStockDamageSchema,
+} from '../schemas/stockSchema';
 import schemaValidator from '../middleware/schemaValidator';
 import { createValidator } from 'express-joi-validation';
 
@@ -32,6 +37,22 @@ router.post(
   can(PERMISSIONS.PERMISSION_RECEIVE_STOCK),
   schemaValidator(createStockSchema),
   StockController.create
+);
+
+router.post(
+  '/return',
+  Auth,
+  can(PERMISSIONS.PERMISSION_RECEIVE_STOCK_RETURN),
+  schemaValidator(returnStockSchema),
+  StockController.return
+);
+
+router.post(
+  '/damage',
+  Auth,
+  can(PERMISSIONS.PERMISSION_ADD_STOCK_DAMAGE),
+  schemaValidator(addStockDamageSchema),
+  StockController.damage
 );
 
 export default router;
