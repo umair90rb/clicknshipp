@@ -5,7 +5,7 @@ const basename = _basename(__filename);
 const config = require(__dirname + '/../config/db.js')[process.env.NODE_ENV];
 const db = {};
 
-let sequelize = new Sequelize(config.use_env_variable, config);
+let sequelize = new Sequelize(process.env[config.use_env_variable], config);
 
 readdirSync(__dirname)
   .filter((file) => {
