@@ -46,7 +46,7 @@ export function addDaysTo(days, date = new Date()) {
 
 export function formatDateTime(dateTimeString, omitYearAndSec = false) {
   if (!dateTimeString) {
-    return 'None';
+    return;
   }
   const date = new Date(dateTimeString);
 

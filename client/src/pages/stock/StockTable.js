@@ -23,7 +23,7 @@ import GridChipFilter from 'components/GridChipFilter';
 import GridSingleChipFilter from 'components/GridSingleChipFilter';
 import ItemStockHistory from './StockHistory';
 import ItemDamageReport from './ItemDamageReport';
-const columns = (showHistory) => [
+const columns = (showItemHistory, showItemDamageReport) => [
   {
     field: 'id',
     headerName: 'ID'
@@ -53,40 +53,26 @@ const columns = (showHistory) => [
     cellClassName: 'actions',
     getActions: (value) => {
       const actions = [];
-      if (showHistory) {
+      if (showItemHistory) {
         actions.push(
           <GridActionsCellItem
             key={value.row?.id}
             icon={<RestoreIcon />}
             label="View History"
             className="textPrimary"
-            onClick={() => {
-              console.log(value.row.item_type);
-              showHistory(
-                value.row.item_type === 'finished_product' ? value.row.item.id : value.row.raw.id,
-                value.row.item_type,
-                'stock_history'
-              );
-            }}
+            onClick={() => showItemHistory(value.row)}
             color="inherit"
           />
         );
       }
-      if (showHistory) {
+      if (showItemDamageReport) {
         actions.push(
           <GridActionsCellItem
             key={value.row?.id}
             icon={<BrokenImageOutlinedIcon />}
             label="Damage Report"
             className="textPrimary"
-            onClick={() => {
-              console.log(value.row.item_type);
-              showHistory(
-                value.row.item_type === 'finished_product' ? value.row.item.id : value.row.raw.id,
-                value.row.item_type,
-                'damage_report'
-              );
-            }}
+            onClick={() => showItemDamageReport(value.row)}
             color="inherit"
           />
         );
@@ -102,20 +88,19 @@ export default function StockTable() {
   const [lowStock, setLowStock] = useState('false');
   const [historyModal, setHistoryModal] = useState(false);
   const [damageModal, setDamageModal] = useState(false);
-  const [itemIdAndType, setItemIdAndType] = useState({});
+  const [item, setItem] = useState({});
   const stockIsLoading = useSelector(stockIsLoadingSelector);
   const stock = useSelector(stockStocksSelector);
   const { hasPermission } = useAccess();
 
-  const getItemIdAndType = (item_id, item_type, historyOrDamage) => {
-    console.log(item_id, item_type);
-    setItemIdAndType({ item_id, item_type });
-    if (historyOrDamage === 'stock_history') {
-      setHistoryModal(true);
-    }
-    if (historyOrDamage === 'damage_report') {
-      setDamageModal(true);
-    }
+  const showItemStockHistory = (item) => {
+    setItem(item);
+    setHistoryModal(true);
+  };
+
+  const showItemDamageReport = (item) => {
+    setItem(item);
+    setDamageModal(true);
   };
 
   useEffect(() => {
@@ -150,22 +135,25 @@ export default function StockTable() {
         loading={stockIsLoading}
         pageSizeOptions={[25, 50, 75, 100]}
         rows={stock}
-        columns={columns(hasPermission(PERMISSIONS.PERMISSION_VIEW_STOCK_HISTORY) ? getItemIdAndType : undefined)}
+        columns={columns(
+          hasPermission(PERMISSIONS.PERMISSION_VIEW_STOCK_HISTORY) && showItemStockHistory,
+          hasPermission(PERMISSIONS.PERMISSION_VIEW_STOCK_HISTORY) && showItemDamageReport
+        )}
       />
       <ItemStockHistory
-        itemIdAndType={itemIdAndType}
+        item={item}
         visible={historyModal}
         onClose={() => {
           setHistoryModal(false);
-          setItemIdAndType({});
+          setItem({});
         }}
       />
       <ItemDamageReport
-        itemIdAndType={itemIdAndType}
+        item={item}
         visible={damageModal}
         onClose={() => {
           setDamageModal(false);
-          setItemIdAndType({});
+          setItem({});
         }}
       />
     </div>

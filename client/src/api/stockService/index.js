@@ -13,6 +13,8 @@ class StockService extends Ajax {
 
   fetchCreateStockDamage = (data) => this.post(`${this.pathname}/damage`, data);
 
+  fetchItemDamageReport = (data) => this.post(`${this.pathname}/damage-report`, data);
+
   fetchUpdateStock = (id, data) => this.put(`${this.pathname}/${id}`, data);
 
   fetchDeleteStock = (id) => this.delete(`${this.pathname}/${id}`);

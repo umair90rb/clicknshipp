@@ -14,7 +14,6 @@ import {
   TextareaAutosize
 } from '@mui/material';
 import Autocomplete, { autocompleteClasses } from '@mui/material/Autocomplete';
-
 import * as Yup from 'yup';
 import { Formik, FieldArray, ErrorMessage } from 'formik';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
@@ -33,28 +32,7 @@ import { toSentence } from 'utils/string-utils';
 import { locationFetchStatusSelector, locationListSelector } from 'store/slices/location/locationSelector';
 import { fetchAllLocation } from 'store/slices/location/fetchLocation';
 import CustomDialog from 'components/CustomDialog';
-
-function filterItemsAndRaw(type, items, raw) {
-  if (type === 'finished_product') {
-    return items;
-  }
-  if (type === 'raw_material') {
-    return raw.filter((r) => r.type === 'raw_material');
-  }
-  if (type === 'packaging_material') {
-    return raw.filter((r) => r.type === 'packaging_material');
-  }
-  return [];
-}
-
-function getItemsAndRaw(type = '', items = [], raw = []) {
-  const result = filterItemsAndRaw(type, items, raw);
-  return result.map((item) => ({
-    id: item.id,
-    label: item.name,
-    unit: item.unit_of_measure
-  }));
-}
+import { getItemsAndRaw } from './util';
 
 export default function AddStockForm({ visible, onClose }) {
   const dispatch = useDispatch();
@@ -83,7 +61,7 @@ export default function AddStockForm({ visible, onClose }) {
     if (unitsFetchStatus !== fetchStatus.SUCCESS) {
       dispatch(fetchAllUnitOfMeasure());
     }
-    if (unitsFetchStatus !== fetchStatus.SUCCESS) {
+    if (rawMaterialFetchStatus !== fetchStatus.SUCCESS) {
       dispatch(fetchAllRawMaterial());
     }
     if (locationFetchStatus !== fetchStatus.SUCCESS) {

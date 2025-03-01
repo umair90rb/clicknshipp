@@ -4,6 +4,7 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { fetchStockHistory } from 'store/slices/stock/fetchStock';
 import { formatDateTime, parseTimestampToDate } from 'utils/format-date';
 import CustomDialog from 'components/CustomDialog';
+import { getIdAndType } from './util';
 
 const columns = [
   {
@@ -45,7 +46,7 @@ const columns = [
   }
 ];
 
-export default function ItemStockHistory({ itemIdAndType, visible, onClose }) {
+export default function ItemStockHistory({ item, visible, onClose }) {
   const dispatch = useDispatch();
   const [history, setHistory] = useState({
     loading: true,
@@ -55,7 +56,7 @@ export default function ItemStockHistory({ itemIdAndType, visible, onClose }) {
 
   useEffect(() => {
     if (!visible) return;
-    dispatch(fetchStockHistory({ body: itemIdAndType })).then((action) => {
+    dispatch(fetchStockHistory({ body: getIdAndType(item) })).then((action) => {
       if (action.type === 'stock/history/fetch/fulfilled') {
         setHistory({ loading: false, rows: action.payload.data?.history, error: null });
       } else {
