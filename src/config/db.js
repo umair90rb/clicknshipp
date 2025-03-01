@@ -35,7 +35,7 @@ module.exports = {
     timezone: '+05:00',
     dialectOptions: {
       ssl: {
-        require: true,
+        require: false,
         rejectUnauthorized: false,
       },
     },

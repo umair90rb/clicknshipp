@@ -2,8 +2,7 @@ import { readdirSync } from 'fs';
 import { basename as _basename, join } from 'path';
 import Sequelize, { DataTypes } from 'sequelize';
 const basename = _basename(__filename);
-const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/db.js')[env];
+const config = require(__dirname + '/../config/db.js')[process.env.NODE_ENV];
 const db = {};
 
 let sequelize = new Sequelize(config.use_env_variable, config);
