@@ -35,7 +35,7 @@ export const returnStockSchema = Joi.object({
       item_id: Joi.object({
         id: Joi.number().integer().required(),
         label: Joi.string().required(),
-        unit: Joi.string(),
+        unit: Joi.string().allow(null),
       }),
       batch_number: Joi.string().allow(''),
       quantity: Joi.number()
@@ -57,7 +57,7 @@ export const addStockDamageSchema = Joi.object({
       item_id: Joi.object({
         id: Joi.number().integer().required(),
         label: Joi.string().required(),
-        unit: Joi.string(),
+        unit: Joi.string().allow(null),
       }),
       batch_number: Joi.string().allow(''),
       quantity: Joi.number()
@@ -74,4 +74,12 @@ export const addStockDamageSchema = Joi.object({
 export const stockHistorySchema = Joi.object({
   item_type: Joi.string().required(),
   item_id: Joi.number().integer().required(),
+});
+
+export const damageReportSchema = Joi.object({
+  item_type: Joi.string().required(),
+  item_id: Joi.number().integer().required(),
+  location_id: Joi.number().integer().required(),
+  from: Joi.date().required(),
+  to: Joi.date().required(),
 });

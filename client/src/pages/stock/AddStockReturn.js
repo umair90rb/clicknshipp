@@ -32,19 +32,7 @@ import { rawMaterialFetchStatusSelector, rawMaterialListSelector } from 'store/s
 import { locationFetchStatusSelector, locationListSelector } from 'store/slices/location/locationSelector';
 import { unitOfMeasureFetchStatusSelector, unitOfMeasureListSelector } from 'store/slices/unitOfMeasure/unitOfMeasureSelector';
 import { fetchAllStock, fetchCreateStockReturn } from 'store/slices/stock/fetchStock';
-
-function filterItemsAndRaw(type, items, raw) {
-  if (type === 'finished_product') {
-    return items;
-  }
-  if (type === 'raw_material') {
-    return raw.filter((r) => r.type === 'raw_material');
-  }
-  if (type === 'packaging_material') {
-    return raw.filter((r) => r.type === 'packaging_material');
-  }
-  return [];
-}
+import { getItemsAndRaw } from './util';
 
 export default function AddStockReturn({ visible, onClose }) {
   const dispatch = useDispatch();
@@ -80,15 +68,6 @@ export default function AddStockReturn({ visible, onClose }) {
       dispatch(fetchAllLocation());
     }
   }, []);
-  // duplicate
-  function getItemsAndRaw(type = '', items = [], raw = []) {
-    const result = filterItemsAndRaw(type, items, raw);
-    return result.map((item) => ({
-      id: item.id,
-      label: item.name,
-      unit: item.unit_of_measure
-    }));
-  }
 
   const handleSubmit = async (values, { setErrors }) => {
     dispatch(fetchCreateStockReturn({ body: values })).then((action) => {
@@ -124,7 +103,7 @@ export default function AddStockReturn({ visible, onClose }) {
           comment: '',
           inventory: [
             {
-              item_id: { id: null, label: '' },
+              item_id: { id: null, label: '', unit: '' },
               batch_number: '',
               quantity: 0,
               unit_of_measure: ''
@@ -139,7 +118,8 @@ export default function AddStockReturn({ visible, onClose }) {
             Yup.object().shape({
               item_id: Yup.object().shape({
                 id: Yup.string().required(),
-                label: Yup.string().required()
+                label: Yup.string().required(),
+                unit: Yup.string().required()
               }),
               batch_number: Yup.string(),
               quantity: Yup.number().min(1).required('Please enter stock received quantity'),
@@ -280,6 +260,7 @@ export default function AddStockReturn({ visible, onClose }) {
                             // onChange={addReturnForm.handleChange}
                             isOptionEqualToValue={(option, value) => option.id === value.id}
                             onChange={(e, option) => {
+                              console.log(option);
                               addReturnForm.setFieldValue(`inventory.${index}.item_id`, option);
                               addReturnForm.setFieldValue(`inventory.${index}.unit_of_measure`, option.unit);
                             }}

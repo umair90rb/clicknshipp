@@ -208,8 +208,8 @@ export default {
           unit_of_measure,
           updatedAt: new Date().toISOString(),
           ...(supplier ? { supplier_id: supplier } : {}),
-          ...(brand ? { supplier_id: brand } : {}),
-          ...(category ? { supplier_id: category } : {}),
+          ...(brand ? { brand_id: brand } : {}),
+          ...(category ? { category_id: category } : {}),
         });
         await item.reload({
           include: [

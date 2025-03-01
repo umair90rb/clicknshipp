@@ -64,6 +64,7 @@ export default {
   async history(req, res) {
     try {
       const { item_id, item_type } = req.body;
+      // need to add location_id to fetch only specific location stock histories. crucial
       const history = await StockHistory.findAll({
         attributes: [
           'id',
@@ -227,6 +228,51 @@ export default {
         .then(() =>
           sendSuccessResponse(res, 201, {}, 'Stock return added successfully')
         );
+    } catch (error) {
+      return sendErrorResponse(
+        res,
+        500,
+        'Could not perform operation at this time, kindly try again later',
+        error
+      );
+    }
+  },
+
+  async damageReport(req, res) {
+    try {
+      const { item_id, item_type, location_id, from, to } = req.body;
+      const history = await StockHistory.findAll({
+        attributes: [
+          'id',
+          'quantity',
+          'comment',
+          // 'gate_pass_no',
+          // 'gate_pass_date',
+          'movement_type',
+          'item_type',
+          'createdAt',
+        ],
+        include: {
+          model: Location,
+          as: 'location',
+          attributes: ['name'],
+        },
+        where: {
+          [Op.and]: [
+            { item_id },
+            { item_type },
+            { location_id },
+            { movement_type: 'damage' },
+            { createdAt: { [Op.between]: [from, to] } },
+          ],
+        },
+      });
+      return sendSuccessResponse(
+        res,
+        201,
+        { history },
+        'Stock return added successfully'
+      );
     } catch (error) {
       return sendErrorResponse(
         res,

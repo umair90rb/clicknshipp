@@ -9,6 +9,7 @@ import {
   createStockSchema,
   returnStockSchema,
   addStockDamageSchema,
+  damageReportSchema,
 } from '../schemas/stockSchema';
 import schemaValidator from '../middleware/schemaValidator';
 import { createValidator } from 'express-joi-validation';
@@ -53,6 +54,14 @@ router.post(
   can(PERMISSIONS.PERMISSION_ADD_STOCK_DAMAGE),
   schemaValidator(addStockDamageSchema),
   StockController.damage
+);
+
+router.post(
+  '/damage-report',
+  Auth,
+  can(PERMISSIONS.PERMISSION_ADD_STOCK_DAMAGE),
+  schemaValidator(damageReportSchema),
+  StockController.damageReport
 );
 
 export default router;
