@@ -100,6 +100,7 @@ export default {
         materials: materials.map(({ raw_material_id, ...rest }) => ({
           ...rest,
           raw_material_id: raw_material_id.id,
+          material_type: raw_material_id.type,
         })),
       };
       const billOfMaterial = await BOM.create(billOfMaterialData, {
@@ -173,15 +174,34 @@ export default {
       const { id, locationId } = req.params;
       const billOfMaterial = await _billOfMaterialService.get(id);
       if (billOfMaterial && billOfMaterial.materials.length) {
+        const stockValidationResults = await Promise.allSettled(
+          billOfMaterial.materials.map((bom) => {
+            console.log(bom.get());
+            return _stockService.validate(
+              bom.material_type,
+              bom.raw.id,
+              locationId,
+              bom.quantity
+            );
+          })
+        );
+        if (stockValidationResults.findIndex((r) => r.value === false) > -1) {
+          return sendErrorResponse(
+            res,
+            404,
+            'Some material stock is 0 or not available in selected store!',
+            null
+          );
+        }
         const materialBatchPromises = billOfMaterial.materials.map((bom) => {
           _stockService.decrement(
-            'raw_material',
+            bom.material_type,
             bom.raw.id,
             bom.quantity,
             locationId
           );
           _stockService.createHistory(
-            'raw_material',
+            bom.material_type,
             bom.raw.id,
             'out',
             locationId,
@@ -202,9 +222,10 @@ export default {
         res,
         500,
         'Could not perform operation at this time, kindly try again later.',
-        error
+        null
       );
     } catch (error) {
+      console.log(error);
       return sendErrorResponse(
         res,
         500,

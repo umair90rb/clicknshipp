@@ -11,6 +11,14 @@ module.exports = (sequelize, DataTypes) => {
           item_type: ['raw_material', 'packaging_material'],
         },
       });
+      RawMaterial.hasMany(models.StockHistory, {
+        foreignKey: 'item_id',
+        constraints: false,
+        as: 'history',
+        scope: {
+          item_type: ['raw_material', 'packaging_material'],
+        },
+      });
       RawMaterial.belongsTo(models.Supplier, {
         foreignKey: 'supplier_id',
         as: 'supplier',

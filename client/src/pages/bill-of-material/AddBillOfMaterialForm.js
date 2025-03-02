@@ -75,13 +75,13 @@ export default function AddBillOfMaterialForm({ visible, onClose }) {
         innerRef={formRef}
         enableReinitialize
         initialValues={{
-          product_id: { id: null, label: '' },
+          product_id: { id: null, label: '', type: '' },
           name: '',
           quantity: 0,
           unit_of_measure: '',
           materials: [
             {
-              raw_material_id: { id: null, label: '' },
+              raw_material_id: { id: null, label: '', type: '' },
               quantity: 0,
               unit_of_measure: ''
             }
@@ -99,7 +99,8 @@ export default function AddBillOfMaterialForm({ visible, onClose }) {
             Yup.object().shape({
               raw_material_id: Yup.object().shape({
                 id: Yup.string().required('Select raw material'),
-                label: Yup.string().required('Select raw material')
+                label: Yup.string().required('Select raw material'),
+                type: Yup.string().required('Select raw material type')
               }),
               quantity: Yup.number().min(1).required('Please enter stock received quantity'),
               unit_of_measure: Yup.string().required('Please select unit')
@@ -267,7 +268,8 @@ export default function AddBillOfMaterialForm({ visible, onClose }) {
                             }}
                             options={rawMaterials.map((item) => ({
                               id: item.id,
-                              label: item.name
+                              label: item.name,
+                              type: item.type
                             }))}
                             error={
                               createBillOfMaterial.touched.materials &&

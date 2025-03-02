@@ -3,7 +3,7 @@ import excelToJson from '../helpers/excelToJson';
 import model from '../models';
 import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
 
-const { RawMaterial, Supplier } = model;
+const { RawMaterial, StockLevel, StockHistory, Supplier } = model;
 
 export default {
   async all(req, res) {
@@ -111,11 +111,36 @@ export default {
     try {
       const { type } = req.body;
       const json = await excelToJson(req.file.buffer);
-      console.log(json, type);
       if (!json.length) {
-        return sendErrorResponse(res, 500, 'Seems like file is empty!', null);
+        return sendErrorResponse(res, 500, 'file is empty!', null);
       }
-      await RawMaterial.bulkCreate(json.map((item) => ({ ...item, type })));
+      const rawMaterials = await RawMaterial.bulkCreate(
+        json.map(({ opening_balance, location_id, ...rest }) => ({
+          ...rest,
+          type,
+        })),
+        { returning: true } // Ensures we get the created records back
+      );
+
+      // Step 2: Create StockLevel & StockHistory records separately
+      const stockLevels = rawMaterials.map((rawMaterial, index) => ({
+        item_id: rawMaterial.id,
+        item_type: type,
+        current_level: json[index].opening_balance,
+        location_id: json[index].location_id,
+      }));
+
+      const stockHistories = rawMaterials.map((rawMaterial, index) => ({
+        item_id: rawMaterial.id,
+        item_type: type,
+        quantity: json[index].opening_balance,
+        location_id: json[index].location_id,
+        comment: `new ${type} created with opening balance ${json[index].opening_balance} in store ${json[index].location_id}`,
+        movement_type: 'opening',
+      }));
+
+      await StockLevel.bulkCreate(stockLevels);
+      await StockHistory.bulkCreate(stockHistories);
       return sendSuccessResponse(
         res,
         200,

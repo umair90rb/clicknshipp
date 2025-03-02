@@ -13,6 +13,7 @@ const createBillOfMaterialSchema = Joi.object({
       raw_material_id: Joi.object({
         id: Joi.number().integer().required(),
         label: Joi.string().required(),
+        type: Joi.string().required(),
       }),
       quantity: Joi.number()
         .integer()

@@ -33,7 +33,7 @@ class BillOfMaterialService {
         {
           model: BOMItem,
           as: 'materials',
-          attributes: ['id', 'quantity', 'unit_of_measure'],
+          attributes: ['id', 'quantity', 'unit_of_measure', 'material_type'],
           include: {
             model: RawMaterial,
             as: 'raw',

@@ -12,6 +12,7 @@ import { fetchAllLocation } from 'store/slices/location/fetchLocation';
 import { Button, FormHelperText, Grid, FormControl, FormLabel, Select, MenuItem } from '@mui/material';
 import { fetchGetBatches } from 'store/slices/batch/fetchBatch';
 import { GridMultiDropdownSelect } from './GridMultiDropdownSelect';
+import { setMessage } from 'store/slices/util/utilSlice';
 
 // function GridMultiSelectComponent(props) {
 //   return (
@@ -108,11 +109,13 @@ export default function FullfilBillOfMaterialModal({ id, bomMaterials = [], visi
     if (!locationId) return;
     setFullfilFetchBillOfMaterialState({ loading: true, error: null, data: {} });
     return dispatch(fetchFullfilBillOfMaterial({ id, locationId })).then(({ type, payload }) => {
+      console.log(type, payload);
       if (type === 'bom/fullfil/fetch/fulfilled') {
         setFullfilFetchBillOfMaterialState({ loading: false, error: null, data: payload.data });
         setTimeout(() => onFulfilled(), 100);
       } else {
         setFullfilFetchBillOfMaterialState({ loading: false, error: payload.error, data: {} });
+        dispatch(setMessage({ type: 'error', message: payload.error }));
       }
     });
   };

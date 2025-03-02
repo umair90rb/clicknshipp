@@ -4,7 +4,18 @@ import model from '../models';
 const { StockLevel, StockHistory } = model;
 
 class StockService {
-  constructor() {}
+  async validate(item_type, item_id, location_id, required) {
+    if (item_type && item_id && location_id) {
+      let stock = await StockLevel.findOne({
+        attributes: ['id', 'current_level'],
+        where: { [Op.and]: [{ item_id }, { location_id }, { item_type }] },
+      });
+      if (stock && stock.current_level && stock.current_level > required) {
+        return true;
+      }
+      return false;
+    }
+  }
 
   async increment(item_type, item_id, by, location_id) {
     try {
