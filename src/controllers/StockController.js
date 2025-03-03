@@ -15,13 +15,13 @@ const {
 export default {
   async stocks(req, res) {
     try {
-      const { type, low_stock } = req.query;
+      const { type, stock_less_than } = req.query;
       const where = {};
       if (type !== 'all') {
         where.item_type = type;
       }
-      if (low_stock === 'true') {
-        where.current_level = { [Op.lte]: 5 };
+      if (stock_less_than && stock_less_than !== 'false') {
+        where.current_level = { [Op.lte]: parseFloat(stock_less_than) };
       }
       const stocks = await StockLevel.findAll({
         attributes: ['id', 'current_level', 'item_id', 'item_type'],
@@ -47,7 +47,7 @@ export default {
       return sendSuccessResponse(
         res,
         200,
-        { stocks },
+        { stocks, ...(type && type), ...(stock_less_than && stock_less_than) },
         'All items current stock'
       );
     } catch (e) {

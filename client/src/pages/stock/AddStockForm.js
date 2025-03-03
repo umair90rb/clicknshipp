@@ -115,7 +115,7 @@ export default function AddStockForm({ visible, onClose }) {
         validationSchema={Yup.object().shape({
           item_type: Yup.string().required('Please select inventory type'),
           location_id: Yup.number().required('Please select store location'),
-          gate_pass_no: Yup.number().required('Please add gate pass no'),
+          gate_pass_no: Yup.number().nullable().required('Please add gate pass no'),
           gate_pass_date: Yup.date().max(new Date(), 'IGP date must not be later than today').required(),
           comment: Yup.string(),
           inventory: Yup.array().of(
@@ -346,7 +346,7 @@ export default function AddStockForm({ visible, onClose }) {
                             )}
                           />
                           <ErrorMessage
-                            name={`inventory.${index}.item_id`}
+                            name={`inventory.${index}.item_id.id`}
                             render={(msg) => (
                               <FormHelperText sx={{ m: 0 }} error id="helper-text-price">
                                 {msg}

@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import RestoreIcon from '@mui/icons-material/Restore';
 import BrokenImageOutlinedIcon from '@mui/icons-material/BrokenImageOutlined';
+import FilterListOffRoundedIcon from '@mui/icons-material/FilterListOffRounded';
 import Box from '@mui/material/Box';
 import {
   DataGrid,
   GridToolbarDensitySelector,
-  GridToolbarFilterButton,
   GridActionsCellItem,
   GridToolbarContainer,
   GridToolbarColumnsButton,
@@ -20,9 +20,9 @@ import { PERMISSIONS } from 'constants/permissions-and-roles';
 import storeTypes from 'constants/storeTypes';
 import GridRefreshButton from 'components/GridRefreshButton';
 import GridChipFilter from 'components/GridChipFilter';
-import GridSingleChipFilter from 'components/GridSingleChipFilter';
 import ItemStockHistory from './StockHistory';
 import ItemDamageReport from './ItemDamageReport';
+import GridFilterButton from 'components/GridFilterButton';
 const columns = (showItemHistory, showItemDamageReport) => [
   {
     field: 'id',
@@ -103,6 +103,14 @@ export default function StockTable() {
     setDamageModal(true);
   };
 
+  const lowStockFilterHandler = () => {
+    if (lowStock !== 'false') return setLowStock('false');
+    const value = parseFloat(prompt('Enter valid low stock number!'));
+    if (!isNaN(value)) {
+      setLowStock(value);
+    }
+  };
+
   useEffect(() => {
     dispatch(fetchAllStock({ type: stockFor, lowStock }));
   }, [stockFor, lowStock]);
@@ -112,11 +120,14 @@ export default function StockTable() {
       <GridToolbarColumnsButton />
       <GridToolbarDensitySelector />
       <GridToolbarExport />
-      <GridToolbarFilterButton />
-      <GridRefreshButton onClick={() => dispatch(fetchAllStock({ type: stockFor }))} />
+      <GridFilterButton
+        title="Low Stock"
+        onClick={lowStockFilterHandler}
+        Icon={lowStock !== 'false' ? FilterListOffRoundedIcon : undefined}
+      />
+      <GridRefreshButton onClick={() => dispatch(fetchAllStock({ type: stockFor, lowStock }))} />
       <Box display="flex" alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
         <GridChipFilter options={[{ label: 'All', value: 'all' }, ...storeTypes]} onClick={setStockFor} value={stockFor} />
-        <GridSingleChipFilter label="Low Stock" onClick={setLowStock} value={lowStock} onClickValue="true" resetValue="false" />
       </Box>
       <GridToolbarQuickFilter />
     </GridToolbarContainer>
