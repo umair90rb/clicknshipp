@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { fetchAllCustomer } from 'store/slices/customer/fetchCustomer';
 import {
   customerCustomersSelector,
@@ -13,6 +13,9 @@ import {
 } from 'store/slices/customer/customerSelector';
 import { useSearchParams } from 'react-router-dom';
 import { setCustomerPagination, setCustomerSort } from 'store/slices/customer/customerSlice';
+import GridCustomToolbar from 'components/GridCustomToolbar';
+import useAccess from 'hooks/useAccess';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
 
 const columns = (handleView) => [
   {
@@ -66,6 +69,7 @@ const columns = (handleView) => [
 
 export default function CustomerTable({ openViewForm }) {
   const dispatch = useDispatch();
+  const { hasPermission } = useAccess();
   const customerIsLoading = useSelector(customerIsLoadingSelector);
   const customers = useSelector(customerCustomersSelector) || [];
   const page = useSelector(customerPageSelector);
@@ -73,13 +77,19 @@ export default function CustomerTable({ openViewForm }) {
   // const filters = useSelector(orderFiltersSelector);
   const sortModel = useSelector(customerSortSelector);
   const total = useSelector(customerTotalSelector);
+  const customerExportPermission = useMemo(() => hasPermission(PERMISSIONS.PERMISSION_EXPORT_CUSTOMER), []);
 
   const [searchParams] = useSearchParams();
   const searchCustomerId = searchParams.get('id');
   const filterModel = searchCustomerId ? [{ field: 'id', operator: '=', value: searchCustomerId }] : [];
 
+  const fetchCustomer = useCallback(
+    () => dispatch(fetchAllCustomer({ body: { sort: sortModel, page, pageSize } })),
+    [page, pageSize, sortModel]
+  );
+
   useEffect(() => {
-    dispatch(fetchAllCustomer({ body: { sort: sortModel, page, pageSize } }));
+    fetchCustomer();
   }, [page, pageSize, sortModel]);
 
   return (
@@ -92,9 +102,11 @@ export default function CustomerTable({ openViewForm }) {
             }
           }
         }}
-        slots={{ toolbar: GridToolbar }}
+        slots={{ toolbar: GridCustomToolbar }}
         slotProps={{
           toolbar: {
+            withRefresh: fetchCustomer,
+            allowExport: customerExportPermission,
             showQuickFilter: true
           }
         }}

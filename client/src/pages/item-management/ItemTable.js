@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -7,6 +7,8 @@ import { itemIsLoadingSelector, itemItemsSelector } from 'store/slices/item/item
 import { fetchAllItem, fetchDeleteItem } from 'store/slices/item/fetchItem';
 import { deleteItem } from 'store/slices/item/itemSlice';
 import GridCustomToolbar from 'components/GridCustomToolbar';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
+import useAccess from 'hooks/useAccess';
 const columns = (handleEditAction, handleDeleteAction) => [
   {
     field: 'id',
@@ -83,6 +85,8 @@ export default function ItemTable({ updateItemHandler }) {
   const itemIsLoading = useSelector(itemIsLoadingSelector);
   const items = useSelector(itemItemsSelector);
   const fetchItems = useCallback(() => dispatch(fetchAllItem()), []);
+  const { hasPermission } = useAccess();
+  const itemExportPermission = useMemo(() => hasPermission(PERMISSIONS.PERMISSION_EXPORT_ITEMS), []);
 
   useEffect(() => {
     fetchItems();
@@ -103,6 +107,7 @@ export default function ItemTable({ updateItemHandler }) {
         slotProps={{
           toolbar: {
             withRefresh: fetchItems,
+            allowExport: itemExportPermission,
             showQuickFilter: true
           }
         }}

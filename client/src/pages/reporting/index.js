@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Grid, FormGroup, Checkbox, FormControlLabel, FormControl, Select, InputLabel, MenuItem, Typography, Button } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import DateRangePicker from 'components/DatePicker';
@@ -26,20 +26,12 @@ import BookingUnitReport from './BookingUnitReport';
 import FOCReport from './FOCReport';
 import DeliveryReport from './DeliveryReport';
 import StockReport from './StockReport';
-
-const REPORT_TYPES = [
-  { label: 'Agent Report', value: 'Agent Report' },
-  { label: 'Product Report', value: 'Unit Report' },
-  { label: 'Booking Report', value: 'Booking Unit Report' },
-  { label: 'FOC Report', value: 'FOC Report' },
-  { label: 'Channel Report', value: 'Channel Report' },
-  { label: 'Incentive Report', value: 'Incentive Report' },
-  { label: 'Courier Delivery Report', value: 'Delivery Report' },
-  { label: 'Stock Report', value: 'Stock Report' }
-];
+import useAccess from 'hooks/useAccess';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
 
 const Reporting = () => {
   const dispatch = useDispatch();
+  const { hasPermission } = useAccess();
   const startPeriod = useSelector(reportStartPeriodSelector);
   const endPeriod = useSelector(reportEndPeriodSelector);
   const reportIsLoading = useSelector(reportIsLoadingSelector);
@@ -52,6 +44,22 @@ const Reporting = () => {
   const chanelsFetchStatus = useSelector(chanelFetchStatusSelector);
   const [filteredChanels, setFilteredChanels] = useState([]);
   const [withTime, setWithTime] = useState(false);
+
+  const REPORT_TYPES = useMemo(
+    () => [
+      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_AGENT_REPORT) ? [{ label: 'Agent Report', value: 'Agent Report' }] : []),
+      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_PRODUCT_REPORT) ? [{ label: 'Product Report', value: 'Unit Report' }] : []),
+      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_BOOKING_REPORT) ? [{ label: 'Booking Report', value: 'Booking Unit Report' }] : []),
+      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_FOC_REPORT) ? [{ label: 'FOC Report', value: 'FOC Report' }] : []),
+      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_CHANNEL_REPORT) ? [{ label: 'Channel Report', value: 'Channel Report' }] : []),
+      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_INCENTIVE_REPORT) ? [{ label: 'Incentive Report', value: 'Incentive Report' }] : []),
+      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_COURIER_DELIVERY_REPORT)
+        ? [{ label: 'Courier Delivery Report', value: 'Delivery Report' }]
+        : []),
+      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_STOCK_REPORT) ? [{ label: 'Stock Report', value: 'Stock Report' }] : [])
+    ],
+    []
+  );
 
   const handleFetchReport = () => {
     if (!reportType) {

@@ -1,4 +1,13 @@
 export const PERMISSIONS = {
+  PERMISSIONS_GET_AGENT_REPORT: 'get-agent-report',
+  PERMISSIONS_GET_PRODUCT_REPORT: 'get-product-report',
+  PERMISSIONS_GET_BOOKING_REPORT: 'get-booking-report',
+  PERMISSIONS_GET_FOC_REPORT: 'get-foc-report',
+  PERMISSIONS_GET_CHANNEL_REPORT: 'get-channel-report',
+  PERMISSIONS_GET_INCENTIVE_REPORT: 'get-incentive-report',
+  PERMISSIONS_GET_COURIER_DELIVERY_REPORT: 'get-courier-delivery-report',
+  PERMISSIONS_GET_STOCK_REPORT: 'get-stock-report',
+
   PERMISSION_VIEW_ADMIN_DASHBOARD: 'view-admin-dashboard',
   PERMISSION_VIEW_REPORTING: 'view-reporting',
 
@@ -11,15 +20,18 @@ export const PERMISSIONS = {
   PERMISSION_BULK_ORDER_DELETE: 'bulk-order-delete',
   PERMISSION_BULK_ORDER_BOOKING: 'bulk-order-booking',
   PERMISSION_ASSIGN_ORDERS: 'assign-orders',
+  PERMISSION_EXPORT_ORDERS: 'export-orders',
 
   PERMISSION_VIEW_ITEMS: 'view-items',
   PERMISSION_CREATE_ITEM: 'create-item',
   PERMISSION_UPDATE_ITEM: 'update-item',
   PERMISSION_DELETE_ITEM: 'delete-item',
   PERMISSION_BULK_CREATE_ITEMS: 'bulk-create-items',
+  PERMISSION_EXPORT_ITEMS: 'export-items',
 
   PERMISSION_VIEW_STOCK: 'view-stock',
   PERMISSION_VIEW_STOCK_HISTORY: 'view-stock-history',
+  PERMISSION_EXPORT_STOCK: 'export-stock',
   PERMISSION_RECEIVE_STOCK: 'receive-stock',
   PERMISSION_RECEIVE_STOCK_RETURN: 'receive-stock-return',
   PERMISSION_ADD_STOCK_DAMAGE: 'add-stock-damage',
@@ -35,6 +47,7 @@ export const PERMISSIONS = {
   PERMISSION_DELETE_BRAND: 'delete-brand',
 
   PERMISSION_VIEW_SUPPLIERS: 'view-suppliers',
+  PERMISSION_EXPORT_SUPPLIER: 'export-supplier',
   PERMISSION_CREATE_SUPPLIER: 'create-supplier',
   PERMISSION_UPDATE_SUPPLIER: 'update-supplier',
   PERMISSION_DELETE_SUPPLIER: 'delete-supplier',
@@ -43,8 +56,10 @@ export const PERMISSIONS = {
   PERMISSION_CREATE_CUSTOMER: 'create-customer',
   PERMISSION_UPDATE_CUSTOMER: 'update-customer',
   PERMISSION_DELETE_CUSTOMER: 'delete-customer',
+  PERMISSION_EXPORT_CUSTOMER: 'export-customer',
 
   PERMISSION_VIEW_SALES_CHANEL: 'view-sales-channel',
+  PERMISSION_EXPORT_SALES_CHANEL: 'export-sales-channel',
   PERMISSION_CREATE_SALES_CHANEL: 'create-sales-channel',
   PERMISSION_UPDATE_SALES_CHANEL: 'update-sales-channel',
   PERMISSION_DELETE_SALES_CHANEL: 'delete-sales-channel',
@@ -53,6 +68,7 @@ export const PERMISSIONS = {
   PERMISSION_CREATE_USER: 'create-user',
   PERMISSION_UPDATE_USER: 'update-user',
   PERMISSION_DELETE_USER: 'delete-user',
+  PERMISSION_EXPORT_USER: 'export-user',
 
   PERMISSION_CREATE_ROLE: 'create-role',
   PERMISSION_UPDATE_ROLE: 'update-role',
@@ -61,6 +77,7 @@ export const PERMISSIONS = {
   PERMISSION_CREATE_DELIVERY_ACCOUNTS: 'create-delivery-accounts',
   PERMISSION_UPDATE_DELIVERY_ACCOUNTS: 'update-delivery-accounts',
   PERMISSION_DELETE_DELIVERY_ACCOUNTS: 'delete-delivery-accounts',
+  PERMISSION_EXPORT_DELIVERY_ACCOUNT: 'export-delivery-account',
 
   PERMISSION_VIEW_LOCATIONS: 'view-locations',
   PERMISSION_CREATE_LOCATION: 'create-location',
@@ -76,6 +93,7 @@ export const PERMISSIONS = {
   PERMISSION_CREATE_RAW_MATERIAL: 'create-raw-material',
   PERMISSION_UPDATE_RAW_MATERIAL: 'update-raw-material',
   PERMISSION_DELETE_RAW_MATERIAL: 'delete-raw-material',
+  PERMISSION_EXPORT_RAW_MATERIAL: 'export-raw-material',
 
   PERMISSION_VIEW_BATCHES: 'view-batches',
   PERMISSION_CREATE_BATCH: 'create-batch',

@@ -578,7 +578,7 @@ const OrderTable = memo(() => {
         >
           Filters
         </Button> */}
-        {userPermissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) && <GridToolbarExport />}
+        {userPermissions.includes(PERMISSIONS.PERMISSION_EXPORT_ORDERS) && <GridToolbarExport />}
 
         {filters.length > 0 && (
           <Button onClick={handleClearFilters} size="small" startIcon={<FilterListOffIcon />}>

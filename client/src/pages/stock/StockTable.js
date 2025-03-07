@@ -119,7 +119,7 @@ export default function StockTable() {
     <GridToolbarContainer>
       <GridToolbarColumnsButton />
       <GridToolbarDensitySelector />
-      <GridToolbarExport />
+      {hasPermission(PERMISSIONS.PERMISSION_EXPORT_STOCK) && <GridToolbarExport />}
       <GridFilterButton
         title="Low Stock"
         onClick={lowStockFilterHandler}
@@ -148,7 +148,7 @@ export default function StockTable() {
         rows={stock}
         columns={columns(
           hasPermission(PERMISSIONS.PERMISSION_VIEW_STOCK_HISTORY) && showItemStockHistory,
-          hasPermission(PERMISSIONS.PERMISSION_VIEW_STOCK_HISTORY) && showItemDamageReport
+          hasPermission(PERMISSIONS.PERMISSIONS_GET_ITEM_DAMAGE_REPORT) && showItemDamageReport
         )}
       />
       <ItemStockHistory

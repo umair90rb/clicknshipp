@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -8,6 +8,7 @@ import { supplierIsLoadingSelector, supplierSuppliersSelector } from 'store/slic
 import { deleteSupplier } from 'store/slices/supplier/supplierSlice';
 import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
+import GridCustomToolbar from 'components/GridCustomToolbar';
 const columns = (handleEditAction, handleDeleteAction) => [
   {
     field: 'id',
@@ -77,9 +78,12 @@ export default function SupplierTable({ updateSupplierHandler }) {
   const supplierIsLoading = useSelector(supplierIsLoadingSelector);
   const suppliers = useSelector(supplierSuppliersSelector);
   const { hasPermission } = useAccess();
+  const supplierExportPermission = useMemo(() => hasPermission(PERMISSIONS.PERMISSION_EXPORT_SUPPLIER), []);
+
+  const fetchSupplier = useCallback(() => dispatch(fetchAllSupplier()), []);
 
   useEffect(() => {
-    dispatch(fetchAllSupplier());
+    fetchSupplier();
   }, []);
 
   const handleDelete = (id) => {
@@ -89,12 +93,15 @@ export default function SupplierTable({ updateSupplierHandler }) {
       }
     });
   };
+
   return (
     <div style={{ width: '100%' }}>
       <DataGrid
-        slots={{ toolbar: GridToolbar }}
+        slots={{ toolbar: GridCustomToolbar }}
         slotProps={{
           toolbar: {
+            withRefresh: fetchSupplier,
+            allowExport: supplierExportPermission,
             showQuickFilter: true
           }
         }}
