@@ -18,7 +18,7 @@ export default {
       const billOfMaterials = await BOM.findAll({
         attributes: [
           'id',
-          'name',
+          'comment',
           'quantity',
           'unit_of_measure',
           'status',
@@ -87,13 +87,13 @@ export default {
 
   async create(req, res) {
     try {
-      const { product_id, name, quantity, unit_of_measure, materials } =
+      const { product_id, comment, quantity, unit_of_measure, materials } =
         req.body;
       // materials[0] => raw_material_id, quantity, unit_of_measure
       const billOfMaterialData = {
         product_id: product_id.id,
         user_id: req.user.id,
-        name,
+        comment,
         quantity,
         unit_of_measure,
         status: 'Opened',

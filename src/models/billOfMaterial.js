@@ -33,9 +33,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       product_id: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
-      name: {
+      comment: {
         type: DataTypes.STRING,
         allowNull: false,
       },
@@ -49,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       unit_of_measure: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       user_id: {
         type: DataTypes.INTEGER,

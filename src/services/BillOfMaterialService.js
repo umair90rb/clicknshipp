@@ -13,7 +13,7 @@ class BillOfMaterialService {
     return BOM.findByPk(id, {
       attributes: [
         'id',
-        'name',
+        'comment',
         'quantity',
         'unit_of_measure',
         'status',

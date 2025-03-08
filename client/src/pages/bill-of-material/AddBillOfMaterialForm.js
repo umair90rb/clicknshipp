@@ -76,7 +76,7 @@ export default function AddBillOfMaterialForm({ visible, onClose }) {
         enableReinitialize
         initialValues={{
           product_id: { id: null, label: '', type: '' },
-          name: '',
+          comment: '',
           quantity: 0,
           unit_of_measure: '',
           materials: [
@@ -89,12 +89,24 @@ export default function AddBillOfMaterialForm({ visible, onClose }) {
         }}
         validationSchema={Yup.object().shape({
           product_id: Yup.object().shape({
-            id: Yup.string().required('Select item'),
-            label: Yup.string().required('Select item')
+            id: Yup.string().nullable(),
+            label: Yup.string().nullable()
           }),
-          name: Yup.string(),
-          quantity: Yup.number().min(1).required('Please enter stock received quantity'),
-          unit_of_measure: Yup.string().required('Please select unit'),
+          comment: Yup.string().when('product_id.id', {
+            is: (val) => val === '' || val === null,
+            then: Yup.string().required('Must enter comment if item not selected'),
+            otherwise: Yup.string().optional()
+          }),
+          quantity: Yup.number().when('product_id.id', {
+            is: (val) => val === '' || val === null,
+            then: Yup.number().optional(),
+            otherwise: Yup.number().min(1).required('Please enter stock received quantity')
+          }),
+          unit_of_measure: Yup.string().when('product_id.id', {
+            is: (val) => val === '' || val === null,
+            then: Yup.string().optional(),
+            otherwise: Yup.string().required('Please select unit!')
+          }),
           materials: Yup.array().of(
             Yup.object().shape({
               raw_material_id: Yup.object().shape({
@@ -168,18 +180,18 @@ export default function AddBillOfMaterialForm({ visible, onClose }) {
               </Grid>
               <Grid item xs={4}>
                 <FormControl fullWidth margin="normal">
-                  <FormLabel id="name">Name</FormLabel>
+                  <FormLabel id="comment">Comment</FormLabel>
                   <TextField
                     size="small"
-                    labelId="name"
-                    id="name_select"
-                    value={createBillOfMaterial.values.name}
-                    name="name"
+                    labelId="comment"
+                    id="comment"
+                    value={createBillOfMaterial.values.comment}
+                    name="comment"
                     onChange={createBillOfMaterial.handleChange}
-                    error={createBillOfMaterial.touched.name && !!createBillOfMaterial.errors.name}
+                    error={createBillOfMaterial.touched.comment && !!createBillOfMaterial.errors.comment}
                   />
                   <ErrorMessage
-                    name="name"
+                    name="comment"
                     render={(msg) => (
                       <FormHelperText sx={{ m: 0 }} error id="helper-text-name">
                         {msg}

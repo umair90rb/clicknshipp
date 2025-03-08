@@ -2,12 +2,17 @@ import Joi from 'joi';
 
 const createBillOfMaterialSchema = Joi.object({
   product_id: Joi.object({
-    id: Joi.number().integer().required(),
-    label: Joi.string().required(),
+    id: Joi.number().integer().allow(null),
+    label: Joi.string().allow(''),
+    type: Joi.string().allow(''),
   }),
-  name: Joi.string().allow(''),
-  quantity: Joi.number().integer().required(),
-  unit_of_measure: Joi.string().required(),
+  comment: Joi.string().when(Joi.ref('product_id.id'), {
+    is: null,
+    then: Joi.string().required(),
+    otherwise: Joi.string().allow(''),
+  }),
+  quantity: Joi.number().integer(),
+  unit_of_measure: Joi.string().allow(''),
   materials: Joi.array()
     .items({
       raw_material_id: Joi.object({
