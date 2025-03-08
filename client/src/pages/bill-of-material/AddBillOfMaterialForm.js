@@ -99,7 +99,7 @@ export default function AddBillOfMaterialForm({ visible, onClose }) {
           }),
           quantity: Yup.number().when('product_id.id', {
             is: (val) => val === '' || val === null,
-            then: Yup.number().optional(),
+            then: Yup.number().min(0).max(0).optional(),
             otherwise: Yup.number().min(1).required('Please enter stock received quantity')
           }),
           unit_of_measure: Yup.string().when('product_id.id', {

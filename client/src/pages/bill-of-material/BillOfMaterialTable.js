@@ -79,7 +79,7 @@ export default function StockTable({ handleView }) {
   const bomIsLoading = useSelector(billOfMaterialIsLoadingSelector);
   const billOfMaterials = useSelector(billOfMaterialListSelector);
   const { hasPermission } = useAccess();
-  const allowViewHistory = useMemo(() => hasPermission(hasPermission(PERMISSIONS.PERMISSION_VIEW_STOCK_HISTORY)), []);
+  const allowViewHistory = useMemo(() => hasPermission(PERMISSIONS.PERMISSION_VIEW_STOCK_HISTORY), []);
   const fetchBOM = useCallback(() => dispatch(fetchAllBillOfMaterial()), []);
 
   useEffect(() => {
