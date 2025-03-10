@@ -10,10 +10,10 @@ class StockService {
         attributes: ['id', 'current_level'],
         where: { [Op.and]: [{ item_id }, { location_id }, { item_type }] },
       });
-      if (stock && stock.current_level && stock.current_level > required) {
-        return true;
+      if (stock && stock.current_level && stock.current_level >= required) {
+        return { item_type, item_id, location_id, available: true };
       }
-      return false;
+      return { item_type, item_id, location_id, available: false };
     }
   }
 

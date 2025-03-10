@@ -140,15 +140,7 @@ export default function ItemDamageReport({ item, visible, onClose }) {
   }, [visible]);
 
   return (
-    <CustomDialog
-      printable
-      enableBackdrop
-      visible={visible}
-      onClose={onClose}
-      maxWidth="lg"
-      dividers={false}
-      title={`Damage Report ${item && 'of'} ${item?.item?.name || item?.raw?.name || ''}`}
-    >
+    <CustomDialog printable enableBackdrop visible={visible} onClose={onClose} maxWidth="lg" dividers={false} title="Damage Report">
       <Grid container alignItems="center" spacing={1}>
         <Grid item sx={2} md={2} lg={2}>
           <CRadioGroup

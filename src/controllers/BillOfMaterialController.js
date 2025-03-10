@@ -185,12 +185,16 @@ export default {
             );
           })
         );
-        if (stockValidationResults.findIndex((r) => r.value === false) > -1) {
+        const invalidStockIndex = stockValidationResults.findIndex(
+          (r) => r.value.available === false
+        );
+        if (invalidStockIndex > -1) {
           return sendErrorResponse(
             res,
             404,
             'Some material stock is 0 or not available in selected store!',
-            null
+            null,
+            stockValidationResults[invalidStockIndex]
           );
         }
         const materialBatchPromises = billOfMaterial.materials.map((bom) => {
