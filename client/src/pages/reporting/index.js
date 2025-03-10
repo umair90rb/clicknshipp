@@ -22,15 +22,12 @@ import {
   setReportType
 } from 'store/slices/report/reportSlice';
 import { fetchReport } from 'store/slices/report/fetchReport';
-import { brandBrandsSelector, brandFetchStatusSelector } from 'store/slices/brand/brandSelector';
-import { fetchAllBrand } from 'store/slices/brand/fetchBrand';
-import fetchStatus from 'constants/fetchStatuses';
+import { brandBrandsSelector } from 'store/slices/brand/brandSelector';
 import UnitReport from './UnitReport';
 import ChannelReport from './ChannelReport';
 import AgentsReports from './AgentsReport';
 import IncentiveReport from './IncentiveReport';
-import { chanelChanelsSelector, chanelFetchStatusSelector } from 'store/slices/chanel/chanelSelector';
-import { fetchAllChanel } from 'store/slices/chanel/fetchChanel';
+import { chanelChanelsSelector } from 'store/slices/chanel/chanelSelector';
 import BookingUnitReport from './BookingUnitReport';
 import FOCReport from './FOCReport';
 import DeliveryReport from './DeliveryReport';
@@ -38,8 +35,7 @@ import StockReport from './StockReport';
 import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 import CAutocomplete from 'components/Autocomplete';
-import { cityCitiesSelector, cityFetchStatusSelector } from 'store/slices/city/citySelector';
-import { fetchAllCities } from 'store/slices/city/fetchCity';
+import { cityCitiesSelector } from 'store/slices/city/citySelector';
 import useCitiesFetch from 'hooks/useCitiesFetch';
 import useBrandsFetch from 'hooks/useBrandsFetch';
 import useChannelsFetch from 'hooks/useChannelsFetch';
