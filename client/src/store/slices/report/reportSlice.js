@@ -11,6 +11,8 @@ const initialState = {
   type: '',
   brand: [],
   chanel: [],
+  cities: [],
+  deliveryServiceAccounts: [],
   startPeriod: getStartOfDay(),
   endPeriod: getEndOfDay()
 };
@@ -31,6 +33,12 @@ const reportSlice = createSlice({
     },
     setReportBrand: (state, action) => {
       state.brand = action.payload;
+    },
+    setReportCities: (state, action) => {
+      state.cities = action.payload;
+    },
+    setReportDeliveryServicesAccount: (state, action) => {
+      state.deliveryServiceAccounts = action.payload;
     },
     setReportChanel: (state, action) => {
       state.chanel = action.payload;
@@ -54,5 +62,13 @@ const reportSlice = createSlice({
     });
   }
 });
-export const { setReportPeriod, setReportType, setReportBrand, setReportChanel, clearReportState } = reportSlice.actions;
+export const {
+  setReportPeriod,
+  setReportType,
+  setReportBrand,
+  setReportCities,
+  setReportChanel,
+  setReportDeliveryServicesAccount,
+  clearReportState
+} = reportSlice.actions;
 export default reportSlice.reducer;

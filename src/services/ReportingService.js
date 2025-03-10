@@ -21,6 +21,7 @@ const {
   Role,
   Permission,
   DeliveryServiceAccounts,
+  Address,
   Item,
   RawMaterial,
   StockLevel,
@@ -254,7 +255,14 @@ class ReportingService {
     );
   }
 
-  getBookingUnitReport(startPeriod, endPeriod, reportBrand, reportChanel) {
+  getBookingUnitReport(
+    startPeriod,
+    endPeriod,
+    reportBrand,
+    reportChanel,
+    reportCities,
+    reportDeliveryServicesAccounts
+  ) {
     let where = {
       '$delivery.createdAt$': {
         [Op.gte]: startPeriod,
@@ -270,6 +278,21 @@ class ReportingService {
     if (reportChanel && reportChanel.length) {
       where['chanel_id'] = {
         [Op.in]: reportChanel,
+      };
+    }
+
+    if (
+      reportDeliveryServicesAccounts &&
+      reportDeliveryServicesAccounts.length
+    ) {
+      where['$delivery.account_id$'] = {
+        [Op.in]: reportDeliveryServicesAccounts,
+      };
+    }
+
+    if (reportCities !== '') {
+      where['$address.city$'] = {
+        [Op.eq]: reportCities,
       };
     }
     return Order.findAll({
@@ -440,6 +463,12 @@ class ReportingService {
           model: Delivery,
           as: 'delivery',
           required: true,
+          attributes: [],
+        },
+        {
+          model: Address,
+          as: 'address',
+          required: false,
           attributes: [],
         },
       ],

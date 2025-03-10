@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { fetchAllSupplier } from 'store/slices/supplier/fetchSupplier';
+import { fetchAllCities } from 'store/slices/city/fetchCity';
 
 export default function useSupplierFetch() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchAllSupplier());
+    dispatch(fetchAllCities());
   }, []);
 }

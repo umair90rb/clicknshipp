@@ -613,7 +613,7 @@ const OrderTable = memo(() => {
         />
       </>
     );
-  }, [rowSelectionModel, filters]);
+  }, [rowSelectionModel, filters, citiesList]);
 
   return (
     <div style={{ height: '80vh', width: '100%' }}>

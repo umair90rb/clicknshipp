@@ -5,8 +5,15 @@ import { _reportingService as reportingService } from '../services/ReportingServ
 export default {
   async getReport(req, res) {
     try {
-      const { reportBrand, reportChanel, reportType, startPeriod, endPeriod } =
-        req.body;
+      const {
+        reportBrand,
+        reportChanel,
+        reportType,
+        startPeriod,
+        endPeriod,
+        reportCities,
+        reportDeliveryServicesAccounts,
+      } = req.body;
       let report;
       switch (reportType) {
         case 'Agent Report':
@@ -30,7 +37,9 @@ export default {
             startPeriod,
             endPeriod,
             reportBrand,
-            reportChanel
+            reportChanel,
+            reportCities,
+            reportDeliveryServicesAccounts
           );
           break;
         case 'FOC Report':

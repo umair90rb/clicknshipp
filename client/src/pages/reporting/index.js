@@ -6,12 +6,21 @@ import DateTimePicker from 'components/DateTimePicker';
 import {
   reportBrandSelector,
   reportChanelSelector,
+  reportCitiesSelector,
+  reportDeliveryServicesAccountsSelector,
   reportEndPeriodSelector,
   reportIsLoadingSelector,
   reportStartPeriodSelector,
   reportTypeSelector
 } from 'store/slices/report/reportSelector';
-import { setReportBrand, setReportChanel, setReportPeriod, setReportType } from 'store/slices/report/reportSlice';
+import {
+  setReportBrand,
+  setReportChanel,
+  setReportCities,
+  setReportDeliveryServicesAccount,
+  setReportPeriod,
+  setReportType
+} from 'store/slices/report/reportSlice';
 import { fetchReport } from 'store/slices/report/fetchReport';
 import { brandBrandsSelector, brandFetchStatusSelector } from 'store/slices/brand/brandSelector';
 import { fetchAllBrand } from 'store/slices/brand/fetchBrand';
@@ -28,6 +37,15 @@ import DeliveryReport from './DeliveryReport';
 import StockReport from './StockReport';
 import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
+import CAutocomplete from 'components/Autocomplete';
+import { cityCitiesSelector, cityFetchStatusSelector } from 'store/slices/city/citySelector';
+import { fetchAllCities } from 'store/slices/city/fetchCity';
+import useCitiesFetch from 'hooks/useCitiesFetch';
+import useBrandsFetch from 'hooks/useBrandsFetch';
+import useChannelsFetch from 'hooks/useChannelsFetch';
+import CSelect from 'components/CSelect';
+import { deliveryServiceAccountsListSelector } from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSelector';
+import useDeliveryServicesAccountFetch from 'hooks/useDeliveryServicesAccountFetch';
 
 const Reporting = () => {
   const dispatch = useDispatch();
@@ -38,10 +56,14 @@ const Reporting = () => {
   const reportType = useSelector(reportTypeSelector);
   const reportBrand = useSelector(reportBrandSelector);
   const reportChanel = useSelector(reportChanelSelector);
+  const reportCities = useSelector(reportCitiesSelector);
+  const reportDeliveryServicesAccounts = useSelector(reportDeliveryServicesAccountsSelector);
+
   const brands = useSelector(brandBrandsSelector);
-  const brandsFetchStatus = useSelector(brandFetchStatusSelector);
+  const cities = useSelector(cityCitiesSelector);
   const chanels = useSelector(chanelChanelsSelector);
-  const chanelsFetchStatus = useSelector(chanelFetchStatusSelector);
+  const deliveryServiceAccounts = useSelector(deliveryServiceAccountsListSelector);
+
   const [filteredChanels, setFilteredChanels] = useState([]);
   const [withTime, setWithTime] = useState(false);
 
@@ -68,17 +90,15 @@ const Reporting = () => {
     if (!reportType) {
       return;
     }
-    dispatch(fetchReport({ body: { reportBrand, reportChanel, reportType, startPeriod, endPeriod } }));
+    dispatch(
+      fetchReport({ body: { reportBrand, reportChanel, reportType, startPeriod, endPeriod, reportCities, reportDeliveryServicesAccounts } })
+    );
   };
 
-  useEffect(() => {
-    if (brandsFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllBrand());
-    }
-    if (chanelsFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllChanel());
-    }
-  }, []);
+  useCitiesFetch();
+  useBrandsFetch();
+  useChannelsFetch();
+  useDeliveryServicesAccountFetch();
 
   useEffect(() => {
     setFilteredChanels(
@@ -176,7 +196,25 @@ const Reporting = () => {
           </FormControl>
         </Grid>
         <Grid item xs={2} md={2} lg={2}>
-          <FormControl fullWidth size="small">
+          <CSelect
+            multiple
+            withAllOption
+            name="channel_filter"
+            label="Select Chanel"
+            options={filteredChanels.map((flt) => ({ value: flt.id, label: flt.name }))}
+            value={reportChanel}
+            onChange={(e) => {
+              const val = e.target.value;
+              if (val.length === 1 && val[0] === 'all') {
+                dispatch(setReportChanel(filteredChanels.map((br) => br.id)));
+              } else if (val.includes('none')) {
+                dispatch(setReportChanel([]));
+              } else {
+                dispatch(setReportChanel(val));
+              }
+            }}
+          />
+          {/* <FormControl fullWidth size="small">
             <InputLabel id="demo-select-small-label">Select Chanel</InputLabel>
             <Select
               multiple
@@ -207,7 +245,7 @@ const Reporting = () => {
                 </MenuItem>
               ))}
             </Select>
-          </FormControl>
+          </FormControl> */}
         </Grid>
         <Grid item xs={1} md={1} lg={1}>
           <FormGroup>
@@ -232,6 +270,45 @@ const Reporting = () => {
           )}
         </Grid>
       </Grid>
+
+      <Grid container xs={12} gap={0.25} justifyContent="start" alignItems="center">
+        <Grid xs={1} md={1} lg={1} />
+        {reportType === 'Booking Unit Report' && (
+          <>
+            <Grid item xs={2.5} md={2.5} lg={2.5}>
+              <CAutocomplete
+                options={cities}
+                value={reportCities}
+                onChange={(e, option) => {
+                  if (option) {
+                    dispatch(setReportCities(option));
+                  }
+                }}
+              />
+            </Grid>
+            <Grid item xs={2.5} md={2.5} lg={2.5}>
+              <CSelect
+                multiple
+                options={deliveryServiceAccounts.map((dsa) => ({ value: dsa.id, label: dsa.name }))}
+                name="delivery_service_account"
+                label="Select Delivery Service Account"
+                value={reportDeliveryServicesAccounts}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val.length === 1 && val[0] === 'all') {
+                    dispatch(setReportDeliveryServicesAccount(deliveryServiceAccounts.map((ac) => ac.id)));
+                  } else if (val.includes('none')) {
+                    dispatch(setReportDeliveryServicesAccount([]));
+                  } else {
+                    dispatch(setReportDeliveryServicesAccount(val));
+                  }
+                }}
+              />
+            </Grid>
+          </>
+        )}
+      </Grid>
+
       {reportIsLoading ? (
         'Loading...'
       ) : (
