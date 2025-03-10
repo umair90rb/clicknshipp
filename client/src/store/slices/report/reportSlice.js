@@ -11,7 +11,7 @@ const initialState = {
   type: '',
   brand: [],
   chanel: [],
-  cities: [],
+  cities: '',
   deliveryServiceAccounts: [],
   startPeriod: getStartOfDay(),
   endPeriod: getEndOfDay()
