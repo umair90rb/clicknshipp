@@ -65,7 +65,7 @@ export const addStockDamageSchema = Joi.object({
         .min(1)
         .required('Please enter stock damage quantity'),
       unit_of_measure: Joi.string().required('Please select unit'),
-      deduct_stock: Joi.boolean(),
+      deduct_stock: Joi.boolean().allow(true, false, 'on', 'off'),
     })
     .min(1)
     .required(),

@@ -32,6 +32,7 @@ import { brandBrandsSelector, brandFetchStatusSelector, brandIsLoadingSelector }
 import fetchStatus from 'constants/fetchStatuses';
 import { aclRolesFetchStatusSelector, aclRolesIsLoadingSelector, aclRolesListSelector } from 'store/slices/acl/aclSelector';
 import FormHelperTextComponent from 'components/LoadingHelperText';
+import { is } from '../../../../../../../Library/Caches/typescript/5.8/node_modules/@babel/types/lib/index';
 
 const style = {
   position: 'absolute',
@@ -148,7 +149,16 @@ export default function AddUpdateUserModal({ visible, onClose, userToUpdate }) {
             name: Yup.string().max(255).required('First Name is required'),
             phone: Yup.number().min(11),
             email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-            password: Yup.string().max(255).required('Password is required'),
+            password: Yup.string().when({
+              is: (val) => (userToUpdate && 'id' in userToUpdate ? false : true),
+              then: Yup.string()
+                .matches(
+                  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                  'Password must contain at least 8 characters, one uppercase, one lowercase, one number and one special case character'
+                )
+                .required('Password is required'),
+              otherwise: Yup.string().max(255)
+            }),
             roles: Yup.array().of(Yup.string()).min(1).required('Minimum 1 role is required'),
             brands: Yup.array().of(Yup.string())
           })}

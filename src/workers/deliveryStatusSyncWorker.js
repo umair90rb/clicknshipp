@@ -7,10 +7,6 @@ import bookingService from '../services/BookingService';
 const bookingWorker = new Worker(
   'deliveryStatusSyncQueue',
   async (job) => {
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('sync completed in development');
-      return;
-    }
     const { id, cn, account_id, order_id } = job.data;
     if (!account_id) {
       await _orderService.updateOrderDeliveryStatus(

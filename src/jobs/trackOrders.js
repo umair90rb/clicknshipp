@@ -16,6 +16,9 @@ const everyMorningAt8Am = '0 8 * * *';
 schedule(every30Sec, async () => {
   // schedule(every10Min, async () => {
   try {
+    if (process.env.NODE_ENV !== 'production') {
+      return;
+    }
     const pendingJobs = await deliveryStatusSyncQueue.count();
     if (pendingJobs) {
       return;

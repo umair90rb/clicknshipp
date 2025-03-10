@@ -47,7 +47,7 @@ class StockService {
       if (stock) {
         stock = await stock.decrement({ current_level: by });
       } else {
-        throw new Error('Stock not found!');
+        return new Error('Stock not found!');
       }
       return stock;
     } catch (error) {

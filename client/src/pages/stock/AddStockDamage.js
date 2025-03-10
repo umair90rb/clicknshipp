@@ -97,7 +97,7 @@ export default function AddStockDamage({ visible, onClose }) {
   const handleSubmit = async (values, { setErrors }) => {
     dispatch(fetchCreateStockDamage({ body: values })).then((action) => {
       if (action.type === 'stockDamage/create/fetch/fulfilled') {
-        dispatch(fetchAllStock({ type: 'all' }));
+        dispatch(fetchAllStock({ type: 'all', lowStock: 'false' }));
         onClose();
       } else {
         setErrors({ submit: action?.payload?.error || 'Something goes wrong, please try again' });
@@ -255,7 +255,7 @@ export default function AddStockDamage({ visible, onClose }) {
                   addReturnForm.values.inventory.length > 0 &&
                   addReturnForm.values.inventory.map((item, index) => (
                     <Grid key={index} container spacing={1}>
-                      <Grid item xs={2.5}>
+                      <Grid item xs={3}>
                         <FormControl fullWidth margin="normal">
                           <FormLabel id={`inventory.${index}.item_id`}>
                             {addReturnForm.values.item_type === 'finished_product' ? 'Select Product' : 'Select Material'}
@@ -286,8 +286,10 @@ export default function AddStockDamage({ visible, onClose }) {
                             // onChange={addReturnForm.handleChange}
                             isOptionEqualToValue={(option, value) => option.id === value.id}
                             onChange={(e, option) => {
-                              addReturnForm.setFieldValue(`inventory.${index}.item_id`, option);
-                              addReturnForm.setFieldValue(`inventory.${index}.unit_of_measure`, option.unit);
+                              if (option) {
+                                addReturnForm.setFieldValue(`inventory.${index}.item_id`, option);
+                                addReturnForm.setFieldValue(`inventory.${index}.unit_of_measure`, option.unit);
+                              }
                             }}
                             type="text"
                             id={`inventory.${index}.item_id`}
@@ -317,7 +319,7 @@ export default function AddStockDamage({ visible, onClose }) {
                           />
                         </FormControl>
                       </Grid>
-                      <Grid item xs={2.5}>
+                      <Grid item xs={1.5}>
                         <FormControl fullWidth margin="normal">
                           <FormLabel id={`inventory.${index}.batch_number`}>Batch Number</FormLabel>
                           <TextField
@@ -450,7 +452,8 @@ export default function AddStockDamage({ visible, onClose }) {
                               item_id: null,
                               batch_number: '',
                               quantity: 0,
-                              unit_of_measure: ''
+                              unit_of_measure: '',
+                              deduct_stock: false
                             })
                           }
                           color="primary"
