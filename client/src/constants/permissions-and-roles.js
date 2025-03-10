@@ -8,6 +8,7 @@ export const PERMISSIONS = {
   PERMISSIONS_GET_COURIER_DELIVERY_REPORT: 'get-courier-delivery-report',
   PERMISSIONS_GET_STOCK_REPORT: 'get-stock-report',
   PERMISSIONS_GET_ITEM_DAMAGE_REPORT: 'get-stock-report',
+  PERMISSIONS_GET_STOCK_DAMAGE_REPORT: 'get-stock-damage-report',
 
   PERMISSION_VIEW_ADMIN_DASHBOARD: 'view-admin-dashboard',
   PERMISSION_VIEW_REPORTING: 'view-reporting',

@@ -9,18 +9,16 @@ import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 
 const Wrapper = styled.div`
   position: relative;
-  display: inline-block;
-  width: '100%';
 `;
 
 const Input = styled.input`
   padding: 8px;
   font-size: 14px;
-  width: 300px;
   border: 1px solid #ccc;
   background: none;
   border-radius: 4px;
-  margin: 0 0px;
+  margin: 0;
+  width: 100%;
 `;
 
 const Popup = styled.div`

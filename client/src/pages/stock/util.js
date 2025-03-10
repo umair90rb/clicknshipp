@@ -1,7 +1,11 @@
+export function isNotEmpty(obj) {
+  return obj && Object.keys(obj).length > 0;
+}
+
 export function getIdAndType(item) {
-  if (item && item.item_type === 'finished_product') {
+  if (isNotEmpty(item) && item.item_type === 'finished_product') {
     return { item_id: item.item.id, item_type: item.item_type };
-  } else if (item) {
+  } else if (isNotEmpty(item)) {
     return { item_id: item.raw.id, item_type: item.item_type };
   }
   return { item_id: null, item_type: null };

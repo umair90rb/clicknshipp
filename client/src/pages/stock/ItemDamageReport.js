@@ -15,6 +15,8 @@ import { itemFetchStatusSelector, itemItemsSelector } from 'store/slices/item/it
 import { rawMaterialFetchStatusSelector, rawMaterialListSelector } from 'store/slices/rawMaterial/RawMaterialSelector';
 import CButton from 'components/Button';
 import { fetchItemDamageReport } from 'store/slices/stock/fetchStock';
+import CCheckbox from 'components/Checkbox';
+import CRadioGroup from 'components/RadioGroup';
 
 const columns = [
   {
@@ -117,7 +119,7 @@ export default function ItemDamageReport({ item, visible, onClose }) {
 
   useEffect(() => {
     if (visible && item) {
-      itemDamageReportForm.setValues({ ...getIdAndType(item), location_id: item.location.id, from: getStartOfDay(), to: getEndOfDay() });
+      itemDamageReportForm.setValues({ ...getIdAndType(item), location_id: item?.location?.id, from: getStartOfDay(), to: getEndOfDay() });
     }
 
     if (visible && locationFetchStatus !== fetchStatus.SUCCESS) {
@@ -148,7 +150,20 @@ export default function ItemDamageReport({ item, visible, onClose }) {
       title={`Damage Report ${item && 'of'} ${item?.item?.name || item?.raw?.name || ''}`}
     >
       <Grid container alignItems="center" spacing={1}>
-        <Grid item sx={4} md={4} lg={4}>
+        <Grid item sx={2} md={2} lg={2}>
+          <CRadioGroup
+            label="Inventory Type"
+            name="item_type"
+            value={itemDamageReportForm.values.item_type}
+            onChange={itemDamageReportForm.handleChange}
+            radios={[
+              { label: 'Finished Products', value: 'finished_product' },
+              { label: 'Raw Material', value: 'raw_material' },
+              { label: 'Packaging Material', value: 'packaging_material' }
+            ]}
+          />
+        </Grid>
+        <Grid item sx={3} md={3} lg={3}>
           <FormControl fullWidth margin="normal">
             <FormLabel id="item_id">
               {itemDamageReportForm.values.item_type === 'finished_product' ? 'Select Product' : 'Select Material'}
@@ -175,13 +190,16 @@ export default function ItemDamageReport({ item, visible, onClose }) {
                 !!itemDamageReportForm.errors.item_id
               }
               getOptionLabel={(option) =>
-                getItemsAndRaw(itemDamageReportForm.values.item_type, items, rawMaterials).find((item) => item.id === option).label
+                getItemsAndRaw(itemDamageReportForm.values.item_type, items, rawMaterials)?.find((item) => item?.id === option)?.label
               }
+              renderOption={(prop, option, state, ownerState) => <li {...prop}>{option.label}</li>}
               value={itemDamageReportForm.values.item_id}
               // onChange={itemDamageReportForm.handleChange}
-              isOptionEqualToValue={(option, value) => option.id === value}
+              isOptionEqualToValue={(option, value) => option === value}
               onChange={(e, option) => {
-                itemDamageReportForm.setFieldValue(`item_id`, option.id);
+                if (option && 'id' in option) {
+                  itemDamageReportForm.setFieldValue(`item_id`, option?.id);
+                }
               }}
               type="text"
               id="item_id"
@@ -203,7 +221,7 @@ export default function ItemDamageReport({ item, visible, onClose }) {
             />
           </FormControl>
         </Grid>
-        <Grid item sx={3.5} md={3.5} lg={3.5}>
+        <Grid item sx={2.5} md={2.5} lg={2.5}>
           <FormControl fullWidth margin="normal">
             <FormLabel id="date_range">Select Date Range</FormLabel>
             <DateRangePicker

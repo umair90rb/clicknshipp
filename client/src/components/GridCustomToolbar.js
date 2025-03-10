@@ -9,7 +9,7 @@ import {
 import GridRefreshButton from './GridRefreshButton';
 import Box from '@mui/material/Box';
 
-export default function GridCustomToolbar({ withRefresh = null, allowExport = false }) {
+export default function GridCustomToolbar({ withRefresh = null, allowExport = false, customActions = null }) {
   return (
     <GridToolbarContainer>
       <GridToolbarColumnsButton />
@@ -17,6 +17,7 @@ export default function GridCustomToolbar({ withRefresh = null, allowExport = fa
       {allowExport && <GridToolbarExport />}
       <GridToolbarFilterButton />
       {withRefresh && <GridRefreshButton onClick={withRefresh} />}
+      {customActions && customActions}
       <Box display="flex" alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}></Box>
       <GridToolbarQuickFilter />
     </GridToolbarContainer>

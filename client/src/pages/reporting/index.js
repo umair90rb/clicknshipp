@@ -56,7 +56,10 @@ const Reporting = () => {
       ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_COURIER_DELIVERY_REPORT)
         ? [{ label: 'Courier Delivery Report', value: 'Delivery Report' }]
         : []),
-      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_STOCK_REPORT) ? [{ label: 'Stock Report', value: 'Stock Report' }] : [])
+      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_STOCK_REPORT) ? [{ label: 'Stock Report', value: 'Stock Report' }] : []),
+      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_STOCK_DAMAGE_REPORT)
+        ? [{ label: 'Stock Damage Report', value: 'Stock Damage Report' }]
+        : [])
     ],
     []
   );
@@ -211,7 +214,7 @@ const Reporting = () => {
             <FormControlLabel control={<Checkbox onChange={() => setWithTime((wT) => !wT)} />} label="With Time" />
           </FormGroup>
         </Grid>
-        <Grid item xs={3.5} md={3.5} lg={3.5}>
+        <Grid item xs={2} md={2} lg={2}>
           {withTime ? (
             <DateTimePicker
               startPeriod={startPeriod}

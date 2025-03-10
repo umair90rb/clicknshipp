@@ -33,6 +33,7 @@ import { locationFetchStatusSelector, locationListSelector } from 'store/slices/
 import { unitOfMeasureFetchStatusSelector, unitOfMeasureListSelector } from 'store/slices/unitOfMeasure/unitOfMeasureSelector';
 import { fetchAllStock, fetchCreateStockReturn } from 'store/slices/stock/fetchStock';
 import { getItemsAndRaw } from './util';
+import CRadioGroup from 'components/RadioGroup';
 
 export default function AddStockReturn({ visible, onClose }) {
   const dispatch = useDispatch();
@@ -133,20 +134,17 @@ export default function AddStockReturn({ visible, onClose }) {
           <Grid container spacing={3}>
             <Grid container columnSpacing={1} alignItems="center" justifyContent="center" item sx={12} md={12} lg={12}>
               <Grid item sx={3} md={3} lg={3}>
-                <FormControl fullWidth margin="normal">
-                  <FormLabel id="item_type_group">Inventory Type</FormLabel>
-                  <RadioGroup
-                    row
-                    aria-labelledby="item_type_group"
-                    name="item_type"
-                    value={addReturnForm.values.item_type}
-                    onChange={addReturnForm.handleChange}
-                  >
-                    <FormControlLabel value="finished_product" control={<Radio />} label="Finished Products" />
-                    <FormControlLabel value="raw_material" control={<Radio />} label="Raw Material" />
-                    <FormControlLabel value="packaging_material" control={<Radio />} label="Packaging Material" />
-                  </RadioGroup>
-                </FormControl>
+                <CRadioGroup
+                  label="Inventory Type"
+                  name="item_type"
+                  value={addReturnForm.values.item_type}
+                  onChange={addReturnForm.handleChange}
+                  radios={[
+                    { label: 'Finished Products', value: 'finished_product' },
+                    { label: 'Raw Material', value: 'raw_material' },
+                    { label: 'Packaging Material', value: 'packaging_material' }
+                  ]}
+                />
               </Grid>
               <Grid item container columnSpacing={1} alignItems="center" justifyContent="center" sx={9} md={9} lg={9}>
                 <Grid item container columnSpacing={1} alignItems="center" justifyContent="flex-start" sx={12} md={12} lg={12}>
@@ -255,7 +253,7 @@ export default function AddStockReturn({ visible, onClose }) {
                               !!addReturnForm.errors.inventory[index] &&
                               !!addReturnForm.errors.inventory[index].item_id
                             }
-                            getOptionLabel={(option) => option.label}
+                            // getOptionLabel={(option) => option.label}
                             value={addReturnForm.values.inventory[index].item_id}
                             // onChange={addReturnForm.handleChange}
                             isOptionEqualToValue={(option, value) => option.id === value.id}

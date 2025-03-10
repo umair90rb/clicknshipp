@@ -47,9 +47,9 @@ class LeapordCourier extends CourierInterface {
         booked_packet_no_piece: 1,
         booked_packet_collect_amount: order.total_price,
         booked_packet_order_id: `${order.order_number}`,
-        origin_city: 322,
+        origin_city: deliveryAccount.cost_center, // change this from 322 to variable cost_center so we add it in
         destination_city: destinationCity.assigned_id,
-        shipment_id: 10,
+        // shipment_id: 10,
         shipment_id: null,
         shipment_name_eng: 'Sukooon Wellness',
         shipment_email: 'umekalsoom011@gmail.com',

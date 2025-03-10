@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import RestoreIcon from '@mui/icons-material/Restore';
 import BrokenImageOutlinedIcon from '@mui/icons-material/BrokenImageOutlined';
@@ -23,6 +23,7 @@ import GridChipFilter from 'components/GridChipFilter';
 import ItemStockHistory from './StockHistory';
 import ItemDamageReport from './ItemDamageReport';
 import GridFilterButton from 'components/GridFilterButton';
+import GridCustomToolbar from 'components/GridCustomToolbar';
 const columns = (showItemHistory, showItemDamageReport) => [
   {
     field: 'id',
@@ -82,7 +83,7 @@ const columns = (showItemHistory, showItemDamageReport) => [
   }
 ];
 
-export default function StockTable() {
+export default function StockTable({ showDamageReport, setShowDamageReport }) {
   const dispatch = useDispatch();
   const [stockFor, setStockFor] = useState('all');
   const [lowStock, setLowStock] = useState('false');
@@ -111,35 +112,42 @@ export default function StockTable() {
     }
   };
 
+  const fetchStock = useCallback(() => dispatch(fetchAllStock({ type: stockFor, lowStock })), [stockFor, lowStock]);
+
   useEffect(() => {
-    dispatch(fetchAllStock({ type: stockFor, lowStock }));
+    fetchStock();
   }, [stockFor, lowStock]);
 
-  const renderToolbar = () => (
-    <GridToolbarContainer>
-      <GridToolbarColumnsButton />
-      <GridToolbarDensitySelector />
-      {hasPermission(PERMISSIONS.PERMISSION_EXPORT_STOCK) && <GridToolbarExport />}
-      <GridFilterButton
-        title="Low Stock"
-        onClick={lowStockFilterHandler}
-        Icon={lowStock !== 'false' ? FilterListOffRoundedIcon : undefined}
-      />
-      <GridRefreshButton onClick={() => dispatch(fetchAllStock({ type: stockFor, lowStock }))} />
-      <Box display="flex" alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
+  useEffect(() => {
+    console.log(showDamageReport, 'showDamageReportshowDamageReportshowDamageReport');
+    if (showDamageReport) {
+      setDamageModal(true);
+    }
+  }, [showDamageReport]);
+
+  const gridCustomActions = useMemo(
+    () => (
+      <>
+        <GridFilterButton
+          title="Low Stock"
+          onClick={lowStockFilterHandler}
+          Icon={lowStock !== 'false' ? FilterListOffRoundedIcon : undefined}
+        />
         <GridChipFilter options={[{ label: 'All', value: 'all' }, ...storeTypes]} onClick={setStockFor} value={stockFor} />
-      </Box>
-      <GridToolbarQuickFilter />
-    </GridToolbarContainer>
+      </>
+    ),
+    [lowStock, stockFor]
   );
 
   return (
     <div style={{ width: '100%' }}>
       <DataGrid
-        slots={{ toolbar: renderToolbar }}
+        slots={{ toolbar: GridCustomToolbar }}
         slotProps={{
           toolbar: {
-            toolbar: renderToolbar,
+            allowExport: hasPermission(PERMISSIONS.PERMISSION_EXPORT_STOCK),
+            withRefresh: fetchStock,
+            customActions: gridCustomActions,
             showQuickFilter: true
           }
         }}
@@ -164,6 +172,7 @@ export default function StockTable() {
         visible={damageModal}
         onClose={() => {
           setDamageModal(false);
+          setShowDamageReport(false);
           setItem({});
         }}
       />

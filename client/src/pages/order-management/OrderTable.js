@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo } from 'react';
+import React, { useEffect, useState, memo, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -64,6 +64,7 @@ import GridDeliveryStatus from './GridDeliveryStatus';
 import { itemFetchStatusSelector, itemItemsSelector } from 'store/slices/item/itemSelector';
 import { fetchAllItem } from 'store/slices/item/fetchItem';
 import OrderBulkBookModal from './OrderBulkBookModal';
+import GridCustomToolbar from 'components/GridCustomToolbar';
 const columns = (
   apiRef,
   rowModesModel,
@@ -372,7 +373,7 @@ const OrderTable = memo(() => {
   const citiesList = useSelector(cityCitiesSelector);
   const citiesFetchStatus = useSelector(cityFetchStatusSelector);
 
-  const itemsList = useSelector(itemItemsSelector);
+  // const itemsList = useSelector(itemItemsSelector);
   const itemsFetchStatus = useSelector(itemFetchStatusSelector);
 
   const deliveryServiceAccountsList = useSelector(deliveryServiceAccountsListSelector);
@@ -396,10 +397,6 @@ const OrderTable = memo(() => {
   const [showAssignSelectedModal, setShowAssignSelectedModal] = useState(false);
   const displayShowAssignSelectedModal = () => setShowAssignSelectedModal(true);
   const hideAssignSelectedModal = () => setShowAssignSelectedModal(false);
-
-  // const [showFilterModal, setShowFilterModal] = useState(false);
-  // const displayFilterModal = () => setShowFilterModal(true);
-  // const hideFilterModal = () => setShowFilterModal(false);
 
   const [addItemInOrderVisible, setAddItemInOrderVisible] = useState(false);
   const [addItemInOrderOrderId, setAddItemInOrderOrderId] = useState(null);
@@ -447,14 +444,6 @@ const OrderTable = memo(() => {
     }
   };
 
-  // const handleRowEditStart = (params, event) => {
-  //   if (params?.row?.status === 'Confirmed') {
-  //     dispatch(setMessage({ type: 'warning', message: 'Confirmed order can not updated!' }));
-  //     event.defaultMuiPrevented = true;
-  //     return;
-  //   }
-  // };
-
   const handleSaveClick = (id) => () => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
   };
@@ -467,7 +456,6 @@ const OrderTable = memo(() => {
   };
 
   const processRowUpdate = async (newRow, oldRow) => {
-    // dispatch(setOrder({ order: { ...newRow, address1: newRow.address1 || newRow?.address?.address1 } }));
     const id = newRow.id;
     const [first, second, ...rest] = newRow.name.split(' ');
     const body = {
@@ -516,14 +504,7 @@ const OrderTable = memo(() => {
     }
   }, []);
 
-  const fetchOrders = (filters) => {
-    // let _filters = filters.filter((f) => f.column !== 'chanel_id');
-    // let chanelFilter = filters.find((f) => f.column === 'chanel_id');
-    // if (chanelFilter) {
-    //   chanelFilter = { ...chanelFilter, value: chanelFilter.value.map((c) => c.id) };
-    // }
-    dispatch(fetchAllOrder({ body: { sort: sortModel, page, pageSize, filters } }));
-  };
+  const fetchOrders = (filters) => dispatch(fetchAllOrder({ body: { sort: sortModel, page, pageSize, filters } }));
 
   useEffect(() => {
     fetchOrders(filters);
@@ -550,42 +531,18 @@ const OrderTable = memo(() => {
     setBulkDeleteLoading(false);
   };
 
-  // const handleApplyFilters = (columnsWithFilter) => {
-  //   const filters = [];
-  //   columnsWithFilter.forEach((column) => {
-  //     if ('filter' in column) {
-  //       filters.push({ column: column.field, op: column.filter.op, value: column.filter.value });
-  //     }
-  //   });
-  //   dispatch(setOrderFilters(filters));
-  // };
-
   const handleClearFilters = () => dispatch(setOrderFilters([]));
 
-  function renderToolbar() {
-    return (
-      <GridToolbarContainer>
-        <GridToolbarColumnsButton />
-        {/* <GridToolbarDensitySelector /> */}
-        {/* <Button
-          onClick={displayFilterModal}
-          size="small"
-          startIcon={
-            <Badge badgeContent={filters.length || 0} color="primary">
-              <FilterListIcon />
-            </Badge>
-          }
-        >
-          Filters
-        </Button> */}
-        {userPermissions.includes(PERMISSIONS.PERMISSION_EXPORT_ORDERS) && <GridToolbarExport />}
+  const allowOrderExports = useMemo(() => hasPermission(PERMISSIONS.PERMISSION_EXPORT_ORDERS), []);
 
+  const gridToolbarActions = useMemo(() => {
+    return (
+      <>
         {filters.length > 0 && (
           <Button onClick={handleClearFilters} size="small" startIcon={<FilterListOffIcon />}>
             Clear Filters
           </Button>
         )}
-
         {userPermissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) && rowSelectionModel.length > 0 && (
           <Button onClick={displayShowAssignSelectedModal} size="small" startIcon={<AssignmentIndIcon />}>
             Assign
@@ -601,43 +558,6 @@ const OrderTable = memo(() => {
             Delete All
           </Button>
         )}
-
-        {/* <GridDateFilter
-          label="Start By"
-          value={filters.find((f) => f.column === 'assignedAt' && f.op === 'Date is after')?.value}
-          onChange={(date) => {
-            console.log(filters.filter((f) => f.column === 'assignedAt' && f.op === 'Date is after'));
-            dispatch(
-              setOrderFilters([
-                ...filters.filter((f) => f.column === 'assignedAt' && f.op === 'Date is after'),
-                // ...filters,
-                {
-                  column: 'assignedAt',
-                  op: 'Date is after',
-                  value: getStartOfDay(date)
-                }
-              ])
-            );
-          }}
-        />
-        <GridDateFilter
-          label="End By"
-          value={filters.find((f) => f.column === 'assignedAt' && f.op === 'Date is before')?.value}
-          onChange={(date) => {
-            console.log(filters.filter((f) => f.column === 'assignedAt' && f.op === 'Date is before'));
-            dispatch(
-              setOrderFilters([
-                ...filters.filter((f) => f.column === 'assignedAt' && f.op === 'Date is before'),
-                // ...filters,
-                {
-                  column: 'assignedAt',
-                  op: 'Date is before',
-                  value: getEndOfDay(date)
-                }
-              ])
-            );
-          }}
-        /> */}
         <GridDropdownFilter
           multiple
           label="filter by status"
@@ -656,24 +576,6 @@ const OrderTable = memo(() => {
             );
           }}
         />
-        {/* <GridDropdownFilter
-          multiple
-          label="filter by chanel"
-          options={chanel?.map((c) => ({ id: c.id, label: c.name, value: c.id }))}
-          value={filters?.find((filter) => filter.column === 'chanel_id')?.value || []}
-          onChange={(e) => {
-            if (e.target.value.length === 0) {
-              dispatch(setOrderFilters([...filters.filter((filter) => filter.column !== 'chanel_id')]));
-              return;
-            }
-            dispatch(
-              setOrderFilters([
-                ...filters.filter((filter) => filter.column !== 'chanel_id'),
-                { column: 'chanel_id', op: 'Text is any', value: e.target.value }
-              ])
-            );
-          }}
-        /> */}
         <GridDropdownFilter
           label="filter by tags"
           options={ORDER_TAGS}
@@ -691,8 +593,6 @@ const OrderTable = memo(() => {
             );
           }}
         />
-
-        {/* <GridSearchSelect /> */}
         <GridDropdownFilter
           multiple
           label="filter by cities"
@@ -711,32 +611,9 @@ const OrderTable = memo(() => {
             );
           }}
         />
-
-        {/* <GridDropdownFilter
-          multiple
-          label="filter by items"
-          options={itemsList.map((item) => item.name)}
-          value={filters.find((filter) => filter.column === 'items')?.value || []}
-          onChange={(e) => {
-            if (!e.target.value || e.target.value === 'All') {
-              dispatch(setOrderFilters([...filters.filter((filter) => filter.column !== 'items')]));
-              return;
-            }
-            console.log(e.target.value);
-            dispatch(
-              setOrderFilters([
-                ...filters.filter((filter) => filter.column !== 'items'),
-                { column: 'items', op: 'Text is any', value: e.target.value }
-              ])
-            );
-          }}
-        /> */}
-
-        <Box sx={{ flexGrow: 1 }} />
-        <GridToolbarQuickFilter />
-      </GridToolbarContainer>
+      </>
     );
-  }
+  }, []);
 
   return (
     <div style={{ height: '80vh', width: '100%' }}>
@@ -751,8 +628,16 @@ const OrderTable = memo(() => {
           }
         }}
         slots={{
-          toolbar: renderToolbar,
+          toolbar: GridCustomToolbar,
           noRowsOverlay: CustomNoRowsOverlay
+        }}
+        slotProps={{
+          toolbar: {
+            withRefresh: fetchOrders,
+            allowExport: allowOrderExports,
+            customActions: gridToolbarActions,
+            showQuickFilter: true
+          }
         }}
         initialState={{
           sorting: {
@@ -809,26 +694,6 @@ const OrderTable = memo(() => {
         onClose={hideOrderBulkBookModal}
         orderIds={rowSelectionModel}
       />
-      {/* <FilterModal
-        visible={showFilterModal}
-        onClose={hideFilterModal}
-        onApplyFilters={handleApplyFilters}
-        columns={columns()
-          .slice(0, -1)
-          .reduce((pv, cv) => {
-            const { field, headerName } = cv;
-            if (field !== 'agent') {
-              const filterObj = { field, headerName };
-              const filterInState = filters.find((f) => f.column === field);
-              if (filterInState) {
-                filterObj.filter = filterInState;
-              }
-              return [...pv, filterObj];
-            } else {
-              return pv;
-            }
-          }, [])}
-      /> */}
     </div>
   );
 });
