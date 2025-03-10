@@ -36,7 +36,7 @@ class DeawooCourier extends CourierInterface {
       }
       const body = {
         order_no: `${order.order_number}`,
-        source_terminal_id: '10',
+        source_terminal_id: deliveryAccount.cost_center, //fsd: '10', karachi: '16'
         destination_terminal_id: destinationCity.assigned_id,
         receiver_name: `${order.customer.first_name} ${
           order.customer.last_name || ''
