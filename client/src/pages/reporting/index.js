@@ -276,9 +276,10 @@ const Reporting = () => {
                 options={cities}
                 value={reportCities}
                 onChange={(e, option) => {
-                  if (option) {
-                    dispatch(setReportCities(option));
+                  if (!option) {
+                    return dispatch(setReportCities(''));
                   }
+                  dispatch(setReportCities(option));
                 }}
               />
             </Grid>

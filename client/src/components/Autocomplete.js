@@ -18,6 +18,10 @@ export default function CAutocomplete({
       {label && <FormLabel id={`${name}_label`}>{label}</FormLabel>}
       <Autocomplete
         // multiple need to work on this
+        autoHighlight
+        autoComplete
+        clearOnEscape
+        handleHomeEndKeys
         sx={{
           height: '100%',
           [`& .${autocompleteClasses.inputRoot}`]: {
@@ -38,7 +42,6 @@ export default function CAutocomplete({
         type="text"
         id={`${name}_id`}
         name={name}
-        autoHighlight
         renderInput={(params) => (
           <TextField
             autoFocus

@@ -548,7 +548,7 @@ const OrderTable = memo(() => {
             Assign
           </Button>
         )}
-        {userPermissions.includes(PERMISSIONS.PERMISSION_BULK_ORDER_DELETE) && rowSelectionModel.length > 0 && (
+        {userPermissions.includes(PERMISSIONS.PERMISSION_BULK_ORDER_BOOKING) && rowSelectionModel.length > 0 && (
           <Button onClick={showOrderBulkBookModal} size="small" startIcon={<LocalShippingOutlinedIcon />}>
             Book
           </Button>
