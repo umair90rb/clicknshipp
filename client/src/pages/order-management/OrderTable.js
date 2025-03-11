@@ -543,7 +543,7 @@ const OrderTable = memo(() => {
             Clear Filters
           </Button>
         )}
-        {userPermissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS) && rowSelectionModel.length > 0 && (
+        {userPermissions.includes(PERMISSIONS.PERMISSION_ASSIGN_ORDERS) && rowSelectionModel.length > 0 && (
           <Button onClick={displayShowAssignSelectedModal} size="small" startIcon={<AssignmentIndIcon />}>
             Assign
           </Button>

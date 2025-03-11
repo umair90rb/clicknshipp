@@ -42,6 +42,8 @@ import useChannelsFetch from 'hooks/useChannelsFetch';
 import CSelect from 'components/CSelect';
 import { deliveryServiceAccountsListSelector } from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSelector';
 import useDeliveryServicesAccountFetch from 'hooks/useDeliveryServicesAccountFetch';
+import { formatDate } from 'utils/format-date';
+import { dateFormatForTimeField } from 'constants/index';
 
 const Reporting = () => {
   const dispatch = useDispatch();
@@ -248,11 +250,11 @@ const Reporting = () => {
             <FormControlLabel control={<Checkbox onChange={() => setWithTime((wT) => !wT)} />} label="With Time" />
           </FormGroup>
         </Grid>
-        <Grid item xs={2} md={2} lg={2}>
+        <Grid item xs={3} md={3} lg={3}>
           {withTime ? (
             <DateTimePicker
-              startPeriod={startPeriod}
-              endPeriod={endPeriod}
+              startPeriod={formatDate(dateFormatForTimeField, startPeriod)}
+              endPeriod={formatDate(dateFormatForTimeField, endPeriod)}
               onStartDateSelect={(date) => dispatch(setReportPeriod({ period: 'startPeriod', value: date }))}
               onEndDateSelect={(date) => dispatch(setReportPeriod({ period: 'endPeriod', value: date }))}
             />

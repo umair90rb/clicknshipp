@@ -1,10 +1,12 @@
 import React from 'react';
 import { TextField, Grid } from '@mui/material';
+import { dateFormat } from 'constants/index';
+import moment from '../../node_modules/moment/moment';
 
 const DateTimePicker = ({ startPeriod, endPeriod, onStartDateSelect, onEndDateSelect }) => {
-  const handleStartChange = (e) => onStartDateSelect(e.target.value);
+  const handleStartChange = (e) => onStartDateSelect(moment(e.target.value).format(dateFormat));
 
-  const handleEndChange = (e) => onEndDateSelect(e.target.value);
+  const handleEndChange = (e) => onEndDateSelect(moment(e.target.value).format(dateFormat));
 
   return (
     <Grid container justifyContent="center" alignItems="center" spacing={2}>
