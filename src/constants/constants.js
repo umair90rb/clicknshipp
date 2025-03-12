@@ -22,6 +22,7 @@ export const PERMISSIONS = {
   PERMISSION_BULK_ORDER_DELETE: 'bulk-order-delete',
   PERMISSION_BULK_ORDER_BOOKING: 'bulk-order-booking',
   PERMISSION_ASSIGN_ORDERS: 'assign-orders',
+  PERMISSION_DAY_START: 'day-start',
   PERMISSION_EXPORT_ORDERS: 'export-orders',
 
   PERMISSION_VIEW_ITEMS: 'view-items',
@@ -80,6 +81,7 @@ export const PERMISSIONS = {
   PERMISSION_UPDATE_DELIVERY_ACCOUNTS: 'update-delivery-accounts',
   PERMISSION_DELETE_DELIVERY_ACCOUNTS: 'delete-delivery-accounts',
   PERMISSION_EXPORT_DELIVERY_ACCOUNT: 'export-delivery-account',
+  PERMISSION_ADD_DELIVER_SERVICE_CITY: 'add-delivery-service-city',
 
   PERMISSION_VIEW_LOCATIONS: 'view-locations',
   PERMISSION_CREATE_LOCATION: 'create-location',

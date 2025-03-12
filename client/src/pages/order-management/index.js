@@ -49,14 +49,14 @@ const OrderManagement = memo(() => {
           </Grid>
           <Grid item>
             <Grid container spacing={1}>
-              {hasPermission(PERMISSIONS.PERMISSION_CREATE_BULK_ORDER) && (
+              {hasPermission(PERMISSIONS.PERMISSION_ADD_DELIVER_SERVICE_CITY) && (
                 <Grid item>
                   <Button component="label" variant="contained" onClick={showAddCityModal} startIcon={<AddIcon />}>
                     Add Courier City
                   </Button>
                 </Grid>
               )}
-              {hasPermission(PERMISSIONS.PERMISSION_CREATE_DELIVERY_ACCOUNTS) && (
+              {hasPermission(PERMISSIONS.PERMISSION_DAY_START) && (
                 <Grid item>
                   <Button component="label" variant="contained" onClick={showAssignModal} startIcon={<StartIcon />}>
                     Day Start
