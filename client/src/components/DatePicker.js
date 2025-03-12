@@ -30,9 +30,9 @@ const CustomPickersDay = styled(PickersDay, {
 }));
 
 function isSelected(day, start, end) {
-  const normalizedDay = getStartOfDay(day);
-  const normalizedStart = getStartOfDay(start);
-  const normalizedEnd = getStartOfDay(end);
+  const normalizedDay = day && getStartOfDay(day);
+  const normalizedStart = start && getStartOfDay(start);
+  const normalizedEnd = end && getStartOfDay(end);
 
   if (isEqual(normalizedDay, normalizedStart)) return true;
   if (isEqual(normalizedDay, normalizedEnd)) return true;
