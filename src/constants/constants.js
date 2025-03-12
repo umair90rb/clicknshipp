@@ -4,6 +4,7 @@ export const PERMISSIONS = {
   PERMISSIONS_GET_BOOKING_REPORT: 'get-booking-report',
   PERMISSIONS_GET_FOC_REPORT: 'get-foc-report',
   PERMISSIONS_GET_CHANNEL_REPORT: 'get-channel-report',
+  PERMISSIONS_GET_CHANNEL_ORDER_REPORT: 'get-channel-order-report',
   PERMISSIONS_GET_INCENTIVE_REPORT: 'get-incentive-report',
   PERMISSIONS_GET_COURIER_DELIVERY_REPORT: 'get-courier-delivery-report',
   PERMISSIONS_GET_STOCK_REPORT: 'get-stock-report',

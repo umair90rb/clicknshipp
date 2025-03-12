@@ -5,7 +5,8 @@ import TimelineSeparator from '@mui/lab/TimelineSeparator';
 import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineDot from '@mui/lab/TimelineDot';
 import TimelineOppositeContent, { timelineOppositeContentClasses } from '@mui/lab/TimelineOppositeContent';
-import moment from 'moment';
+import { formatDate } from 'utils/format-date';
+import { dateFormatForHistory } from 'constants/index';
 
 export default function History({ orderHistory = [] }) {
   return (
@@ -20,7 +21,7 @@ export default function History({ orderHistory = [] }) {
         .sort((a, b) => new Date(b?.createdAt) - new Date(a?.createdAt))
         .map((h, index) => (
           <TimelineItem key={index}>
-            <TimelineOppositeContent color="textSecondary">{moment(h?.createdAt).format('DD MMM h:mm:ss a')}</TimelineOppositeContent>
+            <TimelineOppositeContent color="textSecondary">{formatDate(dateFormatForHistory, h?.createdAt)}</TimelineOppositeContent>
             <TimelineSeparator>
               <TimelineDot />
             </TimelineSeparator>

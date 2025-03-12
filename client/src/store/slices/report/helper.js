@@ -14,6 +14,22 @@ export function addTotalRow(report, data) {
           totalUnitConfirmed: data.reduce((acc, row) => acc + (parseInt(row.unit_confirmed) || 0), 0)
         }
       ];
+    case 'Channel Order Report':
+      return [
+        ...data.map((row) => ({ ...row, id: `${row.agent}-${row.chanel}-${row.orders}-${row.units}` })),
+        {
+          id: 'TOTAL',
+          label: 'Total',
+          totalOrders: data.reduce((acc, row) => acc + (parseInt(row.orders) || 0), 0),
+          totalConfirmedOrders: data.reduce((acc, row) => acc + (parseInt(row.confirmed) || 0), 0),
+          totalDuplicatedOrders: data.reduce((acc, row) => acc + (parseInt(row.duplicate) || 0), 0),
+          totalCancelOrders: data.reduce((acc, row) => acc + (parseInt(row.cancel) || 0), 0),
+          totalNoPickOrders: data.reduce((acc, row) => acc + (parseInt(row.no_pick) || 0), 0),
+          totalUnitGenerated: data.reduce((acc, row) => acc + (parseInt(row.unit_generated) || 0), 0),
+          totalUnitConfirmed: data.reduce((acc, row) => acc + (parseInt(row.unit_confirmed) || 0), 0),
+          totalUnitDuplicated: data.reduce((acc, row) => acc + (parseInt(row.unit_duplicated) || 0), 0)
+        }
+      ];
     case 'Agent Report':
       return [
         ...data.map((row) => ({ ...row, id: `${row.user_id}-${row.cancel}-${row.total}-${row.confirmed}` })),

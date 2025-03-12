@@ -7,10 +7,12 @@ import {
   CONFIRMED,
   CANCELED,
   GENERATED,
+  GENERATED_WITH_DUPLICATED,
   BOOKED,
   BOOKING_ERROR,
   DELIVERED,
   RETURNED,
+  DUPLICATE,
 } from '../constants/orderStatuses';
 const {
   Order,
@@ -25,6 +27,7 @@ const {
   Item,
   RawMaterial,
   StockLevel,
+  StockHistory,
 } = model;
 class ReportingService {
   constructor() {}
@@ -742,6 +745,114 @@ class ReportingService {
     });
   }
 
+  getChannelOrderReport(startPeriod, endPeriod, reportBrand, reportChanel) {
+    let where = {
+      created_at: { [Op.gte]: startPeriod, [Op.lte]: endPeriod },
+    };
+    if (reportBrand && reportBrand.length) {
+      where['brand_id'] = {
+        [Op.in]: reportBrand,
+      };
+    }
+    if (reportChanel && reportChanel.length) {
+      where['chanel_id'] = {
+        [Op.in]: reportChanel,
+      };
+    }
+    return Order.findAll({
+      attributes: [
+        [col('chanel.name'), 'chanel'],
+        [
+          fn(
+            'COUNT',
+            literal(
+              `DISTINCT CASE WHEN "Order"."status" IN ${GENERATED_WITH_DUPLICATED} THEN "Order"."id" ELSE NULL END`
+            )
+          ),
+          'orders',
+        ],
+        [
+          fn(
+            'COUNT',
+            literal(
+              `DISTINCT CASE WHEN "Order"."status" IN ${CONFIRMED} THEN "Order"."id" ELSE NULL END`
+            )
+          ),
+          'confirmed',
+        ],
+        [
+          fn(
+            'COUNT',
+            literal(
+              `DISTINCT CASE WHEN "Order"."status" IN ${DUPLICATE} THEN "Order"."id" ELSE NULL END`
+            )
+          ),
+          'duplicate',
+        ],
+        [
+          fn(
+            'COUNT',
+            literal(
+              'DISTINCT CASE WHEN "Order"."status" = \'No Pick\' THEN "Order"."id" ELSE NULL END'
+            )
+          ),
+          'no_pick',
+        ],
+        [
+          fn(
+            'COUNT',
+            literal(
+              'DISTINCT CASE WHEN "Order"."status" = \'Cancel\' THEN "Order"."id" ELSE NULL END'
+            )
+          ),
+          'cancel',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              `CASE WHEN "Order"."status" IN ${GENERATED} THEN "items"."quantity" ELSE 0 END`
+            )
+          ),
+          'unit_generated',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              `CASE WHEN "Order"."status" IN ${CONFIRMED} THEN "items"."quantity" ELSE 0 END`
+            )
+          ),
+          'unit_confirmed',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              `CASE WHEN "Order"."status" IN ${DUPLICATE} THEN "items"."quantity" ELSE 0 END`
+            )
+          ),
+          'unit_duplicated',
+        ],
+      ],
+      include: [
+        {
+          model: Chanel,
+          as: 'chanel',
+          attributes: [],
+        },
+        {
+          model: OrderItem,
+          as: 'items',
+          attributes: [],
+        },
+      ],
+      where,
+      group: ['Order.chanel_id', 'chanel.name'],
+      raw: true,
+    });
+  }
+
   getStockReport(startPeriod, endPeriod, reportBrand, reportChanel) {
     return sequelize.query(
       `select distinct on (i.id) sl.item_type, sh."createdAt", i.name, coalesce((coalesce(sl.current_level, 0) - coalesce("in".total, 0) + coalesce("out".total, 0)), 0) as "opening", coalesce("in".total, 0) as "in",  coalesce("out".total, 0) as "out", coalesce(sl.current_level, 0) as "closing" from "StockLevels" sl 
@@ -783,6 +894,31 @@ class ReportingService {
         type: QueryTypes.SELECT,
       }
     );
+  }
+
+  getDamageStockReport(startPeriod, endPeriod, reportBrand, reportChanel) {
+    let where = {
+      movement_type: 'damage',
+      createdAt: { [Op.gte]: startPeriod, [Op.lte]: endPeriod },
+    };
+
+    return StockHistory.findAll({
+      attributes: [[fn('sum', col('quantity')), 'balance'], 'item_type'],
+      include: [
+        {
+          model: RawMaterial,
+          as: 'raw',
+          attributes: ['name'],
+        },
+        {
+          model: Item,
+          as: 'item',
+          attributes: ['name'],
+        },
+      ],
+      where,
+      group: ['item_type', 'raw.id', 'item.id'],
+    });
   }
 }
 

@@ -25,7 +25,7 @@ const columns = [
   {
     field: 'name',
     headerName: 'Name',
-    flex: 1,
+    width: 250,
     valueGetter: (params) => {
       if (params.row.id === 'TOTAL') {
         return params.row.label;
@@ -50,7 +50,7 @@ export default function IncentiveReport() {
       withAgentColumns.push({
         field: confirmKey,
         headerName: `${toSentence(k.split('_').join(' '))}`,
-        flex: 1,
+        width: 100,
         valueGetter: (params) => {
           if (params.row.id === 'TOTAL') {
             return params.row[`${confirmKey}_total`];

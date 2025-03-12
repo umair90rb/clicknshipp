@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import fetchStatus from 'constants/fetchStatuses';
 import { fetchDashboardGraph, fetchDashboardStats, fetchDashboardCompareStats } from './fetchDashboard';
-import moment from '../../../../node_modules/moment/moment';
-import { subtractDaysFromToday } from 'utils/format-date';
+import { getEndOfDay, getStartOfDay, subtractDaysFromToday } from 'utils/format-date';
+import { dateFormatForDashboard } from 'constants/index';
 
 const initialState = {
   stats: {},
@@ -17,16 +17,16 @@ const initialState = {
     },
     fetchStatus: fetchStatus.IDLE,
     error: null,
-    startPeriod: moment(subtractDaysFromToday(30)).startOf('day').format('YYYY-MM-DDTHH:MM'),
-    endPeriod: moment(new Date()).endOf('day').format('YYYY-MM-DDTHH:MM')
+    startPeriod: getStartOfDay(subtractDaysFromToday(30), dateFormatForDashboard),
+    endPeriod: getEndOfDay(undefined, dateFormatForDashboard)
   },
   compare: null,
   fetchStatus: fetchStatus.IDLE,
   error: null,
-  startPeriod: moment(new Date()).startOf('day').format('YYYY-MM-DDTHH:MM'),
-  endPeriod: moment(new Date()).endOf('day').format('YYYY-MM-DDTHH:MM'),
-  compareStartPeriod: moment(subtractDaysFromToday(1)).startOf('day').format('YYYY-MM-DDTHH:MM'),
-  compareEndPeriod: moment(subtractDaysFromToday(1)).endOf('day').format('YYYY-MM-DDTHH:MM')
+  startPeriod: getStartOfDay(subtractDaysFromToday(30), dateFormatForDashboard),
+  endPeriod: getEndOfDay(undefined, dateFormatForDashboard),
+  compareStartPeriod: getStartOfDay(subtractDaysFromToday(1), dateFormatForDashboard),
+  compareEndPeriod: getEndOfDay(undefined, dateFormatForDashboard)
 };
 
 const dashboardSlice = createSlice({

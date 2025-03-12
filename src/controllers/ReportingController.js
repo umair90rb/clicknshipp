@@ -82,6 +82,22 @@ export default {
             reportChanel
           );
           break;
+        case 'Channel Order Report':
+          report = await reportingService.getChannelOrderReport(
+            startPeriod,
+            endPeriod,
+            reportBrand,
+            reportChanel
+          );
+          break;
+        case 'Damage Stock Report':
+          report = await reportingService.getDamageStockReport(
+            startPeriod,
+            endPeriod,
+            reportBrand,
+            reportChanel
+          );
+          break;
       }
 
       return sendSuccessResponse(

@@ -12,7 +12,7 @@ import {
   dashboardCompareStartPeriodSelector,
   dashboardCompareEndPeriodSelector,
   dashboardCompareStatsSelector,
-  dashboardGraphDataSelector,
+  // dashboardGraphDataSelector,
   dashboardGraphStartPeriodSelector,
   dashboardGraphEndPeriodSelector
 } from 'store/slices/dashboard/dashboardSelector';
@@ -21,6 +21,7 @@ import DateRangePicker from 'components/DatePicker';
 import MainCard from 'components/MainCard';
 import SalesTrend from './components/SalesTrend';
 import DeliveryRatio from './components/DeliveryRatio';
+import { dateFormatForDateTimeField } from 'constants/index';
 
 const DashboardDefault = () => {
   const dispatch = useDispatch();
@@ -45,10 +46,6 @@ const DashboardDefault = () => {
   }, [startPeriod, endPeriod]);
 
   useEffect(() => {
-    dispatch(fetchDashboardStats({ startPeriod, endPeriod }));
-  }, [startPeriod, endPeriod]);
-
-  useEffect(() => {
     if (compareStartPeriod && compareEndPeriod) {
       dispatch(fetchDashboardCompareStats({ startPeriod: compareStartPeriod, endPeriod: compareEndPeriod }));
     }
@@ -58,28 +55,31 @@ const DashboardDefault = () => {
     <Grid container rowSpacing={1} columnSpacing={0.75}>
       {/* row 1 */}
       <Grid item xs={12}>
-        <Grid container item justifyContent="center" alignItems="center">
-          <Grid item xs={2}>
+        <Grid container item justifyContent="space-between" alignItems="center">
+          <Grid item xs={12} sm={6} md={5} lg={6}>
             <Typography variant="h5">Dashboard</Typography>
           </Grid>
-          <Grid container item gap={1} justifyContent="flex-end" alignItems="center" xs={10}>
-            <DateRangePicker
-              requiredFormat="YYYY-MM-DDTHH:MM"
-              startPeriod={startPeriod}
-              endPeriod={endPeriod}
-              onStartDateSelect={(date) => dispatch(setDashboardStatPeriod({ period: 'startPeriod', value: date }))}
-              onEndDateSelect={(date) => dispatch(setDashboardStatPeriod({ period: 'endPeriod', value: date }))}
-            />
-            <>
+          <Grid container spacing={1} item xs={12} sm={6} md={6} lg={6}>
+            <Grid item xs={12} sm={6} md={5} lg={5}>
+              <Typography variant="body1">Selected Period:</Typography>
+              <DateRangePicker
+                requiredFormat={dateFormatForDateTimeField}
+                startPeriod={startPeriod}
+                endPeriod={endPeriod}
+                onStartDateSelect={(date) => dispatch(setDashboardStatPeriod({ period: 'startPeriod', value: date }))}
+                onEndDateSelect={(date) => dispatch(setDashboardStatPeriod({ period: 'endPeriod', value: date }))}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={7} lg={7}>
               <Typography variant="body1">Compare to:</Typography>
               <DateRangePicker
-                requiredFormat="YYYY-MM-DDTHH:MM"
+                requiredFormat={dateFormatForDateTimeField}
                 startPeriod={compareStartPeriod}
                 endPeriod={compareEndPeriod}
                 onStartDateSelect={(date) => dispatch(setDashboardStatPeriod({ period: 'compareStartPeriod', value: date }))}
                 onEndDateSelect={(date) => dispatch(setDashboardStatPeriod({ period: 'compareEndPeriod', value: date }))}
               />
-            </>
+            </Grid>
           </Grid>
         </Grid>
       </Grid>

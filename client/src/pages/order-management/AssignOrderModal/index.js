@@ -12,8 +12,6 @@ import { fetchFilteredChanel } from 'store/slices/chanel/fetchChanel';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
-// import moment from '../../../../node_modules/moment/moment';
-
 const style = {
   position: 'absolute',
   top: '50%',
@@ -123,8 +121,6 @@ export default function AssignOrderModal({ visible, onClose }) {
         body: {
           brand: brand && brand !== 'All' ? [brand] : [],
           chanel: chanel && chanel !== 'All' ? [chanel] : [],
-          // startPeriod: moment(new Date()).startOf('day').format('YYYY-MM-DDTHH:MM'),
-          // endPeriod: moment(new Date()).format('YYYY-MM-DDTHH:MM'),
           users: users && users.length === 1 && users[0] === 'All' ? [] : users,
           type: orderType
         }

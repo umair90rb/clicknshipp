@@ -6,7 +6,10 @@ const columns = [
   {
     field: 'name',
     headerName: 'Item/Material Name',
-    flex: 1
+    flex: 1,
+    valueGetter: (params) => {
+      return params.row.raw.name || params.row.item.name;
+    }
   },
   {
     field: 'item_type',
@@ -16,34 +19,19 @@ const columns = [
       params.value === 'finished_product' ? 'Item' : params.value === 'raw_material' ? 'Raw Material' : 'Packaging Material'
   },
   {
-    field: 'opening',
-    headerName: 'Opening Balance',
-    flex: 1
-  },
-  {
-    field: 'in',
-    headerName: 'In',
-    flex: 0.5
-  },
-  {
-    field: 'out',
-    headerName: 'Out',
-    flex: 0.5
-  },
-  {
-    field: 'closing',
-    headerName: 'Closing Balance',
+    field: 'balance',
+    headerName: 'Current Damage Balance',
     flex: 1
   }
 ];
 
-export default function StockReport() {
+export default function DamageStockReport() {
   const data = useSelector(reportDataSelector);
 
   return (
     <ReportingGrid
-      heading="Stock Report"
-      description="Stock report give you insight about the stock in, out, and current balance."
+      heading="Damage Stock Report"
+      description="Damage stock report give you current balance of the damage stock."
       rows={data}
       columns={columns}
     />

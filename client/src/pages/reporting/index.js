@@ -43,7 +43,9 @@ import CSelect from 'components/CSelect';
 import { deliveryServiceAccountsListSelector } from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSelector';
 import useDeliveryServicesAccountFetch from 'hooks/useDeliveryServicesAccountFetch';
 import { formatDate } from 'utils/format-date';
-import { dateFormatForTimeField } from 'constants/index';
+import { dateFormatForDateTimeField } from 'constants/index';
+import ChannelOrderReport from './ChannelOrderReport';
+import DamageStockReport from './DamageStockReport';
 
 const Reporting = () => {
   const dispatch = useDispatch();
@@ -67,18 +69,25 @@ const Reporting = () => {
 
   const REPORT_TYPES = useMemo(
     () => [
-      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_AGENT_REPORT) ? [{ label: 'Agent Report', value: 'Agent Report' }] : []),
-      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_PRODUCT_REPORT) ? [{ label: 'Product Report', value: 'Unit Report' }] : []),
-      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_BOOKING_REPORT) ? [{ label: 'Booking Report', value: 'Booking Unit Report' }] : []),
-      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_FOC_REPORT) ? [{ label: 'FOC Report', value: 'FOC Report' }] : []),
-      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_CHANNEL_REPORT) ? [{ label: 'Channel Report', value: 'Channel Report' }] : []),
-      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_INCENTIVE_REPORT) ? [{ label: 'Incentive Report', value: 'Incentive Report' }] : []),
+      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_AGENT_REPORT) ? [{ label: 'Agent Order Report', value: 'Agent Report' }] : []),
+      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_PRODUCT_REPORT) ? [{ label: 'Product Unit Report', value: 'Unit Report' }] : []),
+      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_BOOKING_REPORT)
+        ? [{ label: 'Booking Unit Report', value: 'Booking Unit Report' }]
+        : []),
+      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_FOC_REPORT) ? [{ label: 'Courier FOC Unit Report', value: 'FOC Report' }] : []),
+      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_CHANNEL_REPORT) ? [{ label: 'Agent Channel Report', value: 'Channel Report' }] : []),
+      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_CHANNEL_ORDER_REPORT)
+        ? [{ label: 'Channel Order Report', value: 'Channel Order Report' }]
+        : []),
+      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_INCENTIVE_REPORT)
+        ? [{ label: 'Agent Incentive Unit Report', value: 'Incentive Report' }]
+        : []),
       ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_COURIER_DELIVERY_REPORT)
         ? [{ label: 'Courier Delivery Report', value: 'Delivery Report' }]
         : []),
       ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_STOCK_REPORT) ? [{ label: 'Stock Report', value: 'Stock Report' }] : []),
       ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_STOCK_DAMAGE_REPORT)
-        ? [{ label: 'Stock Damage Report', value: 'Stock Damage Report' }]
+        ? [{ label: 'Damage Stock Report', value: 'Damage Stock Report' }]
         : [])
     ],
     []
@@ -119,12 +128,16 @@ const Reporting = () => {
         return <FOCReport />;
       case 'Channel Report':
         return <ChannelReport />;
+      case 'Channel Order Report':
+        return <ChannelOrderReport />;
       case 'Incentive Report':
         return <IncentiveReport />;
       case 'Delivery Report':
         return <DeliveryReport />;
       case 'Stock Report':
         return <StockReport />;
+      case 'Damage Stock Report':
+        return <DamageStockReport />;
     }
   };
 
@@ -253,8 +266,8 @@ const Reporting = () => {
         <Grid item xs={3} md={3} lg={3}>
           {withTime ? (
             <DateTimePicker
-              startPeriod={formatDate(dateFormatForTimeField, startPeriod)}
-              endPeriod={formatDate(dateFormatForTimeField, endPeriod)}
+              startPeriod={formatDate(dateFormatForDateTimeField, startPeriod)}
+              endPeriod={formatDate(dateFormatForDateTimeField, endPeriod)}
               onStartDateSelect={(date) => dispatch(setReportPeriod({ period: 'startPeriod', value: date }))}
               onEndDateSelect={(date) => dispatch(setReportPeriod({ period: 'endPeriod', value: date }))}
             />

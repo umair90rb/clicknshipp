@@ -1,4 +1,4 @@
-import { startOfDay, endOfDay, format, formatDistanceToNow, isToday, subDays, addDays, parse, parseISO } from 'date-fns';
+import { startOfDay, endOfDay, format, formatDistanceToNow, isToday, isYesterday, subDays, addDays, parse, parseISO } from 'date-fns';
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 export default (date = new Date().toISOString()) => {
@@ -15,9 +15,9 @@ export default (date = new Date().toISOString()) => {
 
 export const getDate = (date = '') => date?.split('T')[0];
 
-export const getStartOfDay = (date = new Date()) => startOfDay(format(date, 'yyyy-MM-dd HH:mm:ss.SSS XXX"'));
+export const getStartOfDay = (date = new Date(), formatStr = 'yyyy-MM-dd HH:mm:ss.SSS XXX') => format(startOfDay(date), formatStr);
 
-export const getEndOfDay = (date = new Date()) => endOfDay(format(date, 'yyyy-MM-dd HH:mm:ss.SSS XXX"'));
+export const getEndOfDay = (date = new Date(), formatStr = 'yyyy-MM-dd HH:mm:ss.SSS XXX') => format(endOfDay(date), formatStr);
 
 export const formatDate = (formatStr = 'dd/MM/yyyy', date = new Date()) => format(date, formatStr);
 
@@ -31,6 +31,7 @@ export const parseTimestamp = (date, formatStr = 'dd/MM/yyyy hh:mm:ss a') => for
 export const formatDistance = (date) => formatDistanceToNow(date, { addSuffix: true });
 
 export const isItToday = (date) => isToday(date);
+export const isItYesterday = (date) => isYesterday(date);
 
 export const subtractDaysFromToday = (days) => subtractDays(days);
 

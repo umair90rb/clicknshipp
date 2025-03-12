@@ -1,11 +1,62 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { format, addDays } from 'date-fns';
-import moment from 'moment';
+import { format, addDays, isSameDay, isEqual, endOfWeek, startOfWeek, lastDayOfWeek, isWithinInterval } from 'date-fns';
+import { getStartOfDay, getEndOfDay, subtractDays, isItToday, isItYesterday } from 'utils/format-date';
 import { dateFormat } from 'constants/index';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { PickersDay } from '@mui/x-date-pickers/PickersDay';
+
+const CustomPickersDay = styled(PickersDay, {
+  shouldForwardProp: (prop) => prop !== 'isSelected' && prop !== 'isHovered'
+})(({ theme, isSelected, day, start, end }) => ({
+  borderRadius: 0,
+  ...(isSelected && {
+    backgroundColor: theme?.palette?.primary?.main || '#1976d2',
+    color: theme?.palette?.primary?.contrastText || '#fff',
+    '&:hover, &:focus': {
+      backgroundColor: theme?.palette?.primary?.main || '#1976d2'
+    }
+  })
+  // ...(isSameDay(day, start) && {
+  //   borderTopLeftRadius: '50%',
+  //   borderBottomLeftRadius: '50%'
+  // }),
+  // ...(isSameDay(day, end) && {
+  //   borderTopRightRadius: '50%',
+  //   borderBottomRightRadius: '50%'
+  // }) not working properly
+}));
+
+function isSelected(day, start, end) {
+  const normalizedDay = getStartOfDay(day);
+  const normalizedStart = getStartOfDay(start);
+  const normalizedEnd = getStartOfDay(end);
+
+  if (isEqual(normalizedDay, normalizedStart)) return true;
+  if (isEqual(normalizedDay, normalizedEnd)) return true;
+  if (isWithinInterval(normalizedDay, { start: normalizedStart, end: normalizedEnd })) return true;
+
+  return false;
+}
+
+function Day(props) {
+  const { day, start, end, ...other } = props;
+
+  return (
+    <CustomPickersDay
+      {...other}
+      day={day}
+      start={start}
+      end={end}
+      sx={{ px: 2.5 }}
+      disableMargin
+      selected={false}
+      isSelected={isSelected(day, start, end)}
+    />
+  );
+}
 
 const Wrapper = styled.div`
   position: relative;
@@ -66,17 +117,24 @@ const DateRangePicker = ({ requiredFormat = dateFormat, startPeriod, endPeriod, 
   const predefinedRanges = {
     Today: [new Date(), new Date()],
     Yesterday: [addDays(new Date(), -1), addDays(new Date(), -1)],
-    'Last 7 days': [addDays(new Date(), -6), new Date()],
-    'Last 30 days': [addDays(new Date(), -29), new Date()],
-    'Last 90 days': [addDays(new Date(), -89), new Date()],
-    'Last 365 days': [addDays(new Date(), -364), new Date()]
+    'This week': [startOfWeek(new Date()), endOfWeek(new Date())],
+    'Last week': [startOfWeek(subtractDays(7, new Date())), endOfWeek(subtractDays(7, new Date()))],
+    'Last 7 days': [subtractDays(7, new Date()), new Date()],
+    'This month': [new Date(new Date().getFullYear(), new Date().getMonth(), 1), new Date()],
+    'Last month': [
+      new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
+      new Date(new Date().getFullYear(), new Date().getMonth(), 0)
+    ],
+    'Last 30 days': [subtractDays(30, new Date()), new Date()],
+    'Last 90 days': [subtractDays(90, new Date()), new Date()],
+    'Last 365 days': [subtractDays(365, new Date()), new Date()]
   };
 
   const handleRangeClick = (range) => {
     setStartDate(predefinedRanges[range][0]);
-    onStartDateSelect(moment(predefinedRanges[range][0]).startOf('day').format(requiredFormat));
+    onStartDateSelect(getStartOfDay(predefinedRanges[range][0], requiredFormat));
     setEndDate(predefinedRanges[range][1]);
-    onEndDateSelect(moment(predefinedRanges[range][1]).endOf('day').format(requiredFormat));
+    onEndDateSelect(getEndOfDay(predefinedRanges[range][1], requiredFormat));
     setSelectedRange(range);
     setIsPopupOpen(false);
   };
@@ -86,10 +144,10 @@ const DateRangePicker = ({ requiredFormat = dateFormat, startPeriod, endPeriod, 
     if (!startDate || endDate) {
       setStartDate(day);
       setEndDate(null);
-      onStartDateSelect(moment(day).startOf('day').format(requiredFormat));
+      onStartDateSelect(getStartOfDay(day, requiredFormat));
     } else {
       setEndDate(day);
-      onEndDateSelect(moment(day).endOf('day').format(requiredFormat));
+      onEndDateSelect(getEndOfDay(day, requiredFormat));
       setIsPopupOpen(false);
     }
   };
@@ -129,6 +187,13 @@ const DateRangePicker = ({ requiredFormat = dateFormat, startPeriod, endPeriod, 
               showDaysOutsideCurrentMonth
               fixedWeekNumber={6}
               views={['year', 'month', 'day']}
+              slots={{ day: Day }}
+              slotProps={{
+                day: {
+                  start: startDate,
+                  end: endDate
+                }
+              }}
             />
           </LocalizationProvider>
         </Popup>
