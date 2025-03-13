@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
+  refresh: '',
   message: null,
   type: 'success',
   path: '/'
@@ -17,8 +18,11 @@ const utilSlice = createSlice({
     },
     setPath: (state, action) => {
       state.path = action.payload;
+    },
+    setRefresh: (state, action) => {
+      state.refresh = action.payload;
     }
   }
 });
-export const { setMessage, setPath } = utilSlice.actions;
+export const { setMessage, setPath, setRefresh } = utilSlice.actions;
 export default utilSlice.reducer;

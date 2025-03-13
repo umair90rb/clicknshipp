@@ -29,7 +29,7 @@ router.post(
 router.post(
   '/',
   Auth,
-  can(PERMISSIONS.PERMISSION_CREATE_USER),
+  can(PERMISSIONS.PERMISSION_ADD_DELIVER_SERVICE_CITY),
   schemaValidator(createMapedCitySchema),
   CityController.create
 );

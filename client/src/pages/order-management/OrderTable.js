@@ -66,6 +66,11 @@ import { fetchAllItem } from 'store/slices/item/fetchItem';
 import OrderBulkBookModal from './OrderBulkBookModal';
 import GridCustomToolbar from 'components/GridCustomToolbar';
 import useFilteredUsersFetch from 'hooks/useFilteredUsersFetch';
+import useCitiesFetch from 'hooks/useCitiesFetch';
+import useItemsFetch from 'hooks/useItemsFetch';
+import useDeliveryServicesAccountFetch from 'hooks/useDeliveryServicesAccountFetch';
+import useChannelsFetch from 'hooks/useChannelsFetch';
+import useOrdersFetch from 'hooks/useOrdersFetch';
 const columns = (
   apiRef,
   rowModesModel,
@@ -373,15 +378,11 @@ const OrderTable = memo(() => {
   // const orderChanelFilter = useSelector(orderChanelFiltersSelector);
 
   const citiesList = useSelector(cityCitiesSelector);
-  const citiesFetchStatus = useSelector(cityFetchStatusSelector);
 
   // const itemsList = useSelector(itemItemsSelector);
-  const itemsFetchStatus = useSelector(itemFetchStatusSelector);
 
   const deliveryServiceAccountsList = useSelector(deliveryServiceAccountsListSelector);
-  const deliveryServiceAccountsFetchStatus = useSelector(deliveryServiceAccountsFetchStatusSelector);
   // const chanel = useSelector(chanelChanelsSelector);
-  const chanelFetchStatus = useSelector(chanelFetchStatusSelector);
   const userPermissions = useSelector(authPermissionsSelector);
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({
@@ -491,26 +492,11 @@ const OrderTable = memo(() => {
     return;
   };
 
-  useEffect(() => {
-    if (citiesFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllCities());
-    }
-    if (itemsFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllItem());
-    }
-    if (deliveryServiceAccountsFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchDeliveryServiceAccounts());
-    }
-    if (chanelFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllChanel());
-    }
-  }, []);
-
-  const fetchOrders = (filters) => dispatch(fetchAllOrder({ body: { sort: sortModel, page, pageSize, filters } }));
-
-  useEffect(() => {
-    fetchOrders(filters);
-  }, [page, pageSize, filters, sortModel]);
+  useCitiesFetch();
+  useItemsFetch();
+  useDeliveryServicesAccountFetch();
+  useChannelsFetch();
+  const { refresh } = useOrdersFetch();
 
   const handleViewClick = (id) => () => navigate(location.viewOrder(id));
 
@@ -545,17 +531,17 @@ const OrderTable = memo(() => {
             Clear Filters
           </Button>
         )}
-        {userPermissions.includes(PERMISSIONS.PERMISSION_ASSIGN_ORDERS) && rowSelectionModel.length > 0 && (
+        {hasPermission(PERMISSIONS.PERMISSION_DAY_START) && rowSelectionModel.length > 0 && (
           <Button onClick={displayShowAssignSelectedModal} size="small" startIcon={<AssignmentIndIcon />}>
             Assign
           </Button>
         )}
-        {userPermissions.includes(PERMISSIONS.PERMISSION_BULK_ORDER_BOOKING) && rowSelectionModel.length > 0 && (
+        {hasPermission(PERMISSIONS.PERMISSION_BULK_ORDER_BOOKING) && rowSelectionModel.length > 0 && (
           <Button onClick={showOrderBulkBookModal} size="small" startIcon={<LocalShippingOutlinedIcon />}>
             Book
           </Button>
         )}
-        {userPermissions.includes(PERMISSIONS.PERMISSION_BULK_ORDER_DELETE) && rowSelectionModel.length > 0 && (
+        {hasPermission(PERMISSIONS.PERMISSION_BULK_ORDER_DELETE) && rowSelectionModel.length > 0 && (
           <Button disabled={bulkDeleteLoading} onClick={handleBulkDelete} size="small" startIcon={<DeleteSweepIcon />}>
             Delete All
           </Button>
@@ -613,7 +599,7 @@ const OrderTable = memo(() => {
             );
           }}
         />
-        {userPermissions.includes(PERMISSIONS.PERMISSION_ORDERS_FILTERS_AGENT) && rowSelectionModel.length > 0 && (
+        {hasPermission(PERMISSIONS.PERMISSION_ORDERS_FILTERS_AGENT) && (
           <GridDropdownFilter
             multiple
             getLabelFromOptions
@@ -636,7 +622,7 @@ const OrderTable = memo(() => {
         )}
       </>
     );
-  }, [rowSelectionModel, filters, citiesList]);
+  }, [rowSelectionModel, filters, citiesList, users]);
 
   return (
     <div style={{ height: '80vh', width: '100%' }}>
@@ -656,7 +642,7 @@ const OrderTable = memo(() => {
         }}
         slotProps={{
           toolbar: {
-            withRefresh: fetchOrders,
+            withRefresh: refresh,
             allowExport: allowOrderExports,
             customActions: gridToolbarActions,
             showQuickFilter: true

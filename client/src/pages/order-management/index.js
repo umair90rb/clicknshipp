@@ -5,13 +5,9 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import StartIcon from '@mui/icons-material/Start';
 import AddIcon from '@mui/icons-material/Add';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-import SyncIcon from '@mui/icons-material/Sync';
 import OrderTable from './OrderTable';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import location from 'utils/location';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllOrder } from 'store/slices/order/fetchOrder';
-import { orderFiltersSelector, orderPageSelector, orderPageSizeSelector, orderSortSelector } from 'store/slices/order/orderSelector';
 import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 import BulkUploadModal from './BulkUploadModal';
@@ -20,12 +16,6 @@ import AddCourierCityModal from './AddCityModal';
 
 const OrderManagement = memo(() => {
   const navigate = useNavigate();
-  const [_, setSearchParams] = useSearchParams();
-  const dispatch = useDispatch();
-  const orderPaginationPage = useSelector(orderPageSelector);
-  const orderPaginationPageSize = useSelector(orderPageSizeSelector);
-  const orderFilters = useSelector(orderFiltersSelector);
-  const orderSort = useSelector(orderSortSelector);
   const { hasPermission } = useAccess();
 
   const [bulkOrderModalVisible, setBulkOrderModalVisible] = useState(false);
@@ -63,22 +53,6 @@ const OrderManagement = memo(() => {
                   </Button>
                 </Grid>
               )}
-              <Grid item>
-                <Button
-                  variant="contained"
-                  startIcon={<SyncIcon />}
-                  onClick={() => {
-                    setSearchParams({});
-                    dispatch(
-                      fetchAllOrder({
-                        body: { sort: orderSort, page: orderPaginationPage, pageSize: orderPaginationPageSize, filters: orderFilters }
-                      })
-                    );
-                  }}
-                >
-                  Refresh
-                </Button>
-              </Grid>
               {hasPermission(PERMISSIONS.PERMISSION_CREATE_BULK_ORDER) && (
                 <Grid item>
                   <Button component="label" variant="contained" onClick={showBulkOrderModal} startIcon={<UploadFileIcon />}>
