@@ -65,6 +65,7 @@ import { itemFetchStatusSelector, itemItemsSelector } from 'store/slices/item/it
 import { fetchAllItem } from 'store/slices/item/fetchItem';
 import OrderBulkBookModal from './OrderBulkBookModal';
 import GridCustomToolbar from 'components/GridCustomToolbar';
+import useFilteredUsersFetch from 'hooks/useFilteredUsersFetch';
 const columns = (
   apiRef,
   rowModesModel,
@@ -361,6 +362,7 @@ const OrderTable = memo(() => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { hasPermission } = useAccess();
+  const { users, loading, error } = useFilteredUsersFetch({ agentsOnly: true });
   const listIsLoading = useSelector(orderListIsLoadingSelector);
   const orders = useSelector(orderListSelector);
   const page = useSelector(orderPageSelector);
@@ -611,6 +613,27 @@ const OrderTable = memo(() => {
             );
           }}
         />
+        {userPermissions.includes(PERMISSIONS.PERMISSION_ORDERS_FILTERS_AGENT) && rowSelectionModel.length > 0 && (
+          <GridDropdownFilter
+            multiple
+            getLabelFromOptions
+            label={loading ? 'loading...' : 'filter by agents'}
+            options={users.map((u) => ({ id: u.id, label: u.name, value: u.id }))}
+            value={filters.find((filter) => filter.column === 'agent')?.value || []}
+            onChange={(e) => {
+              console.log(e.target.value);
+              if (!e.target.value) {
+                return dispatch(setOrderFilters([...filters.filter((filter) => filter.column !== 'agent')]));
+              }
+              dispatch(
+                setOrderFilters([
+                  ...filters.filter((filter) => filter.column !== 'agent'),
+                  { column: 'agent', op: 'Text is any', value: e.target.value.map((v) => v?.value || v) }
+                ])
+              );
+            }}
+          />
+        )}
       </>
     );
   }, [rowSelectionModel, filters, citiesList]);

@@ -23,6 +23,7 @@ export const PERMISSIONS = {
   PERMISSION_BULK_ORDER_DELETE: 'bulk-order-delete',
   PERMISSION_BULK_ORDER_BOOKING: 'bulk-order-booking',
   PERMISSION_ASSIGN_ORDERS: 'assign-orders',
+  PERMISSION_ORDERS_FILTERS_AGENT: 'orders/filters/agent',
   PERMISSION_DAY_START: 'day-start',
   PERMISSION_EXPORT_ORDERS: 'export-orders',
 

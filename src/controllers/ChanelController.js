@@ -114,12 +114,13 @@ export default {
   async update(req, res) {
     try {
       const id = req.params.id;
-      const { name, source, brand_id } = req.body;
+      const { name, source, token, brand_id } = req.body;
       const chanel = await Chanel.findByPk(id);
       if (chanel) {
         chanel.set({
           name,
           source,
+          ...(token && { token }),
           brand_id,
           updatedAt: new Date().toISOString(),
         });

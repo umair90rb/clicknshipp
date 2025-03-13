@@ -208,7 +208,6 @@ export default {
     try {
       const { identifier } = req.params;
       const { by } = req.query;
-      console.log(by, '++++++by');
       let orderExisted = await Order.findOne(
         {
           attributes: ['id', 'order_number'],

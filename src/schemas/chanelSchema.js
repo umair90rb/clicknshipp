@@ -14,6 +14,7 @@ const createChanelSchema = Joi.object({
 const updateChanelSchema = Joi.object({
   name: Joi.string().required(),
   source: Joi.string().required(),
+  token: Joi.string(),
   brand_id: Joi.number().required(),
 });
 

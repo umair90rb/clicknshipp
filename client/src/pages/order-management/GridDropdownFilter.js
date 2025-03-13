@@ -1,6 +1,13 @@
 import { FormControl, InputBase, Box, Select, MenuItem, Chip } from '@mui/material';
 
-export function GridDropdownFilter({ label = '', options = [], value, multiple = false, onChange = () => {} }) {
+export function GridDropdownFilter({
+  label = '',
+  options = [],
+  value,
+  multiple = false,
+  onChange = () => {},
+  getLabelFromOptions = false
+}) {
   return (
     <FormControl sx={{ m: 1 }} size="small">
       <Select
@@ -24,6 +31,18 @@ export function GridDropdownFilter({ label = '', options = [], value, multiple =
                   if (typeof value === 'object' && 'label' in value) {
                     return <Chip size="small" sx={{ borderRadius: 5 }} variant="outlined" key={value.id} label={value.label} />;
                   }
+                  if (getLabelFromOptions) {
+                    console.log(value, options);
+                    return (
+                      <Chip
+                        size="small"
+                        sx={{ borderRadius: 5 }}
+                        variant="outlined"
+                        key={value}
+                        label={options.find((o) => o.value === value)?.label}
+                      />
+                    );
+                  }
                   return <Chip size="small" sx={{ borderRadius: 5 }} variant="outlined" key={value} label={value} />;
                 })}
               </Box>
@@ -39,7 +58,7 @@ export function GridDropdownFilter({ label = '', options = [], value, multiple =
         {options?.map((option, index) => {
           if (typeof option === 'object' && 'label' in option) {
             return (
-              <MenuItem key={index} value={option}>
+              <MenuItem key={index} value={option.value}>
                 {option.label}
               </MenuItem>
             );

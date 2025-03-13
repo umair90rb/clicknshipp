@@ -11,6 +11,7 @@ import { setUserForUpdate, disableUser } from 'store/slices/user/userSlice';
 import { userService } from 'api/index';
 import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
+import useUsersFetch from 'hooks/useUsersFetch';
 
 const columns = (handleEditAction, handleDeleteAction) => [
   {
@@ -93,9 +94,7 @@ export default function UserTable({ updateUser }) {
   const user = useSelector(authUserSelector);
   const { hasPermission } = useAccess();
 
-  useEffect(() => {
-    dispatch(fetchAllUser());
-  }, []);
+  useUsersFetch();
 
   const handleDisableUser = async (id) => {
     if (id === user.id) {
