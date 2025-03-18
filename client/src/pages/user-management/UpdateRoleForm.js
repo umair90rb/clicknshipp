@@ -12,7 +12,7 @@ import {
   aclRolesIsLoadingSelector,
   aclRolesListSelector
 } from 'store/slices/acl/aclSelector';
-import FormHelperTextComponent from 'components/LoadingHelperText';
+import FormHelperTextComponent from 'components/FormHelperTextComponent';
 
 const UpdateRoleForm = ({ closeModal }) => {
   const dispatch = useDispatch();
@@ -83,7 +83,7 @@ const UpdateRoleForm = ({ closeModal }) => {
                       </MenuItem>
                     ))}
                   </Select>
-                  <FormHelperTextComponent loading={rolesIsLoading} />
+                  <FormHelperTextComponent id="roles" loading={rolesIsLoading} error={touched.role && errors.role} />
                   {touched.role && errors.role && (
                     <FormHelperText error id="helper-text-role-signup">
                       {errors.role}
@@ -121,20 +121,18 @@ const UpdateRoleForm = ({ closeModal }) => {
                       </MenuItem>
                     ))}
                   </Select>
-                  <FormHelperTextComponent loading={permissionsIsLoading} />
-                  {touched.permissions && errors.permissions && (
-                    <FormHelperText error id="helper-text-permissions-signup">
-                      {errors.permissions}
-                    </FormHelperText>
-                  )}
+                  <FormHelperTextComponent
+                    id="permissions"
+                    loading={permissionsIsLoading}
+                    error={touched.permissions && errors.permissions}
+                  />
                 </Stack>
               </Grid>
 
-              {errors.submit && (
-                <Grid item xs={12}>
-                  <FormHelperText error>{errors.submit}</FormHelperText>
-                </Grid>
-              )}
+              <Grid item xs={12}>
+                <FormHelperTextComponent id="submit" error={errors.submit} />
+              </Grid>
+
               <Grid item xs={12}>
                 <AnimateButton>
                   <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">

@@ -3,7 +3,7 @@ import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 
-export default function CCheckbox({ label, checked, onChange }) {
+export default function CustomCheckbox({ label, checked, onChange }) {
   return (
     <FormControl fullWidth margin="normal">
       <FormControlLabel

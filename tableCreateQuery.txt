@@ -92,4 +92,4 @@ npx sequelize-cli migration:generate --name add-type-column-in-bill-of-material-
 
 npx sequelize-cli migration:generate --name update-name-product-id-and-unit-of-measure-columns-in-bill-of-material-table
 
-
+npx sequelize-cli migration:generate --name create-metafield-table

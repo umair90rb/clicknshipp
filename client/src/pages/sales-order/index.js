@@ -20,7 +20,7 @@ export default function SalesOrder() {
           <Grid item>
             <Typography variant="h5">Sales Order</Typography>
           </Grid>
-          {hasPermission(PERMISSIONS.PERMISSION_RECEIVE_STOCK) && (
+          {hasPermission(PERMISSIONS.PERMISSION_WRITE_SALES_ORDER) && (
             <Grid item>
               <Button variant="contained" startIcon={<AddOutlinedIcon />} onClick={() => dispatch(setSalesOrderCreateModalVisible(true))}>
                 Create Sales Order

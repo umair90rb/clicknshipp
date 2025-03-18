@@ -9,6 +9,7 @@ import { deleteItem } from 'store/slices/item/itemSlice';
 import GridCustomToolbar from 'components/GridCustomToolbar';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 import useAccess from 'hooks/useAccess';
+import useItemsFetch from 'hooks/useItemsFetch';
 const columns = (handleEditAction, handleDeleteAction) => [
   {
     field: 'id',
@@ -84,13 +85,10 @@ export default function ItemTable({ updateItemHandler }) {
   const dispatch = useDispatch();
   const itemIsLoading = useSelector(itemIsLoadingSelector);
   const items = useSelector(itemItemsSelector);
-  const fetchItems = useCallback(() => dispatch(fetchAllItem()), []);
   const { hasPermission } = useAccess();
   const itemExportPermission = useMemo(() => hasPermission(PERMISSIONS.PERMISSION_EXPORT_ITEMS), []);
 
-  useEffect(() => {
-    fetchItems();
-  }, []);
+  const { refresh } = useItemsFetch();
 
   const deleteItemHandler = (id) => {
     dispatch(fetchDeleteItem({ id })).then((action) => {
@@ -106,7 +104,7 @@ export default function ItemTable({ updateItemHandler }) {
         slots={{ toolbar: GridCustomToolbar }}
         slotProps={{
           toolbar: {
-            withRefresh: fetchItems,
+            withRefresh: refresh,
             allowExport: itemExportPermission,
             showQuickFilter: true
           }

@@ -2,25 +2,28 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-// import CButton from 'components/Button';
+// import CustomButton from 'components/Button';
 import MainCard from 'components/MainCard';
 import KeyboardBackspaceOutlinedIcon from '@mui/icons-material/KeyboardBackspaceOutlined';
 import AssignmentReturnOutlinedIcon from '@mui/icons-material/AssignmentReturnOutlined';
 import BrokenImageOutlinedIcon from '@mui/icons-material/BrokenImageOutlined';
 import SummarizeOutlinedIcon from '@mui/icons-material/SummarizeOutlined';
+import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 import StockTable from './StockTable';
 import AddStockForm from './AddStockForm';
 import { stockStocksSelector } from 'store/slices/stock/stockSelector';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 import AddStockReturn from './AddStockReturn';
 import AddStockDamage from './AddStockDamage';
-import CMenu from 'components/Menu';
+import CustomMenus from 'components/CustomMenu';
+import ImportOpeningStockModal from './ImportOpeningStockModal';
 
 const StockManagement = () => {
   const [addFormModal, setAddFormModal] = useState(false);
   const [returnStockModal, setReturnStockModal] = useState(false);
   const [damageStockModal, setDamageStockModal] = useState(false);
   const [showDamageReport, setShowDamageReport] = useState(false);
+  const [importOpeningStockModalVisible, setImportOpeningStockModalVisible] = useState(false);
   const [itemId, setItemId] = useState();
   const stocks = useSelector(stockStocksSelector);
 
@@ -44,7 +47,7 @@ const StockManagement = () => {
             <Typography variant="h5">Current Stock</Typography>
           </Grid>
           <Grid item>
-            <CMenu
+            <CustomMenus
               options={[
                 {
                   title: 'Receive Stock',
@@ -65,35 +68,14 @@ const StockManagement = () => {
                   title: 'Damage Report',
                   onClick: () => setShowDamageReport(true),
                   Icon: SummarizeOutlinedIcon
+                },
+                {
+                  title: 'Import Opening Stock',
+                  onClick: () => setImportOpeningStockModalVisible(true),
+                  Icon: FileUploadOutlinedIcon
                 }
               ]}
             />
-            {/* <Grid container spacing={1}>
-              <Grid item>
-                <CButton
-                  text="Manage Damage Items/Materials"
-                  onClick={() => setDamageStockModal(true)}
-                  Icon={BrokenImageOutlinedIcon}
-                  permission={PERMISSIONS.PERMISSION_RECEIVE_STOCK}
-                />
-              </Grid>
-              <Grid item>
-                <CButton
-                  text="Add Return"
-                  onClick={() => setReturnStockModal(true)}
-                  Icon={AssignmentReturnOutlinedIcon}
-                  permission={PERMISSIONS.PERMISSION_RECEIVE_STOCK}
-                />
-              </Grid>
-              <Grid item>
-                <CButton
-                  text="Receive Stock"
-                  onClick={() => setAddFormModal(true)}
-                  Icon={KeyboardBackspaceOutlinedIcon}
-                  permission={PERMISSIONS.PERMISSION_RECEIVE_STOCK}
-                />
-              </Grid>
-            </Grid> */}
           </Grid>
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>
@@ -103,6 +85,7 @@ const StockManagement = () => {
       <AddStockForm item={itemId} visible={addFormModal} onClose={() => setAddFormModal(false)} />
       <AddStockReturn visible={returnStockModal} onClose={() => setReturnStockModal(false)} />
       <AddStockDamage visible={damageStockModal} onClose={() => setDamageStockModal(false)} />
+      <ImportOpeningStockModal visible={importOpeningStockModalVisible} onClose={() => setImportOpeningStockModalVisible(false)} />
     </>
   );
 };

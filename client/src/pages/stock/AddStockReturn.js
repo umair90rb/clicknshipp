@@ -33,7 +33,7 @@ import { locationFetchStatusSelector, locationListSelector } from 'store/slices/
 import { unitOfMeasureFetchStatusSelector, unitOfMeasureListSelector } from 'store/slices/unitOfMeasure/unitOfMeasureSelector';
 import { fetchAllStock, fetchCreateStockReturn } from 'store/slices/stock/fetchStock';
 import { getItemsAndRaw } from './util';
-import CRadioGroup from 'components/RadioGroup';
+import CustomRadioGroup from 'components/CustomRadioGroup';
 
 export default function AddStockReturn({ visible, onClose }) {
   const dispatch = useDispatch();
@@ -134,7 +134,7 @@ export default function AddStockReturn({ visible, onClose }) {
           <Grid container spacing={3}>
             <Grid container columnSpacing={1} alignItems="center" justifyContent="center" item sx={12} md={12} lg={12}>
               <Grid item sx={3} md={3} lg={3}>
-                <CRadioGroup
+                <CustomRadioGroup
                   label="Inventory Type"
                   name="item_type"
                   value={addReturnForm.values.item_type}

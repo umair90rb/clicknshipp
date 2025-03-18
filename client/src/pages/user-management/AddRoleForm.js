@@ -23,7 +23,7 @@ import { fetchCreateRole } from 'store/slices/acl/fetchACL';
 import { setMessage } from 'store/slices/util/utilSlice';
 import { useSelector } from '../../../node_modules/react-redux/es/exports';
 import { aclPermissionsIsLoadingSelector, aclPermissionsListSelector } from 'store/slices/acl/aclSelector';
-import FormHelperTextComponent from 'components/LoadingHelperText';
+import FormHelperTextComponent from 'components/FormHelperTextComponent';
 
 const AddRoleForm = ({ closeModal }) => {
   const dispatch = useDispatch();
@@ -76,11 +76,7 @@ const AddRoleForm = ({ closeModal }) => {
                     fullWidth
                     error={Boolean(touched.name && errors.name)}
                   />
-                  {touched.name && errors.name && (
-                    <FormHelperText error id="helper-text-name-signup">
-                      {errors.name}
-                    </FormHelperText>
-                  )}
+                  <FormHelperTextComponent id="name" error={touched.name && errors.name} />
                 </Stack>
               </Grid>
 
@@ -113,20 +109,18 @@ const AddRoleForm = ({ closeModal }) => {
                       </MenuItem>
                     ))}
                   </Select>
-                  <FormHelperTextComponent loading={permissionsIsLoading} />
-                  {touched.permissions && errors.permissions && (
-                    <FormHelperText error id="helper-text-permissions-signup">
-                      {errors.permissions}
-                    </FormHelperText>
-                  )}
+                  <FormHelperTextComponent
+                    id="permissions"
+                    loading={permissionsIsLoading}
+                    error={touched.permissions && errors.permissions}
+                  />
                 </Stack>
               </Grid>
 
-              {errors.submit && (
-                <Grid item xs={12}>
-                  <FormHelperText error>{errors.submit}</FormHelperText>
-                </Grid>
-              )}
+              <Grid item xs={12}>
+                <FormHelperTextComponent id="submit" error={errors.submit} />
+              </Grid>
+
               <Grid item xs={12}>
                 <AnimateButton>
                   <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">

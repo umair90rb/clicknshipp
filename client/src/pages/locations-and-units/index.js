@@ -52,7 +52,7 @@ export default function LocationsAndUnits() {
       <Grid item xs={12} md={7} lg={8}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
-            <Typography variant="h5">Store Locations</Typography>
+            <Typography variant="h5">Store Locations and Units</Typography>
           </Grid>
 
           <Grid item>
@@ -74,25 +74,22 @@ export default function LocationsAndUnits() {
             </Grid>
           </Grid>
         </Grid>
-        {hasPermission(PERMISSIONS.PERMISSION_VIEW_LOCATIONS) && (
-          <MainCard sx={{ mt: 2 }} content={false}>
-            <LocationTable handleUpdate={handleUpdate} />
-          </MainCard>
-        )}
-
-        <Grid item xs={12} md={7} lg={8} sx={{ mt: 3 }}>
-          <Grid container alignItems="center" justifyContent="space-between">
-            <Grid item>
-              <Typography variant="h5">Units</Typography>
+        <Grid container spacing={2}>
+          {hasPermission(PERMISSIONS.PERMISSION_VIEW_LOCATIONS) && (
+            <Grid item xs={12} sm={7} md={9} lg={8}>
+              <MainCard sx={{ mt: 2 }} content={false}>
+                <LocationTable handleUpdate={handleUpdate} />
+              </MainCard>
             </Grid>
-          </Grid>
+          )}
+          {hasPermission(PERMISSIONS.PERMISSION_VIEW_UNIT_OF_MEASURES) && (
+            <Grid item xs={12} sm={5} md={3} lg={4}>
+              <MainCard sx={{ mt: 2 }} content={false}>
+                <UnitsTable handleUpdate={handleUpdate} />
+              </MainCard>
+            </Grid>
+          )}
         </Grid>
-
-        {hasPermission(PERMISSIONS.PERMISSION_VIEW_UNIT_OF_MEASURES) && (
-          <MainCard sx={{ mt: 2 }} content={false}>
-            <UnitsTable handleUpdate={handleUpdate} />
-          </MainCard>
-        )}
       </Grid>
       <AddUpdateForm type={type} data={updateData} visible={openModal} onClose={closeModalHandler} />
     </>

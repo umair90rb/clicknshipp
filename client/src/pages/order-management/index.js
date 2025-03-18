@@ -13,6 +13,7 @@ import { PERMISSIONS } from 'constants/permissions-and-roles';
 import BulkUploadModal from './BulkUploadModal';
 import AssignOrderModal from './AssignOrderModal';
 import AddCourierCityModal from './AddCityModal';
+import CustomButton from 'components/CustomButton';
 
 const OrderManagement = memo(() => {
   const navigate = useNavigate();
@@ -55,9 +56,7 @@ const OrderManagement = memo(() => {
               )}
               {hasPermission(PERMISSIONS.PERMISSION_CREATE_BULK_ORDER) && (
                 <Grid item>
-                  <Button component="label" variant="contained" onClick={showBulkOrderModal} startIcon={<UploadFileIcon />}>
-                    Add Bulk Order
-                  </Button>
+                  <CustomButton text="Import Orders" onClick={showBulkOrderModal} Icon={UploadFileIcon} />
                 </Grid>
               )}
               {hasPermission(PERMISSIONS.PERMISSION_CREATE_ORDER) && (

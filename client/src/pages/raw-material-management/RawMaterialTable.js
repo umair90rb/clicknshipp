@@ -1,12 +1,13 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
+import { GridActionsCellItem } from '@mui/x-data-grid';
 import { rawMaterialIsLoadingSelector, rawMaterialListSelector } from 'store/slices/rawMaterial/RawMaterialSelector';
-import { fetchAllRawMaterial, fetchDeleteRawMaterial } from 'store/slices/rawMaterial/fetchRawMaterial';
+import { fetchDeleteRawMaterial } from 'store/slices/rawMaterial/fetchRawMaterial';
 import { deleteRawMaterial } from 'store/slices/rawMaterial/rawMaterialSlice';
 import CustomGrid from 'components/CustomGrid';
+import useRawMaterialsFetch from 'hooks/useRawMaterialsFetch';
 
 const columns = (handleEditAction, handleDeleteAction) => [
   {
@@ -91,14 +92,9 @@ const columns = (handleEditAction, handleDeleteAction) => [
 
 export default function RawMaterialTable({ updateHandler }) {
   const dispatch = useDispatch();
-  const rawMaterialIsLoading = useSelector(rawMaterialIsLoadingSelector);
   const rawMaterials = useSelector(rawMaterialListSelector);
-
-  const fetchAll = () => dispatch(fetchAllRawMaterial());
-
-  useEffect(() => {
-    fetchAll();
-  }, []);
+  const loading = useSelector(rawMaterialIsLoadingSelector);
+  const { refresh } = useRawMaterialsFetch();
 
   const deleteHandler = (id) => {
     dispatch(fetchDeleteRawMaterial({ id })).then((action) => {
@@ -110,13 +106,7 @@ export default function RawMaterialTable({ updateHandler }) {
 
   return (
     <div style={{ width: '100%' }}>
-      <CustomGrid
-        withRefresh={fetchAll}
-        loading={rawMaterialIsLoading}
-        pageSizeOptions={[25, 50, 75, 100]}
-        rows={rawMaterials}
-        columns={columns(updateHandler, deleteHandler)}
-      />
+      <CustomGrid withRefresh={refresh} loading={loading} rows={rawMaterials} columns={columns(updateHandler, deleteHandler)} />
     </div>
   );
 }

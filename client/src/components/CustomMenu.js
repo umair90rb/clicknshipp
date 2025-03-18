@@ -54,7 +54,7 @@ function withClose(cb, handleClose) {
   };
 }
 
-export default function CMenus({ title = '', options = [] }) {
+export default function CustomMenus({ title = '', options = [] }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {

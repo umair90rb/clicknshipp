@@ -1,63 +1,43 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { Button, MenuItem, Select, FormHelperText, Grid, ListItemText, InputLabel, OutlinedInput, Stack } from '@mui/material';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import AnimateButton from 'components/@extended/AnimateButton';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllSupplier } from 'store/slices/supplier/fetchSupplier';
-import { supplierFetchStatusSelector, supplierIsLoadingSelector, supplierSuppliersSelector } from 'store/slices/supplier/supplierSelector';
-import { categoryCategoriesSelector, categoryFetchStatusSelector, categoryIsLoadingSelector } from 'store/slices/category/categorySelector';
-import { brandBrandsSelector, brandFetchStatusSelector, brandIsLoadingSelector } from 'store/slices/brand/brandSelector';
-import { fetchAllCategory } from 'store/slices/category/fetchCategory';
-import { fetchAllBrand } from 'store/slices/brand/fetchBrand';
+import { supplierIsLoadingSelector, supplierSuppliersSelector } from 'store/slices/supplier/supplierSelector';
+import { categoryCategoriesSelector, categoryIsLoadingSelector } from 'store/slices/category/categorySelector';
+import { brandBrandsSelector, brandIsLoadingSelector } from 'store/slices/brand/brandSelector';
 import { fetchCreateItem, fetchUpdateItem } from 'store/slices/item/fetchItem';
 import { createItem, updateItem } from 'store/slices/item/itemSlice';
 import CenterCircularLoader from 'components/CenterCircularLoader';
 import { setMessage } from 'store/slices/util/utilSlice';
-import fetchStatus from 'constants/fetchStatuses';
-import {
-  unitOfMeasureFetchStatusSelector,
-  unitOfMeasureIsLoadingSelector,
-  unitOfMeasureListSelector
-} from 'store/slices/unitOfMeasure/unitOfMeasureSelector';
-import { fetchAllUnitOfMeasure } from 'store/slices/unitOfMeasure/fetchUnitOfMeasure';
+import { unitOfMeasureIsLoadingSelector, unitOfMeasureListSelector } from 'store/slices/unitOfMeasure/unitOfMeasureSelector';
+import useSupplierFetch from 'hooks/useSupplierFetch';
+import useBrandsFetch from 'hooks/useBrandsFetch';
+import useUOMFetch from 'hooks/useUOMFetch';
+import useCategoriesFetch from 'hooks/useCategoriesFetch';
+import CustomDialog from 'components/CustomDialog';
 
-// ============================|| FIREBASE - REGISTER ||============================ //
-
-const AddItemForm = ({ item }) => {
+export default function AddItemModal({ visible, onClose, item }) {
   const dispatch = useDispatch();
   const formRef = useRef();
 
   const suppliersIsLoading = useSelector(supplierIsLoadingSelector);
-  const suppliersFetchStatus = useSelector(supplierFetchStatusSelector);
   const suppliers = useSelector(supplierSuppliersSelector);
 
   const categoriesIsLoading = useSelector(categoryIsLoadingSelector);
-  const categoriesFetchStatus = useSelector(categoryFetchStatusSelector);
   const categories = useSelector(categoryCategoriesSelector);
 
   const brandsIsLoading = useSelector(brandIsLoadingSelector);
-  const brandsFetchStatus = useSelector(brandFetchStatusSelector);
   const brands = useSelector(brandBrandsSelector);
 
   const unitsIsLoading = useSelector(unitOfMeasureIsLoadingSelector);
-  const unitsFetchStatus = useSelector(unitOfMeasureFetchStatusSelector);
   const units = useSelector(unitOfMeasureListSelector);
 
-  useEffect(function () {
-    if (suppliersFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllSupplier());
-    }
-    if (categoriesFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllCategory());
-    }
-    if (brandsFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllBrand());
-    }
-    if (unitsFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllUnitOfMeasure());
-    }
-  }, []);
+  useSupplierFetch();
+  useBrandsFetch();
+  useUOMFetch();
+  useCategoriesFetch();
 
   const handleSubmit = async (values, { setErrors, setStatus, setSubmitting }) => {
     if (item) {
@@ -85,7 +65,7 @@ const AddItemForm = ({ item }) => {
   }
 
   return (
-    <>
+    <CustomDialog visible={visible} onClose={onClose} title={item ? 'Update Item' : 'Add Item'} maxWidth="md">
       <Formik
         innerRef={formRef}
         initialValues={{
@@ -112,7 +92,7 @@ const AddItemForm = ({ item }) => {
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit}>
             <Grid container spacing={3}>
-              <Grid item xs={12}>
+              <Grid item xs={6}>
                 <Stack spacing={1}>
                   <InputLabel htmlFor="name-signup">Item Name</InputLabel>
                   <OutlinedInput
@@ -133,7 +113,7 @@ const AddItemForm = ({ item }) => {
                   )}
                 </Stack>
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={6}>
                 <Stack spacing={1}>
                   <InputLabel htmlFor="code-signup">code</InputLabel>
                   <OutlinedInput
@@ -155,7 +135,7 @@ const AddItemForm = ({ item }) => {
                   )}
                 </Stack>
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={6}>
                 <Stack spacing={1}>
                   <InputLabel htmlFor="unit_price-signup">Unit Price</InputLabel>
                   <OutlinedInput
@@ -167,7 +147,7 @@ const AddItemForm = ({ item }) => {
                     name="unit_price"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="120"
+                    placeholder="60"
                     inputProps={{}}
                   />
                   {touched.unit_price && errors.unit_price && (
@@ -177,7 +157,7 @@ const AddItemForm = ({ item }) => {
                   )}
                 </Stack>
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={6}>
                 <Stack spacing={1}>
                   <InputLabel htmlFor="cost_price-signup">Cost Price</InputLabel>
                   <OutlinedInput
@@ -203,7 +183,7 @@ const AddItemForm = ({ item }) => {
               {unitsIsLoading ? (
                 <CenterCircularLoader />
               ) : (
-                <Grid item xs={12}>
+                <Grid item xs={6}>
                   <Stack spacing={1}>
                     <InputLabel htmlFor="unit_of_measure-signup">Unit of Measure</InputLabel>
                     <Select
@@ -231,7 +211,7 @@ const AddItemForm = ({ item }) => {
                 </Grid>
               )}
               {!categoriesIsLoading && (
-                <Grid item xs={12}>
+                <Grid item xs={6}>
                   <Stack spacing={1}>
                     <InputLabel htmlFor="category-signup">Category</InputLabel>
                     <Select
@@ -260,7 +240,7 @@ const AddItemForm = ({ item }) => {
                 </Grid>
               )}
               {!brandsIsLoading && (
-                <Grid item xs={12}>
+                <Grid item xs={6}>
                   <Stack spacing={1}>
                     <InputLabel htmlFor="brand-signup">Brand</InputLabel>
                     <Select
@@ -289,7 +269,7 @@ const AddItemForm = ({ item }) => {
                 </Grid>
               )}
               {!suppliersIsLoading && (
-                <Grid item xs={12}>
+                <Grid item xs={6}>
                   <Stack spacing={1}>
                     <InputLabel htmlFor="supplier-signup">Suppliers</InputLabel>
                     <Select
@@ -333,8 +313,6 @@ const AddItemForm = ({ item }) => {
           </form>
         )}
       </Formik>
-    </>
+    </CustomDialog>
   );
-};
-
-export default AddItemForm;
+}

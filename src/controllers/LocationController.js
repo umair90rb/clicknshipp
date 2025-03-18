@@ -1,12 +1,23 @@
+import { Op } from 'sequelize';
 import model from '../models';
 import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
+import { PERMISSIONS } from '../constants/constants';
 
 const { Location } = model;
 
 export default {
   async all(req, res) {
     try {
-      const locations = await Location.findAll();
+      const stores = req.user.stores;
+      const where = {};
+      if (
+        !req.user.permissions.includes(
+          PERMISSIONS.PERMISSION_ACCESS_TO_ALL_STORES
+        )
+      ) {
+        where['id'] = { [Op.in]: stores };
+      }
+      const locations = await Location.findAll({ where });
       return sendSuccessResponse(
         res,
         200,

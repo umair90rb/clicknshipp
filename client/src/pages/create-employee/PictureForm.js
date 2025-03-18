@@ -1,23 +1,11 @@
 import { useEffect, useRef } from 'react';
-import { Button, Stack, FormHelperText, Grid } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { Button, FormHelperText, Grid } from '@mui/material';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import { useDispatch } from 'react-redux';
 import { fetchAddEmployeePicture } from 'store/slices/employee/fetchEmployee';
 import { toSentence } from 'utils/string-utils';
-
-const VisuallyHiddenInput = styled('input')({
-  clip: 'rect(0 0 0 0)',
-  clipPath: 'inset(50%)',
-  height: 1,
-  overflow: 'hidden',
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  whiteSpace: 'nowrap',
-  width: 1
-});
+import CustomFileInput from 'components/CustomFileInput';
 
 const PictureForm = ({ employeeId, setStep, employeeDataToUpdate }) => {
   const dispatch = useDispatch();
@@ -58,23 +46,14 @@ const PictureForm = ({ employeeId, setStep, employeeDataToUpdate }) => {
       {(addPictureForm) => (
         <Grid container mt={5}>
           <Grid container justifyContent="center">
-            <Stack spacing={1}>
-              <Button component="label" variant="contained">
-                {(addPictureForm.values.picture && addPictureForm.values.picture.name) || 'Select picture (Not Selected) (4mb)'}
-                <VisuallyHiddenInput
-                  type="file"
-                  name="picture"
-                  onChange={(e) => {
-                    addPictureForm.setFieldValue('picture', e.target.files[0]);
-                  }}
-                />
-              </Button>
-              {addPictureForm.touched.picture && addPictureForm.errors.picture && (
-                <FormHelperText error id="helper-text-picture">
-                  {addPictureForm.errors.picture}
-                </FormHelperText>
-              )}
-            </Stack>
+            <CustomFileInput
+              label={(addPictureForm.values.picture && addPictureForm.values.picture.name) || 'Select picture (Not Selected) (4mb)'}
+              name="picture"
+              onChange={(e) => {
+                addPictureForm.setFieldValue('picture', e.target.files[0]);
+              }}
+              error={addPictureForm.touched.picture && addPictureForm.errors.picture}
+            />
           </Grid>
 
           {addPictureForm.errors.submit && (

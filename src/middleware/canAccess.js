@@ -1,21 +1,21 @@
-import { sendErrorResponse } from "../utils/sendResponse";
-import model from "../models";
+import { sendErrorResponse } from '../utils/sendResponse';
+import model from '../models';
 
 const { User, Role, Permission } = model;
 
 export default (requiredPermission) => async (req, res, next) => {
   const user = await User.findByPk(req.user.id, {
-    attributes: ["id"],
+    attributes: ['id', 'settings'],
     include: [
       {
         model: Role,
-        as: "roles",
-        attributes: ["id", "name"],
+        as: 'roles',
+        attributes: ['id', 'name'],
         include: [
           {
             model: Permission,
-            as: "permissions",
-            attributes: ["name"],
+            as: 'permissions',
+            attributes: ['name'],
           },
         ],
       },
@@ -45,6 +45,6 @@ export default (requiredPermission) => async (req, res, next) => {
     req.user.permissions = userPermissions;
     return next();
   }
-  console.error("Insufficient Permissions.");
-  return sendErrorResponse(res, 403, "Insufficient Permissions.");
+  console.error('Insufficient Permissions.');
+  return sendErrorResponse(res, 403, 'Insufficient Permissions.');
 };

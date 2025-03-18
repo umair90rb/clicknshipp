@@ -1,7 +1,7 @@
 import Button from '@mui/material/Button';
 import useAccess from 'hooks/useAccess';
 
-export default function CButton({ text, onClick, Icon, permission, ...rest }) {
+export default function CustomButton({ text, onClick, Icon, permission, ...rest }) {
   const { hasPermission } = useAccess();
 
   if (permission && hasPermission(permission)) {

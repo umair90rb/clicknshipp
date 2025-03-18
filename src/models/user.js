@@ -1,24 +1,31 @@
-import { Model } from "sequelize";
-import { hash } from "../utils/hashing";
-import random from "../utils/random";
+import { Model } from 'sequelize';
+import { hash } from '../utils/hashing';
+import random from '../utils/random';
 
-const PROTECTED_ATTRIBUTES = ["password"];
+const PROTECTED_ATTRIBUTES = ['password'];
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
       User.hasMany(models.Order, {
-        foreignKey: "user_id",
-        as: "orders",
+        foreignKey: 'user_id',
+        as: 'orders',
       });
       User.hasMany(models.OrderHistory, {
-        as: "orderHistory",
-        foreignKey: "user_id",
+        as: 'orderHistory',
+        foreignKey: 'user_id',
       });
       User.belongsToMany(models.Permission, {
-        through: "UserPermissions",
-        as: "permissions",
-        foreignKey: "user_id",
+        through: 'UserPermissions',
+        as: 'permissions',
+        foreignKey: 'user_id',
+      });
+      User.hasMany(models.Metafield, {
+        foreignKey: 'owner_id',
+        as: 'metafield',
+        scope: {
+          owner_type: 'user',
+        },
       });
     }
   }
@@ -29,16 +36,16 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: {
           args: false,
-          msg: "Please enter your email address",
+          msg: 'Please enter your email address',
         },
         unique: {
           args: true,
-          msg: "Email already exists",
+          msg: 'Email already exists',
         },
         validate: {
           isEmail: {
             args: true,
-            msg: "Please enter a valid email address",
+            msg: 'Please enter a valid email address',
           },
         },
       },
@@ -46,43 +53,46 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: {
           args: false,
-          msg: "Please enter your phone number",
+          msg: 'Please enter your phone number',
         },
         unique: {
           args: true,
-          msg: "Phone number already exists",
+          msg: 'Phone number already exists',
         },
       },
       password: DataTypes.STRING,
       status: {
-        type: DataTypes.ENUM("inactive", "active", "suspended"),
-        defaultValue: "active",
+        type: DataTypes.ENUM('inactive', 'active', 'suspended'),
+        defaultValue: 'active',
       },
       settings: DataTypes.JSON,
     },
     {
       sequelize,
-      modelName: "User",
-      onDelete: "CASCADE",
+      modelName: 'User',
+      onDelete: 'CASCADE',
       defaultScope: {
         attributes: {
-          exclude: ["password"],
+          exclude: ['password'],
         },
       },
       scopes: {
         clean: {
           attributes: {
-            exclude: ["password", "settings", "updatedAt", "createdAt"],
+            exclude: ['password', 'updatedAt', 'createdAt'],
           },
         },
+        settings: {
+          attributes: ['settings'],
+        },
         withPassword: {
-          attributes: { include: ["password"] },
+          attributes: { include: ['password'] },
         },
       },
     }
   );
 
-  User.prototype.newToken = async function newToken(device_name = "Web FE") {
+  User.prototype.newToken = async function newToken(device_name = 'Web FE') {
     const plainTextToken = random(40);
 
     const token = await this.createToken({
@@ -97,7 +107,7 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   User.prototype.hasRole = async function hasRole(role) {
-    if (!role || role === "undefined") {
+    if (!role || role === 'undefined') {
       return false;
     }
     const roles = await this.getRoles();
@@ -105,7 +115,7 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   User.prototype.hasPermission = async function hasPermission(permission) {
-    if (!permission || permission === "undefined") {
+    if (!permission || permission === 'undefined') {
       return false;
     }
     const permissions = await this.getPermissions();
@@ -114,7 +124,7 @@ module.exports = (sequelize, DataTypes) => {
 
   User.prototype.hasPermissionThroughRole =
     async function hasPermissionThroughRole(permission) {
-      if (!permission || permission === "undefined") {
+      if (!permission || permission === 'undefined') {
         return false;
       }
       const roles = await this.getRoles();
@@ -128,7 +138,7 @@ module.exports = (sequelize, DataTypes) => {
     };
 
   User.prototype.hasPermissionTo = async function hasPermissionTo(permission) {
-    if (!permission || permission === "undefined") {
+    if (!permission || permission === 'undefined') {
       return false;
     }
     return (

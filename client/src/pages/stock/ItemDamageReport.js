@@ -13,10 +13,9 @@ import { locationFetchStatusSelector, locationListSelector } from 'store/slices/
 import fetchStatus from 'constants/fetchStatuses';
 import { itemFetchStatusSelector, itemItemsSelector } from 'store/slices/item/itemSelector';
 import { rawMaterialFetchStatusSelector, rawMaterialListSelector } from 'store/slices/rawMaterial/RawMaterialSelector';
-import CButton from 'components/Button';
+import CustomButton from 'components/CustomButton';
 import { fetchItemDamageReport } from 'store/slices/stock/fetchStock';
-import CCheckbox from 'components/Checkbox';
-import CRadioGroup from 'components/RadioGroup';
+import CustomRadioGroup from 'components/CustomRadioGroup';
 
 const columns = [
   {
@@ -143,7 +142,7 @@ export default function ItemDamageReport({ item, visible, onClose }) {
     <CustomDialog printable enableBackdrop visible={visible} onClose={onClose} maxWidth="lg" dividers={false} title="Damage Report">
       <Grid container alignItems="center" spacing={1}>
         <Grid item sx={2} md={2} lg={2}>
-          <CRadioGroup
+          <CustomRadioGroup
             label="Inventory Type"
             name="item_type"
             value={itemDamageReportForm.values.item_type}
@@ -261,7 +260,7 @@ export default function ItemDamageReport({ item, visible, onClose }) {
         <Grid item sx={1.5} md={1.5} lg={1.5}>
           <FormControl fullWidth margin="normal">
             <Box sx={{ marginTop: 2 }} />
-            <CButton
+            <CustomButton
               text="Get Report"
               onClick={() => {
                 // itemDamageReportForm.validateForm();

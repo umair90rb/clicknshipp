@@ -12,6 +12,8 @@ const createUserSchema = Joi.object({
   password: Joi.string().min(8).required(),
   roles: Joi.array().items(Joi.number().integer()).min(1),
   brands: Joi.array().items(Joi.number().integer()),
+  storeAccess: Joi.boolean(),
+  stores: Joi.array().items(Joi.number().integer()),
 });
 
 const updateUserSchema = Joi.object({
@@ -23,6 +25,8 @@ const updateUserSchema = Joi.object({
   settings: Joi.string(),
   roles: Joi.array().items(Joi.number().integer()),
   brands: Joi.array().items(Joi.number().integer()),
+  storeAccess: Joi.boolean(),
+  stores: Joi.array().items(Joi.number().integer()),
 });
 
 const setDefaultBrandSchema = Joi.object({

@@ -12,6 +12,7 @@ import { userService } from 'api/index';
 import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 import useUsersFetch from 'hooks/useUsersFetch';
+import CustomGrid from 'components/CustomGrid';
 
 const columns = (handleEditAction, handleDeleteAction) => [
   {
@@ -48,7 +49,8 @@ const columns = (handleEditAction, handleDeleteAction) => [
   {
     field: 'roles',
     headerName: 'Roles',
-    flex: 1
+    flex: 1,
+    valueGetter: ({ value }) => value.map((roles) => roles.name)
   },
   {
     field: 'actions',
@@ -93,8 +95,7 @@ export default function UserTable({ updateUser }) {
   const users = useSelector(userUsersSelector);
   const user = useSelector(authUserSelector);
   const { hasPermission } = useAccess();
-
-  useUsersFetch();
+  const { refresh } = useUsersFetch();
 
   const handleDisableUser = async (id) => {
     if (id === user.id) {
@@ -118,16 +119,11 @@ export default function UserTable({ updateUser }) {
 
   return (
     <div style={{ width: '100%' }}>
-      <DataGrid
-        slots={{ toolbar: GridToolbar }}
-        slotProps={{
-          toolbar: {
-            showQuickFilter: true
-          }
-        }}
+      <CustomGrid
         loading={userIsLoading}
-        pageSizeOptions={[25, 50, 75, 100]}
+        withRefresh={refresh}
         rows={users}
+        getRowHeight={() => 'auto'}
         columns={columns(
           hasPermission(PERMISSIONS.PERMISSION_UPDATE_USER) ? updateUser : undefined,
           hasPermission(PERMISSIONS.PERMISSION_DELETE_USER) ? handleDisableUser : undefined

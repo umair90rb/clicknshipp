@@ -2,6 +2,7 @@ import { Op, literal, col } from 'sequelize';
 import model from '../models';
 import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
 import _stockService from '../services/StockService';
+import { PERMISSIONS } from '../constants/constants';
 const {
   Item,
   RawMaterial,
@@ -15,8 +16,16 @@ const {
 export default {
   async stocks(req, res) {
     try {
+      console.log(req.user);
       const { type, stock_less_than } = req.query;
       const where = {};
+      if (
+        !req.user.permissions.includes(
+          PERMISSIONS.PERMISSION_ACCESS_TO_ALL_STORES
+        )
+      ) {
+        where.location_id = { [Op.in]: req.user?.stores };
+      }
       if (type !== 'all') {
         where.item_type = type;
       }
@@ -47,7 +56,11 @@ export default {
       return sendSuccessResponse(
         res,
         200,
-        { stocks, ...(type && type), ...(stock_less_than && stock_less_than) },
+        {
+          stocks,
+          type,
+          stock_less_than,
+        },
         'All items current stock'
       );
     } catch (e) {
@@ -273,6 +286,22 @@ export default {
         { history },
         'Stock return added successfully'
       );
+    } catch (error) {
+      return sendErrorResponse(
+        res,
+        500,
+        'Could not perform operation at this time, kindly try again later',
+        error
+      );
+    }
+  },
+
+  async import(req, res) {
+    try {
+      const { store_id, stock_type } = req.body;
+      const json = await excelToJson(req.file.buffer);
+      await _stockService.importOpeningStock(json, store_id, stock_type);
+      return sendSuccessResponse(res, 201, {}, 'Stock imported successfully');
     } catch (error) {
       return sendErrorResponse(
         res,

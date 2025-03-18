@@ -4,6 +4,7 @@ import { PERMISSIONS } from '../constants/constants';
 
 import can from '../middleware/canAccess';
 import Auth from '../middleware/auth';
+import attachPermittedStores from '../middleware/attachPermittedStores';
 import {
   stockHistorySchema,
   createStockSchema,
@@ -12,15 +13,18 @@ import {
   damageReportSchema,
 } from '../schemas/stockSchema';
 import schemaValidator from '../middleware/schemaValidator';
-import { createValidator } from 'express-joi-validation';
+// import { createValidator } from 'express-joi-validation';
+import multer from 'multer';
 
+const upload = multer({ storage: multer.memoryStorage() });
 const router = express.Router();
-const validator = createValidator();
+// const validator = createValidator();
 
 router.get(
   '/all',
   Auth,
   can(PERMISSIONS.PERMISSION_VIEW_STOCK),
+  attachPermittedStores,
   StockController.stocks
 );
 
@@ -29,6 +33,7 @@ router.post(
   Auth,
   can(PERMISSIONS.PERMISSION_VIEW_STOCK),
   schemaValidator(stockHistorySchema),
+  attachPermittedStores,
   StockController.history
 );
 
@@ -37,6 +42,7 @@ router.post(
   Auth,
   can(PERMISSIONS.PERMISSION_RECEIVE_STOCK),
   schemaValidator(createStockSchema),
+  attachPermittedStores,
   StockController.create
 );
 
@@ -45,6 +51,7 @@ router.post(
   Auth,
   can(PERMISSIONS.PERMISSION_RECEIVE_STOCK_RETURN),
   schemaValidator(returnStockSchema),
+  attachPermittedStores,
   StockController.return
 );
 
@@ -53,6 +60,7 @@ router.post(
   Auth,
   can(PERMISSIONS.PERMISSION_ADD_STOCK_DAMAGE),
   schemaValidator(addStockDamageSchema),
+  attachPermittedStores,
   StockController.damage
 );
 
@@ -61,7 +69,17 @@ router.post(
   Auth,
   can(PERMISSIONS.PERMISSION_ADD_STOCK_DAMAGE),
   schemaValidator(damageReportSchema),
+  attachPermittedStores,
   StockController.damageReport
+);
+
+router.post(
+  '/import',
+  Auth,
+  can(PERMISSIONS.PERMISSION_IMPORT_STOCK),
+  attachPermittedStores,
+  upload.single('file'),
+  StockController.import
 );
 
 export default router;

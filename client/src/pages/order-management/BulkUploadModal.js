@@ -1,11 +1,8 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Grid, Stack, FormHelperText, ListItemText, InputLabel, Button, Select, MenuItem, Box, Modal, Typography } from '@mui/material';
-import Link from '@mui/material/Link';
-import { styled } from '@mui/material/styles';
+import { Grid, Stack, ListItemText, InputLabel, Button, Select, MenuItem } from '@mui/material';
 import { setMessage } from 'store/slices/util/utilSlice';
-import { fetchAllChanel } from 'store/slices/chanel/fetchChanel';
-import { chanelChanelsSelector, chanelFetchStatusSelector, chanelIsLoadingSelector } from 'store/slices/chanel/chanelSelector';
+import { chanelChanelsSelector, chanelIsLoadingSelector } from 'store/slices/chanel/chanelSelector';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { fetchAllOrder, fetchImportOrder } from 'store/slices/order/fetchOrder';
@@ -16,33 +13,10 @@ import {
   orderPageSizeSelector,
   orderSortSelector
 } from 'store/slices/order/orderSelector';
-import { brandBrandsSelector, brandFetchStatusSelector, brandIsLoadingSelector } from 'store/slices/brand/brandSelector';
-import FormHelperTextComponent from 'components/LoadingHelperText';
-import fetchStatus from 'constants/fetchStatuses';
-import { fetchAllBrand } from 'store/slices/brand/fetchBrand';
-
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4
-};
-
-const VisuallyHiddenInput = styled('input')({
-  clip: 'rect(0 0 0 0)',
-  clipPath: 'inset(50%)',
-  height: 1,
-  overflow: 'hidden',
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  whiteSpace: 'nowrap',
-  width: 1
-});
+import FormHelperTextComponent from 'components/FormHelperTextComponent';
+import CustomDialog from 'components/CustomDialog';
+import CustomFileInput from 'components/CustomFileInput';
+import useChannelsFetch from 'hooks/useChannelsFetch';
 
 export default function BulkUploadModal({ visible, onClose }) {
   const dispatch = useDispatch();
@@ -53,7 +27,8 @@ export default function BulkUploadModal({ visible, onClose }) {
   const orderImportIsLoading = useSelector(orderImportIsLoadingSelector);
   const chanels = useSelector(chanelChanelsSelector);
   const chanelsIsLoading = useSelector(chanelIsLoadingSelector);
-  const chanelFetchStatus = useSelector(chanelFetchStatusSelector);
+
+  useChannelsFetch();
 
   const createBulkOrders = async (values) => {
     let formData = new FormData();
@@ -87,83 +62,58 @@ export default function BulkUploadModal({ visible, onClose }) {
   useEffect(() => {
     if (visible) {
       bulkOrderUploadForm.handleReset();
-      if (chanelFetchStatus !== fetchStatus.SUCCESS) {
-        dispatch(fetchAllChanel());
-      }
     }
   }, [visible]);
 
   return (
-    <Modal open={visible} onClose={onClose}>
-      <Box sx={style}>
-        <Typography display="flex" justifyContent="center" alignItems="center">
-          Add Bulk Orders
-        </Typography>
-        <Grid container gap={1} spacing={1} my={2}>
-          <Stack spacing={1} sx={{ flexGrow: 1 }}>
-            <Button sx={{ flexGrow: 1 }} component="label" variant="contained">
-              {(bulkOrderUploadForm.values.file && bulkOrderUploadForm.values.file.name) || 'Select file (Not Selected)'}
-              <VisuallyHiddenInput
-                type="file"
-                name="file"
-                onChange={(e) => {
-                  bulkOrderUploadForm.setFieldValue('file', e.target.files[0]);
-                  e.target.value = '';
-                }}
-              />
-            </Button>
-            {bulkOrderUploadForm.touched.file && bulkOrderUploadForm.errors.file && (
-              <FormHelperText error id="helper-text-file-signup">
-                {bulkOrderUploadForm.errors.file}
-              </FormHelperText>
-            )}
-          </Stack>
-        </Grid>
+    <CustomDialog visible={visible} onClose={onClose} title="Import Orders" maxWidth="sm">
+      <Grid container gap={1} spacing={1} my={2}>
+        <CustomFileInput
+          label={bulkOrderUploadForm.values.file && bulkOrderUploadForm.values.file.name}
+          error={bulkOrderUploadForm.touched.file && bulkOrderUploadForm.errors.file}
+          onChange={(e) => {
+            bulkOrderUploadForm.setFieldValue('file', e.target.files[0]);
+            e.target.value = '';
+          }}
+          name="file"
+          link="https://spreadsheets.google.com/feeds/download/spreadsheets/Export?key=11K1q6jyzBRe1RCGVadk_jv-vN7T8n5tqG-idMIx3Ym0&exportFormat=xlsx"
+        />
+      </Grid>
 
-        <Grid item xs={12}>
-          <Stack spacing={1}>
-            <InputLabel htmlFor="chanel_id-signup">Chanel</InputLabel>
-            <Select
-              fullWidth
-              error={Boolean(bulkOrderUploadForm.touched.chanel_id && bulkOrderUploadForm.errors.chanel_id)}
-              id="chanel_id-signup"
-              value={bulkOrderUploadForm.values.chanel_id}
-              name="chanel_id"
-              onBlur={bulkOrderUploadForm.handleBlur}
-              onChange={bulkOrderUploadForm.handleChange}
-              labelId="chanel_id-signup"
-            >
-              {chanels.map(({ name, id }, index) => (
-                <MenuItem key={index} value={id}>
-                  <ListItemText primary={name} />
-                </MenuItem>
-              ))}
-            </Select>
-            <FormHelperTextComponent loading={chanelsIsLoading} />
-            {bulkOrderUploadForm.touched.chanel_id && bulkOrderUploadForm.errors.chanel_id && (
-              <FormHelperText error id="helper-text-chanel_id-signup">
-                {bulkOrderUploadForm.errors.chanel_id}
-              </FormHelperText>
-            )}
-          </Stack>
-        </Grid>
+      <Grid item xs={12}>
+        <Stack spacing={1}>
+          <InputLabel htmlFor="chanel_id-signup">Chanel</InputLabel>
+          <Select
+            fullWidth
+            error={Boolean(bulkOrderUploadForm.touched.chanel_id && bulkOrderUploadForm.errors.chanel_id)}
+            id="chanel_id-signup"
+            value={bulkOrderUploadForm.values.chanel_id}
+            name="chanel_id"
+            onBlur={bulkOrderUploadForm.handleBlur}
+            onChange={bulkOrderUploadForm.handleChange}
+            labelId="chanel_id-signup"
+          >
+            {chanels.map(({ name, id }, index) => (
+              <MenuItem key={index} value={id}>
+                <ListItemText primary={name} />
+              </MenuItem>
+            ))}
+          </Select>
+          <FormHelperTextComponent
+            id="channel_id"
+            loading={chanelsIsLoading}
+            error={bulkOrderUploadForm.touched.chanel_id && bulkOrderUploadForm.errors.chanel_id}
+          />
+        </Stack>
+      </Grid>
 
-        <Grid container spacing={1} mt={5}>
-          <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
-            <Button onClick={bulkOrderUploadForm.handleSubmit} sx={{ flexGrow: 1 }} disable={orderImportIsLoading} variant="contained">
-              Upload
-            </Button>
-          </Grid>
-          <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
-            <Link
-              target="_blank"
-              href="https://spreadsheets.google.com/feeds/download/spreadsheets/Export?key=11K1q6jyzBRe1RCGVadk_jv-vN7T8n5tqG-idMIx3Ym0&exportFormat=xlsx"
-            >
-              Download Bulk Order Upload Excel Format
-            </Link>
-          </Grid>
+      <Grid container spacing={1} mt={5}>
+        <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
+          <Button onClick={bulkOrderUploadForm.handleSubmit} sx={{ flexGrow: 1 }} disable={orderImportIsLoading} variant="contained">
+            Upload
+          </Button>
         </Grid>
-      </Box>
-    </Modal>
+      </Grid>
+    </CustomDialog>
   );
 }

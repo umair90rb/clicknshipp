@@ -36,9 +36,11 @@ export const PERMISSIONS = {
   PERMISSION_VIEW_STOCK: 'view-stock',
   PERMISSION_VIEW_STOCK_HISTORY: 'view-stock-history',
   PERMISSION_EXPORT_STOCK: 'export-stock',
+  PERMISSION_IMPORT_STOCK: 'import-stock',
   PERMISSION_RECEIVE_STOCK: 'receive-stock',
   PERMISSION_RECEIVE_STOCK_RETURN: 'receive-stock-return',
   PERMISSION_ADD_STOCK_DAMAGE: 'add-stock-damage',
+  PERMISSION_ACCESS_TO_ALL_STORES: 'access-to-all-stores',
 
   PERMISSION_VIEW_CATEGORIES_AND_BRANDS: 'view-categories-and-brands',
 

@@ -8,6 +8,8 @@ import { PERMISSIONS } from 'constants/permissions-and-roles';
 import { unitOfMeasureIsLoadingSelector, unitOfMeasureListSelector } from 'store/slices/unitOfMeasure/unitOfMeasureSelector';
 import { fetchAllUnitOfMeasure, fetchDeleteUnitOfMeasure } from 'store/slices/unitOfMeasure/fetchUnitOfMeasure';
 import { deleteUnitOfMeasure } from 'store/slices/unitOfMeasure/unitOfMeasureSlice';
+import CustomGrid from 'components/CustomGrid';
+import useUOMFetch from 'hooks/useUOMFetch';
 
 const columns = (handleUpdate, handleDelete) => [
   {
@@ -61,10 +63,7 @@ export default function UnitsTable({ handleUpdate }) {
   const unitsIsLoading = useSelector(unitOfMeasureIsLoadingSelector);
   const units = useSelector(unitOfMeasureListSelector);
   const { hasPermission } = useAccess();
-
-  useEffect(() => {
-    dispatch(fetchAllUnitOfMeasure());
-  }, []);
+  const { refresh } = useUOMFetch();
 
   const handleDelete = (id) => {
     dispatch(fetchDeleteUnitOfMeasure({ id })).then((action) => {
@@ -76,16 +75,13 @@ export default function UnitsTable({ handleUpdate }) {
 
   return (
     <div style={{ width: '100%', minHeight: 250 }}>
-      <DataGrid
-        slots={{ toolbar: GridToolbar }}
-        slotProps={{
-          toolbar: {
-            showQuickFilter: true
-          }
-        }}
+      <CustomGrid
+        showQuickFilter={false}
+        withRefresh={refresh}
         loading={unitsIsLoading}
-        pageSizeOptions={[25, 50, 75, 100]}
         rows={units}
+        hideFooterPagination
+        hideFooter
         columns={columns(
           hasPermission(PERMISSIONS.PERMISSION_UPDATE_BRAND) ? handleUpdate : undefined,
           hasPermission(PERMISSIONS.PERMISSION_DELETE_BRAND) ? handleDelete : undefined

@@ -2,7 +2,7 @@ import { FormHelperText, FormControl, FormLabel, TextField } from '@mui/material
 import Autocomplete, { autocompleteClasses } from '@mui/material/Autocomplete';
 import { ErrorMessage } from 'formik';
 
-export default function CAutocomplete({
+export default function CustomAutocomplete({
   label = '',
   name = '',
   options = [],

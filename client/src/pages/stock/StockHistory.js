@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { fetchStockHistory } from 'store/slices/stock/fetchStock';
@@ -42,6 +42,7 @@ const columns = [
   {
     field: 'createdAt',
     headerName: 'Date',
+    flex: 1,
     valueGetter: (value) => formatDateTime(value?.row?.createdAt)
   }
 ];
@@ -70,13 +71,12 @@ export default function ItemStockHistory({ item, visible, onClose }) {
   }, [visible]);
 
   return (
-    <CustomDialog visible={visible} onClose={onClose} maxWidth="lg" dividers={false} title="Stock History" enableBackdrop>
+    <CustomDialog printable visible={visible} onClose={onClose} maxWidth="lg" dividers={false} title="Stock History" enableBackdrop>
       <DataGrid
         autoHeight
         getRowHeight={() => 'auto'}
-        hideFooterPagination={true}
+        hideFooterPagination
         loading={history.loading}
-        hidePagination={true}
         rows={history?.rows}
         columns={columns}
         slots={{ toolbar: GridToolbar }}

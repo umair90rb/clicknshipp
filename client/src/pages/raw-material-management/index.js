@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Grid, Typography, Link } from '@mui/material';
 import MainCard from 'components/MainCard';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
-import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import RefreshOutlinedIcon from '@mui/icons-material/RefreshOutlined';
-import { styled } from '@mui/material/styles';
 import RawMaterialTable from './RawMaterialTable';
 import AddUpdateRawMaterialForm from './AddUpdateRawMaterialForm';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,18 +11,7 @@ import { setMessage } from 'store/slices/util/utilSlice';
 import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 import { fetchAllRawMaterial, fetchImportRawMaterial } from 'store/slices/rawMaterial/fetchRawMaterial';
-
-const VisuallyHiddenInput = styled('input')({
-  clip: 'rect(0 0 0 0)',
-  clipPath: 'inset(50%)',
-  height: 1,
-  overflow: 'hidden',
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  whiteSpace: 'nowrap',
-  width: 1
-});
+import CustomFileInput from 'components/CustomFileInput';
 
 export default function RawMaterialManagement() {
   const dispatch = useDispatch();
@@ -84,23 +71,13 @@ export default function RawMaterialManagement() {
             <Grid container spacing={2}>
               {hasPermission(PERMISSIONS.PERMISSION_BULK_CREATE_ITEMS) && (
                 <Grid item>
-                  <Button
-                    component="label"
-                    variant="contained"
-                    disabled={importing ? true : undefined}
-                    startIcon={importing ? <RefreshOutlinedIcon /> : <CloudUploadOutlinedIcon />}
-                  >
-                    Import Raw Materials
-                    <VisuallyHiddenInput type="file" onChange={(e) => uploadFile(e, 'raw_material')} />
-                  </Button>
-                  <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
-                    <Link
-                      target="_blank"
-                      href="https://spreadsheets.google.com/feeds/download/spreadsheets/Export?key=1RwPbZuWD8Xs7vwbvbvITQtuHwPc2_-PZK4miXd2XoXk&exportFormat=xlsx"
-                    >
-                      Download Excel Format
-                    </Link>
-                  </Grid>
+                  <CustomFileInput
+                    link="https://spreadsheets.google.com/feeds/download/spreadsheets/Export?key=1RwPbZuWD8Xs7vwbvbvITQtuHwPc2_-PZK4miXd2XoXk&exportFormat=xlsx"
+                    onChange={(e) => uploadFile(e, 'raw_material')}
+                    label="Import Raw Materials"
+                    disabled={importing}
+                    startIcon={importing && RefreshOutlinedIcon}
+                  />
                 </Grid>
               )}
 
@@ -113,23 +90,13 @@ export default function RawMaterialManagement() {
               )}
               {hasPermission(PERMISSIONS.PERMISSION_BULK_CREATE_ITEMS) && (
                 <Grid item>
-                  <Button
-                    component="label"
-                    variant="contained"
-                    disabled={importing ? true : undefined}
-                    startIcon={importing ? <RefreshOutlinedIcon /> : <CloudUploadOutlinedIcon />}
-                  >
-                    Import Packaging Materials
-                    <VisuallyHiddenInput type="file" onChange={(e) => uploadFile(e, 'packaging_material')} />
-                  </Button>
-                  <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
-                    <Link
-                      target="_blank"
-                      href="https://spreadsheets.google.com/feeds/download/spreadsheets/Export?key=1RwPbZuWD8Xs7vwbvbvITQtuHwPc2_-PZK4miXd2XoXk&exportFormat=xlsx"
-                    >
-                      Download Excel Format
-                    </Link>
-                  </Grid>
+                  <CustomFileInput
+                    link="https://spreadsheets.google.com/feeds/download/spreadsheets/Export?key=1RwPbZuWD8Xs7vwbvbvITQtuHwPc2_-PZK4miXd2XoXk&exportFormat=xlsx"
+                    onChange={(e) => uploadFile(e, 'packaging_material')}
+                    label="Import Packaging Materials"
+                    disabled={importing}
+                    startIcon={importing && RefreshOutlinedIcon}
+                  />
                 </Grid>
               )}
               {hasPermission(PERMISSIONS.PERMISSION_CREATE_ITEM) && (

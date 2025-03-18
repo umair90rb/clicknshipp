@@ -7,7 +7,7 @@ import AddBillOfMaterialForm from './AddBillOfMaterialForm';
 import ViewBillOfMaterialModal from './ViewBillOfMaterialModal';
 import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
-import CButton from 'components/Button';
+import CustomButton from 'components/CustomButton';
 
 export default function BOM() {
   const { hasPermission } = useAccess();
@@ -35,7 +35,7 @@ export default function BOM() {
           </Grid>
           {hasPermission(PERMISSIONS.PERMISSION_RECEIVE_STOCK) && (
             <Grid item>
-              <CButton text="Create Bill Of Material" Icon={AddOutlinedIcon} onClick={() => setAddFormModal(true)} />
+              <CustomButton text="Create Bill Of Material" Icon={AddOutlinedIcon} onClick={() => setAddFormModal(true)} />
             </Grid>
           )}
         </Grid>

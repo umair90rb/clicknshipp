@@ -9,6 +9,8 @@ import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 import { deleteLocation } from 'store/slices/location/locationSlice';
 import { splitAndToUpperCase } from 'utils/string-utils';
+import useStoreLocationFetch from 'hooks/useStoreLocationFetch';
+import CustomGrid from 'components/CustomGrid';
 const columns = (handleUpdate, handleDelete) => [
   {
     field: 'id',
@@ -74,10 +76,7 @@ export default function LocationTable({ handleUpdate }) {
   const locationIsLoading = useSelector(locationIsLoadingSelector);
   const locations = useSelector(locationListSelector);
   const { hasPermission } = useAccess();
-
-  useEffect(() => {
-    dispatch(fetchAllLocation());
-  }, []);
+  const { refresh } = useStoreLocationFetch();
 
   const handleDelete = (id) => {
     dispatch(fetchDeleteLocation({ id })).then((action) => {
@@ -89,16 +88,12 @@ export default function LocationTable({ handleUpdate }) {
 
   return (
     <div style={{ width: '100%', minHeight: 250 }}>
-      <DataGrid
-        slots={{ toolbar: GridToolbar }}
-        slotProps={{
-          toolbar: {
-            showQuickFilter: true
-          }
-        }}
+      <CustomGrid
+        withRefresh={refresh}
         loading={locationIsLoading}
-        pageSizeOptions={[25, 50, 75, 100]}
         rows={locations}
+        hideFooterPagination
+        hideFooter
         columns={columns(
           hasPermission(PERMISSIONS.PERMISSION_UPDATE_BRAND) ? handleUpdate : undefined,
           hasPermission(PERMISSIONS.PERMISSION_DELETE_BRAND) ? handleDelete : undefined

@@ -1,23 +1,37 @@
 import { InputLabel, Select, FormControl, MenuItem } from '@mui/material';
+import FormHelperTextComponent from './FormHelperTextComponent';
 
-export default function CSelect({
+export default function CustomSelect({
   label = '',
   name = '',
   value = '',
   onChange = (e) => {},
+  onBlur = (e) => {},
   options = [],
   multiple = false,
-  withAllOption = false
+  withAllOption = false,
+  loading = false,
+  error = ''
 }) {
   return (
     <FormControl fullWidth size="small">
       <InputLabel id={`${name}_label`}>{label}</InputLabel>
-      <Select multiple={multiple} labelId={`${label}_label`} id={name} label={label} value={value} onChange={onChange}>
+      <Select
+        error={Boolean(error)}
+        multiple={multiple}
+        labelId={`${label}_label`}
+        id={name}
+        name={name}
+        label={label}
+        value={value}
+        onChange={onChange}
+        onBlur={onBlur}
+      >
         {[
           ...(withAllOption
             ? [
                 {
-                  value: options.length === value.length ? 'none' : 'all',
+                  value: options.length === value.length ? '' : 'all',
                   label: options.length === value.length ? 'Unselect all' : 'Select all'
                 }
               ]
@@ -29,6 +43,7 @@ export default function CSelect({
           </MenuItem>
         ))}
       </Select>
+      <FormHelperTextComponent id={name} error={error} loading={loading} />
     </FormControl>
   );
 }

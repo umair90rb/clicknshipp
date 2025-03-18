@@ -1,48 +1,25 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  Box,
-  Button,
-  MenuItem,
-  Select,
-  FormControl,
-  FormHelperText,
-  Grid,
-  ListItemText,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  OutlinedInput,
-  Stack,
-  Typography,
-  Checkbox,
-  Chip,
-  Modal
-} from '@mui/material';
+import { Box, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, OutlinedInput, Stack, Typography } from '@mui/material';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-import AnimateButton from 'components/@extended/AnimateButton';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
-import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import { userService } from 'api/index';
 import { addUser, updateUser } from 'store/slices/user/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllRoles } from 'store/slices/acl/fetchACL';
-import { fetchAllBrand } from 'store/slices/brand/fetchBrand';
-import { brandBrandsSelector, brandFetchStatusSelector, brandIsLoadingSelector } from 'store/slices/brand/brandSelector';
-import fetchStatus from 'constants/fetchStatuses';
-import { aclRolesFetchStatusSelector, aclRolesIsLoadingSelector, aclRolesListSelector } from 'store/slices/acl/aclSelector';
-import FormHelperTextComponent from 'components/LoadingHelperText';
-
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '50%',
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4
-};
+import { brandBrandsSelector, brandIsLoadingSelector } from 'store/slices/brand/brandSelector';
+import FormHelperTextComponent from 'components/FormHelperTextComponent';
+import CustomDialog from 'components/CustomDialog';
+import CustomButton from 'components/CustomButton';
+import CustomCheckbox from 'components/CustomCheckbox';
+import CustomChipSelect from 'components/CustomChipSelect';
+import useBrandsFetch from 'hooks/useBrandsFetch';
+import useRolesFetch from 'hooks/useRolesFetch';
+import useStoreLocationFetch from 'hooks/useStoreLocationFetch';
+import { locationIsLoadingSelector, locationListSelector } from 'store/slices/location/locationSelector';
+import { aclRolesIsLoadingSelector, aclRolesListSelector } from 'store/slices/acl/aclSelector';
+import { getMetafieldValues } from './util';
 
 export default function AddUpdateUserModal({ visible, onClose, userToUpdate }) {
   const dispatch = useDispatch();
@@ -53,14 +30,16 @@ export default function AddUpdateUserModal({ visible, onClose, userToUpdate }) {
     phone: '',
     password: '',
     roles: [],
-    brands: []
+    brands: [],
+    storeAccess: false,
+    stores: []
   });
-  const brandsIsLoading = useSelector(brandIsLoadingSelector);
-  const brandsFetchStatus = useSelector(brandFetchStatusSelector);
   const brands = useSelector(brandBrandsSelector);
-  const rolesIsLoading = useSelector(aclRolesIsLoadingSelector);
-  const rolesFetchStatus = useSelector(aclRolesFetchStatusSelector);
+  const brandsIsLoading = useSelector(brandIsLoadingSelector);
   const roles = useSelector(aclRolesListSelector);
+  const rolesIsLoading = useSelector(aclRolesIsLoadingSelector);
+  const storeLocations = useSelector(locationListSelector);
+  const storeLocationsIsLoading = useSelector(locationIsLoadingSelector);
 
   const [level, setLevel] = useState();
   const changePassword = (value) => {
@@ -78,37 +57,37 @@ export default function AddUpdateUserModal({ visible, onClose, userToUpdate }) {
   };
 
   const handleSubmit = async (values, { setErrors, setStatus, setSubmitting }) => {
-    const roleIds = [],
-      brandIds = [];
-    values.roles.forEach((role) => {
-      const index = roles.findIndex((r) => r.name === role);
-      if (index > -1) {
-        roleIds.push(roles[index].id);
-        return;
-      }
-    });
-    values.brands.forEach((brand) => {
-      const index = brands.findIndex((b) => b.name === brand);
-      if (index > -1) {
-        brandIds.push(brands[index].id);
-        return;
-      }
-    });
-    const body = { ...values, roles: roleIds, brands: brandIds };
     let response;
     try {
       if (Object.values(userToUpdate).length) {
-        const { id, permissions, ...rest } = body;
-        response = await userService.fetchUpdateUser(userToUpdate.id, rest);
+        const roleIds = [],
+          brandIds = [];
+        values.roles.forEach((role) => {
+          const index = roles.findIndex((r) => r.name === role);
+          if (index > -1) {
+            roleIds.push(roles[index].id);
+            return;
+          }
+        });
+        values.brands.forEach((brand) => {
+          const index = brands.findIndex((b) => b.name === brand);
+          if (index > -1) {
+            brandIds.push(brands[index].id);
+            return;
+          }
+        });
+        const { id, permissions, roles: r, brands: b, ...rest } = values;
+        response = await userService.fetchUpdateUser(userToUpdate.id, { ...rest, roles: roleIds, brands: brandIds });
+        console.log(response);
         dispatch(updateUser({ data: response.data.user }));
       } else {
-        response = await userService.fetchAddUser(body);
+        response = await userService.fetchAddUser(values);
         dispatch(addUser(response.data.user));
       }
       setStatus({ success: false });
       setSubmitting(false);
     } catch (err) {
-      console.error(err, err.response.data.error);
+      console.error(err);
       setStatus({ success: false });
       setErrors({ submit: err.response.data.error });
       setSubmitting(false);
@@ -118,7 +97,15 @@ export default function AddUpdateUserModal({ visible, onClose, userToUpdate }) {
   useEffect(() => {
     changePassword('');
     if (Object.values(userToUpdate).length) {
-      setInitialValues({ ...userToUpdate, brands: userToUpdate.brands.map((b) => b.name) });
+      console.log(userToUpdate.metafield, getMetafieldValues(userToUpdate.metafield, 'store_access', 'store_id'));
+      const { settings, metafield, ...user } = userToUpdate;
+      setInitialValues({
+        ...user,
+        brands: userToUpdate.brands.map((b) => b.id),
+        roles: userToUpdate.roles.map((r) => r.id),
+        storeAccess: Boolean(userToUpdate.settings?.store_access),
+        stores: getMetafieldValues(userToUpdate.metafield, 'store_access', 'store_id')
+      });
     } else {
       setInitialValues({
         name: '',
@@ -126,223 +113,127 @@ export default function AddUpdateUserModal({ visible, onClose, userToUpdate }) {
         phone: '',
         password: '',
         roles: [],
-        brands: []
+        brands: [],
+        storeAccess: false,
+        stores: []
       });
-    }
-    if (brandsFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllBrand());
-    }
-    if (rolesFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllRoles());
     }
   }, [visible]);
 
+  useBrandsFetch();
+  const { refresh: refreshRoles } = useRolesFetch();
+  useStoreLocationFetch();
+
   return (
-    <Modal open={visible} onClose={onClose}>
-      <Box sx={style}>
-        <Formik
-          innerRef={formRef}
-          enableReinitialize
-          initialValues={initialValues}
-          validationSchema={Yup.object().shape({
-            name: Yup.string().max(255).required('First Name is required'),
-            phone: Yup.number().min(11),
-            email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-            password: Yup.string().when({
-              is: (val) => (userToUpdate && 'id' in userToUpdate ? false : true),
-              then: Yup.string()
-                .matches(
-                  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-                  'Password must contain at least 8 characters, one uppercase, one lowercase, one number and one special case character'
-                )
-                .required('Password is required'),
-              otherwise: Yup.string().max(255)
-            }),
-            roles: Yup.array().of(Yup.string()).min(1).required('Minimum 1 role is required'),
-            brands: Yup.array().of(Yup.string())
-          })}
-          onSubmit={handleSubmit}
-        >
-          {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
-            <form noValidate onSubmit={handleSubmit}>
-              <Grid container spacing={3}>
-                <Grid item xs={12}>
-                  <Stack spacing={1}>
-                    <InputLabel htmlFor="name-signup">Name*</InputLabel>
-                    <OutlinedInput
-                      id="name-login"
-                      type="name"
-                      value={values.name}
-                      name="name"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      placeholder="Ali"
-                      fullWidth
-                      error={Boolean(touched.name && errors.name)}
-                    />
-                    {touched.name && errors.name && (
-                      <FormHelperText error id="helper-text-name-signup">
-                        {errors.name}
-                      </FormHelperText>
-                    )}
-                  </Stack>
-                </Grid>
-                <Grid item xs={12}>
-                  <Stack spacing={1}>
-                    <InputLabel htmlFor="roles-signup">Roles*</InputLabel>
-                    <Select
-                      fullWidth
-                      multiple
-                      error={Boolean(touched.roles && errors.roles)}
-                      id="roles-signup"
-                      value={values.roles}
-                      name="roles"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      inputProps={{}}
-                      labelId="roles-signup"
-                      renderValue={(selected) => (
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                          {selected.map((value) => (
-                            <Chip key={value} label={value} />
-                          ))}
-                        </Box>
-                      )}
-                    >
-                      {roles.map(({ name }, index) => (
-                        <MenuItem key={index} value={name}>
-                          <Checkbox checked={values.roles && values.roles?.indexOf(name) > -1} />
-                          <ListItemText primary={name} />
-                        </MenuItem>
-                      ))}
-                    </Select>
-                    <FormHelperTextComponent loading={rolesIsLoading} />
-                    {touched.roles && errors.roles && (
-                      <FormHelperText error id="helper-text-roles-signup">
-                        {errors.roles}
-                      </FormHelperText>
-                    )}
-                  </Stack>
-                </Grid>
-                <Grid item xs={12}>
-                  <Stack spacing={1}>
-                    <InputLabel htmlFor="brands-signup">Brands*</InputLabel>
-                    <Select
-                      fullWidth
-                      multiple
-                      error={Boolean(touched.brands && errors.brands)}
-                      id="brands-signup"
-                      value={values.brands}
-                      name="brands"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      inputProps={{}}
-                      labelId="brands-signup"
-                      renderValue={(selected) => (
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                          {selected.map((value) => (
-                            <Chip key={value} label={value} />
-                          ))}
-                        </Box>
-                      )}
-                    >
-                      {brands.map(({ id, name }) => (
-                        <MenuItem key={id} value={name}>
-                          <Checkbox checked={values.brands && values.brands.indexOf(name) > -1} />
-                          <ListItemText primary={name} />
-                        </MenuItem>
-                      ))}
-                    </Select>
-                    <FormHelperTextComponent loading={brandsIsLoading} />
-                    {touched.brands && errors.brands && (
-                      <FormHelperText error id="helper-text-brands-signup">
-                        {errors.brands}
-                      </FormHelperText>
-                    )}
-                  </Stack>
-                </Grid>
-                <Grid item xs={12}>
-                  <Stack spacing={1}>
-                    <InputLabel htmlFor="phone-signup">Phone*</InputLabel>
-                    <OutlinedInput
-                      fullWidth
-                      error={Boolean(touched.phone && errors.phone)}
-                      id="phone-signup"
-                      value={values.phone}
-                      name="phone"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      placeholder="03001234567"
-                      inputProps={{}}
-                    />
-                    {touched.phone && errors.phone && (
-                      <FormHelperText error id="helper-text-phone-signup">
-                        {errors.phone}
-                      </FormHelperText>
-                    )}
-                  </Stack>
-                </Grid>
-                <Grid item xs={12}>
-                  <Stack spacing={1}>
-                    <InputLabel htmlFor="email-signup">Email Address*</InputLabel>
-                    <OutlinedInput
-                      fullWidth
-                      error={Boolean(touched.email && errors.email)}
-                      id="email-login"
-                      type="email"
-                      value={values.email}
-                      name="email"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      placeholder="demo@sukoon.com"
-                      inputProps={{}}
-                    />
-                    {touched.email && errors.email && (
-                      <FormHelperText error id="helper-text-email-signup">
-                        {errors.email}
-                      </FormHelperText>
-                    )}
-                  </Stack>
-                </Grid>
-                <Grid item xs={12}>
-                  <Stack spacing={1}>
-                    <InputLabel htmlFor="password-signup">Password</InputLabel>
-                    <OutlinedInput
-                      fullWidth
-                      error={Boolean(touched.password && errors.password)}
-                      id="password-signup"
-                      type={showPassword ? 'text' : 'password'}
-                      value={values.password}
-                      name="password"
-                      onBlur={handleBlur}
-                      onChange={(e) => {
-                        handleChange(e);
-                        changePassword(e.target.value);
-                      }}
-                      endAdornment={
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={handleClickShowPassword}
-                            onMouseDown={handleMouseDownPassword}
-                            edge="end"
-                            size="large"
-                          >
-                            {showPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
-                          </IconButton>
-                        </InputAdornment>
-                      }
-                      placeholder="******"
-                      inputProps={{}}
-                    />
-                    {touched.password && errors.password && (
-                      <FormHelperText error id="helper-text-password-signup">
-                        {errors.password}
-                      </FormHelperText>
-                    )}
-                  </Stack>
-                  <FormControl fullWidth sx={{ mt: 2 }}>
+    <CustomDialog
+      title="Create/Update User"
+      visible={visible}
+      onClose={onClose}
+      maxWidth="lg"
+      actions={[
+        <CustomButton
+          key={1}
+          disabled={formRef.current?.isSubmitting}
+          text="Create/Update User Account"
+          onClick={formRef.current?.handleSubmit}
+        />
+      ]}
+    >
+      <Formik
+        innerRef={formRef}
+        enableReinitialize
+        initialValues={initialValues}
+        validationSchema={Yup.object().shape({
+          name: Yup.string().max(255).required('First Name is required'),
+          phone: Yup.number().min(11),
+          email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
+          password: Yup.string().when({
+            is: (val) => (userToUpdate && 'id' in userToUpdate ? false : true),
+            then: Yup.string()
+              .matches(
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                'Password must contain at least 8 characters, one uppercase, one lowercase, one number and one special (@$!%*?&) case character'
+              )
+              .required('Password is required'),
+            otherwise: Yup.string().max(255)
+          }),
+          roles: Yup.array().of(Yup.string()).min(1).required('Minimum 1 role is required'),
+          brands: Yup.array().of(Yup.string())
+        })}
+        onSubmit={handleSubmit}
+      >
+        {({ errors, handleBlur, handleChange, handleSubmit, setFieldValue, isSubmitting, touched, values }) => (
+          <form noValidate onSubmit={handleSubmit}>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6} md={6} lg={6}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="name-signup">Name*</InputLabel>
+                  <OutlinedInput
+                    id="name-login"
+                    type="text"
+                    value={values.name}
+                    name="name"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="Ali"
+                    fullWidth
+                    error={Boolean(touched.name && errors.name)}
+                  />
+                  {touched.name && errors.name && (
+                    <FormHelperText error id="helper-text-name-signup">
+                      {errors.name}
+                    </FormHelperText>
+                  )}
+                </Stack>
+              </Grid>
+              <Grid item xs={12} sm={6} md={6} lg={6}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="email-signup">Email Address*</InputLabel>
+                  <OutlinedInput
+                    fullWidth
+                    error={Boolean(touched.email && errors.email)}
+                    id="email-login"
+                    type="email"
+                    value={values.email}
+                    name="email"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="demo@sukoon.com"
+                    inputProps={{}}
+                  />
+                  {touched.email && errors.email && (
+                    <FormHelperText error id="helper-text-email-signup">
+                      {errors.email}
+                    </FormHelperText>
+                  )}
+                </Stack>
+              </Grid>
+              <Grid item xs={12} sm={6} md={6} lg={6}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="phone-signup">Phone*</InputLabel>
+                  <OutlinedInput
+                    fullWidth
+                    error={Boolean(touched.phone && errors.phone)}
+                    id="phone-signup"
+                    value={values.phone}
+                    name="phone"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="03001234567"
+                    inputProps={{}}
+                  />
+                  {touched.phone && errors.phone && (
+                    <FormHelperText error id="helper-text-phone-signup">
+                      {errors.phone}
+                    </FormHelperText>
+                  )}
+                </Stack>
+              </Grid>
+              <Grid item xs={12} sm={6} md={6} lg={6}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="password-signup">
                     <Grid container spacing={2} alignItems="center">
+                      <Grid item> Password </Grid>
                       <Grid item>
                         <Box sx={{ bgcolor: level?.color, width: 85, height: 8, borderRadius: '7px' }} />
                       </Grid>
@@ -352,33 +243,108 @@ export default function AddUpdateUserModal({ visible, onClose, userToUpdate }) {
                         </Typography>
                       </Grid>
                     </Grid>
-                  </FormControl>
+                  </InputLabel>
+                  <OutlinedInput
+                    fullWidth
+                    error={Boolean(touched.password && errors.password)}
+                    id="password-signup"
+                    type={showPassword ? 'text' : 'password'}
+                    value={values.password}
+                    name="password"
+                    onBlur={handleBlur}
+                    onChange={(e) => {
+                      handleChange(e);
+                      changePassword(e.target.value);
+                    }}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                          size="large"
+                        >
+                          {showPassword ? <RemoveRedEyeOutlinedIcon /> : <VisibilityOffOutlinedIcon />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    placeholder="******"
+                    inputProps={{}}
+                  />
+                  {touched.password && errors.password && (
+                    <FormHelperText error id="helper-text-password-signup">
+                      {errors.password}
+                    </FormHelperText>
+                  )}
+                </Stack>
+              </Grid>
+              <Grid item xs={12}>
+                <CustomChipSelect
+                  multiple
+                  fullWidth
+                  getLabelFromOptions
+                  loading={brandsIsLoading}
+                  label="Brands*"
+                  error={Boolean(touched.brands && errors.brands)}
+                  value={values.brands}
+                  name="brands"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  options={brands.map((b) => ({ label: b.name, value: b.id }))}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <CustomChipSelect
+                  multiple
+                  fullWidth
+                  getLabelFromOptions
+                  withRefresh={refreshRoles}
+                  loading={rolesIsLoading}
+                  label="Roles*"
+                  error={Boolean(touched.roles && errors.roles)}
+                  value={values.roles}
+                  name="roles"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  options={roles.map((r) => ({ label: r.name, value: r.id }))}
+                />
+              </Grid>
+              <Grid item xs={12} container>
+                <Grid item xs={2}>
+                  <Box sx={{ marginTop: 1.5 }} />
+                  <CustomCheckbox
+                    label="Store Access"
+                    checked={values.storeAccess}
+                    onChange={() => setFieldValue('storeAccess', !values.storeAccess)}
+                  />
                 </Grid>
-                {errors.submit && (
-                  <Grid item xs={12}>
-                    <FormHelperText error>{errors.submit}</FormHelperText>
-                  </Grid>
-                )}
-                <Grid item xs={12}>
-                  <AnimateButton>
-                    <Button
-                      disableElevation
-                      disabled={isSubmitting}
-                      fullWidth
-                      size="large"
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                    >
-                      Create/Update User Account
-                    </Button>
-                  </AnimateButton>
+                <Grid item xs={10}>
+                  <CustomChipSelect
+                    multiple
+                    getLabelFromOptions
+                    disabled={!values.storeAccess}
+                    error={Boolean(touched.stores && errors.stores)}
+                    loading={storeLocationsIsLoading}
+                    label="Select Stores"
+                    value={values.stores}
+                    name="stores"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    options={storeLocations.map((l) => ({ label: l.name, value: l.id }))}
+                  />
                 </Grid>
               </Grid>
-            </form>
-          )}
-        </Formik>
-      </Box>
-    </Modal>
+
+              {errors.submit && (
+                <Grid item xs={12}>
+                  <FormHelperTextComponent id="submits" error={errors.submit} />
+                </Grid>
+              )}
+            </Grid>
+          </form>
+        )}
+      </Formik>
+    </CustomDialog>
   );
 }

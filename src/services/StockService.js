@@ -107,6 +107,8 @@ class StockService {
       )
     );
   }
+
+  async importOpeningStock(json, store_id, stock_type) {}
 }
 
 const _stockService = new StockService();

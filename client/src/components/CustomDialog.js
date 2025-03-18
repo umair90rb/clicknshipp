@@ -9,6 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
+import { useReactToPrint } from 'react-to-print';
 
 const getWidthHeight = (size) => {
   switch (size) {
@@ -41,6 +42,23 @@ export default function CustomDialog({
   scroll = 'paper',
   printable = false
 }) {
+  const printableRef = React.useRef(null);
+  const handlePrint = useReactToPrint({
+    contentRef: printableRef,
+    pageStyle: `
+      @page {
+        size: A4;
+        margin: 48px;
+      }
+      @media print {
+        body {
+          margin: 0;
+          padding: 0;
+        }
+      }
+    `
+  });
+
   return (
     <Dialog
       maxWidth={maxWidth}
@@ -59,7 +77,7 @@ export default function CustomDialog({
         {title && <Typography variant="h5">{title}</Typography>}
         <Box>
           {printable && (
-            <IconButton sx={{ displayPrint: 'none' }} aria-label="print" onClick={window.print}>
+            <IconButton sx={{ displayPrint: 'none' }} aria-label="print" onClick={printableRef ? handlePrint : window.print}>
               <PrintOutlinedIcon />
             </IconButton>
           )}
@@ -72,7 +90,13 @@ export default function CustomDialog({
       <DialogContent dividers={dividers}>
         <div style={getWidthHeight(maxWidth)}>
           {description && <DialogContentText>{description}</DialogContentText>}
-          {children}
+          {printable ? (
+            <div style={{ width: '100%', overflowX: 'auto' }} ref={printableRef}>
+              {children}
+            </div>
+          ) : (
+            children
+          )}
         </div>
       </DialogContent>
       {actions.length > 0 && <DialogActions sx={{ displayPrint: 'none' }}>{actions}</DialogActions>}

@@ -54,8 +54,8 @@ export default {
 
   async profile(req, res) {
     try {
-      const { user } = req;
-      const userData = await User.scope('withPassword').findByPk(user.id, {
+      const userId = req.user.id;
+      const user = await User.findByPk(userId, {
         attributes: ['id', 'name', 'email', 'phone', 'settings'],
         include: [
           {
@@ -78,12 +78,12 @@ export default {
           },
         ],
       });
-      if (userData) {
-        const userRoles = [];
-        const userPermissions = [];
-        userData.roles.forEach((role) => {
-          userRoles.push(role.name);
-          userPermissions.push(
+      if (user) {
+        const roles = [];
+        const permissions = [];
+        user.roles.forEach((role) => {
+          roles.push(role.name);
+          permissions.push(
             ...role.permissions.map((permission) => permission.name)
           );
         });
@@ -92,9 +92,9 @@ export default {
           200,
           {
             user: {
-              ...userData.get(),
-              roles: userRoles,
-              permissions: userPermissions,
+              ...user.get(),
+              roles,
+              permissions,
             },
           },
           'User profile!'

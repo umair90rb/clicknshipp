@@ -1,5 +1,16 @@
 import { useEffect, useRef } from 'react';
-import { IconButton, Button, FormHelperText, Grid, TextField, FormControl, FormLabel, Select, MenuItem } from '@mui/material';
+import {
+  TextareaAutosize,
+  IconButton,
+  Button,
+  FormHelperText,
+  Grid,
+  TextField,
+  FormControl,
+  FormLabel,
+  Select,
+  MenuItem
+} from '@mui/material';
 import Autocomplete, { autocompleteClasses } from '@mui/material/Autocomplete';
 
 import * as Yup from 'yup';
@@ -70,8 +81,8 @@ export default function AddSalesOrderModal() {
           items: [
             {
               item_id: null,
-              quantity: 0,
-              price: 0
+              quantity: 0
+              // price: 0
             }
           ]
         }}
@@ -92,7 +103,7 @@ export default function AddSalesOrderModal() {
         {(salesOrder) => (
           <Grid container spacing={3}>
             <Grid container columnSpacing={1} alignItems="center" justifyContent="center" item sx={12} md={12} lg={12}>
-              <Grid item sx={4} md={4} lg={4}>
+              <Grid item sx={5} md={5} lg={5}>
                 <FormControl fullWidth margin="normal">
                   <FormLabel id="location_id">Store Location</FormLabel>
                   <Select
@@ -127,7 +138,7 @@ export default function AddSalesOrderModal() {
                   />
                 </FormControl>
               </Grid>
-              <Grid item sx={4} md={4} lg={4}>
+              <Grid item sx={7} md={7} lg={7}>
                 <FormControl fullWidth margin="normal">
                   <FormLabel id="name">Name</FormLabel>
                   <TextField
@@ -156,10 +167,12 @@ export default function AddSalesOrderModal() {
                   />
                 </FormControl>
               </Grid>
-              <Grid item sx={4} md={4} lg={4}>
+              <Grid item sx={12} md={12} lg={12}>
                 <FormControl fullWidth margin="normal">
                   <FormLabel id="comment">Comment</FormLabel>
-                  <TextField
+                  <TextareaAutosize
+                    maxRows={5}
+                    minRows={3}
                     size="small"
                     labelId="comment"
                     id="comment_select"
@@ -258,7 +271,7 @@ export default function AddSalesOrderModal() {
                         </FormControl>
                       </Grid>
 
-                      <Grid item xs={2}>
+                      {/* <Grid item xs={2}>
                         <FormControl fullWidth margin="normal">
                           <FormLabel id={`items.${index}.price`}>Price (for 1 item)</FormLabel>
                           <TextField
@@ -287,7 +300,7 @@ export default function AddSalesOrderModal() {
                             )}
                           />
                         </FormControl>
-                      </Grid>
+                      </Grid> */}
 
                       <Grid item xs={2}>
                         <FormControl fullWidth margin="normal">
@@ -325,8 +338,8 @@ export default function AddSalesOrderModal() {
                           onClick={() =>
                             arrayHelper.push({
                               item_id: null,
-                              quantity: 1,
-                              price: 0
+                              quantity: 1
+                              // price: 0
                             })
                           }
                           color="primary"

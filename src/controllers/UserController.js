@@ -1,17 +1,24 @@
 import { Op } from 'sequelize';
 import model from '../models';
 import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
+import _metafieldService from '../services/MetafieldService';
+import {
+  metafieldOwners,
+  metafieldNamespaces,
+  metafieldKeys,
+} from '../constants/metafield';
+
 const bcrypt = require('bcrypt');
 
 const {
   User,
   Role,
   Brand,
-  Chanel,
   Permission,
   UserRole,
   UserPermission,
   PersonalAccessToken,
+  Metafield,
 } = model;
 
 export default {
@@ -46,6 +53,11 @@ export default {
               attributes: [],
             },
           },
+          {
+            model: Metafield,
+            as: 'metafield',
+            attributes: ['id', 'namespace', 'key', 'value', 'type'],
+          },
         ],
       });
       return sendSuccessResponse(
@@ -54,7 +66,7 @@ export default {
         {
           users: users.map((user) => ({
             ...user.get(),
-            roles: user.roles.map((r) => r.name),
+            roles: user.roles.map(({ name, id }) => ({ name, id })),
             permissions: user.roles.reduce(
               (t, c) => [...t, ...c.permissions],
               []
@@ -100,6 +112,11 @@ export default {
             through: {
               attributes: [],
             },
+          },
+          {
+            model: Metafield,
+            as: 'metafield',
+            attributes: ['id', 'namespace', 'key', 'value', 'type'],
           },
         ],
       });
@@ -199,7 +216,8 @@ export default {
   },
 
   async create(req, res) {
-    const { name, email, password, phone, roles, brands } = req.body;
+    const { name, email, password, phone, roles, brands, storeAccess, stores } =
+      req.body;
     try {
       let user = await User.findOne({
         where: { [Op.or]: [{ email }, { phone }] },
@@ -236,6 +254,18 @@ export default {
         );
       });
       await user.addPermissions(permissions.map((permission) => permission.id));
+      if (storeAccess) {
+        await user.update({ settings: { store_access: true } });
+        await _metafieldService.bulkCreateInteger(
+          stores.map((st) => ({
+            namespace: metafieldNamespaces.storeAccess,
+            key: metafieldKeys.storeId,
+            value: st,
+            owner_id: user.id,
+            owner_type: metafieldOwners.user,
+          }))
+        );
+      }
       return sendSuccessResponse(
         res,
         201,
@@ -246,6 +276,13 @@ export default {
             name: user.name,
             phone: user.phone,
             status: user.status,
+            settings: user.settings,
+            stores: await user.getMetafield({
+              where: {
+                namespace: metafieldNamespaces.storeAccess,
+                key: metafieldKeys.storeId,
+              },
+            }),
             roles: assignedRoles.map((role) => role.name),
             permissions: permissions.map((permission) => permission.name),
             brands: assignedBrands.map((brand) => ({
@@ -270,8 +307,17 @@ export default {
     try {
       const id = req.params.id;
       const userUpdatedData = req.body;
-      const { name, email, phone, password, roles, brands, status, settings } =
-        userUpdatedData || {};
+      const {
+        name,
+        email,
+        phone,
+        password,
+        roles,
+        brands,
+        status,
+        storeAccess,
+        stores,
+      } = userUpdatedData || {};
       if (email && phone) {
         const userWithEmailOrPhone = await User.findOne({
           where: { [Op.or]: [{ email }, { phone }] },
@@ -292,10 +338,35 @@ export default {
           name: name || user.name,
           phone: phone || user.phone,
           status: status || user.status,
-          settings: settings || user.settings,
           password: password ? await bcrypt.hash(password, 10) : user.password,
           updatedAt: new Date().toISOString(),
         });
+        if (storeAccess) {
+          user.set({ settings: { ...user.settings, store_access: true } });
+          await _metafieldService.deleteAll({
+            namespace: metafieldNamespaces.storeAccess,
+            key: metafieldKeys.storeId,
+            owner_id: user.id,
+            owner_type: metafieldOwners.user,
+          });
+          await _metafieldService.bulkCreateInteger(
+            stores.map((st) => ({
+              namespace: metafieldNamespaces.storeAccess,
+              key: metafieldKeys.storeId,
+              value: st,
+              owner_id: user.id,
+              owner_type: metafieldOwners.user,
+            }))
+          );
+        } else {
+          user.set({ settings: { ...user.settings, store_access: false } });
+          await _metafieldService.deleteAll({
+            namespace: metafieldNamespaces.storeAccess,
+            key: metafieldKeys.storeId,
+            owner_id: user.id,
+            owner_type: metafieldOwners.user,
+          });
+        }
         let assignedRoles, permissions;
         if (roles && roles.length) {
           const currentRoles = await user.getRoles();
@@ -337,6 +408,13 @@ export default {
               name: user.name,
               phone: user.phone,
               status: user.status,
+              settings: user.settings,
+              stores: await user.getMetafield({
+                where: {
+                  namespace: metafieldNamespaces.storeAccess,
+                  key: metafieldKeys.storeId,
+                },
+              }),
               brands: await user.getBrands({
                 attributes: ['id', 'name'],
                 joinTableAttributes: [],
@@ -368,7 +446,6 @@ export default {
     try {
       const brandId = req.params.id;
       const userId = req.user.id;
-      const settings = { default_brand_id: brandId };
       const user = await User.findByPk(userId, {
         include: {
           model: Brand,
@@ -382,12 +459,14 @@ export default {
       if (user) {
         const brandIds = user.brands.map((brand) => brand.id);
         if (brandIds.includes(brandId)) {
-          await user.update({ settings });
+          await user.update({
+            settings: { ...user.settings, default_brand_id: brandId },
+          });
           return sendSuccessResponse(
             res,
             200,
             {
-              settings,
+              settings: user.settings,
             },
             'Operation successful.'
           );

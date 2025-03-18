@@ -4,6 +4,7 @@ import LocationController from '../controllers/LocationController';
 import { PERMISSIONS } from '../constants/constants';
 import can from '../middleware/canAccess';
 import Auth from '../middleware/auth';
+import attachPermittedStores from '../middleware/attachPermittedStores';
 import { createLocationSchema } from '../schemas/locationSchema';
 import { idSchema } from '../schemas/commonSchema';
 import schemaValidator from '../middleware/schemaValidator';
@@ -15,6 +16,7 @@ router.get(
   '/all',
   Auth,
   can(PERMISSIONS.PERMISSION_VIEW_LOCATIONS),
+  attachPermittedStores,
   LocationController.all
 );
 

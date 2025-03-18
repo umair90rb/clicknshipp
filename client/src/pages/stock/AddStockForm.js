@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import {
   IconButton,
   Button,
@@ -11,7 +11,8 @@ import {
   Radio,
   Select,
   MenuItem,
-  TextareaAutosize
+  TextareaAutosize,
+  TextField
 } from '@mui/material';
 import Autocomplete, { autocompleteClasses } from '@mui/material/Autocomplete';
 import * as Yup from 'yup';
@@ -19,55 +20,32 @@ import { Formik, FieldArray, ErrorMessage } from 'formik';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllItem } from 'store/slices/item/fetchItem';
-import { itemFetchStatusSelector, itemItemsSelector } from 'store/slices/item/itemSelector';
-import fetchStatus from 'constants/fetchStatuses';
-import { TextField } from '../../../node_modules/@mui/material/index';
+import { itemItemsSelector } from 'store/slices/item/itemSelector';
 import { fetchAllStock, fetchCreateStock } from 'store/slices/stock/fetchStock';
-import { unitOfMeasureFetchStatusSelector, unitOfMeasureListSelector } from 'store/slices/unitOfMeasure/unitOfMeasureSelector';
-import { fetchAllUnitOfMeasure } from 'store/slices/unitOfMeasure/fetchUnitOfMeasure';
-import { rawMaterialFetchStatusSelector, rawMaterialListSelector } from 'store/slices/rawMaterial/RawMaterialSelector';
-import { fetchAllRawMaterial } from 'store/slices/rawMaterial/fetchRawMaterial';
+import { unitOfMeasureListSelector } from 'store/slices/unitOfMeasure/unitOfMeasureSelector';
+import { rawMaterialListSelector } from 'store/slices/rawMaterial/RawMaterialSelector';
 import { toSentence } from 'utils/string-utils';
-import { locationFetchStatusSelector, locationListSelector } from 'store/slices/location/locationSelector';
-import { fetchAllLocation } from 'store/slices/location/fetchLocation';
+import { locationListSelector } from 'store/slices/location/locationSelector';
 import CustomDialog from 'components/CustomDialog';
 import { getItemsAndRaw } from './util';
+import useStoreLocationFetch from 'hooks/useStoreLocationFetch';
+import useItemsFetch from 'hooks/useItemsFetch';
+import useUOMFetch from 'hooks/useUOMFetch';
+import useRawMaterialsFetch from 'hooks/useRawMaterialsFetch';
 
 export default function AddStockForm({ visible, onClose }) {
   const dispatch = useDispatch();
   const formRef = useRef();
 
-  const itemFetchStatus = useSelector(itemFetchStatusSelector);
   const items = useSelector(itemItemsSelector);
-  const itemsIsLoading = itemFetchStatus === fetchStatus.REQUEST;
-
-  const rawMaterialFetchStatus = useSelector(rawMaterialFetchStatusSelector);
   const rawMaterials = useSelector(rawMaterialListSelector);
-  const rawMaterialIsLoading = rawMaterialFetchStatus === fetchStatus.REQUEST;
-
-  const locationFetchStatus = useSelector(locationFetchStatusSelector);
   const locations = useSelector(locationListSelector);
-  const locationIsLoading = locationFetchStatus === fetchStatus.REQUEST;
-
-  const unitsFetchStatus = useSelector(unitOfMeasureFetchStatusSelector);
   const units = useSelector(unitOfMeasureListSelector);
-  const unitsIsLoading = unitsFetchStatus === fetchStatus.REQUEST;
 
-  useEffect(() => {
-    if (itemFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllItem());
-    }
-    if (unitsFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllUnitOfMeasure());
-    }
-    if (rawMaterialFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllRawMaterial());
-    }
-    if (locationFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllLocation());
-    }
-  }, []);
+  useStoreLocationFetch();
+  useItemsFetch();
+  useUOMFetch();
+  useRawMaterialsFetch();
 
   const handleSubmit = async (values, { setErrors }) => {
     dispatch(fetchCreateStock({ body: values })).then((action) => {

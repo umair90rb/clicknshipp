@@ -1,39 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Grid, Typography, Modal, Box } from '@mui/material';
+import { Button, Grid, Typography } from '@mui/material';
 import MainCard from 'components/MainCard';
-import { PlusOutlined, FileExcelOutlined, LoadingOutlined } from '@ant-design/icons';
-import { styled } from '@mui/material/styles';
+import { PlusOutlined, LoadingOutlined } from '@ant-design/icons';
 import ItemTable from './ItemTable';
-import AddItemForm from './AddItemForm';
 import { useDispatch, useSelector } from 'react-redux';
 import { itemItemsSelector } from 'store/slices/item/itemSelector';
 import { fetchAllItem, fetchImportItems } from 'store/slices/item/fetchItem';
 import { setMessage } from 'store/slices/util/utilSlice';
 import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
-
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4
-};
-
-const VisuallyHiddenInput = styled('input')({
-  clip: 'rect(0 0 0 0)',
-  clipPath: 'inset(50%)',
-  height: 1,
-  overflow: 'hidden',
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  whiteSpace: 'nowrap',
-  width: 1
-});
+import CustomFileInput from 'components/CustomFileInput';
+import AddItemModal from './AddItemModal';
 
 const ItemsManagement = () => {
   const dispatch = useDispatch();
@@ -90,15 +67,12 @@ const ItemsManagement = () => {
             <Grid container spacing={2}>
               {hasPermission(PERMISSIONS.PERMISSION_BULK_CREATE_ITEMS) && (
                 <Grid item>
-                  <Button
-                    component="label"
-                    variant="contained"
-                    disabled={importingItems ? true : undefined}
-                    startIcon={importingItems ? <LoadingOutlined /> : <FileExcelOutlined />}
-                  >
-                    Add Bulk Item
-                    <VisuallyHiddenInput type="file" onChange={uploadFile} />
-                  </Button>
+                  <CustomFileInput
+                    onChange={uploadFile}
+                    label="Import Items"
+                    disabled={importingItems}
+                    startIcon={importingItems && LoadingOutlined}
+                  />
                 </Grid>
               )}
               {hasPermission(PERMISSIONS.PERMISSION_CREATE_ITEM) && (
@@ -115,16 +89,7 @@ const ItemsManagement = () => {
           <ItemTable order="desc" orderBy="id" updateItemHandler={updateItemHandler} />
         </MainCard>
       </Grid>
-      <Modal
-        open={openModal}
-        onClose={() => setOpenModal(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <AddItemForm item={itemToUpdate} />
-        </Box>
-      </Modal>
+      <AddItemModal visible={openModal} onClose={() => setOpenModal(false)} item={itemToUpdate} />
     </>
   );
 };

@@ -21,7 +21,8 @@
     "db:seed": "npx sequelize-cli db:seed:all",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm run build",
     "babel-version": "babel --version",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db:sync:permissions": "node scripts/syncPermissions.js && npm run db:seed"
   },
   "author": "Umair",
   "license": "LICENSED",

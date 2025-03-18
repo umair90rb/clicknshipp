@@ -5,13 +5,15 @@ import { setMessage } from 'store/slices/util/utilSlice';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { fetchAllOrder, fetchImportOrder, fetchOrderBulkBook } from 'store/slices/order/fetchOrder';
-import FormHelperTextComponent from 'components/LoadingHelperText';
+import FormHelperTextComponent from 'components/FormHelperTextComponent';
 import fetchStatus from 'constants/fetchStatuses';
 import {
   deliveryServiceAccountsFetchStatusSelector,
+  deliveryServiceAccountsIsLoadingSelector,
   deliveryServiceAccountsListSelector
 } from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSelector';
 import { fetchDeliveryServiceAccounts } from 'store/slices/deliveryServicesAccounts/fetchDeliveryServicesAccounts';
+import useDeliveryServicesAccountFetch from 'hooks/useDeliveryServicesAccountFetch';
 
 const style = {
   position: 'absolute',
@@ -27,8 +29,7 @@ const style = {
 export default function OrderBulkBookModal({ visible, onClose, orderIds }) {
   const dispatch = useDispatch();
   const deliveryServiceAccountsList = useSelector(deliveryServiceAccountsListSelector);
-  const deliveryServiceAccountsFetchStatus = useSelector(deliveryServiceAccountsFetchStatusSelector);
-  const deliveryServiceAccountsIsLoading = deliveryServiceAccountsFetchStatus === fetchStatus.REQUEST;
+  const deliveryServiceAccountsIsLoading = useSelector(deliveryServiceAccountsIsLoadingSelector);
 
   const createOrderBulkBooking = async (values) => {
     const { type, payload } = await dispatch(fetchOrderBulkBook({ body: values }));
@@ -52,12 +53,10 @@ export default function OrderBulkBookModal({ visible, onClose, orderIds }) {
     onSubmit: createOrderBulkBooking
   });
 
+  useDeliveryServicesAccountFetch();
   useEffect(() => {
     if (visible) {
       orderBulkBookForm.handleReset();
-      if (deliveryServiceAccountsFetchStatus !== fetchStatus.SUCCESS) {
-        dispatch(fetchDeliveryServiceAccounts());
-      }
     }
   }, [visible]);
 
@@ -87,12 +86,11 @@ export default function OrderBulkBookModal({ visible, onClose, orderIds }) {
                 </MenuItem>
               ))}
             </Select>
-            <FormHelperTextComponent loading={deliveryServiceAccountsIsLoading} />
-            {orderBulkBookForm.touched.deliveryAccountId && orderBulkBookForm.errors.deliveryAccountId && (
-              <FormHelperText error id="helper-text-deliveryAccountId-signup">
-                {orderBulkBookForm.errors.deliveryAccountId}
-              </FormHelperText>
-            )}
+            <FormHelperTextComponent
+              id="dleivery_account_id"
+              loading={deliveryServiceAccountsIsLoading}
+              error={orderBulkBookForm.touched.deliveryAccountId && orderBulkBookForm.errors.deliveryAccountId}
+            />
           </Stack>
         </Grid>
 
