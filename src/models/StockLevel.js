@@ -51,6 +51,9 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     {
+      indexes: [
+        { unique: true, fields: ['item_id', 'location_id', 'item_type'] },
+      ],
       sequelize,
       modelName: 'StockLevel',
       timestamps: true,

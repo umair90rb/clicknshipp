@@ -65,43 +65,44 @@ export default function AddItemModal({ visible, onClose, item }) {
   }
 
   return (
-    <CustomDialog
-      actions={[
-        {
-          text: item ? 'Update Item' : 'Create Item',
-          disabled: formRef.current?.isSubmitting,
-          onClick: formRef.current?.handleSubmit
-        }
-      ]}
-      visible={visible}
-      onClose={onClose}
-      title={item ? 'Update Item' : 'Add Item'}
-      maxWidth="md"
+    <Formik
+      innerRef={formRef}
+      initialValues={{
+        name: item?.name || '',
+        code: item?.code || '',
+        unit_price: item?.unit_price || '',
+        cost_price: item?.cost_price || '',
+        //need to add validation for unit of measure required
+        unit_of_measure: item?.unit_of_measure || '',
+        supplier: item?.supplier?.id || '',
+        category: item?.category?.id || '',
+        brand: item?.brand?.id || ''
+      }}
+      validationSchema={Yup.object().shape({
+        name: Yup.string().max(255).required('Name is required'),
+        code: Yup.string().max(255).required('Code is required'),
+        unit_price: Yup.number().required('Unit price is required'),
+        cost_price: Yup.number().required('Cost price is required'),
+        supplier: Yup.number().required('Supplier is required'),
+        category: Yup.number().required('Category is required'),
+        brand: Yup.number().required('Brand is required')
+      })}
+      onSubmit={handleSubmit}
     >
-      <Formik
-        innerRef={formRef}
-        initialValues={{
-          name: item?.name || '',
-          code: item?.code || '',
-          unit_price: item?.unit_price || '',
-          cost_price: item?.cost_price || '',
-          unit_of_measure: item?.unit_of_measure || '',
-          supplier: item?.supplier?.id || '',
-          category: item?.category?.id || '',
-          brand: item?.brand?.id || ''
-        }}
-        validationSchema={Yup.object().shape({
-          name: Yup.string().max(255).required('Name is required'),
-          code: Yup.string().max(255).required('Code is required'),
-          unit_price: Yup.number().required('Unit price is required'),
-          cost_price: Yup.number().required('Cost price is required'),
-          supplier: Yup.number().required('Supplier is required'),
-          category: Yup.number().required('Category is required'),
-          brand: Yup.number().required('Brand is required')
-        })}
-        onSubmit={handleSubmit}
-      >
-        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
+      {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
+        <CustomDialog
+          actions={[
+            {
+              text: item ? 'Update Item' : 'Create Item',
+              disabled: isSubmitting,
+              onClick: handleSubmit
+            }
+          ]}
+          visible={visible}
+          onClose={onClose}
+          title={item ? 'Update Item' : 'Add Item'}
+          maxWidth="md"
+        >
           <form noValidate onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               <Grid item xs={6}>
@@ -316,8 +317,8 @@ export default function AddItemModal({ visible, onClose, item }) {
               )}
             </Grid>
           </form>
-        )}
-      </Formik>
-    </CustomDialog>
+        </CustomDialog>
+      )}
+    </Formik>
   );
 }

@@ -112,7 +112,7 @@ export default {
       const { type } = req.body;
       const json = await excelToJson(req.file.buffer);
       if (!json.length) {
-        return sendErrorResponse(res, 500, 'file is empty!', null);
+        return sendErrorResponse(res, 400, 'file is empty!', null);
       }
       const rawMaterials = await RawMaterial.bulkCreate(
         json.map(({ opening_balance, location_id, ...rest }) => ({

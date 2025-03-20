@@ -1,17 +1,10 @@
-import { Op, literal, col } from 'sequelize';
+import { Op } from 'sequelize';
 import model from '../models';
+import excelToJson from '../helpers/excelToJson';
 import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
 import _stockService from '../services/StockService';
 import { PERMISSIONS } from '../constants/constants';
-const {
-  Item,
-  RawMaterial,
-  Batch,
-  Location,
-  Category,
-  StockLevel,
-  StockHistory,
-} = model;
+const { Item, RawMaterial, Batch, Location, StockLevel, StockHistory } = model;
 
 export default {
   async stocks(req, res) {
@@ -298,9 +291,27 @@ export default {
 
   async import(req, res) {
     try {
-      const { store_id, stock_type } = req.body;
+      const { location_id, item_type } = req.body;
+      if (
+        !req.user.permissions.includes(
+          PERMISSIONS.PERMISSION_ACCESS_TO_ALL_STORES
+        ) &&
+        !req.user.stores.includes(store_id)
+      ) {
+        return sendErrorResponse(
+          res,
+          403,
+          'You do not have permission to perform this operation'
+        );
+      }
+      if (!req.file) {
+        return sendErrorResponse(res, 400, 'Please upload a file');
+      }
       const json = await excelToJson(req.file.buffer);
-      await _stockService.importOpeningStock(json, store_id, stock_type);
+      if (!json.length) {
+        return sendErrorResponse(res, 400, 'file is empty!', null);
+      }
+      await _stockService.importOpeningStock(json, location_id, item_type);
       return sendSuccessResponse(res, 201, {}, 'Stock imported successfully');
     } catch (error) {
       return sendErrorResponse(

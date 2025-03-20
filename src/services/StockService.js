@@ -108,7 +108,19 @@ class StockService {
     );
   }
 
-  async importOpeningStock(json, store_id, stock_type) {}
+  async importOpeningStock(json, location_id, item_type) {
+    return StockLevel.bulkCreate(
+      json.map(({ item_id, opening_balance }) => ({
+        item_id,
+        location_id,
+        item_type,
+        current_level: opening_balance,
+      })),
+      {
+        ignoreDuplicates: true,
+      }
+    );
+  }
 }
 
 const _stockService = new StockService();
