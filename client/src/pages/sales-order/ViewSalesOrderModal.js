@@ -66,18 +66,7 @@ export default function ViewSalesOrderModal() {
   }, [visible]);
 
   return (
-    <CustomDialog
-      printable
-      visible={visible}
-      onClose={onClose}
-      maxWidth="lg"
-      title="Sales Order"
-      //   actions={[
-      //     <Button key="2" disabled={fetchSalesOrderState.data?.status === 'Fulfilled'} onClick={() => {}} variant="contained" color="success">
-      //       Edit
-      //     </Button>
-      //   ]}
-    >
+    <CustomDialog printable visible={visible} onClose={onClose} maxWidth="lg" title="Sales Order">
       {!fetchSalesOrderState.loading && (
         <Grid container sx={{ marginBottom: 4 }}>
           <Grid item xs={12} sm={6}>

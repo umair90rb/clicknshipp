@@ -1,7 +1,7 @@
 import React, { memo, useState } from 'react';
 import { Button, Grid, Typography } from '@mui/material';
 import MainCard from 'components/MainCard';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
+import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import StartIcon from '@mui/icons-material/Start';
 import AddIcon from '@mui/icons-material/Add';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
@@ -56,7 +56,7 @@ const OrderManagement = memo(() => {
               )}
               {hasPermission(PERMISSIONS.PERMISSION_CREATE_BULK_ORDER) && (
                 <Grid item>
-                  <CustomButton text="Import Orders" onClick={showBulkOrderModal} Icon={UploadFileIcon} />
+                  <CustomButton text="Import Orders" onClick={showBulkOrderModal} Icon={CloudUploadOutlinedIcon} />
                 </Grid>
               )}
               {hasPermission(PERMISSIONS.PERMISSION_CREATE_ORDER) && (

@@ -1,35 +1,17 @@
 import { useRef } from 'react';
-
-import {
-  Box,
-  Button,
-  MenuItem,
-  Select,
-  FormHelperText,
-  Grid,
-  ListItemText,
-  InputLabel,
-  OutlinedInput,
-  Stack,
-  Checkbox,
-  Chip
-} from '@mui/material';
-
+import { Button, Grid, InputLabel, OutlinedInput, Stack } from '@mui/material';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import AnimateButton from 'components/@extended/AnimateButton';
 import { useDispatch } from 'react-redux';
 import { fetchCreateRole } from 'store/slices/acl/fetchACL';
 import { setMessage } from 'store/slices/util/utilSlice';
-import { useSelector } from '../../../node_modules/react-redux/es/exports';
-import { aclPermissionsIsLoadingSelector, aclPermissionsListSelector } from 'store/slices/acl/aclSelector';
 import FormHelperTextComponent from 'components/FormHelperTextComponent';
+import PermissionSelectorInput from 'ui/PermissionSelectorInput';
 
 const AddRoleForm = ({ closeModal }) => {
   const dispatch = useDispatch();
   const formRef = useRef();
-  const permissions = useSelector(aclPermissionsListSelector);
-  const permissionsIsLoading = useSelector(aclPermissionsIsLoadingSelector);
 
   const handleSubmit = async ({ name, permissions }, { setErrors, setStatus, setSubmitting }) => {
     const body = { name, permissions };
@@ -81,40 +63,12 @@ const AddRoleForm = ({ closeModal }) => {
               </Grid>
 
               <Grid item xs={12}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="permissions-signup">Permissions</InputLabel>
-                  <Select
-                    fullWidth
-                    multiple
-                    error={Boolean(touched.permissions && errors.permissions)}
-                    id="permissions-signup"
-                    value={values.permissions}
-                    name="permissions"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    inputProps={{}}
-                    labelId="permissions-signup"
-                    renderValue={(selected) => (
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                        {selected.map((id) => (
-                          <Chip key={id} label={permissions.find((p) => p.id === id).name} />
-                        ))}
-                      </Box>
-                    )}
-                  >
-                    {permissions.map(({ id, name }, index) => (
-                      <MenuItem key={index} value={id}>
-                        <Checkbox checked={values.permissions.indexOf(id) > -1} />
-                        <ListItemText primary={name} />
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  <FormHelperTextComponent
-                    id="permissions"
-                    loading={permissionsIsLoading}
-                    error={touched.permissions && errors.permissions}
-                  />
-                </Stack>
+                <PermissionSelectorInput
+                  value={values.permissions}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  error={touched.permissions && errors.permissions}
+                />
               </Grid>
 
               <Grid item xs={12}>

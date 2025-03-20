@@ -138,9 +138,7 @@ export default function FullfilBillOfMaterialModal({ id, bomMaterials = [], visi
       maxWidth="sm"
       title="Select Location"
       actions={[
-        <Button key="1" disabled={fetchFullfilBillOfMaterialState.loading} onClick={fullfilBOM} variant="contained" color="success">
-          Fulfill Bill of Material
-        </Button>
+        { text: 'Fulfill Bill of Material', onClick: fullfilBOM, disabled: fetchFullfilBillOfMaterialState.loading, color: 'success' }
       ]}
     >
       <Grid item sx={3} md={3} lg={3}>

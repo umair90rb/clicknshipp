@@ -8,7 +8,7 @@ const columns = [
     headerName: 'Item/Material Name',
     flex: 1,
     valueGetter: (params) => {
-      return params.row.raw.name || params.row.item.name;
+      return params.row?.raw?.name || params.row?.item?.name;
     }
   },
   {

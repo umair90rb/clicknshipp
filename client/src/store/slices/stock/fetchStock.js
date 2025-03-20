@@ -17,6 +17,10 @@ export const fetchCreateStockReturn = createAsyncThunk('stockReturn/create/fetch
   stockService.fetchCreateStockReturn(body).catch((error) => rejectWithValue(error.response.data || error.message))
 );
 
+export const fetchImportOpeningStock = createAsyncThunk('stock/import/fetch', ({ body }, { rejectWithValue }) =>
+  stockService.fetchImportOpeningStock(body).catch((error) => rejectWithValue(error.response.data || error.message))
+);
+
 export const fetchCreateStockDamage = createAsyncThunk('stockDamage/create/fetch', ({ body }, { rejectWithValue }) =>
   stockService.fetchCreateStockDamage(body).catch((error) => rejectWithValue(error.response.data || error.message))
 );

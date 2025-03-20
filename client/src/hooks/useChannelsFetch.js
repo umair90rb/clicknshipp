@@ -1,16 +1,19 @@
 import fetchStatus from 'constants/fetchStatuses';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { chanelFetchStatusSelector } from 'store/slices/chanel/chanelSelector';
 import { fetchAllChanel } from 'store/slices/chanel/fetchChanel';
 
 export default function useChannelsFetch() {
   const dispatch = useDispatch();
-  const chanelsFetchStatus = useSelector(chanelFetchStatusSelector);
+  const channelsFetchStatus = useSelector(chanelFetchStatusSelector);
+  const fetchChannel = useCallback(() => dispatch(fetchAllChanel()), []);
 
   useEffect(() => {
-    if (chanelsFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllChanel());
+    if (channelsFetchStatus !== fetchStatus.SUCCESS) {
+      fetchChannel();
     }
   }, []);
+
+  return { refresh: fetchChannel };
 }

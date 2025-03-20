@@ -1,13 +1,13 @@
+import { useEffect, useState } from 'react';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
-import React from 'react';
 import { useDispatch } from 'react-redux';
 import { fetchFilteredUsers } from 'store/slices/user/fetchUser';
 
 export default function useFilteredUsersFetch({ agentsOnly = false, brand = [] }) {
   const dispatch = useDispatch();
-  const [users, setUsers] = React.useState([]);
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState(null);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const body = {};
   if (agentsOnly) {
@@ -18,7 +18,7 @@ export default function useFilteredUsersFetch({ agentsOnly = false, brand = [] }
     body['brand'] = brand;
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     setLoading(true);
     dispatch(
       fetchFilteredUsers({

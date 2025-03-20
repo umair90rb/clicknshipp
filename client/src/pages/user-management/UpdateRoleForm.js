@@ -3,26 +3,16 @@ import { Box, Button, MenuItem, Select, FormHelperText, Grid, ListItemText, Inpu
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import AnimateButton from 'components/@extended/AnimateButton';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { fetchRole, fetchUpdateRole } from 'store/slices/acl/fetchACL';
 import { setMessage } from 'store/slices/util/utilSlice';
-import {
-  aclPermissionsIsLoadingSelector,
-  aclPermissionsListSelector,
-  aclRolesIsLoadingSelector,
-  aclRolesListSelector
-} from 'store/slices/acl/aclSelector';
 import FormHelperTextComponent from 'components/FormHelperTextComponent';
+import PermissionSelectorInput from 'ui/PermissionSelectorInput';
+import RoleSelectorInput from 'ui/RoleSelectorInput';
 
 const UpdateRoleForm = ({ closeModal }) => {
   const dispatch = useDispatch();
   const formRef = useRef();
-
-  const rolesIsLoading = useSelector(aclRolesIsLoadingSelector);
-  const roles = useSelector(aclRolesListSelector);
-  const permissionsIsLoading = useSelector(aclPermissionsIsLoadingSelector);
-  const permissions = useSelector(aclPermissionsListSelector);
-
   const handleSubmit = async ({ role: { id, name }, permissions }, { setErrors, setSubmitting }) => {
     const body = { name, permissions };
     const { type, payload } = await dispatch(fetchUpdateRole({ id, body }));
@@ -45,16 +35,31 @@ const UpdateRoleForm = ({ closeModal }) => {
           permissions: []
         }}
         validationSchema={Yup.object().shape({
-          role: Yup.object().shape({ id: Yup.number(), name: Yup.string() }).required('Role name is required'),
+          role: Yup.number().required('Role name is required'),
           permissions: Yup.array().of(Yup.string()).min(1).required('Minimum 1 permission is required')
         })}
         onSubmit={handleSubmit}
       >
-        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values, setValues }) => (
+        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values, setFieldValue }) => (
           <form noValidate onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
-                <Stack spacing={1}>
+                <RoleSelectorInput
+                  error={touched.role && errors.role}
+                  value={values.role}
+                  onBlur={handleBlur}
+                  onChange={async (e) => {
+                    handleChange(e);
+                    const { type, payload } = await dispatch(fetchRole({ id: e.target.value }));
+                    if (type === 'role/fetch/fulfilled') {
+                      setFieldValue(
+                        'permissions',
+                        payload.data.role.permissions.map((p) => p.id)
+                      );
+                    }
+                  }}
+                />
+                {/* <Stack spacing={1}>
                   <InputLabel htmlFor="role-signup">Role</InputLabel>
                   <Select
                     fullWidth
@@ -89,44 +94,16 @@ const UpdateRoleForm = ({ closeModal }) => {
                       {errors.role}
                     </FormHelperText>
                   )}
-                </Stack>
+                </Stack> */}
               </Grid>
 
               <Grid item xs={12}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="permissions-signup">Permissions</InputLabel>
-                  <Select
-                    fullWidth
-                    multiple
-                    error={Boolean(touched.permissions && errors.permissions)}
-                    id="permissions-signup"
-                    value={values.permissions}
-                    name="permissions"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    inputProps={{}}
-                    labelId="permissions-signup"
-                    renderValue={(selected) => (
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                        {selected.map((id) => (
-                          <Chip key={id} label={permissions.find((p) => p.id === id).name} />
-                        ))}
-                      </Box>
-                    )}
-                  >
-                    {permissions.map(({ id, name }, index) => (
-                      <MenuItem key={index} value={id}>
-                        <Checkbox checked={values.permissions.indexOf(id) > -1} />
-                        <ListItemText primary={name} />
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  <FormHelperTextComponent
-                    id="permissions"
-                    loading={permissionsIsLoading}
-                    error={touched.permissions && errors.permissions}
-                  />
-                </Stack>
+                <PermissionSelectorInput
+                  value={values.permissions}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  error={touched.permissions && errors.permissions}
+                />
               </Grid>
 
               <Grid item xs={12}>

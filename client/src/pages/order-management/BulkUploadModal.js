@@ -66,7 +66,13 @@ export default function BulkUploadModal({ visible, onClose }) {
   }, [visible]);
 
   return (
-    <CustomDialog visible={visible} onClose={onClose} title="Import Orders" maxWidth="sm">
+    <CustomDialog
+      actions={[{ text: 'Upload', onClick: bulkOrderUploadForm.handleSubmit, disable: orderImportIsLoading }]}
+      visible={visible}
+      onClose={onClose}
+      title="Import Orders"
+      maxWidth="sm"
+    >
       <Grid container gap={1} spacing={1} my={2}>
         <CustomFileInput
           label={bulkOrderUploadForm.values.file && bulkOrderUploadForm.values.file.name}
@@ -105,14 +111,6 @@ export default function BulkUploadModal({ visible, onClose }) {
             error={bulkOrderUploadForm.touched.chanel_id && bulkOrderUploadForm.errors.chanel_id}
           />
         </Stack>
-      </Grid>
-
-      <Grid container spacing={1} mt={5}>
-        <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
-          <Button onClick={bulkOrderUploadForm.handleSubmit} sx={{ flexGrow: 1 }} disable={orderImportIsLoading} variant="contained">
-            Upload
-          </Button>
-        </Grid>
       </Grid>
     </CustomDialog>
   );

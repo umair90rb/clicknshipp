@@ -60,47 +60,43 @@ export default function AddSalesOrderModal() {
   };
 
   return (
-    <CustomDialog
-      visible={visible}
-      onClose={onClose}
-      maxWidth="xl"
-      title="Create New Sale Order"
-      actions={[
-        <Button key="1" onClick={() => formRef?.current.submitForm()} variant="contained">
-          Create and Fulfill
-        </Button>
-      ]}
+    <Formik
+      innerRef={formRef}
+      enableReinitialize
+      initialValues={{
+        location_id: null,
+        name: '',
+        comment: '',
+        items: [
+          {
+            item_id: null,
+            quantity: 0
+            // price: 0
+          }
+        ]
+      }}
+      validationSchema={Yup.object().shape({
+        location_id: Yup.number().required('Please select store location'),
+        name: Yup.string().required(),
+        comment: Yup.string(),
+        items: Yup.array().of(
+          Yup.object().shape({
+            item_id: Yup.number().required(),
+            quantity: Yup.number().min(1).required('Please enter stock received quantity'),
+            price: Yup.number().min(0).required('Please enter price')
+          })
+        )
+      })}
+      onSubmit={handleSubmit}
     >
-      <Formik
-        innerRef={formRef}
-        enableReinitialize
-        initialValues={{
-          location_id: null,
-          name: '',
-          comment: '',
-          items: [
-            {
-              item_id: null,
-              quantity: 0
-              // price: 0
-            }
-          ]
-        }}
-        validationSchema={Yup.object().shape({
-          location_id: Yup.number().required('Please select store location'),
-          name: Yup.string().required(),
-          comment: Yup.string(),
-          items: Yup.array().of(
-            Yup.object().shape({
-              item_id: Yup.number().required(),
-              quantity: Yup.number().min(1).required('Please enter stock received quantity'),
-              price: Yup.number().min(0).required('Please enter price')
-            })
-          )
-        })}
-        onSubmit={handleSubmit}
-      >
-        {(salesOrder) => (
+      {(salesOrder) => (
+        <CustomDialog
+          visible={visible}
+          onClose={onClose}
+          maxWidth="xl"
+          title="Create New Sale Order"
+          actions={[{ text: 'Create and Fulfill', onClick: salesOrder.handleSubmit }]}
+        >
           <Grid container spacing={3}>
             <Grid container columnSpacing={1} alignItems="center" justifyContent="center" item sx={12} md={12} lg={12}>
               <Grid item sx={5} md={5} lg={5}>
@@ -368,8 +364,8 @@ export default function AddSalesOrderModal() {
               </Grid>
             )}
           </Grid>
-        )}
-      </Formik>
-    </CustomDialog>
+        </CustomDialog>
+      )}
+    </Formik>
   );
 }

@@ -20,6 +20,7 @@ import useStoreLocationFetch from 'hooks/useStoreLocationFetch';
 import { locationIsLoadingSelector, locationListSelector } from 'store/slices/location/locationSelector';
 import { aclRolesIsLoadingSelector, aclRolesListSelector } from 'store/slices/acl/aclSelector';
 import { getMetafieldValues } from './util';
+import RoleSelectorInput from 'ui/RoleSelectorInput';
 
 export default function AddUpdateUserModal({ visible, onClose, userToUpdate }) {
   const dispatch = useDispatch();
@@ -130,14 +131,7 @@ export default function AddUpdateUserModal({ visible, onClose, userToUpdate }) {
       visible={visible}
       onClose={onClose}
       maxWidth="lg"
-      actions={[
-        <CustomButton
-          key={1}
-          disabled={formRef.current?.isSubmitting}
-          text="Create/Update User Account"
-          onClick={formRef.current?.handleSubmit}
-        />
-      ]}
+      actions={[{ disabled: formRef.current?.isSubmitting, text: 'Create/Update User Account', onClick: formRef.current?.handleSubmit }]}
     >
       <Formik
         innerRef={formRef}
@@ -295,19 +289,12 @@ export default function AddUpdateUserModal({ visible, onClose, userToUpdate }) {
                 />
               </Grid>
               <Grid item xs={12}>
-                <CustomChipSelect
-                  multiple
-                  fullWidth
-                  getLabelFromOptions
-                  withRefresh={refreshRoles}
-                  loading={rolesIsLoading}
-                  label="Roles*"
-                  error={Boolean(touched.roles && errors.roles)}
+                <RoleSelectorInput
+                  error={touched.roles && errors.roles}
                   value={values.roles}
-                  name="roles"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  options={roles.map((r) => ({ label: r.name, value: r.id }))}
+                  multiple
                 />
               </Grid>
               <Grid item xs={12} container>

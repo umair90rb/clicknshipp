@@ -11,7 +11,7 @@ import Modals from 'modals/index';
 const App = () => {
   const dispatch = useDispatch();
   const { message, type, sticky } = useSelector(utilMessageSelector);
-  const handleExited = () => dispatch(setMessage({ message: '', type: '' }));
+  const handleExited = () => dispatch(setMessage({ message: '' }));
 
   useProfileFetch();
 

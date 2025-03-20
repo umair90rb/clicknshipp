@@ -3,27 +3,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import RestoreIcon from '@mui/icons-material/Restore';
 import BrokenImageOutlinedIcon from '@mui/icons-material/BrokenImageOutlined';
 import FilterListOffRoundedIcon from '@mui/icons-material/FilterListOffRounded';
-import Box from '@mui/material/Box';
-import {
-  DataGrid,
-  GridToolbarDensitySelector,
-  GridActionsCellItem,
-  GridToolbarContainer,
-  GridToolbarColumnsButton,
-  GridToolbarQuickFilter,
-  GridToolbarExport
-} from '@mui/x-data-grid';
+import { GridActionsCellItem } from '@mui/x-data-grid';
 import { stockIsLoadingSelector, stockStocksSelector } from 'store/slices/stock/stockSelector';
 import { fetchAllStock } from 'store/slices/stock/fetchStock';
 import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 import storeTypes from 'constants/storeTypes';
-import GridRefreshButton from 'components/GridRefreshButton';
 import GridChipFilter from 'components/GridChipFilter';
 import ItemStockHistory from './StockHistory';
 import ItemDamageReport from './ItemDamageReport';
 import GridFilterButton from 'components/GridFilterButton';
-import GridCustomToolbar from 'components/GridCustomToolbar';
+import CustomGrid from 'components/CustomGrid';
 const columns = (showItemHistory, showItemDamageReport) => [
   {
     field: 'id',
@@ -46,6 +36,13 @@ const columns = (showItemHistory, showItemDamageReport) => [
     headerName: 'Store',
     flex: 1,
     valueGetter: (value) => `${value?.value?.name || ''}`
+  },
+  {
+    field: 'item_type',
+    headerName: 'Type',
+    flex: 0.75,
+    valueFormatter: (params) =>
+      params.value === 'finished_product' ? 'Item' : params.value === 'raw_material' ? 'Raw Material' : 'Packaging Material'
   },
   {
     field: 'actions',
@@ -133,7 +130,9 @@ export default function StockTable({ showDamageReport, setShowDamageReport }) {
           onClick={lowStockFilterHandler}
           Icon={lowStock !== 'false' ? FilterListOffRoundedIcon : undefined}
         />
-        <GridChipFilter options={[{ label: 'All', value: 'all' }, ...storeTypes]} onClick={setStockFor} value={stockFor} />
+        {hasPermission(PERMISSIONS.PERMISSION_ACCESS_TO_ALL_STORES) && (
+          <GridChipFilter options={[{ label: 'All', value: 'all' }, ...storeTypes]} onClick={setStockFor} value={stockFor} />
+        )}
       </>
     ),
     [lowStock, stockFor]
@@ -141,22 +140,15 @@ export default function StockTable({ showDamageReport, setShowDamageReport }) {
 
   return (
     <div style={{ width: '100%' }}>
-      <DataGrid
-        slots={{ toolbar: GridCustomToolbar }}
-        slotProps={{
-          toolbar: {
-            allowExport: hasPermission(PERMISSIONS.PERMISSION_EXPORT_STOCK),
-            withRefresh: fetchStock,
-            customActions: gridCustomActions,
-            showQuickFilter: true
-          }
-        }}
+      <CustomGrid
+        withRefresh={fetchStock}
+        allowExport={hasPermission(PERMISSIONS.PERMISSION_EXPORT_STOCK)}
+        customActions={gridCustomActions}
         loading={stockIsLoading}
-        pageSizeOptions={[25, 50, 75, 100]}
         rows={stock}
         columns={columns(
           hasPermission(PERMISSIONS.PERMISSION_VIEW_STOCK_HISTORY) && showItemStockHistory,
-          hasPermission(PERMISSIONS.PERMISSIONS_GET_ITEM_DAMAGE_REPORT) && showItemDamageReport
+          hasPermission(PERMISSIONS.PERMISSION_GET_ITEM_DAMAGE_REPORT) && showItemDamageReport
         )}
       />
       <ItemStockHistory

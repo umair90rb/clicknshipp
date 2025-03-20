@@ -9,6 +9,8 @@ class StockService extends Ajax {
 
   fetchCreateStock = (data) => this.post(`${this.pathname}`, data);
 
+  fetchImportOpeningStock = (data) => this.post(`${this.pathname}/import`, data, { 'Content-Type': 'multipart/form-data' });
+
   fetchCreateStockReturn = (data) => this.post(`${this.pathname}/return`, data);
 
   fetchCreateStockDamage = (data) => this.post(`${this.pathname}/damage`, data);

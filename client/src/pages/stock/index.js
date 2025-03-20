@@ -55,12 +55,12 @@ const StockManagement = () => {
                   Icon: KeyboardBackspaceOutlinedIcon
                 },
                 {
-                  title: 'Add Return',
+                  title: 'Receive Return',
                   onClick: () => setReturnStockModal(true),
                   Icon: AssignmentReturnOutlinedIcon
                 },
                 {
-                  title: 'Manage Damage Items/Materials',
+                  title: 'Add Damage Stock',
                   onClick: () => setDamageStockModal(true),
                   Icon: BrokenImageOutlinedIcon
                 },

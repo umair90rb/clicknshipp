@@ -1,6 +1,5 @@
 import { InputLabel, Select, Box, Chip, Checkbox, ListItemText, Stack, MenuItem, InputAdornment } from '@mui/material';
 import FormHelperTextComponent from './FormHelperTextComponent';
-import GridRefreshButton from './GridRefreshButton';
 import CustomIconButton from './CustomIconButton';
 
 function getLabel(value, options) {
@@ -8,12 +7,6 @@ function getLabel(value, options) {
     return options.find((o) => o.value === value)?.label;
   }
   return '';
-}
-
-function startAdornmentWithRefresh(refresh) {
-  return {
-    startAdornment: refresh
-  };
 }
 
 export default function CustomChipSelect({
@@ -56,19 +49,23 @@ export default function CustomChipSelect({
         }
         inputProps={inputProps}
         labelId={`${name}_label`}
-        renderValue={(selected) => (
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-            {selected.map((value) => (
-              <Chip
-                size="small"
-                variant="outlined"
-                sx={{ borderRadius: 5 }}
-                key={value}
-                label={getLabelFromOptions ? getLabel(value, options) : value}
-              />
-            ))}
-          </Box>
-        )}
+        renderValue={
+          multiple
+            ? (selected) => (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {selected.map((value) => (
+                    <Chip
+                      size="small"
+                      variant="outlined"
+                      sx={{ borderRadius: 5 }}
+                      key={value}
+                      label={getLabelFromOptions ? getLabel(value, options) : value}
+                    />
+                  ))}
+                </Box>
+              )
+            : undefined
+        }
       >
         {options.map(({ label, value: ov }, index) => (
           <MenuItem key={index} value={ov}>

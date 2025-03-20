@@ -16,6 +16,9 @@ import { rawMaterialFetchStatusSelector, rawMaterialListSelector } from 'store/s
 import CustomButton from 'components/CustomButton';
 import { fetchItemDamageReport } from 'store/slices/stock/fetchStock';
 import CustomRadioGroup from 'components/CustomRadioGroup';
+import useRawMaterialsFetch from 'hooks/useRawMaterialsFetch';
+import useItemsFetch from 'hooks/useItemsFetch';
+import useStoreLocationFetch from 'hooks/useStoreLocationFetch';
 
 const columns = [
   {
@@ -60,18 +63,13 @@ const columns = [
 
 export default function ItemDamageReport({ item, visible, onClose }) {
   const dispatch = useDispatch();
-
-  const locationFetchStatus = useSelector(locationFetchStatusSelector);
   const locations = useSelector(locationListSelector);
-  const locationIsLoading = locationFetchStatus === fetchStatus.REQUEST;
-
-  const itemFetchStatus = useSelector(itemFetchStatusSelector);
   const items = useSelector(itemItemsSelector);
-  const itemsIsLoading = itemFetchStatus === fetchStatus.REQUEST;
-
-  const rawMaterialFetchStatus = useSelector(rawMaterialFetchStatusSelector);
   const rawMaterials = useSelector(rawMaterialListSelector);
-  const rawMaterialIsLoading = rawMaterialFetchStatus === fetchStatus.REQUEST;
+
+  useRawMaterialsFetch();
+  useItemsFetch();
+  useStoreLocationFetch();
 
   const [report, setReport] = useState({
     error: null,
@@ -120,19 +118,6 @@ export default function ItemDamageReport({ item, visible, onClose }) {
     if (visible && item) {
       itemDamageReportForm.setValues({ ...getIdAndType(item), location_id: item?.location?.id, from: getStartOfDay(), to: getEndOfDay() });
     }
-
-    if (visible && locationFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllLocation());
-    }
-
-    if (visible && itemFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllItem());
-    }
-
-    if (visible && rawMaterialFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllRawMaterial());
-    }
-
     return () => {
       setReport({ loading: false, error: null, rows: [] });
     };

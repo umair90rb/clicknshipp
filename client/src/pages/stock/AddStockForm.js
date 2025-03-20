@@ -32,6 +32,7 @@ import useStoreLocationFetch from 'hooks/useStoreLocationFetch';
 import useItemsFetch from 'hooks/useItemsFetch';
 import useUOMFetch from 'hooks/useUOMFetch';
 import useRawMaterialsFetch from 'hooks/useRawMaterialsFetch';
+import useResetForm from 'hooks/useResetForm';
 
 export default function AddStockForm({ visible, onClose }) {
   const dispatch = useDispatch();
@@ -46,6 +47,7 @@ export default function AddStockForm({ visible, onClose }) {
   useItemsFetch();
   useUOMFetch();
   useRawMaterialsFetch();
+  useResetForm(formRef, visible);
 
   const handleSubmit = async (values, { setErrors }) => {
     dispatch(fetchCreateStock({ body: values })).then((action) => {
@@ -59,60 +61,56 @@ export default function AddStockForm({ visible, onClose }) {
   };
 
   return (
-    <CustomDialog
-      visible={visible}
-      onClose={onClose}
-      maxWidth="xl"
-      title="Receive Inventory"
-      actions={[
-        <Button key="1" onClick={() => formRef?.current.submitForm()} variant="contained">
-          Add Stock
-        </Button>
-      ]}
+    <Formik
+      innerRef={formRef}
+      enableReinitialize
+      initialValues={{
+        item_type: 'raw_material',
+        location_id: null,
+        gate_pass_no: null,
+        gate_pass_date: null,
+        comment: '',
+        inventory: [
+          {
+            item_id: { id: null, label: '' },
+            batch_number: '',
+            production_date: null,
+            expiry_date: null,
+            quantity: 0,
+            unit_of_measure: ''
+          }
+        ]
+      }}
+      validationSchema={Yup.object().shape({
+        item_type: Yup.string().required('Please select inventory type'),
+        location_id: Yup.number().required('Please select store location'),
+        gate_pass_no: Yup.number().nullable().required('Please add gate pass no'),
+        gate_pass_date: Yup.date().max(new Date(), 'IGP date must not be later than today').required(),
+        comment: Yup.string(),
+        inventory: Yup.array().of(
+          Yup.object().shape({
+            item_id: Yup.object().shape({
+              id: Yup.string().required(),
+              label: Yup.string().required()
+            }),
+            batch_number: Yup.string(),
+            production_date: Yup.date().nullable(),
+            expiry_date: Yup.date().min(new Date(), 'Expiry date must be later than today').nullable(),
+            quantity: Yup.number().min(1).required('Please enter stock received quantity'),
+            unit_of_measure: Yup.string().required('Please select unit')
+          })
+        )
+      })}
+      onSubmit={handleSubmit}
     >
-      <Formik
-        innerRef={formRef}
-        enableReinitialize
-        initialValues={{
-          item_type: 'raw_material',
-          location_id: null,
-          gate_pass_no: null,
-          gate_pass_date: null,
-          comment: '',
-          inventory: [
-            {
-              item_id: { id: null, label: '' },
-              batch_number: '',
-              production_date: null,
-              expiry_date: null,
-              quantity: 0,
-              unit_of_measure: ''
-            }
-          ]
-        }}
-        validationSchema={Yup.object().shape({
-          item_type: Yup.string().required('Please select inventory type'),
-          location_id: Yup.number().required('Please select store location'),
-          gate_pass_no: Yup.number().nullable().required('Please add gate pass no'),
-          gate_pass_date: Yup.date().max(new Date(), 'IGP date must not be later than today').required(),
-          comment: Yup.string(),
-          inventory: Yup.array().of(
-            Yup.object().shape({
-              item_id: Yup.object().shape({
-                id: Yup.string().required(),
-                label: Yup.string().required()
-              }),
-              batch_number: Yup.string(),
-              production_date: Yup.date().nullable(),
-              expiry_date: Yup.date().min(new Date(), 'Expiry date must be later than today').nullable(),
-              quantity: Yup.number().min(1).required('Please enter stock received quantity'),
-              unit_of_measure: Yup.string().required('Please select unit')
-            })
-          )
-        })}
-        onSubmit={handleSubmit}
-      >
-        {(receiveInventory) => (
+      {(receiveInventory) => (
+        <CustomDialog
+          visible={visible}
+          onClose={onClose}
+          maxWidth="xl"
+          title="Receive Inventory"
+          actions={[{ text: 'Add Stock', onClick: formRef.current?.handleSubmit }]}
+        >
           <Grid container spacing={3}>
             <Grid container columnSpacing={1} alignItems="center" justifyContent="center" item sx={12} md={12} lg={12}>
               <Grid item sx={3} md={3} lg={3}>
@@ -531,8 +529,8 @@ export default function AddStockForm({ visible, onClose }) {
               </Grid>
             )}
           </Grid>
-        )}
-      </Formik>
-    </CustomDialog>
+        </CustomDialog>
+      )}
+    </Formik>
   );
 }

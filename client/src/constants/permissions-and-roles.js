@@ -8,7 +8,6 @@ export const PERMISSIONS = {
   PERMISSIONS_GET_INCENTIVE_REPORT: 'get-incentive-report',
   PERMISSIONS_GET_COURIER_DELIVERY_REPORT: 'get-courier-delivery-report',
   PERMISSIONS_GET_STOCK_REPORT: 'get-stock-report',
-  PERMISSIONS_GET_ITEM_DAMAGE_REPORT: 'get-stock-report',
   PERMISSIONS_GET_STOCK_DAMAGE_REPORT: 'get-stock-damage-report',
 
   PERMISSION_VIEW_ADMIN_DASHBOARD: 'view-admin-dashboard',
@@ -37,9 +36,12 @@ export const PERMISSIONS = {
   PERMISSION_VIEW_STOCK: 'view-stock',
   PERMISSION_VIEW_STOCK_HISTORY: 'view-stock-history',
   PERMISSION_EXPORT_STOCK: 'export-stock',
+  PERMISSION_IMPORT_STOCK: 'import-stock',
   PERMISSION_RECEIVE_STOCK: 'receive-stock',
   PERMISSION_RECEIVE_STOCK_RETURN: 'receive-stock-return',
   PERMISSION_ADD_STOCK_DAMAGE: 'add-stock-damage',
+  PERMISSION_ACCESS_TO_ALL_STORES: 'access-to-all-stores',
+  PERMISSION_GET_ITEM_DAMAGE_REPORT: 'get-item-damage-report',
 
   PERMISSION_VIEW_CATEGORIES_AND_BRANDS: 'view-categories-and-brands',
 
@@ -82,8 +84,8 @@ export const PERMISSIONS = {
   PERMISSION_CREATE_DELIVERY_ACCOUNTS: 'create-delivery-accounts',
   PERMISSION_UPDATE_DELIVERY_ACCOUNTS: 'update-delivery-accounts',
   PERMISSION_DELETE_DELIVERY_ACCOUNTS: 'delete-delivery-accounts',
-  PERMISSION_ADD_DELIVER_SERVICE_CITY: 'add-delivery-service-city',
   PERMISSION_EXPORT_DELIVERY_ACCOUNT: 'export-delivery-account',
+  PERMISSION_ADD_DELIVER_SERVICE_CITY: 'add-delivery-service-city',
 
   PERMISSION_VIEW_LOCATIONS: 'view-locations',
   PERMISSION_CREATE_LOCATION: 'create-location',

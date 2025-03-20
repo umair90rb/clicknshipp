@@ -1,27 +1,17 @@
-import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Grid, Stack, ListItemText, InputLabel, Button, Select, MenuItem } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { setMessage } from 'store/slices/util/utilSlice';
-import { chanelChanelsSelector, chanelIsLoadingSelector } from 'store/slices/chanel/chanelSelector';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { fetchAllOrder, fetchImportOrder } from 'store/slices/order/fetchOrder';
-import {
-  orderFiltersSelector,
-  orderImportIsLoadingSelector,
-  orderPageSelector,
-  orderPageSizeSelector,
-  orderSortSelector
-} from 'store/slices/order/orderSelector';
-
-import FormHelperTextComponent from 'components/FormHelperTextComponent';
 import CustomDialog from 'components/CustomDialog';
 import CustomFileInput from 'components/CustomFileInput';
-import useChannelsFetch from 'hooks/useChannelsFetch';
 import CustomSelect from 'components/CustomSelect';
 import useStoreLocationFetch from 'hooks/useStoreLocationFetch';
 import { locationIsLoadingSelector, locationListSelector } from 'store/slices/location/locationSelector';
 import CustomRadioGroup from 'components/CustomRadioGroup';
+import useResetForm from 'hooks/useResetForm';
+import { fetchImportOpeningStock } from 'store/slices/stock/fetchStock';
 
 export default function ImportOpeningStockModal({ visible, onClose }) {
   const dispatch = useDispatch();
@@ -33,17 +23,14 @@ export default function ImportOpeningStockModal({ visible, onClose }) {
   const createBulkOrders = async (values) => {
     let formData = new FormData();
     formData.append('file', values.file);
-    formData.append('store_id', values.store_id);
-    formData.append('stock_type', values.stock_type);
-    const { type, payload } = await dispatch(fetchImportOrder({ body: formData }));
-    if (type === 'order/import/fetch/fulfilled') {
-      dispatch(
-        fetchAllOrder({ body: { sort: sortModel, page: filters.length ? 0 : page, pageSize: filters.length ? 100 : pageSize, filters } })
-      );
+    formData.append('location_id', values.location_id);
+    formData.append('item_type', values.item_type);
+    const { type, payload } = await dispatch(fetchImportOpeningStock({ body: formData }));
+    if (type === 'stock/import/fetch/fulfilled') {
       dispatch(setMessage({ message: payload?.data?.message || 'Order created successfully.', type: 'success' }));
       onClose();
       importOpeningStockForm.handleReset();
-    } else if (type === 'order/import/fetch/rejected') {
+    } else if (type === 'stock/import/fetch/rejected') {
       dispatch(setMessage({ message: payload?.error || 'Error! Something goes wrong!', type: 'error' }));
     }
   };
@@ -51,30 +38,22 @@ export default function ImportOpeningStockModal({ visible, onClose }) {
   const importOpeningStockForm = useFormik({
     initialValues: {
       file: '',
-      store_id: '',
-      stock_type: 'raw_material'
+      location_id: '',
+      item_type: 'raw_material'
     },
     validationSchema: Yup.object({
       file: Yup.mixed().required('Please select file to upload'),
-      store_id: Yup.number().required('Please select store'),
-      stock_type: Yup.string().required('Please select type')
+      location_id: Yup.number().required('Please select store'),
+      item_type: Yup.string().required('Please select type')
     }),
     onSubmit: createBulkOrders
   });
 
-  useEffect(() => {
-    if (visible) {
-      importOpeningStockForm.handleReset();
-    }
-  }, [visible]);
+  useResetForm(importOpeningStockForm, visible, false);
 
   return (
     <CustomDialog
-      actions={[
-        <Button key="1" onClick={importOpeningStockForm.handleSubmit} variant="contained">
-          Upload
-        </Button>
-      ]}
+      actions={[{ text: 'Upload', onClick: importOpeningStockForm.handleSubmit }]}
       visible={visible}
       onClose={onClose}
       title="Import Opening Stock"
@@ -90,7 +69,8 @@ export default function ImportOpeningStockModal({ visible, onClose }) {
               e.target.value = '';
             }}
             name="file"
-            link="https://spreadsheets.google.com/feeds/download/spreadsheets/Export?key=11K1q6jyzBRe1RCGVadk_jv-vN7T8n5tqG-idMIx3Ym0&exportFormat=xlsx"
+            //https://docs.google.com/spreadsheets/d/1AebJIoT1NBnGxoEXn7G-pFW6-QV9sTm4MY27RQqOzo8/edit?usp=sharing
+            link="https://spreadsheets.google.com/feeds/download/spreadsheets/Export?key=1AebJIoT1NBnGxoEXn7G-pFW6-QV9sTm4MY27RQqOzo8&exportFormat=xlsx"
           />
         </Grid>
 
@@ -98,10 +78,10 @@ export default function ImportOpeningStockModal({ visible, onClose }) {
           <CustomRadioGroup
             row
             label="Select Stock Type"
-            name="stock_type"
-            value={importOpeningStockForm.values.stock_type}
+            name="item_type"
+            value={importOpeningStockForm.values.item_type}
             onChange={importOpeningStockForm.handleChange}
-            error={importOpeningStockForm.touched.stock_type && importOpeningStockForm.errors.stock_type}
+            error={importOpeningStockForm.touched.item_type && importOpeningStockForm.errors.item_type}
             radios={[
               { label: 'Finished Products', value: 'finished_product' },
               { label: 'Raw Material', value: 'raw_material' },
@@ -113,9 +93,9 @@ export default function ImportOpeningStockModal({ visible, onClose }) {
         <Grid item xs={12}>
           <CustomSelect
             label="Select Store"
-            name="store_id"
-            error={importOpeningStockForm.touched.store_id && importOpeningStockForm.errors.store_id}
-            value={importOpeningStockForm.values.store_id}
+            name="location_id"
+            error={importOpeningStockForm.touched.location_id && importOpeningStockForm.errors.location_id}
+            value={importOpeningStockForm.values.location_id}
             options={storeLocations.map(({ name, id }) => ({ label: name, value: id }))}
             onBlur={importOpeningStockForm.handleBlur}
             onChange={importOpeningStockForm.handleChange}

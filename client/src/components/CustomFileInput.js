@@ -31,15 +31,12 @@ export default function CustomFileInput({
   return (
     <Stack spacing={1} sx={{ flexGrow: 1 }}>
       <Button startIcon={<Icon />} sx={{ flexGrow: 1 }} component="label" variant="contained" disabled={disabled}>
-        {label || 'Select file (Not Selected)'}
+        {label || 'Select file (No file selected yet)'}
         <VisuallyHiddenInput type="file" name={name} onChange={onChange} />
       </Button>
       {link && (
         <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
-          <Link
-            target="_blank"
-            href="https://spreadsheets.google.com/feeds/download/spreadsheets/Export?key=1RwPbZuWD8Xs7vwbvbvITQtuHwPc2_-PZK4miXd2XoXk&exportFormat=xlsx"
-          >
+          <Link target="_blank" href={link}>
             {linkText}
           </Link>
         </Grid>

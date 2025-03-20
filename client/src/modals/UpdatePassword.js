@@ -57,12 +57,7 @@ export default function UpdatePassword() {
       onClose={handleOnClose}
       maxWidth="sm"
       title="Update Password"
-      dividers
-      actions={[
-        <Button disabled={isLoading} key="1" onClick={() => formRef.current.submitForm()} variant="contained">
-          Save
-        </Button>
-      ]}
+      actions={[{ text: 'Update', onClick: formRef.current?.handleSubmit, disabled: isLoading }]}
     >
       <Formik
         innerRef={formRef}
@@ -83,7 +78,7 @@ export default function UpdatePassword() {
       >
         {(updatePassword) => (
           <Grid container justifyContent="center" spacing={1} item xs={12}>
-            <Grid item xs={10}>
+            <Grid item xs={12}>
               <FormControl fullWidth margin="normal">
                 <FormLabel id="current_password">Current Password</FormLabel>
                 <OutlinedInput
@@ -122,9 +117,6 @@ export default function UpdatePassword() {
               </FormControl>
             </Grid>
             <Grid item xs={12}>
-              <Divider />
-            </Grid>
-            <Grid item xs={10}>
               <FormControl fullWidth margin="normal">
                 <FormLabel id="password">Password</FormLabel>
                 <OutlinedInput
@@ -162,7 +154,7 @@ export default function UpdatePassword() {
                 />
               </FormControl>
             </Grid>
-            <Grid item xs={10}>
+            <Grid item xs={12}>
               <FormControl fullWidth margin="normal">
                 <FormLabel id="confirm_password">Confirm Password</FormLabel>
                 <OutlinedInput

@@ -65,7 +65,19 @@ export default function AddItemModal({ visible, onClose, item }) {
   }
 
   return (
-    <CustomDialog visible={visible} onClose={onClose} title={item ? 'Update Item' : 'Add Item'} maxWidth="md">
+    <CustomDialog
+      actions={[
+        {
+          text: item ? 'Update Item' : 'Create Item',
+          disabled: formRef.current?.isSubmitting,
+          onClick: formRef.current?.handleSubmit
+        }
+      ]}
+      visible={visible}
+      onClose={onClose}
+      title={item ? 'Update Item' : 'Add Item'}
+      maxWidth="md"
+    >
       <Formik
         innerRef={formRef}
         initialValues={{
@@ -79,13 +91,13 @@ export default function AddItemModal({ visible, onClose, item }) {
           brand: item?.brand?.id || ''
         }}
         validationSchema={Yup.object().shape({
-          name: Yup.string().max(255).required('Item name is required'),
+          name: Yup.string().max(255).required('Name is required'),
           code: Yup.string().max(255).required('Code is required'),
           unit_price: Yup.number().required('Unit price is required'),
-          cost_price: Yup.number().required(),
-          supplier: Yup.number().required(),
-          category: Yup.number().required(),
-          brand: Yup.number().required()
+          cost_price: Yup.number().required('Cost price is required'),
+          supplier: Yup.number().required('Supplier is required'),
+          category: Yup.number().required('Category is required'),
+          brand: Yup.number().required('Brand is required')
         })}
         onSubmit={handleSubmit}
       >
@@ -302,13 +314,6 @@ export default function AddItemModal({ visible, onClose, item }) {
                   <FormHelperText error>{errors.submit}</FormHelperText>
                 </Grid>
               )}
-              <Grid item xs={12}>
-                <AnimateButton>
-                  <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
-                    {item ? 'Update Item' : 'Create Item'}
-                  </Button>
-                </AnimateButton>
-              </Grid>
             </Grid>
           </form>
         )}

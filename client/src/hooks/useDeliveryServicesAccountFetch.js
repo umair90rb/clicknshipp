@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import fetchStatus from 'constants/fetchStatuses';
 import { useDispatch, useSelector } from 'react-redux';
 import { deliveryServiceAccountsFetchStatusSelector } from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSelector';
@@ -7,10 +7,13 @@ import { fetchDeliveryServiceAccounts } from 'store/slices/deliveryServicesAccou
 export default function useDeliveryServicesAccountFetch() {
   const dispatch = useDispatch();
   const deliveryServiceAccountsFetchStatus = useSelector(deliveryServiceAccountsFetchStatusSelector);
+  const fetchServices = useCallback(() => dispatch(fetchDeliveryServiceAccounts()), []);
 
   useEffect(() => {
     if (deliveryServiceAccountsFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchDeliveryServiceAccounts());
+      fetchServices();
     }
   }, []);
+
+  return { refresh: fetchServices };
 }

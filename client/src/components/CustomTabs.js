@@ -1,6 +1,7 @@
-import React from 'react';
+import { useState, useCallback } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import Box from '@mui/material/Box';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -12,9 +13,9 @@ function CustomTabPanel(props) {
   );
 }
 
-export default function CustomTabs({ tabs = [], ...rest }) {
-  const [tab, setTab] = React.useState(0);
-  const handleOnChange = React.useCallback((e, value) => {
+export default function CustomTabs({ tabs = [], mt = 3, ...rest }) {
+  const [tab, setTab] = useState(0);
+  const handleOnChange = useCallback((e, value) => {
     setTab(value);
   }, []);
   return (
@@ -24,6 +25,7 @@ export default function CustomTabs({ tabs = [], ...rest }) {
           <Tab label={label} key={i} value={i} />
         ))}
       </Tabs>
+      {<Box sx={{ mt: mt }} />}
       {tabs.map(({ children }, i) => (
         <CustomTabPanel value={tab} index={i} key={i}>
           {children}

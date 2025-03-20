@@ -65,11 +65,7 @@ export default function AddBillOfMaterialForm({ visible, onClose }) {
       maxWidth="lg"
       title="Create Bill Of Material"
       dividers
-      actions={[
-        <Button key="1" onClick={() => formRef?.current.submitForm()} variant="contained">
-          Create Bill Of Material
-        </Button>
-      ]}
+      actions={[{ text: 'Create Bill Of Material', onClick: () => formRef?.current.submitForm() }]}
     >
       <Formik
         innerRef={formRef}

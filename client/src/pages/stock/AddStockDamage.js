@@ -34,6 +34,11 @@ import { rawMaterialFetchStatusSelector, rawMaterialListSelector } from 'store/s
 import { locationFetchStatusSelector, locationListSelector } from 'store/slices/location/locationSelector';
 import { unitOfMeasureFetchStatusSelector, unitOfMeasureListSelector } from 'store/slices/unitOfMeasure/unitOfMeasureSelector';
 import { fetchAllStock, fetchCreateStockDamage, fetchCreateStockReturn } from 'store/slices/stock/fetchStock';
+import useItemsFetch from 'hooks/useItemsFetch';
+import useUOMFetch from 'hooks/useUOMFetch';
+import useRawMaterialsFetch from 'hooks/useRawMaterialsFetch';
+import useStoreLocationFetch from 'hooks/useStoreLocationFetch';
+import useResetForm from 'hooks/useResetForm';
 
 //duplicate
 function filterItemsAndRaw(type, items, raw) {
@@ -52,37 +57,16 @@ function filterItemsAndRaw(type, items, raw) {
 export default function AddStockDamage({ visible, onClose }) {
   const dispatch = useDispatch();
   const formRef = useRef(null);
-
-  const itemFetchStatus = useSelector(itemFetchStatusSelector);
   const items = useSelector(itemItemsSelector);
-  const itemsIsLoading = itemFetchStatus === fetchStatus.REQUEST;
-
-  const rawMaterialFetchStatus = useSelector(rawMaterialFetchStatusSelector);
   const rawMaterials = useSelector(rawMaterialListSelector);
-  const rawMaterialIsLoading = rawMaterialFetchStatus === fetchStatus.REQUEST;
-
-  const locationFetchStatus = useSelector(locationFetchStatusSelector);
   const locations = useSelector(locationListSelector);
-  const locationIsLoading = locationFetchStatus === fetchStatus.REQUEST;
-
-  const unitsFetchStatus = useSelector(unitOfMeasureFetchStatusSelector);
   const units = useSelector(unitOfMeasureListSelector);
-  const unitsIsLoading = unitsFetchStatus === fetchStatus.REQUEST;
 
-  useEffect(() => {
-    if (itemFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllItem());
-    }
-    if (unitsFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllUnitOfMeasure());
-    }
-    if (unitsFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllRawMaterial());
-    }
-    if (locationFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllLocation());
-    }
-  }, []);
+  useItemsFetch();
+  useUOMFetch();
+  useRawMaterialsFetch();
+  useStoreLocationFetch();
+  useResetForm(formRef, visible);
 
   // duplicate
   function getItemsAndRaw(type = '', items = [], raw = []) {
@@ -106,63 +90,58 @@ export default function AddStockDamage({ visible, onClose }) {
   };
 
   return (
-    <CustomDialog
-      enableBackdrop
-      visible={visible}
-      onClose={onClose}
-      maxWidth="lg"
-      dividers={false}
-      title="Add Stock Damage"
-      actions={[
-        <Button key="1" onClick={() => formRef?.current.submitForm()} variant="contained">
-          Add Stock Return
-        </Button>
-      ]}
+    <Formik
+      innerRef={formRef}
+      enableReinitialize
+      initialValues={{
+        item_type: 'raw_material',
+        location_id: null,
+        comment: '',
+        inventory: [
+          {
+            item_id: { id: null, label: '' },
+            batch_number: '',
+            quantity: 0,
+            unit_of_measure: '',
+            deduct_stock: false
+          }
+        ]
+      }}
+      validationSchema={Yup.object().shape({
+        item_type: Yup.string().required('Please select inventory type'),
+        location_id: Yup.number().required('Please select store location'),
+        comment: Yup.string(),
+        inventory: Yup.array().of(
+          Yup.object().shape({
+            item_id: Yup.object().shape({
+              id: Yup.string().required(),
+              label: Yup.string().required()
+            }),
+            batch_number: Yup.string(),
+            quantity: Yup.number().min(1).required('Please enter stock received quantity'),
+            unit_of_measure: Yup.string().required('Please select unit'),
+            deduct_stock: Yup.boolean().required()
+          })
+        )
+      })}
+      onSubmit={handleSubmit}
     >
-      <Formik
-        innerRef={formRef}
-        enableReinitialize
-        initialValues={{
-          item_type: 'raw_material',
-          location_id: null,
-          comment: '',
-          inventory: [
-            {
-              item_id: { id: null, label: '' },
-              batch_number: '',
-              quantity: 0,
-              unit_of_measure: '',
-              deduct_stock: false
-            }
-          ]
-        }}
-        validationSchema={Yup.object().shape({
-          item_type: Yup.string().required('Please select inventory type'),
-          location_id: Yup.number().required('Please select store location'),
-          comment: Yup.string(),
-          inventory: Yup.array().of(
-            Yup.object().shape({
-              item_id: Yup.object().shape({
-                id: Yup.string().required(),
-                label: Yup.string().required()
-              }),
-              batch_number: Yup.string(),
-              quantity: Yup.number().min(1).required('Please enter stock received quantity'),
-              unit_of_measure: Yup.string().required('Please select unit'),
-              deduct_stock: Yup.boolean().required()
-            })
-          )
-        })}
-        onSubmit={handleSubmit}
-      >
-        {(addReturnForm) => (
+      {(addReturnForm) => (
+        <CustomDialog
+          enableBackdrop
+          visible={visible}
+          onClose={onClose}
+          maxWidth="lg"
+          dividers={false}
+          title="Add Damage Stock"
+          actions={[{ text: 'Add Damage Stock', onClick: addReturnForm.handleSubmit }]}
+        >
           <Grid container spacing={3}>
             <Grid container columnSpacing={1} alignItems="center" justifyContent="center" item sx={12} md={12} lg={12}>
               <Grid item sx={3} md={3} lg={3}>
                 <FormControl fullWidth margin="normal">
                   <FormLabel id="item_type_group">Inventory Type</FormLabel>
                   <RadioGroup
-                    row
                     aria-labelledby="item_type_group"
                     name="item_type"
                     value={addReturnForm.values.item_type}
@@ -310,7 +289,7 @@ export default function AddStockDamage({ visible, onClose }) {
                             )}
                           />
                           <ErrorMessage
-                            name={`inventory.${index}.item_id`}
+                            name={`inventory.${index}.item_id.id`}
                             render={(msg) => (
                               <FormHelperText sx={{ m: 0 }} error id="helper-text-price">
                                 {msg}
@@ -478,12 +457,12 @@ export default function AddStockDamage({ visible, onClose }) {
             </Grid>
             {addReturnForm.errors.submit && (
               <Grid item xs={12}>
-                <FormHelperText error>{toSentence(addReturnForm.errors.submit)}</FormHelperText>
+                <FormHelperText error>{toSentence(addReturnForm.errors?.submit)}</FormHelperText>
               </Grid>
             )}
           </Grid>
-        )}
-      </Formik>
-    </CustomDialog>
+        </CustomDialog>
+      )}
+    </Formik>
   );
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { unitOfMeasureFetchStatusSelector } from 'store/slices/unitOfMeasure/unitOfMeasureSelector';
 import fetchStatus from 'constants/fetchStatuses';
@@ -7,9 +7,9 @@ import { fetchAllUnitOfMeasure } from 'store/slices/unitOfMeasure/fetchUnitOfMea
 export default function useUOMFetch() {
   const dispatch = useDispatch();
   const uomFetchStatus = useSelector(unitOfMeasureFetchStatusSelector);
-  const fetchUOM = React.useCallback(() => dispatch(fetchAllUnitOfMeasure()), []);
+  const fetchUOM = useCallback(() => dispatch(fetchAllUnitOfMeasure()), []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (uomFetchStatus !== fetchStatus.SUCCESS) {
       fetchUOM();
     }

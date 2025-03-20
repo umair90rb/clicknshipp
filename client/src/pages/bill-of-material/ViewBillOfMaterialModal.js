@@ -117,11 +117,7 @@ export default function ViewBillOfMaterialModal({ id, visible, onClose }) {
         onClose={onClose}
         maxWidth="lg"
         title="Bill Of Material"
-        actions={[
-          <Button key="2" disabled={isFulfilled} onClick={() => setShowFullfilModal(true)} variant="contained" color="success">
-            Fulfill Bill of Material
-          </Button>
-        ]}
+        actions={[{ text: 'Fulfill Bill of Material', disabled: isFulfilled, onClick: () => setShowFullfilModal(true) }]}
       >
         {!fetchBillOfMaterialState.loading && (
           <Grid container sx={{ marginBottom: 2 }}>

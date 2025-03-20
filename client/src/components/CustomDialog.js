@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState, useRef } from 'react';
 import Dialog from '@mui/material/Dialog';
 import Box from '@mui/material/Box';
 import DialogActions from '@mui/material/DialogActions';
@@ -9,7 +9,10 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
+import FullscreenOutlinedIcon from '@mui/icons-material/FullscreenOutlined';
+import FullscreenExitOutlinedIcon from '@mui/icons-material/FullscreenExitOutlined';
 import { useReactToPrint } from 'react-to-print';
+import CustomButton from './CustomButton';
 
 const getWidthHeight = (size) => {
   switch (size) {
@@ -42,7 +45,8 @@ export default function CustomDialog({
   scroll = 'paper',
   printable = false
 }) {
-  const printableRef = React.useRef(null);
+  const [toggleFullScreen, setToggleFullScreen] = useState(fullScreen);
+  const printableRef = useRef(null);
   const handlePrint = useReactToPrint({
     contentRef: printableRef,
     pageStyle: `
@@ -62,7 +66,7 @@ export default function CustomDialog({
   return (
     <Dialog
       maxWidth={maxWidth}
-      fullScreen={fullScreen}
+      fullScreen={toggleFullScreen}
       open={visible}
       scroll={scroll}
       onClose={(e, reason) => {
@@ -81,6 +85,9 @@ export default function CustomDialog({
               <PrintOutlinedIcon />
             </IconButton>
           )}
+          <IconButton sx={{ displayPrint: 'none' }} aria-label="toggle-full-screen" onClick={() => setToggleFullScreen(!toggleFullScreen)}>
+            {toggleFullScreen ? <FullscreenExitOutlinedIcon /> : <FullscreenOutlinedIcon />}
+          </IconButton>
           <IconButton sx={{ displayPrint: 'none' }} aria-label="close" onClick={onClose}>
             <CloseOutlinedIcon />
           </IconButton>
@@ -99,7 +106,13 @@ export default function CustomDialog({
           )}
         </div>
       </DialogContent>
-      {actions.length > 0 && <DialogActions sx={{ displayPrint: 'none' }}>{actions}</DialogActions>}
+      {actions.length > 0 && (
+        <DialogActions sx={{ displayPrint: 'none' }}>
+          {actions.map(({ text, onClick, ...props }, i) => (
+            <CustomButton text={text} key={i} onClick={onClick} {...props}></CustomButton>
+          ))}
+        </DialogActions>
+      )}
     </Dialog>
   );
 }
