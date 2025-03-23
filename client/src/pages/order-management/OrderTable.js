@@ -1,18 +1,8 @@
-import React, { useEffect, useState, memo, useMemo } from 'react';
+import React, { useState, memo, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import {
-  DataGrid,
-  GridActionsCellItem,
-  GridToolbarContainer,
-  GridToolbarColumnsButton,
-  GridToolbarQuickFilter,
-  GridToolbarExport,
-  GridRowEditStopReasons,
-  GridRowModes
-} from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, GridRowEditStopReasons, GridRowModes } from '@mui/x-data-grid';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-// import FilterListIcon from '@mui/icons-material/FilterList';
 import FilterListOffIcon from '@mui/icons-material/FilterListOff';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
@@ -30,7 +20,7 @@ import {
   orderSortSelector,
   orderTotalSelector
 } from 'store/slices/order/orderSelector';
-import { fetchAllOrder, fetchBulkOrdersDelete, fetchPartialUpdateOrder } from 'store/slices/order/fetchOrder';
+import { fetchBulkOrdersDelete, fetchPartialUpdateOrder } from 'store/slices/order/fetchOrder';
 import location from 'utils/location';
 import { Button, Box, Chip } from '@mui/material';
 import AssignSelectedOrderModal from './AssignSelectedOrderModal';
@@ -625,7 +615,7 @@ const OrderTable = memo(() => {
   }, [rowSelectionModel, filters, citiesList, users]);
 
   return (
-    <div style={{ height: '80vh', width: '100%' }}>
+    <Box style={{ height: '80vh' }}>
       <DataGrid
         apiRef={apiRef}
         sx={{
@@ -703,7 +693,7 @@ const OrderTable = memo(() => {
         onClose={hideOrderBulkBookModal}
         orderIds={rowSelectionModel}
       />
-    </div>
+    </Box>
   );
 });
 

@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Box, Button, MenuItem, Select, FormHelperText, Grid, ListItemText, InputLabel, Stack, Checkbox, Chip } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import AnimateButton from 'components/@extended/AnimateButton';
@@ -13,12 +13,11 @@ import RoleSelectorInput from 'ui/RoleSelectorInput';
 const UpdateRoleForm = ({ closeModal }) => {
   const dispatch = useDispatch();
   const formRef = useRef();
-  const handleSubmit = async ({ role: { id, name }, permissions }, { setErrors, setSubmitting }) => {
-    const body = { name, permissions };
-    const { type, payload } = await dispatch(fetchUpdateRole({ id, body }));
+  const handleSubmit = async ({ role, permissions }, { setErrors, setSubmitting }) => {
+    const { type, payload } = await dispatch(fetchUpdateRole({ id: role, body: { permissions } }));
     if (type === 'role/update/fetch/fulfilled') {
       setSubmitting(false);
-      dispatch(setMessage({ message: 'Role updated successfully!' }));
+      dispatch(setMessage({ message: 'Role updated successfully', type: 'success' }));
       closeModal();
     } else {
       setErrors({ submit: payload.error || 'Role creation failed!' });
@@ -59,42 +58,6 @@ const UpdateRoleForm = ({ closeModal }) => {
                     }
                   }}
                 />
-                {/* <Stack spacing={1}>
-                  <InputLabel htmlFor="role-signup">Role</InputLabel>
-                  <Select
-                    fullWidth
-                    error={Boolean(touched.role && errors.role)}
-                    id="role-signup"
-                    value={values.role.name}
-                    name="role"
-                    onBlur={handleBlur}
-                    onChange={async (e) => {
-                      console.log(e.target.value);
-                      handleChange(e);
-                      const { type, payload } = await dispatch(fetchRole({ id: e.target.value.id }));
-                      if (type === 'role/fetch/fulfilled') {
-                        setValues((currentValues) => ({
-                          ...currentValues,
-                          permissions: payload.data.role.permissions.map((p) => p.id)
-                        }));
-                      }
-                    }}
-                    inputProps={{}}
-                    labelId="role-signup"
-                  >
-                    {roles.map((role, index) => (
-                      <MenuItem key={index} value={role}>
-                        <ListItemText primary={role.name} />
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  <FormHelperTextComponent id="roles" loading={rolesIsLoading} error={touched.role && errors.role} />
-                  {touched.role && errors.role && (
-                    <FormHelperText error id="helper-text-role-signup">
-                      {errors.role}
-                    </FormHelperText>
-                  )}
-                </Stack> */}
               </Grid>
 
               <Grid item xs={12}>

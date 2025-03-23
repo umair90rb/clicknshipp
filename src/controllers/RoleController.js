@@ -1,5 +1,5 @@
-import model from "../models";
-import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
+import model from '../models';
+import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
 
 const { Role, Permissions } = model;
 
@@ -13,7 +13,7 @@ export default {
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
@@ -24,7 +24,7 @@ export default {
       const role = await Role.findByPk(id, {
         include: [
           {
-            association: "permissions",
+            association: 'permissions',
             model: Permissions,
             through: { attributes: [] },
           },
@@ -33,13 +33,13 @@ export default {
       if (role) {
         return sendSuccessResponse(res, 200, { role });
       }
-      return sendErrorResponse(res, 404, "No data found with this id.");
+      return sendErrorResponse(res, 404, 'No data found with this id.');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
@@ -50,7 +50,7 @@ export default {
       const { name, permissions } = req.body;
       let role = await Role.findOne({ where: { name } });
       if (role) {
-        return sendErrorResponse(res, 422, "Role already exists.");
+        return sendErrorResponse(res, 422, 'Role already exists.');
       }
       role = await Role.create({
         name,
@@ -66,13 +66,13 @@ export default {
             permissions: assignedPermission.map((p) => p.name),
           },
         },
-        "Role created successfully"
+        'Role created successfully'
       );
     } catch (error) {
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         error
       );
     }
@@ -84,31 +84,34 @@ export default {
       const { permissions } = req.body;
       const role = await Role.findByPk(id);
       if (!role) {
-        return sendErrorResponse(res, 404, "No data found with this id.");
+        return sendErrorResponse(res, 404, 'No data found with this id.');
       }
       if (permissions && permissions.length) {
-        const exitingPermission = await role.getPermissions();
-        await role.removePermissions(exitingPermission.map((p) => p.id));
-        await role.addPermissions(permissions);
-      }
-      const newPermissions = await role.getPermissions();
-      return sendSuccessResponse(
-        res,
-        200,
-        {
-          role: {
-            ...role.dataValues,
-            permissions: newPermissions.map((p) => p.name),
+        // const exitingPermission = await role.getPermissions();
+        // await role.removePermissions(exitingPermission.map((p) => p.id));
+        await role.setPermissions([]);
+        const updatedPermissions = await role.addPermissions(permissions, {
+          returning: true,
+        });
+        // const newPermissions = await role.getPermissions();
+        return sendSuccessResponse(
+          res,
+          200,
+          {
+            role: {
+              ...role.dataValues,
+              permissions: updatedPermissions.map((p) => p.name),
+            },
           },
-        },
-        "Operation successful."
-      );
+          'Operation successful.'
+        );
+      }
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }
@@ -120,15 +123,15 @@ export default {
       const role = await Role.findByPk(id);
       if (role) {
         await role.destroy();
-        return sendSuccessResponse(res, 200, {}, "Operation successful.");
+        return sendSuccessResponse(res, 200, {}, 'Operation successful.');
       }
-      return sendErrorResponse(res, 404, "No data found with this id.");
+      return sendErrorResponse(res, 404, 'No data found with this id.');
     } catch (e) {
       console.error(e);
       return sendErrorResponse(
         res,
         500,
-        "Could not perform operation at this time, kindly try again later.",
+        'Could not perform operation at this time, kindly try again later.',
         e
       );
     }

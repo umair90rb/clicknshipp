@@ -3,6 +3,8 @@ import { Button, Grid, Typography, Link } from '@mui/material';
 import MainCard from 'components/MainCard';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import RefreshOutlinedIcon from '@mui/icons-material/RefreshOutlined';
+import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
+import CloudDownloadOutlinedIcon from '@mui/icons-material/CloudDownloadOutlined';
 import RawMaterialTable from './RawMaterialTable';
 import AddUpdateRawMaterialForm from './AddUpdateRawMaterialForm';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,6 +14,8 @@ import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 import { fetchAllRawMaterial, fetchImportRawMaterial } from 'store/slices/rawMaterial/fetchRawMaterial';
 import CustomFileInput from 'components/CustomFileInput';
+import CustomMenus from 'components/CustomMenu';
+import createBlankLink from 'utils/linkGenerator';
 
 export default function RawMaterialManagement() {
   const dispatch = useDispatch();
@@ -67,9 +71,47 @@ export default function RawMaterialManagement() {
           <Grid item>
             <Typography variant="h5">Materials</Typography>
           </Grid>
+          {/* <Grid item>
+            <CustomMenus
+              options={[
+                {
+                  title: 'Add Raw Material',
+                  onClick: () => addRawMaterialHandler('raw_material'),
+                  permission: PERMISSIONS.PERMISSION_CREATE_RAW_MATERIAL,
+                  Icon: AddOutlinedIcon
+                },
+                {
+                  title: 'Add Packaging Material',
+                  onClick: () => addRawMaterialHandler('packaging_material'),
+                  permission: PERMISSIONS.PERMISSION_CREATE_RAW_MATERIAL,
+                  Icon: AddOutlinedIcon
+                },
+                {
+                  title: 'Import Raw Materials',
+                  onClick: (e) => uploadFile(e, 'raw_material'),
+                  permission: PERMISSIONS.PERMISSION_BULK_CREATE_RAW_MATERIALS,
+                  Icon: CloudUploadOutlinedIcon
+                },
+                {
+                  title: 'Import Packaging Materials',
+                  onClick: (e) => uploadFile(e, 'packaging_material'),
+                  permission: PERMISSIONS.PERMISSION_BULK_CREATE_RAW_MATERIALS,
+                  Icon: CloudUploadOutlinedIcon
+                },
+                {
+                  title: 'Download Import Format',
+                  onClick: createBlankLink(
+                    'https://spreadsheets.google.com/feeds/download/spreadsheets/Export?key=1RwPbZuWD8Xs7vwbvbvITQtuHwPc2_-PZK4miXd2XoXk&exportFormat=xlsx'
+                  ),
+                  permission: PERMISSIONS.PERMISSION_BULK_CREATE_RAW_MATERIALS,
+                  Icon: CloudDownloadOutlinedIcon
+                }
+              ]}
+            />
+          </Grid> */}
           <Grid item>
             <Grid container spacing={2}>
-              {hasPermission(PERMISSIONS.PERMISSION_BULK_CREATE_ITEMS) && (
+              {hasPermission(PERMISSIONS.PERMISSION_BULK_CREATE_RAW_MATERIALS) && (
                 <Grid item>
                   <CustomFileInput
                     link="https://spreadsheets.google.com/feeds/download/spreadsheets/Export?key=1RwPbZuWD8Xs7vwbvbvITQtuHwPc2_-PZK4miXd2XoXk&exportFormat=xlsx"
@@ -81,14 +123,14 @@ export default function RawMaterialManagement() {
                 </Grid>
               )}
 
-              {hasPermission(PERMISSIONS.PERMISSION_CREATE_ITEM) && (
+              {hasPermission(PERMISSIONS.PERMISSION_CREATE_RAW_MATERIAL) && (
                 <Grid item>
                   <Button variant="contained" startIcon={<AddOutlinedIcon />} onClick={() => addRawMaterialHandler('raw_material')}>
                     Add Raw Material
                   </Button>
                 </Grid>
               )}
-              {hasPermission(PERMISSIONS.PERMISSION_BULK_CREATE_ITEMS) && (
+              {hasPermission(PERMISSIONS.PERMISSION_BULK_CREATE_RAW_MATERIALS) && (
                 <Grid item>
                   <CustomFileInput
                     link="https://spreadsheets.google.com/feeds/download/spreadsheets/Export?key=1RwPbZuWD8Xs7vwbvbvITQtuHwPc2_-PZK4miXd2XoXk&exportFormat=xlsx"
@@ -99,7 +141,7 @@ export default function RawMaterialManagement() {
                   />
                 </Grid>
               )}
-              {hasPermission(PERMISSIONS.PERMISSION_CREATE_ITEM) && (
+              {hasPermission(PERMISSIONS.PERMISSION_CREATE_RAW_MATERIAL) && (
                 <Grid item>
                   <Button variant="contained" startIcon={<AddOutlinedIcon />} onClick={() => addRawMaterialHandler('packaging_material')}>
                     Add Packaging Material

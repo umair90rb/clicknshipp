@@ -23,6 +23,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'supplier_id',
         as: 'supplier',
       });
+      RawMaterial.belongsTo(models.Category, {
+        foreignKey: 'category_id',
+        as: 'category',
+      });
     }
   }
 
@@ -50,6 +54,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       supplier_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      category_id: {
         type: DataTypes.INTEGER,
         allowNull: true,
       },

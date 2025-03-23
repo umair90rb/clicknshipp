@@ -1,16 +1,5 @@
 import { useEffect, useRef } from 'react';
-import {
-  TextareaAutosize,
-  IconButton,
-  Button,
-  FormHelperText,
-  Grid,
-  TextField,
-  FormControl,
-  FormLabel,
-  Select,
-  MenuItem
-} from '@mui/material';
+import { TextareaAutosize, IconButton, FormHelperText, Grid, TextField, FormControl, FormLabel, Select, MenuItem } from '@mui/material';
 import Autocomplete, { autocompleteClasses } from '@mui/material/Autocomplete';
 
 import * as Yup from 'yup';
@@ -22,36 +11,25 @@ import { fetchAllItem } from 'store/slices/item/fetchItem';
 import { itemFetchStatusSelector, itemItemsSelector } from 'store/slices/item/itemSelector';
 import fetchStatus from 'constants/fetchStatuses';
 import { toSentence } from 'utils/string-utils';
-import { locationFetchStatusSelector, locationListSelector } from 'store/slices/location/locationSelector';
-import { fetchAllLocation } from 'store/slices/location/fetchLocation';
 import CustomDialog from 'components/CustomDialog';
 import { fetchCreateSalesOrder } from 'store/slices/salesOrder/fetchSalesOrder';
 import { salesOrderCreateCreateModalVisibleSelector } from 'store/slices/salesOrder/salesOrderSelector';
 import { setSalesOrderCreateModalVisible } from 'store/slices/salesOrder/salesOrderSlice';
+import useItemsFetch from 'hooks/useItemsFetch';
+import StoreLocationSelectorInput from 'ui/StoreLocationSelectorInput';
+import useResetForm from 'hooks/useResetForm';
 
 export default function AddSalesOrderModal() {
   const dispatch = useDispatch();
   const formRef = useRef();
   const visible = useSelector(salesOrderCreateCreateModalVisibleSelector);
-
-  const itemFetchStatus = useSelector(itemFetchStatusSelector);
   const items = useSelector(itemItemsSelector);
-  const itemsIsLoading = itemFetchStatus === fetchStatus.REQUEST;
 
-  const locationFetchStatus = useSelector(locationFetchStatusSelector);
-  const locations = useSelector(locationListSelector);
-  const locationIsLoading = locationFetchStatus === fetchStatus.REQUEST;
+  useItemsFetch();
+  useResetForm(formRef, visible);
 
-  useEffect(() => {
-    if (itemFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllItem());
-    }
-    if (locationFetchStatus !== fetchStatus.SUCCESS) {
-      dispatch(fetchAllLocation());
-    }
-  }, []);
-
-  const handleSubmit = async (values, _actions) => {
+  const handleSubmit = (values, _actions) => {
+    console.log('values', values);
     dispatch(fetchCreateSalesOrder({ body: values }));
   };
 
@@ -70,8 +48,8 @@ export default function AddSalesOrderModal() {
         items: [
           {
             item_id: null,
-            quantity: 0
-            // price: 0
+            quantity: 0,
+            price: 0
           }
         ]
       }}
@@ -83,7 +61,7 @@ export default function AddSalesOrderModal() {
           Yup.object().shape({
             item_id: Yup.number().required(),
             quantity: Yup.number().min(1).required('Please enter stock received quantity'),
-            price: Yup.number().min(0).required('Please enter price')
+            price: Yup.number()
           })
         )
       })}
@@ -95,44 +73,25 @@ export default function AddSalesOrderModal() {
           onClose={onClose}
           maxWidth="xl"
           title="Create New Sale Order"
-          actions={[{ text: 'Create and Fulfill', onClick: salesOrder.handleSubmit }]}
+          actions={[
+            {
+              text: 'Create and Fulfill',
+              onClick: () => {
+                console.log('salesOrder', salesOrder.errors);
+                salesOrder.handleSubmit();
+              }
+            }
+          ]}
         >
           <Grid container spacing={3}>
             <Grid container columnSpacing={1} alignItems="center" justifyContent="center" item sx={12} md={12} lg={12}>
               <Grid item sx={5} md={5} lg={5}>
-                <FormControl fullWidth margin="normal">
-                  <FormLabel id="location_id">Store Location</FormLabel>
-                  <Select
-                    size="small"
-                    labelId="location_id"
-                    id="location_id_select"
-                    value={salesOrder.values.location_id}
-                    name="location_id"
-                    onChange={salesOrder.handleChange}
-                    error={
-                      salesOrder.touched.location_id &&
-                      salesOrder.touched.location_id &&
-                      salesOrder.touched.location_id &&
-                      !!salesOrder.errors.location_id &&
-                      !!salesOrder.errors.location_id &&
-                      !!salesOrder.errors.location_id
-                    }
-                  >
-                    {locations.map(({ id, name }, index) => (
-                      <MenuItem key={index} value={id}>
-                        {name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  <ErrorMessage
-                    name="location_id"
-                    render={(msg) => (
-                      <FormHelperText sx={{ m: 0 }} error id="helper-text-name">
-                        {msg}
-                      </FormHelperText>
-                    )}
-                  />
-                </FormControl>
+                <StoreLocationSelectorInput
+                  onBlur={salesOrder.handleBlur}
+                  onChange={salesOrder.handleChange}
+                  error={salesOrder.touched.location_id && salesOrder.errors.location_id}
+                  value={salesOrder.values.location_id}
+                />
               </Grid>
               <Grid item sx={7} md={7} lg={7}>
                 <FormControl fullWidth margin="normal">
@@ -221,7 +180,8 @@ export default function AddSalesOrderModal() {
                             }}
                             options={items.map((item) => ({
                               id: item.id,
-                              label: item.name
+                              label: item.name,
+                              price: item.unit_price
                             }))}
                             error={
                               salesOrder.touched.items &&
@@ -236,6 +196,7 @@ export default function AddSalesOrderModal() {
                             // onChange={salesOrder.handleChange}
                             isOptionEqualToValue={(option, value) => option.id === value}
                             onChange={(e, option) => {
+                              salesOrder.setFieldValue(`items.${index}.price`, option.price);
                               salesOrder.setFieldValue(`items.${index}.item_id`, option.id);
                             }}
                             type="text"
@@ -334,8 +295,8 @@ export default function AddSalesOrderModal() {
                           onClick={() =>
                             arrayHelper.push({
                               item_id: null,
-                              quantity: 1
-                              // price: 0
+                              quantity: 1,
+                              price: 0
                             })
                           }
                           color="primary"

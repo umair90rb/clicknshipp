@@ -27,10 +27,14 @@ const MainDrawer = ({ open, handleDrawerToggle, window }) => {
           variant="temporary"
           open={open}
           onClose={handleDrawerToggle}
-          ModalProps={{ keepMounted: true }}
+          ModalProps={{ keepMounted: true }} // Better open performance on mobile.
           sx={{
             display: { xs: 'block', lg: 'none' },
             '& .MuiDrawer-paper': {
+              scrollbarWidth: 'none', // Firefox
+              '&::-webkit-scrollbar': {
+                display: 'none' // Chrome, Safari
+              },
               boxSizing: 'border-box',
               width: drawerWidth,
               borderRight: `1px solid ${theme.palette.divider}`,

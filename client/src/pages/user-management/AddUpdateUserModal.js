@@ -61,24 +61,8 @@ export default function AddUpdateUserModal({ visible, onClose, userToUpdate }) {
     let response;
     try {
       if (Object.values(userToUpdate).length) {
-        const roleIds = [],
-          brandIds = [];
-        values.roles.forEach((role) => {
-          const index = roles.findIndex((r) => r.name === role);
-          if (index > -1) {
-            roleIds.push(roles[index].id);
-            return;
-          }
-        });
-        values.brands.forEach((brand) => {
-          const index = brands.findIndex((b) => b.name === brand);
-          if (index > -1) {
-            brandIds.push(brands[index].id);
-            return;
-          }
-        });
-        const { id, permissions, roles: r, brands: b, ...rest } = values;
-        response = await userService.fetchUpdateUser(userToUpdate.id, { ...rest, roles: roleIds, brands: brandIds });
+        const { id, permissions, ...rest } = values;
+        response = await userService.fetchUpdateUser(userToUpdate.id, rest);
         console.log(response);
         dispatch(updateUser({ data: response.data.user }));
       } else {

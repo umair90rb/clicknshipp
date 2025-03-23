@@ -1,4 +1,4 @@
-import Joi from "joi";
+import Joi from 'joi';
 
 const createRoleSchema = Joi.object({
   name: Joi.string().required(),
@@ -6,7 +6,6 @@ const createRoleSchema = Joi.object({
 });
 
 const updateRoleSchema = Joi.object({
-  name: Joi.string(),
   permissions: Joi.array().items(Joi.number().integer()),
 });
 

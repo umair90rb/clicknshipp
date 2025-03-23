@@ -45,12 +45,12 @@ const columns = (handleEditAction, handleDeleteAction) => [
     headerName: 'Re Order Level',
     flex: 1
   },
-  // {
-  //   field: 'category',
-  //   headerName: 'Category',
-  //   valueGetter: ({ value }) => (value ? value.name : ''),
-  //   flex: 1
-  // },
+  {
+    field: 'category',
+    headerName: 'Category',
+    valueGetter: (param) => param.row.category?.name || '',
+    flex: 1
+  },
   // {
   //   field: 'brand',
   //   headerName: 'Brand',
@@ -60,7 +60,7 @@ const columns = (handleEditAction, handleDeleteAction) => [
   {
     field: 'supplier',
     headerName: 'Supplier',
-    valueGetter: ({ value }) => (value ? value?.name : ''),
+    valueGetter: (param) => param.row.supplier?.name || '',
     flex: 1
   },
   {

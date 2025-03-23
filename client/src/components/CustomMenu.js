@@ -6,6 +6,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import useAccess from 'hooks/useAccess';
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -55,6 +56,7 @@ function withClose(cb, handleClose) {
 }
 
 export default function CustomMenus({ title = '', options = [] }) {
+  const { hasPermission } = useAccess();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -101,12 +103,21 @@ export default function CustomMenus({ title = '', options = [] }) {
           open={open}
           onClose={handleClose}
         >
-          {options.map(({ title, onClick, Icon }, i) => (
-            <MenuItem key={i} onClick={withClose(onClick, handleClose)} disableRipple>
-              {Icon && <Icon />}
-              {title}
-            </MenuItem>
-          ))}
+          {options.map(({ title, onClick, Icon, permission }, i) =>
+            permission && hasPermission(permission) ? (
+              <MenuItem key={i} onClick={withClose(onClick, handleClose)} disableRipple>
+                {Icon && <Icon />}
+                {title}
+              </MenuItem>
+            ) : (
+              !permission && (
+                <MenuItem key={i} onClick={withClose(onClick, handleClose)} disableRipple>
+                  {Icon && <Icon />}
+                  {title}
+                </MenuItem>
+              )
+            )
+          )}
         </StyledMenu>
       )}
     </div>

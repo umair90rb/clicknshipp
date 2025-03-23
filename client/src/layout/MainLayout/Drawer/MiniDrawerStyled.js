@@ -56,6 +56,10 @@ const openedMixin = (theme) => ({
     duration: theme.transitions.duration.enteringScreen
   }),
   overflowX: 'hidden',
+  scrollbarWidth: 'none', // Firefox
+  '&::-webkit-scrollbar': {
+    display: 'none' // Chrome, Safari
+  },
   boxShadow: 'none'
 });
 
@@ -65,12 +69,14 @@ const closedMixin = (theme) => ({
     duration: theme.transitions.duration.leavingScreen
   }),
   overflowX: 'hidden',
-  width: 0,
+  scrollbarWidth: 'none', // Firefox
+  '&::-webkit-scrollbar': {
+    display: 'none' // Chrome, Safari
+  },
+  width: 0, // this property create min header with only icons.
   borderRight: 'none',
   boxShadow: theme.customShadows.z1
 });
-
-// ==============================|| DRAWER - MINI STYLED ||============================== //
 
 const MiniDrawerStyled = styled(Drawer, { shouldForwardProp: (prop) => prop !== 'open' })(({ theme, open }) => ({
   width: drawerWidth,

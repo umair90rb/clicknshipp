@@ -9,6 +9,7 @@ export const PERMISSIONS = {
   PERMISSIONS_GET_COURIER_DELIVERY_REPORT: 'get-courier-delivery-report',
   PERMISSIONS_GET_STOCK_REPORT: 'get-stock-report',
   PERMISSIONS_GET_STOCK_DAMAGE_REPORT: 'get-stock-damage-report',
+  PERMISSION_GET_ITEM_DAMAGE_REPORT: 'get-item-damage-report',
 
   PERMISSION_VIEW_ADMIN_DASHBOARD: 'view-admin-dashboard',
   PERMISSION_VIEW_REPORTING: 'view-reporting',
@@ -22,7 +23,7 @@ export const PERMISSIONS = {
   PERMISSION_BULK_ORDER_DELETE: 'bulk-order-delete',
   PERMISSION_BULK_ORDER_BOOKING: 'bulk-order-booking',
   PERMISSION_ASSIGN_ORDERS: 'assign-orders',
-  PERMISSION_ORDERS_FILTERS_AGENT: 'orders/filters/agent',
+  PERMISSION_ORDERS_FILTERS_AGENT: 'show-orders-agent-filter',
   PERMISSION_DAY_START: 'day-start',
   PERMISSION_EXPORT_ORDERS: 'export-orders',
 
@@ -101,6 +102,7 @@ export const PERMISSIONS = {
   PERMISSION_UPDATE_RAW_MATERIAL: 'update-raw-material',
   PERMISSION_DELETE_RAW_MATERIAL: 'delete-raw-material',
   PERMISSION_EXPORT_RAW_MATERIAL: 'export-raw-material',
+  PERMISSION_BULK_CREATE_RAW_MATERIALS: 'bulk-create-raw_material',
 
   PERMISSION_VIEW_BATCHES: 'view-batches',
   PERMISSION_CREATE_BATCH: 'create-batch',

@@ -3,17 +3,25 @@ import excelToJson from '../helpers/excelToJson';
 import model from '../models';
 import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
 
-const { RawMaterial, StockLevel, StockHistory, Supplier } = model;
+const { RawMaterial, StockLevel, StockHistory, Supplier, Category } = model;
 
 export default {
   async all(req, res) {
     try {
       const rawMaterials = await RawMaterial.findAll({
-        include: {
-          model: Supplier,
-          as: 'supplier',
-          attributes: ['name', 'id'],
-        },
+        attributes: { exclude: ['category_id', 'supplier_id', 'updatedAt'] },
+        include: [
+          {
+            model: Supplier,
+            as: 'supplier',
+            attributes: ['name', 'id'],
+          },
+          {
+            model: Category,
+            as: 'category',
+            attributes: ['name', 'id'],
+          },
+        ],
       });
       return sendSuccessResponse(res, 200, { rawMaterials }, 'All materials');
     } catch (e) {
@@ -30,7 +38,21 @@ export default {
   async rawMaterial(req, res) {
     try {
       const { id } = req.params;
-      const rawMaterial = await RawMaterial.findByPk(id);
+      const rawMaterial = await RawMaterial.findByPk(id, {
+        attributes: { exclude: ['category_id', 'supplier_id', 'updatedAt'] },
+        include: [
+          {
+            model: Supplier,
+            as: 'supplier',
+            attributes: ['name', 'id'],
+          },
+          {
+            model: Category,
+            as: 'category',
+            attributes: ['name', 'id'],
+          },
+        ],
+      });
       if (rawMaterial) {
         return sendSuccessResponse(
           res,
@@ -61,6 +83,7 @@ export default {
       code,
       cost_price,
       supplier,
+      category,
     } = req.body;
     try {
       let rawMaterial = await RawMaterial.findOne({
@@ -82,13 +105,22 @@ export default {
         code,
         cost_price,
         supplier_id: supplier,
+        category_id: category,
       });
       await rawMaterial.reload({
-        include: {
-          model: Supplier,
-          as: 'supplier',
-          attributes: ['id', 'name'],
-        },
+        attributes: { exclude: ['category_id', 'supplier_id', 'updatedAt'] },
+        include: [
+          {
+            model: Supplier,
+            as: 'supplier',
+            attributes: ['name', 'id'],
+          },
+          {
+            model: Category,
+            as: 'category',
+            attributes: ['name', 'id'],
+          },
+        ],
       });
       return sendSuccessResponse(
         res,
@@ -169,6 +201,8 @@ export default {
         type,
         code,
         cost_price,
+        supplier,
+        category,
       } = req.body;
       const rawMaterial = await RawMaterial.findByPk(id);
       if (rawMaterial) {
@@ -180,6 +214,8 @@ export default {
           type,
           code,
           cost_price,
+          supplier_id: supplier,
+          category_id: category,
           updatedAt: new Date().toISOString(),
         });
         await rawMaterial.save();

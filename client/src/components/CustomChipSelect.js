@@ -26,7 +26,7 @@ export default function CustomChipSelect({
   error = ''
 }) {
   return (
-    <Stack spacing={1}>
+    <Stack sx={{ marginTop: 1.5 }}>
       <InputLabel htmlFor={`${name}_label`} disabled={disabled}>
         {label}
       </InputLabel>
@@ -48,6 +48,7 @@ export default function CustomChipSelect({
           ) : null
         }
         inputProps={inputProps}
+        SelectDisplayProps={{ style: { paddingBottom: 3, paddingTop: 3 } }}
         labelId={`${name}_label`}
         renderValue={
           multiple

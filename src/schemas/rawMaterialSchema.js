@@ -9,6 +9,7 @@ const createRawMaterialSchema = Joi.object({
   cost_price: Joi.number().required(),
   re_order_level: Joi.number().required(),
   supplier: Joi.number().required(),
+  category: Joi.number().required(),
 });
 
 export { createRawMaterialSchema };
