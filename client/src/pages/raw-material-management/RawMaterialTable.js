@@ -106,7 +106,13 @@ export default function RawMaterialTable({ updateHandler }) {
 
   return (
     <div style={{ width: '100%' }}>
-      <CustomGrid withRefresh={refresh} loading={loading} rows={rawMaterials} columns={columns(updateHandler, deleteHandler)} />
+      <CustomGrid
+        resource="material"
+        withRefresh={refresh}
+        loading={loading}
+        rows={rawMaterials}
+        columns={columns(updateHandler, deleteHandler)}
+      />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import CustomChipSelect from 'components/CustomChipSelect';
+import CustomSelect from 'components/CustomSelect';
 import useStoreLocationFetch from 'hooks/useStoreLocationFetch';
 import { useSelector } from 'react-redux';
 import { locationIsLoadingSelector, locationListSelector } from 'store/slices/location/locationSelector';
@@ -9,7 +9,7 @@ export default function StoreLocationSelectorInput({ value, onChange, onBlur, er
 
   const { refresh } = useStoreLocationFetch();
   return (
-    <CustomChipSelect
+    <CustomSelect
       fullWidth
       multiple={multiple}
       getLabelFromOptions

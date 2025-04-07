@@ -80,8 +80,8 @@ export default function UnitsTable({ handleUpdate }) {
         withRefresh={refresh}
         loading={unitsIsLoading}
         rows={units}
-        hideFooterPagination
-        hideFooter
+        pagination={false}
+        resource="unit_of_measure"
         columns={columns(
           hasPermission(PERMISSIONS.PERMISSION_UPDATE_BRAND) ? handleUpdate : undefined,
           hasPermission(PERMISSIONS.PERMISSION_DELETE_BRAND) ? handleDelete : undefined

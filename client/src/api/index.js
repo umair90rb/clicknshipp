@@ -25,3 +25,4 @@ export { rawMaterialService } from './rawMaterialService';
 export { billOfMaterialService } from './billOfMaterialService';
 export { salesOrderService } from './salesOrderService';
 export { batchService } from './batchService';
+export { notificationService } from './notificationService';

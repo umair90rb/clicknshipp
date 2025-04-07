@@ -29,7 +29,7 @@ module.exports = {
   },
   production: {
     use_env_variable: 'DATABASE_URL',
-    logging: false,
+    logging: true,
     dialect: 'postgres',
     seederStorage: 'sequelize',
     timezone: '+05:00',

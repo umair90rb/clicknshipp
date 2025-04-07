@@ -38,6 +38,17 @@ const columns = [
     }
   },
   {
+    field: 'duplicated',
+    headerName: 'Orders Duplicated',
+    flex: 0.5,
+    valueGetter: (params) => {
+      if (params.row.id === 'TOTAL') {
+        return params.row.totalDuplicatedOrders;
+      }
+      return params.value;
+    }
+  },
+  {
     field: 'confirmed',
     headerName: 'Orders Confirmed',
     flex: 0.5,
@@ -48,7 +59,17 @@ const columns = [
       return params.value;
     }
   },
-
+  {
+    field: 'order_confirmed_cod',
+    headerName: 'Confirmed Orders COD',
+    flex: 0.5,
+    valueGetter: (params) => {
+      if (params.row.id === 'TOTAL') {
+        return params.row.totalConfirmedOrdersCOD;
+      }
+      return params.value;
+    }
+  },
   {
     field: 'unit_generated',
     headerName: 'Units Generated',
@@ -67,6 +88,17 @@ const columns = [
     valueGetter: (params) => {
       if (params.row.id === 'TOTAL') {
         return params.row.totalUnitConfirmed;
+      }
+      return params.value;
+    }
+  },
+  {
+    field: 'unit_duplicated',
+    headerName: 'Units Duplicated',
+    flex: 0.5,
+    valueGetter: (params) => {
+      if (params.row.id === 'TOTAL') {
+        return params.row.totalUnitDuplicated;
       }
       return params.value;
     }

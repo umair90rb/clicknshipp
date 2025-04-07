@@ -1,6 +1,6 @@
-import { FormHelperText, FormControl, FormLabel, TextField } from '@mui/material';
+import { FormControl, FormLabel, TextField } from '@mui/material';
 import Autocomplete, { autocompleteClasses } from '@mui/material/Autocomplete';
-import { ErrorMessage } from 'formik';
+import FormHelperTextComponent from './FormHelperTextComponent';
 
 export default function CustomAutocomplete({
   label = '',
@@ -8,10 +8,11 @@ export default function CustomAutocomplete({
   options = [],
   value = null,
   onChange = (e, option) => {},
-  error = false,
+  error = '',
   getOptionLabel = undefined,
   isOptionEqualToValue = undefined,
-  validate = ''
+  loading = false,
+  size = 'small'
 }) {
   return (
     <FormControl fullWidth margin="normal">
@@ -34,7 +35,7 @@ export default function CustomAutocomplete({
           }
         }}
         options={options}
-        error={error}
+        error={Boolean(error)}
         getOptionLabel={getOptionLabel}
         value={value}
         isOptionEqualToValue={isOptionEqualToValue}
@@ -47,7 +48,7 @@ export default function CustomAutocomplete({
             autoFocus
             fullWidth
             id={params.id}
-            size="small"
+            size={size}
             inputProps={{
               ...params.inputProps,
               autoComplete: 'new-password', // disable autocomplete and autofill not worked
@@ -59,16 +60,7 @@ export default function CustomAutocomplete({
           />
         )}
       />
-      {validate && (
-        <ErrorMessage
-          name={validate}
-          render={(msg) => (
-            <FormHelperText sx={{ m: 0 }} error={error} id={`helper-text-${name}`}>
-              {msg}
-            </FormHelperText>
-          )}
-        />
-      )}
+      <FormHelperTextComponent error={error} id={`auto-select-helper-text-${name}`} loading={loading} />
     </FormControl>
   );
 }

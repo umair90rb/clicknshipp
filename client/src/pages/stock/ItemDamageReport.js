@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import Autocomplete, { autocompleteClasses } from '@mui/material/Autocomplete';
 import { formatDateTime, getEndOfDay, getStartOfDay } from 'utils/format-date';
 import CustomDialog from 'components/CustomDialog';
@@ -9,16 +8,16 @@ import { Box, Grid, FormControl, FormLabel, Select, MenuItem, TextField, Typogra
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { getIdAndType, getItemsAndRaw } from './util';
-import { locationFetchStatusSelector, locationListSelector } from 'store/slices/location/locationSelector';
-import fetchStatus from 'constants/fetchStatuses';
-import { itemFetchStatusSelector, itemItemsSelector } from 'store/slices/item/itemSelector';
-import { rawMaterialFetchStatusSelector, rawMaterialListSelector } from 'store/slices/rawMaterial/RawMaterialSelector';
+import { locationListSelector } from 'store/slices/location/locationSelector';
+import { itemItemsSelector } from 'store/slices/item/itemSelector';
+import { rawMaterialListSelector } from 'store/slices/rawMaterial/RawMaterialSelector';
 import CustomButton from 'components/CustomButton';
 import { fetchItemDamageReport } from 'store/slices/stock/fetchStock';
 import CustomRadioGroup from 'components/CustomRadioGroup';
 import useRawMaterialsFetch from 'hooks/useRawMaterialsFetch';
 import useItemsFetch from 'hooks/useItemsFetch';
 import useStoreLocationFetch from 'hooks/useStoreLocationFetch';
+import CustomGrid from 'components/CustomGrid';
 
 const columns = [
   {
@@ -248,11 +247,6 @@ export default function ItemDamageReport({ item, visible, onClose }) {
             <CustomButton
               text="Get Report"
               onClick={() => {
-                // itemDamageReportForm.validateForm();
-                // const errors = Object.values(itemDamageReportForm.errors);
-                // if (errors.length) {
-                //   alert(errors.join('\n'));
-                // }
                 itemDamageReportForm.handleSubmit();
               }}
               disabled={itemDamageReportForm.isSubmitting}
@@ -277,15 +271,14 @@ export default function ItemDamageReport({ item, visible, onClose }) {
         </Grid>
       )}
 
-      <DataGrid
-        autoHeight
+      <CustomGrid
         getRowHeight={() => 'auto'}
-        hideFooterPagination={true}
+        toolbar={false}
         loading={itemDamageReportForm.isSubmitting}
-        hidePagination={true}
+        pagination={false}
         rows={report?.rows}
         columns={columns}
-        slots={{ toolbar: GridToolbar }}
+        showQuickFilter={false}
       />
     </CustomDialog>
   );

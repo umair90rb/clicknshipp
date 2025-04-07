@@ -101,7 +101,7 @@ export default function SalesOrderTable() {
 
   return (
     <div style={{ width: '100%', height: '80vh' }}>
-      <CustomGrid loading={salesOrderIsLoading} rows={salesOrderList} columns={columns(handleView)} />
+      <CustomGrid resource="sales_order" loading={salesOrderIsLoading} rows={salesOrderList} columns={columns(handleView)} />
       <ViewSalesOrderModal />
     </div>
   );

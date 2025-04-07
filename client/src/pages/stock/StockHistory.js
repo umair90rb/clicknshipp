@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { fetchStockHistory } from 'store/slices/stock/fetchStock';
 import { formatDateTime, parseTimestampToDate } from 'utils/format-date';
 import CustomDialog from 'components/CustomDialog';
 import { getIdAndType } from './util';
+import CustomGrid from 'components/CustomGrid';
 
 const columns = [
   {
@@ -72,14 +72,14 @@ export default function ItemStockHistory({ item, visible, onClose }) {
 
   return (
     <CustomDialog printable visible={visible} onClose={onClose} maxWidth="lg" dividers={false} title="Stock History" enableBackdrop>
-      <DataGrid
-        autoHeight
+      <CustomGrid
+        toolbar={false}
         getRowHeight={() => 'auto'}
-        hideFooterPagination
+        pagination={false}
+        showQuickFilter={false}
         loading={history.loading}
         rows={history?.rows}
         columns={columns}
-        slots={{ toolbar: GridToolbar }}
       />
     </CustomDialog>
   );

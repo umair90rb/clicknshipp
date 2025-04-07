@@ -27,6 +27,7 @@ import unitOfMeasure from './slices/unitOfMeasure/unitOfMeasureSlice';
 import rawMaterial from './slices/rawMaterial/rawMaterialSlice';
 import billOfMaterial from './slices/billOfMaterial/billOfMaterialSlice';
 import salesOrder from './slices/salesOrder/salesOrderSlice';
+import notification from './slices/notification/notificationSlice';
 
 const reducers = combineReducers(
   {
@@ -56,7 +57,8 @@ const reducers = combineReducers(
     menu,
     util,
     billOfMaterial,
-    salesOrder
+    salesOrder,
+    notification
   },
   composeWithDevTools()
 );

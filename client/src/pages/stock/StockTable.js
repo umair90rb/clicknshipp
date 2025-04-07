@@ -143,6 +143,7 @@ export default function StockTable({ showDamageReport, setShowDamageReport }) {
       <CustomGrid
         withRefresh={fetchStock}
         allowExport={hasPermission(PERMISSIONS.PERMISSION_EXPORT_STOCK)}
+        resource="stock"
         customActions={gridCustomActions}
         loading={stockIsLoading}
         rows={stock}

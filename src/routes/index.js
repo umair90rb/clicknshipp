@@ -29,6 +29,7 @@ import uom from './unitOfMeasure';
 import rawMaterial from './rawMaterial';
 import bom from './billOfMaterial';
 import salesOrder from './salesOrder';
+import notification from './notification';
 
 const rootDir = path.dirname(process.argv[1]);
 
@@ -61,6 +62,7 @@ export default (app) => {
   app.use('/api/v1/customer', customer);
   app.use('/api/v1/role', role);
   app.use('/api/v1/city', city);
+  app.use('/api/v1/notification', notification);
   app.use('/api/v1/permission', permission);
   app.use('/api/v1/order', order);
   //[baseURL]/api/v1/order/shopify

@@ -10,6 +10,7 @@ import GridCustomToolbar from 'components/GridCustomToolbar';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 import useAccess from 'hooks/useAccess';
 import useItemsFetch from 'hooks/useItemsFetch';
+import CustomGrid from 'components/CustomGrid';
 const columns = (handleEditAction, handleDeleteAction) => [
   {
     field: 'id',
@@ -100,20 +101,13 @@ export default function ItemTable({ updateItemHandler }) {
 
   return (
     <div style={{ width: '100%' }}>
-      <DataGrid
-        slots={{ toolbar: GridCustomToolbar }}
-        slotProps={{
-          toolbar: {
-            withRefresh: refresh,
-            allowExport: itemExportPermission,
-            showQuickFilter: true
-          }
-        }}
+      <CustomGrid
+        allowExport={itemExportPermission}
+        resource="item"
+        withRefresh={refresh}
         loading={itemIsLoading}
-        pageSizeOptions={[25, 50, 75, 100]}
         rows={items}
         columns={columns(updateItemHandler, deleteItemHandler)}
-        onPaginationModelChange={(model) => console.log(model, 'items pagination model')}
       />
     </div>
   );

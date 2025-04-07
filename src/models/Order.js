@@ -1,40 +1,40 @@
-"use strict";
-import { Model } from "sequelize";
+'use strict';
+import { Model } from 'sequelize';
 module.exports = (sequelize, DataTypes) => {
   class Order extends Model {
     static associate(models) {
       Order.belongsTo(models.Customer, {
-        as: "customer",
-        foreignKey: "customer_id",
+        as: 'customer',
+        foreignKey: 'customer_id',
       });
       Order.belongsTo(models.Chanel, {
-        as: "chanel",
-        foreignKey: "chanel_id",
+        as: 'chanel',
+        foreignKey: 'chanel_id',
       });
       Order.belongsTo(models.DeliveryServiceAccounts, {
-        as: "courier",
-        foreignKey: "delivery_account_id",
+        as: 'courier',
+        foreignKey: 'delivery_account_id',
       });
       Order.belongsTo(models.Brand, {
-        as: "brand",
-        foreignKey: "brand_id",
+        as: 'brand',
+        foreignKey: 'brand_id',
       });
-      Order.hasOne(models.Address, { as: "address", foreignKey: "order_id" });
-      Order.hasOne(models.Delivery, { as: "delivery", foreignKey: "order_id" });
-      Order.hasMany(models.OrderItem, { as: "items", foreignKey: "order_id" });
+      Order.hasOne(models.Address, { as: 'address', foreignKey: 'order_id' });
+      Order.hasOne(models.Delivery, { as: 'delivery', foreignKey: 'order_id' });
+      Order.hasMany(models.OrderItem, { as: 'items', foreignKey: 'order_id' });
       Order.hasMany(models.OrderHistory, {
-        as: "history",
-        foreignKey: "order_id",
+        as: 'history',
+        foreignKey: 'order_id',
       });
       Order.hasMany(models.Payments, {
-        as: "payments",
-        foreignKey: "order_id",
+        as: 'payments',
+        foreignKey: 'order_id',
       });
       Order.belongsTo(models.User, {
-        foreignKey: "user_id",
-        as: "user",
-        onDelete: "NO ACTION",
-        onUpdate: "NO ACTION",
+        foreignKey: 'user_id',
+        as: 'user',
+        onDelete: 'NO ACTION',
+        onUpdate: 'NO ACTION',
       });
     }
   }
@@ -74,7 +74,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       status: {
         type: DataTypes.STRING,
-        defaultValue: "Received",
+        defaultValue: 'Received',
       },
       cancel_reason: {
         type: DataTypes.STRING,
@@ -96,29 +96,29 @@ module.exports = (sequelize, DataTypes) => {
       },
       createdAt: {
         type: DataTypes.DATE,
-        field: "created_at",
+        field: 'created_at',
       },
-      updatedAt: { type: DataTypes.DATE, field: "updated_at" },
+      updatedAt: { type: DataTypes.DATE, field: 'updated_at' },
       receivedAt: {
         type: DataTypes.DATE,
         allowNull: true,
         defaultValue: DataTypes.NOW,
-        field: "received_at",
+        field: 'received_at',
       },
       assignedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: "assigned_at",
+        field: 'assigned_at',
       },
     },
     {
       paranoid: true,
       sequelize,
-      modelName: "Order",
-      tableName: "Orders",
+      modelName: 'Order',
+      tableName: 'Orders',
       timestamps: true,
       underscored: true,
-      deletedAt: "deleted_at",
+      deletedAt: 'deleted_at',
     }
   );
   return Order;

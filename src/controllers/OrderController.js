@@ -63,11 +63,8 @@ export default {
       let query = {
         where: {
           user_id: req.user.id,
-          assigned_at: {
-            [Op.and]: [
-              { [Op.gte]: getStartOfDay() },
-              { [Op.lte]: getEndOfDay() },
-            ],
+          assignedAt: {
+            [Op.between]: [getStartOfDay(), getEndOfDay()],
           },
         },
         include: [
@@ -109,7 +106,6 @@ export default {
             model: Address,
             as: 'address',
             attributes: ['id', 'name', 'phone', 'city', 'address1'],
-            required: true,
           },
         ],
         attributes: {
@@ -139,7 +135,7 @@ export default {
       }
       if (permissions.includes(PERMISSIONS.PERMISSION_VIEW_ALL_ORDERS)) {
         delete query.where.user_id;
-        delete query.where.assigned_at;
+        delete query.where.assignedAt;
       }
 
       if (filters.length) {
@@ -183,16 +179,20 @@ export default {
             value[0] === 'No Pick'
           ) {
             delete query.where.user_id;
-            delete query.where.assigned_at;
+            delete query.where.assignedAt;
           }
         }
         const _query = { ...query, where: { ...query.where, ..._filters } };
         query = _query;
       }
-      const count = await Order.count(query);
+      // const count = await Order.count(query);
+      Object.entries(query.where).forEach((e) => {
+        console.log(e);
+      });
+      console.log(JSON.stringify(query, null, 2));
       const rows = await Order.findAll(query);
       return sendSuccessResponse(res, 200, {
-        orders: { rows, count, ...req.body },
+        orders: { rows, count: rows.length, ...req.body },
       });
     } catch (e) {
       logger.error(e);

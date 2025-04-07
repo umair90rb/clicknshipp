@@ -2,13 +2,14 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
+import { GridActionsCellItem } from '@mui/x-data-grid';
 import { fetchAllSupplier, fetchDeleteSupplier } from 'store/slices/supplier/fetchSupplier';
 import { supplierIsLoadingSelector, supplierSuppliersSelector } from 'store/slices/supplier/supplierSelector';
 import { deleteSupplier } from 'store/slices/supplier/supplierSlice';
 import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
-import GridCustomToolbar from 'components/GridCustomToolbar';
+import CustomGrid from 'components/CustomGrid';
+
 const columns = (handleEditAction, handleDeleteAction) => [
   {
     field: 'id',
@@ -96,17 +97,11 @@ export default function SupplierTable({ updateSupplierHandler }) {
 
   return (
     <div style={{ width: '100%' }}>
-      <DataGrid
-        slots={{ toolbar: GridCustomToolbar }}
-        slotProps={{
-          toolbar: {
-            withRefresh: fetchSupplier,
-            allowExport: supplierExportPermission,
-            showQuickFilter: true
-          }
-        }}
+      <CustomGrid
+        resource="suppliers"
+        withRefresh={fetchSupplier}
+        allowExport={supplierExportPermission}
         loading={supplierIsLoading}
-        pageSizeOptions={[25, 50, 75, 100]}
         rows={suppliers}
         columns={columns(
           hasPermission(PERMISSIONS.PERMISSION_UPDATE_SUPPLIER) ? updateSupplierHandler : undefined,

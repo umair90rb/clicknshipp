@@ -27,6 +27,8 @@ export const PERMISSIONS = {
   PERMISSION_DAY_START: 'day-start',
   PERMISSION_EXPORT_ORDERS: 'export-orders',
 
+  PERMISSION_RECEIVE_EXPORT_NOTIFICATIONS: 'receive-export-notifications',
+
   PERMISSION_VIEW_ITEMS: 'view-items',
   PERMISSION_CREATE_ITEM: 'create-item',
   PERMISSION_UPDATE_ITEM: 'update-item',

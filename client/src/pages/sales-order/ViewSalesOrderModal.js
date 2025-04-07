@@ -8,6 +8,7 @@ import { fetchSalesOrder } from 'store/slices/salesOrder/fetchSalesOrder';
 import { useSelector } from '../../../node_modules/react-redux/es/exports';
 import { salesOrderCreateViewIdSelector, salesOrderCreateViewModalVisibleSelector } from 'store/slices/salesOrder/salesOrderSelector';
 import { setSalesOrderViewId, setSalesOrderViewModalVisible } from 'store/slices/salesOrder/salesOrderSlice';
+import CustomGrid from 'components/CustomGrid';
 
 const materialColumns = [
   {
@@ -80,10 +81,11 @@ export default function ViewSalesOrderModal() {
       )}
 
       {!fetchSalesOrderState.loading && (
-        <DataGrid
-          autoHeight
+        <CustomGrid
           disableRowSelectionOnClick
-          hideFooter
+          pagination={false}
+          toolbar={false}
+          showQuickFilter={false}
           sx={{
             '& .MuiDataGrid-columnHeaders': {
               fontSize: '16px',

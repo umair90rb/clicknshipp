@@ -94,3 +94,5 @@ npx sequelize-cli migration:generate --name update-name-product-id-and-unit-of-m
 
 npx sequelize-cli migration:generate --name create-metafield-table
 npx sequelize-cli migration:generate --name add-unique-index-to-stocklevels
+
+npx sequelize-cli migration:generate --name create-notifications-table

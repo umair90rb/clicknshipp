@@ -34,7 +34,7 @@ class ReportingService {
 
   getAgentReport(startPeriod, endPeriod, reportBrand, reportChanel) {
     let where = {
-      assigned_at: { [Op.gte]: startPeriod, [Op.lte]: endPeriod },
+      assigned_at: { [Op.between]: [startPeriod, endPeriod] },
       user_id: { [Op.ne]: null },
     };
     if (reportBrand && reportBrand.length) {
@@ -108,7 +108,7 @@ class ReportingService {
         {
           model: User,
           as: 'user',
-          attributes: ['id', 'name'],
+          attributes: ['name'],
         },
       ],
       where,
@@ -523,6 +523,15 @@ class ReportingService {
           fn(
             'COUNT',
             literal(
+              `DISTINCT CASE WHEN "Order"."status" IN ${DUPLICATE} THEN "Order"."id" ELSE NULL END`
+            )
+          ),
+          'duplicated',
+        ],
+        [
+          fn(
+            'COUNT',
+            literal(
               'DISTINCT CASE WHEN "Order"."status" = \'No Pick\' THEN "Order"."id" ELSE NULL END'
             )
           ),
@@ -554,6 +563,24 @@ class ReportingService {
             )
           ),
           'unit_confirmed',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              `CASE WHEN "Order"."status" IN ${DUPLICATE} THEN "items"."quantity" ELSE 0 END`
+            )
+          ),
+          'unit_duplicated',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(
+              `CASE WHEN "Order"."status" IN ${CONFIRMED} THEN "Order"."total_price" ELSE 0 END`
+            )
+          ),
+          'order_confirmed_cod',
         ],
       ],
       include: [

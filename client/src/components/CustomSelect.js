@@ -1,5 +1,10 @@
-import { InputLabel, Select, FormControl, MenuItem } from '@mui/material';
+import Select from '@mui/material/Select';
+import FormControl from '@mui/material/FormControl';
+import MenuItem from '@mui/material/MenuItem';
+import FormLabel from '@mui/material/FormLabel';
 import FormHelperTextComponent from './FormHelperTextComponent';
+import InputAdornment from '@mui/material/InputAdornment';
+import CustomIconButton from './CustomIconButton';
 
 export default function CustomSelect({
   label = '',
@@ -10,22 +15,29 @@ export default function CustomSelect({
   options = [],
   multiple = false,
   withAllOption = false,
+  withRefresh = undefined,
   loading = false,
   error = ''
 }) {
   return (
     <FormControl fullWidth size="small">
-      <InputLabel id={`${name}_label`}>{label}</InputLabel>
+      <FormLabel id={`${name}_label`}>{label}</FormLabel>
       <Select
         error={Boolean(error)}
         multiple={multiple}
         labelId={`${label}_label`}
         id={name}
         name={name}
-        label={label}
         value={value}
         onChange={onChange}
         onBlur={onBlur}
+        endAdornment={
+          withRefresh ? (
+            <InputAdornment sx={{ marginRight: 2 }}>
+              <CustomIconButton onClick={withRefresh} />
+            </InputAdornment>
+          ) : null
+        }
       >
         {[
           ...(withAllOption

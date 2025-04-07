@@ -34,25 +34,15 @@ import { formatDateTime } from 'utils/format-date';
 import { useGridApiRef } from '../../../node_modules/@mui/x-data-grid/index';
 import GridEditTextarea from './GridEditTextarea';
 import ORDER_STATUSES, { ORDER_TAGS } from 'constants/orderStatuses';
-import { cityCitiesSelector, cityFetchStatusSelector } from 'store/slices/city/citySelector';
-import fetchStatus from 'constants/fetchStatuses';
-import { fetchAllCities } from 'store/slices/city/fetchCity';
+import { cityCitiesSelector } from 'store/slices/city/citySelector';
 import GridSearchSelect from './GridSearchSelect';
 import GridAddItemModal from './GridAddItemModal/index';
 import { GridDropdownFilter } from './GridDropdownFilter';
-import { fetchDeliveryServiceAccounts } from 'store/slices/deliveryServicesAccounts/fetchDeliveryServicesAccounts';
-import {
-  deliveryServiceAccountsFetchStatusSelector,
-  deliveryServiceAccountsListSelector
-} from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSelector';
+
+import { deliveryServiceAccountsListSelector } from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSelector';
 import useAccess from 'hooks/useAccess';
 import PaymentsModal from './PaymentsModal';
-import { chanelFetchStatusSelector } from 'store/slices/chanel/chanelSelector';
-import { fetchAllChanel } from 'store/slices/chanel/fetchChanel';
-import { GridDateFilter } from './GridDateFilter';
 import GridDeliveryStatus from './GridDeliveryStatus';
-import { itemFetchStatusSelector, itemItemsSelector } from 'store/slices/item/itemSelector';
-import { fetchAllItem } from 'store/slices/item/fetchItem';
 import OrderBulkBookModal from './OrderBulkBookModal';
 import GridCustomToolbar from 'components/GridCustomToolbar';
 import useFilteredUsersFetch from 'hooks/useFilteredUsersFetch';
@@ -61,6 +51,7 @@ import useItemsFetch from 'hooks/useItemsFetch';
 import useDeliveryServicesAccountFetch from 'hooks/useDeliveryServicesAccountFetch';
 import useChannelsFetch from 'hooks/useChannelsFetch';
 import useOrdersFetch from 'hooks/useOrdersFetch';
+import GridButton from 'components/GridButton';
 const columns = (
   apiRef,
   rowModesModel,
@@ -516,25 +507,15 @@ const OrderTable = memo(() => {
   const gridToolbarActions = useMemo(() => {
     return (
       <>
-        {filters.length > 0 && (
-          <Button onClick={handleClearFilters} size="small" startIcon={<FilterListOffIcon />}>
-            Clear Filters
-          </Button>
-        )}
+        {filters.length > 0 && <GridButton text="Clear Filters" onClick={handleClearFilters} Icon={FilterListOffIcon} />}
         {hasPermission(PERMISSIONS.PERMISSION_DAY_START) && rowSelectionModel.length > 0 && (
-          <Button onClick={displayShowAssignSelectedModal} size="small" startIcon={<AssignmentIndIcon />}>
-            Assign
-          </Button>
+          <GridButton text="Assign" onClick={displayShowAssignSelectedModal} Icon={AssignmentIndIcon} />
         )}
         {hasPermission(PERMISSIONS.PERMISSION_BULK_ORDER_BOOKING) && rowSelectionModel.length > 0 && (
-          <Button onClick={showOrderBulkBookModal} size="small" startIcon={<LocalShippingOutlinedIcon />}>
-            Book
-          </Button>
+          <GridButton onClick={showOrderBulkBookModal} Icon={LocalShippingOutlinedIcon} text="Book" />
         )}
         {hasPermission(PERMISSIONS.PERMISSION_BULK_ORDER_DELETE) && rowSelectionModel.length > 0 && (
-          <Button disabled={bulkDeleteLoading} onClick={handleBulkDelete} size="small" startIcon={<DeleteSweepIcon />}>
-            Delete All
-          </Button>
+          <GridButton disabled={bulkDeleteLoading} onClick={handleBulkDelete} text="Delete All" Icon={DeleteSweepIcon} />
         )}
         <GridDropdownFilter
           multiple
@@ -635,7 +616,8 @@ const OrderTable = memo(() => {
             withRefresh: refresh,
             allowExport: allowOrderExports,
             customActions: gridToolbarActions,
-            showQuickFilter: true
+            showQuickFilter: true,
+            resource: 'order'
           }
         }}
         initialState={{

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { TextareaAutosize, IconButton, FormHelperText, Grid, TextField, FormControl, FormLabel, Select, MenuItem } from '@mui/material';
 import Autocomplete, { autocompleteClasses } from '@mui/material/Autocomplete';
 
@@ -7,9 +7,7 @@ import { Formik, FieldArray, ErrorMessage } from 'formik';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllItem } from 'store/slices/item/fetchItem';
-import { itemFetchStatusSelector, itemItemsSelector } from 'store/slices/item/itemSelector';
-import fetchStatus from 'constants/fetchStatuses';
+import { itemItemsSelector } from 'store/slices/item/itemSelector';
 import { toSentence } from 'utils/string-utils';
 import CustomDialog from 'components/CustomDialog';
 import { fetchCreateSalesOrder } from 'store/slices/salesOrder/fetchSalesOrder';
@@ -18,6 +16,11 @@ import { setSalesOrderCreateModalVisible } from 'store/slices/salesOrder/salesOr
 import useItemsFetch from 'hooks/useItemsFetch';
 import StoreLocationSelectorInput from 'ui/StoreLocationSelectorInput';
 import useResetForm from 'hooks/useResetForm';
+import CustomInput from 'components/CustomInput';
+import CustomTextarea from 'components/CustomTextarea';
+import CustomIconButton from 'components/CustomIconButton';
+import CustomAutocomplete from 'components/CustomAutocomplete';
+import CustomSelect from 'components/CustomSelect';
 
 export default function AddSalesOrderModal() {
   const dispatch = useDispatch();
@@ -49,19 +52,23 @@ export default function AddSalesOrderModal() {
           {
             item_id: null,
             quantity: 0,
-            price: 0
+            price: 1
           }
         ]
       }}
       validationSchema={Yup.object().shape({
         location_id: Yup.number().required('Please select store location'),
         name: Yup.string().required(),
-        comment: Yup.string(),
+        for: Yup.string().required('Please select purpose'),
+        comment: Yup.string().when('for', {
+          is: (value) => value === 'other',
+          then: Yup.string().required('Comment is required when purpose is other')
+        }),
         items: Yup.array().of(
           Yup.object().shape({
-            item_id: Yup.number().required(),
-            quantity: Yup.number().min(1).required('Please enter stock received quantity'),
-            price: Yup.number()
+            item_id: Yup.number().required('Item is required'),
+            quantity: Yup.number().min(1, 'Quantity must be at least 1').required('Please enter quantity'),
+            price: Yup.number().min(1, 'Price must be at least 1').required('Price is required')
           })
         )
       })}
@@ -83,9 +90,9 @@ export default function AddSalesOrderModal() {
             }
           ]}
         >
-          <Grid container spacing={3}>
+          <Grid container>
             <Grid container columnSpacing={1} alignItems="center" justifyContent="center" item sx={12} md={12} lg={12}>
-              <Grid item sx={5} md={5} lg={5}>
+              <Grid item sx={4} md={4} lg={4}>
                 <StoreLocationSelectorInput
                   onBlur={salesOrder.handleBlur}
                   onChange={salesOrder.handleChange}
@@ -93,65 +100,40 @@ export default function AddSalesOrderModal() {
                   value={salesOrder.values.location_id}
                 />
               </Grid>
-              <Grid item sx={7} md={7} lg={7}>
-                <FormControl fullWidth margin="normal">
-                  <FormLabel id="name">Name</FormLabel>
-                  <TextField
-                    size="small"
-                    labelId="name"
-                    id="name_select"
-                    value={salesOrder.values.name}
-                    name="name"
-                    onChange={salesOrder.handleChange}
-                    error={
-                      salesOrder.touched.name &&
-                      salesOrder.touched.name &&
-                      salesOrder.touched.name &&
-                      !!salesOrder.errors.name &&
-                      !!salesOrder.errors.name &&
-                      !!salesOrder.errors.name
-                    }
-                  />
-                  <ErrorMessage
-                    name="name"
-                    render={(msg) => (
-                      <FormHelperText sx={{ m: 0 }} error id="helper-text-name">
-                        {msg}
-                      </FormHelperText>
-                    )}
-                  />
-                </FormControl>
+              <Grid item sx={4} md={4} lg={4}>
+                <CustomInput
+                  error={salesOrder.touched.name && salesOrder.errors.name}
+                  value={salesOrder.values.name}
+                  onChange={salesOrder.handleChange}
+                  onBlur={salesOrder.handleBlur}
+                  name="name"
+                  label="Name"
+                />
+              </Grid>
+              <Grid item sx={4} md={4} lg={4}>
+                <CustomSelect
+                  error={salesOrder.touched.for && salesOrder.errors.for}
+                  value={salesOrder.values.for}
+                  onChange={salesOrder.handleChange}
+                  onBlur={salesOrder.handleBlur}
+                  name="for"
+                  label="Select Stock Issue Purpose"
+                  options={[
+                    { label: 'Today Booking', value: 'today_booking' },
+                    { label: 'Sell to Employee', value: 'sell_to_employee' },
+                    { label: 'Other', value: 'other' }
+                  ]}
+                />
               </Grid>
               <Grid item sx={12} md={12} lg={12}>
-                <FormControl fullWidth margin="normal">
-                  <FormLabel id="comment">Comment</FormLabel>
-                  <TextareaAutosize
-                    maxRows={5}
-                    minRows={3}
-                    size="small"
-                    labelId="comment"
-                    id="comment_select"
-                    value={salesOrder.values.comment}
-                    name="comment"
-                    onChange={salesOrder.handleChange}
-                    error={
-                      salesOrder.touched.comment &&
-                      salesOrder.touched.comment &&
-                      salesOrder.touched.comment &&
-                      !!salesOrder.errors.comment &&
-                      !!salesOrder.errors.comment &&
-                      !!salesOrder.errors.comment
-                    }
-                  />
-                  <ErrorMessage
-                    name="comment"
-                    render={(msg) => (
-                      <FormHelperText sx={{ m: 0 }} error id="helper-text-name">
-                        {msg}
-                      </FormHelperText>
-                    )}
-                  />
-                </FormControl>
+                <CustomTextarea
+                  label="Comment"
+                  value={salesOrder.values.comment}
+                  onBlur={salesOrder.handleBlur}
+                  onChange={salesOrder.handleChange}
+                  error={salesOrder.touched.comment && salesOrder.errors.comment}
+                  name="comment"
+                />
               </Grid>
             </Grid>
             <Grid item sx={12} md={12}>
@@ -164,134 +146,79 @@ export default function AddSalesOrderModal() {
                   salesOrder.values.items.map((item, index) => (
                     <Grid key={index} container spacing={1}>
                       <Grid item xs={6}>
-                        <FormControl fullWidth margin="normal">
-                          <FormLabel id={`items.${index}.item_id`}>Select Item</FormLabel>
-                          <Autocomplete
-                            sx={{
-                              height: '100%',
-                              [`& .${autocompleteClasses.inputRoot}`]: {
-                                padding: '0px 0',
-                                height: '100%',
-                                '& input': {
-                                  padding: '0 0px',
-                                  height: '100%'
-                                }
-                              }
-                            }}
-                            options={items.map((item) => ({
-                              id: item.id,
-                              label: item.name,
-                              price: item.unit_price
-                            }))}
-                            error={
-                              salesOrder.touched.items &&
-                              salesOrder.touched.items[index] &&
-                              salesOrder.touched.items[index].item_id &&
-                              !!salesOrder.errors.items &&
-                              !!salesOrder.errors.items[index] &&
-                              !!salesOrder.errors.items[index].item_id
+                        <CustomAutocomplete
+                          label="Select Item"
+                          options={items.map((item) => ({
+                            id: item.id,
+                            label: item.name,
+                            price: item.unit_price
+                          }))}
+                          error={
+                            salesOrder.touched.items &&
+                            salesOrder.touched.items[index] &&
+                            salesOrder.touched.items[index].item_id &&
+                            !!salesOrder.errors.items &&
+                            !!salesOrder.errors.items[index] &&
+                            !!salesOrder.errors.items[index].item_id
+                          }
+                          value={salesOrder.values.items[index].item_id}
+                          isOptionEqualToValue={(option, value) => option.id === value}
+                          getOptionLabel={(option) => {
+                            if (typeof option === 'number') {
+                              return items.find((item) => item.id === option)?.name;
                             }
-                            // getOptionLabel={(option) => option.label}
-                            value={items.find((item) => item.id === salesOrder.values.items[index].item_id)?.name}
-                            // onChange={salesOrder.handleChange}
-                            isOptionEqualToValue={(option, value) => option.id === value}
-                            onChange={(e, option) => {
+                            return option.label;
+                          }}
+                          onChange={(e, option) => {
+                            if (option !== null && Object.values(option).length > 0) {
                               salesOrder.setFieldValue(`items.${index}.price`, option.price);
                               salesOrder.setFieldValue(`items.${index}.item_id`, option.id);
-                            }}
-                            type="text"
-                            id={`items.${index}.item_id`}
-                            name={`items.${index}.item_id`}
-                            autoHighlight
-                            renderInput={(params) => (
-                              <TextField
-                                autoFocus
-                                fullWidth
-                                id={params.id}
-                                size="small"
-                                inputProps={{
-                                  ...params.inputProps,
-                                  autoComplete: 'new-password' // disable autocomplete and autofill
-                                }}
-                                {...params.InputProps}
-                              />
-                            )}
-                          />
-                          <ErrorMessage
-                            name={`items.${index}.item_id`}
-                            render={(msg) => (
-                              <FormHelperText sx={{ m: 0 }} error id="helper-text-price">
-                                {msg}
-                              </FormHelperText>
-                            )}
-                          />
-                        </FormControl>
-                      </Grid>
-
-                      {/* <Grid item xs={2}>
-                        <FormControl fullWidth margin="normal">
-                          <FormLabel id={`items.${index}.price`}>Price (for 1 item)</FormLabel>
-                          <TextField
-                            error={
-                              salesOrder.touched.items &&
-                              salesOrder.touched.items[index] &&
-                              salesOrder.touched.items[index].price &&
-                              !!salesOrder.errors.items &&
-                              !!salesOrder.errors.items[index] &&
-                              !!salesOrder.errors.items[index].price
                             }
-                            size="small"
-                            value={item.price}
-                            onChange={salesOrder.handleChange}
-                            type="number"
-                            id={`items.${index}.price`}
-                            name={`items.${index}.price`}
-                            variant="outlined"
-                          />
-                          <ErrorMessage
-                            name={`items.${index}.price`}
-                            render={(msg) => (
-                              <FormHelperText sx={{ m: 0 }} error id="helper-text-price">
-                                {msg}
-                              </FormHelperText>
-                            )}
-                          />
-                        </FormControl>
-                      </Grid> */}
+                          }}
+                        />
+                      </Grid>
 
                       <Grid item xs={2}>
-                        <FormControl fullWidth margin="normal">
-                          <FormLabel id={`items.${index}.quantity`}>Quantity</FormLabel>
-                          <TextField
-                            error={
-                              salesOrder.touched.items &&
-                              salesOrder.touched.items[index] &&
-                              salesOrder.touched.items[index].quantity &&
-                              !!salesOrder.errors.items &&
-                              !!salesOrder.errors.items[index] &&
-                              !!salesOrder.errors.items[index].quantity
-                            }
-                            size="small"
-                            value={item.quantity}
-                            onChange={salesOrder.handleChange}
-                            type="number"
-                            id={`items.${index}.quantity`}
-                            name={`items.${index}.quantity`}
-                            variant="outlined"
-                          />
-                          <ErrorMessage
-                            name={`items.${index}.quantity`}
-                            render={(msg) => (
-                              <FormHelperText sx={{ m: 0 }} error id="helper-text-quantity">
-                                {msg}
-                              </FormHelperText>
-                            )}
-                          />
-                        </FormControl>
+                        <CustomInput
+                          label="Price (for 1 item)"
+                          value={item.price}
+                          onChange={salesOrder.handleChange}
+                          onBlur={salesOrder.handleBlur}
+                          name={`items.${index}.price`}
+                          error={
+                            salesOrder.touched.items &&
+                            salesOrder.touched.items[index] &&
+                            salesOrder.touched.items[index].price &&
+                            !!salesOrder.errors.items &&
+                            !!salesOrder.errors.items[index] &&
+                            salesOrder.errors.items[index].price
+                          }
+                          type="number"
+                        />
                       </Grid>
 
-                      <Grid item alignItems="center" justifyContent="center" display="flex" xs={1}>
-                        <IconButton
+                      <Grid item xs={2}>
+                        <CustomInput
+                          label="Quantity"
+                          value={item.quantity}
+                          onChange={salesOrder.handleChange}
+                          onBlur={salesOrder.handleBlur}
+                          name={`items.${index}.quantity`}
+                          error={
+                            salesOrder.touched.items &&
+                            salesOrder.touched.items[index] &&
+                            salesOrder.touched.items[index].quantity &&
+                            !!salesOrder.errors.items &&
+                            !!salesOrder.errors.items[index] &&
+                            salesOrder.errors.items[index].quantity
+                          }
+                          type="number"
+                        />
+                      </Grid>
+
+                      <Grid item xs={2} alignItems="center" justifyContent="space-evenly" display="flex">
+                        <CustomIconButton
+                          Icon={AddOutlinedIcon}
                           onClick={() =>
                             arrayHelper.push({
                               item_id: null,
@@ -299,20 +226,12 @@ export default function AddSalesOrderModal() {
                               price: 0
                             })
                           }
-                          color="primary"
-                          variant="contained"
-                        >
-                          <AddOutlinedIcon />
-                        </IconButton>
-                      </Grid>
-                      <Grid item alignItems="center" justifyContent="center" display="flex" xs={1}>
-                        <IconButton
-                          onClick={() => salesOrder.values.items.length > 1 && arrayHelper.remove(index)}
+                        />
+                        <CustomIconButton
                           color="error"
-                          variant="outlined"
-                        >
-                          <CloseOutlinedIcon />
-                        </IconButton>
+                          Icon={CloseOutlinedIcon}
+                          onClick={() => salesOrder.values.items.length > 1 && arrayHelper.remove(index)}
+                        />
                       </Grid>
                     </Grid>
                   ))

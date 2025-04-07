@@ -92,8 +92,8 @@ export default function LocationTable({ handleUpdate }) {
         withRefresh={refresh}
         loading={locationIsLoading}
         rows={locations}
-        hideFooterPagination
-        hideFooter
+        pagination={false}
+        resource="store_locations"
         columns={columns(
           hasPermission(PERMISSIONS.PERMISSION_UPDATE_BRAND) ? handleUpdate : undefined,
           hasPermission(PERMISSIONS.PERMISSION_DELETE_BRAND) ? handleDelete : undefined

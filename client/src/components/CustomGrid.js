@@ -8,25 +8,32 @@ export default function CustomGrid({
   loading = false,
   withRefresh,
   customActions = [],
+  resource = '',
+  allowExport = false,
   showQuickFilter = true,
+  pagination = true,
+  toolbar = true,
   ...props
 }) {
   return (
     <DataGrid
-      slots={{ toolbar: GridCustomToolbar, noRowsOverlay: CustomNoRowsOverlay }}
+      slots={{ toolbar: toolbar ? GridCustomToolbar : null, noRowsOverlay: CustomNoRowsOverlay }}
       slotProps={{
         toolbar: {
+          allowExport,
           showQuickFilter,
           withRefresh,
-          customActions
+          customActions,
+          resource
         }
       }}
       loading={loading}
       pageSizeOptions={[25, 50, 75, 100]}
       rows={rows}
       columns={columns}
+      hideFooterPagination={!pagination}
+      hideFooter={!pagination}
       {...props}
-      //   sx={{ '--DataGrid-overlayHeight': '300px'}}
     />
   );
 }

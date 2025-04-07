@@ -191,7 +191,7 @@ export default {
       if (Object.keys(where).length) {
         query['where'] = where;
       }
-      console.log(query, 'filtered user query', JSON.stringify(query));
+      // console.log(query, 'filtered user query', JSON.stringify(query));
       const users = await User.scope('clean').findAll(query);
       if (users && users.length) {
         return sendSuccessResponse(

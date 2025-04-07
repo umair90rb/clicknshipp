@@ -1,14 +1,13 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { userIsLoadingSelector, userUsersSelector } from 'store/slices/user/userSelector';
-import { fetchAllUser, fetchDisableUser } from 'store/slices/user/fetchUser';
-import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
+import { fetchDisableUser } from 'store/slices/user/fetchUser';
+import { GridActionsCellItem } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import NoAccountsIcon from '@mui/icons-material/NoAccounts';
 import { authUserSelector } from 'store/slices/auth/authSelector';
 import { setMessage } from 'store/slices/util/utilSlice';
-import { setUserForUpdate, disableUser } from 'store/slices/user/userSlice';
-import { userService } from 'api/index';
+import { disableUser } from 'store/slices/user/userSlice';
 import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
 import useUsersFetch from 'hooks/useUsersFetch';
@@ -120,6 +119,7 @@ export default function UserTable({ updateUser }) {
   return (
     <div style={{ width: '100%' }}>
       <CustomGrid
+        resource="users"
         loading={userIsLoading}
         withRefresh={refresh}
         rows={users}
