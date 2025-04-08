@@ -33,8 +33,17 @@ export default {
   async account(req, res) {},
 
   async create(req, res) {
-    const { name, service, client_id, cost_center, key, username, password } =
-      req.body;
+    const {
+      name,
+      service,
+      client_id,
+      cost_center,
+      key,
+      username,
+      password,
+      dispatch_address,
+      return_address,
+    } = req.body;
     try {
       let account = null;
       if (key) {
@@ -57,6 +66,8 @@ export default {
         cost_center,
         username,
         password,
+        dispatch_address,
+        return_address,
         active: true,
       };
       if (service === 'tcs') {
@@ -114,6 +125,8 @@ export default {
         active,
         username,
         password,
+        dispatch_address,
+        return_address,
       } = req.body;
       const account = await DeliveryServiceAccounts.findByPk(id);
       if (account) {
@@ -125,6 +138,8 @@ export default {
           cost_center: cost_center,
           username: username,
           password: password,
+          dispatch_address,
+          return_address,
           active: active,
           updatedAt: new Date().toISOString(),
         });

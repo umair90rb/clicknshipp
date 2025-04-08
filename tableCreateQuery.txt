@@ -96,3 +96,5 @@ npx sequelize-cli migration:generate --name create-metafield-table
 npx sequelize-cli migration:generate --name add-unique-index-to-stocklevels
 
 npx sequelize-cli migration:generate --name create-notifications-table
+
+npx sequelize-cli migration:generate --name add-addresses-columns-delivery-service-accounts-table

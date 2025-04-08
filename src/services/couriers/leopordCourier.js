@@ -54,7 +54,8 @@ class LeapordCourier extends CourierInterface {
         shipment_name_eng: 'Sukooon Wellness',
         shipment_email: 'umekalsoom011@gmail.com',
         shipment_phone: '03094446319',
-        shipment_address: 'SIE MILLAT ROAD FAISALABAD',
+        shipment_address:
+          deliveryAccount.dispatch_address || 'SIE MILLAT ROAD FAISALABAD',
         consignment_name_eng: `${order.customer.first_name} ${
           order.customer.last_name || ''
         }`,
@@ -74,8 +75,9 @@ class LeapordCourier extends CourierInterface {
           ),
         shipment_type: 'overnight',
         // custom_data: "",
-        return_address: 'SIE MILLAT ROAD FAISALABAD',
-        return_city: 322,
+        return_address:
+          deliveryAccount.return_address || 'SIE MILLAT ROAD FAISALABAD',
+        return_city: deliveryAccount.cost_center,
       };
       response = await this.http.post('bookPacket/format/json', body);
       logger.log('info', 'leopard book parcel api response', {

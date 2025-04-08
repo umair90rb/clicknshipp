@@ -18,6 +18,8 @@ module.exports = (sequelize, DataTypes) => {
       key: DataTypes.STRING,
       client_id: DataTypes.STRING,
       cost_center: DataTypes.STRING,
+      dispatch_address: DataTypes.STRING,
+      return_address: DataTypes.STRING,
       halfKey: {
         type: DataTypes.VIRTUAL,
         get() {

@@ -7,7 +7,7 @@ import DeliveryServiceAccountTable from './DeliveryServiceAccountTable';
 import { useSelector } from 'react-redux';
 import useAccess from 'hooks/useAccess';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
-import CreateUpdateForm from './CreateUpdateForm';
+import CreateUpdateDeliveryServiceAccountModal from './CreateUpdateDeliveryServiceAccountModal';
 import { deliveryServiceAccountsListSelector } from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSelector';
 
 const style = {
@@ -66,16 +66,7 @@ const DeliveryServiceAccountsManagement = () => {
           <DeliveryServiceAccountTable updateAccountHandler={updateAccountHandler} />
         </MainCard>
       </Grid>
-      <Modal
-        open={openModal}
-        onClose={() => setOpenModal(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <CreateUpdateForm account={accountToUpdate} />
-        </Box>
-      </Modal>
+      <CreateUpdateDeliveryServiceAccountModal visible={openModal} onClose={() => setOpenModal(false)} account={accountToUpdate} />
     </>
   );
 };

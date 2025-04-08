@@ -13,7 +13,6 @@ export default function CustomInput({
   error = '',
   loading = false
 }) {
-  console.log(error);
   return (
     <FormControl fullWidth margin="normal">
       {label && <FormLabel id={`${name}_label`}>{label}</FormLabel>}
