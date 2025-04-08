@@ -185,14 +185,14 @@ export default {
         const _query = { ...query, where: { ...query.where, ..._filters } };
         query = _query;
       }
-      // const count = await Order.count(query);
-      Object.entries(query.where).forEach((e) => {
-        console.log(e);
-      });
-      console.log(JSON.stringify(query, null, 2));
+      const count = await Order.count(query);
+      // Object.entries(query.where).forEach((e) => {
+      //   console.log(e);
+      // });
+      // console.log(JSON.stringify(query, null, 2));
       const rows = await Order.findAll(query);
       return sendSuccessResponse(res, 200, {
-        orders: { rows, count: rows.length, ...req.body },
+        orders: { rows, count, ...req.body },
       });
     } catch (e) {
       logger.error(e);
