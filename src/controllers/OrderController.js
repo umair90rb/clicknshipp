@@ -153,6 +153,20 @@ export default {
             };
             continue;
           }
+          if (column === 'city') {
+            const addressIncludeIndex = query.include.findIndex(
+              (inc) => inc.as === 'address'
+            );
+            const addressInclude = query.include[addressIncludeIndex];
+            query.include[addressIncludeIndex] = {
+              ...addressInclude,
+              where: {
+                ...addressInclude.where,
+                city: { [Op.in]: value },
+              },
+            };
+            continue;
+          }
           if (FILTER_COLUMNS[column] in _filters) {
             const previousFilter = _filters[FILTER_COLUMNS[column]];
             delete _filters[FILTER_COLUMNS[column]];
@@ -186,10 +200,6 @@ export default {
         query = _query;
       }
       const count = await Order.count(query);
-      // Object.entries(query.where).forEach((e) => {
-      //   console.log(e);
-      // });
-      // console.log(JSON.stringify(query, null, 2));
       const rows = await Order.findAll(query);
       return sendSuccessResponse(res, 200, {
         orders: { rows, count, ...req.body },
