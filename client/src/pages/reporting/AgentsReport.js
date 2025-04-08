@@ -98,7 +98,7 @@ export default function AgentsReports() {
           );
         }
         return (
-          <Button onClick={() => linkClicked([params.row.user.id], [])} variant="text" size="small">
+          <Button onClick={() => linkClicked([params.row.user_id], [])} variant="text" size="small">
             {params.row.total}
           </Button>
         );
@@ -132,7 +132,7 @@ export default function AgentsReports() {
           );
         }
         return (
-          <Button onClick={() => linkClicked([params.row.user.id], ['Confirmed'])} variant="text" size="small">
+          <Button onClick={() => linkClicked([params.row.user_id], ['Confirmed'])} variant="text" size="small">
             {params.row.confirmed}
           </Button>
         );
@@ -166,7 +166,7 @@ export default function AgentsReports() {
           );
         }
         return (
-          <Button onClick={() => linkClicked([params.row.user.id], ['Assigned'])} variant="text" size="small">
+          <Button onClick={() => linkClicked([params.row.user_id], ['Assigned'])} variant="text" size="small">
             {params.row.assigned}
           </Button>
         );
@@ -200,7 +200,7 @@ export default function AgentsReports() {
           );
         }
         return (
-          <Button onClick={() => linkClicked([params.row.user.id], ['No Pick'])} variant="text" size="small">
+          <Button onClick={() => linkClicked([params.row.user_id], ['No Pick'])} variant="text" size="small">
             {params.row.no_pick}
           </Button>
         );
@@ -234,7 +234,7 @@ export default function AgentsReports() {
           );
         }
         return (
-          <Button onClick={() => linkClicked([params.row.user.id], ['Payment Pending'])} variant="text" size="small">
+          <Button onClick={() => linkClicked([params.row.user_id], ['Payment Pending'])} variant="text" size="small">
             {params.row.payment_pending}
           </Button>
         );
@@ -268,7 +268,7 @@ export default function AgentsReports() {
           );
         }
         return (
-          <Button onClick={() => linkClicked([params.row.user.id], ['Cancel'])} variant="text" size="small">
+          <Button onClick={() => linkClicked([params.row.user_id], ['Cancel'])} variant="text" size="small">
             {params.row.cancel}
           </Button>
         );
