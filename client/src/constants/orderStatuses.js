@@ -7,6 +7,7 @@ const ORDER_STATUSES = [
   'Dispatched',
   'Delivered',
   'Payment Pending',
+  'In Booking Queue',
   'Booking Canceled',
   'Booking Error',
   'Booked',
