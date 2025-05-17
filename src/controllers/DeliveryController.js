@@ -99,7 +99,7 @@ export default {
         }))
       );
       await Order.update(
-        { status: 'Booked', delivery_account_id: deliveryAccountId },
+        { status: 'In Booking Queue', delivery_account_id: deliveryAccountId },
         { where: { id: { [Op.in]: orderIds } } }
       );
       return sendSuccessResponse(

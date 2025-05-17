@@ -1076,6 +1076,7 @@ export default {
                 removeOnFail: true,
               }
             );
+            orderUpdateData.status = 'In Booking Queue';
           }
         }
       }
