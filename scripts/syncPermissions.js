@@ -17,10 +17,11 @@ const client = new Client({
 async function connectToDatabase() {
   try {
     await client.connect();
-    console.log('Connected to the database successfully');
+    console.log('Connected to the database successfully, executing query...');
     await client.query(
       `DELETE FROM "SequelizeData" WHERE name = '20231109085435-add-roles-permissions-super-user.js';`
     );
+    console.log('Query executed successfully');
   } catch (error) {
     console.error('Error connecting to the database:', error);
   } finally {

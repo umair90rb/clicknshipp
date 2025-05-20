@@ -66,12 +66,14 @@ export default function AddItemModal({ visible, onClose, item }) {
 
   return (
     <Formik
+      enableReinitialize
       innerRef={formRef}
       initialValues={{
         name: item?.name || '',
         code: item?.code || '',
         unit_price: item?.unit_price || '',
         cost_price: item?.cost_price || '',
+        incentive: item?.incentive || '',
         //need to add validation for unit of measure required
         unit_of_measure: item?.unit_of_measure || '',
         supplier: item?.supplier?.id || '',
@@ -83,6 +85,7 @@ export default function AddItemModal({ visible, onClose, item }) {
         code: Yup.string().max(255).required('Code is required'),
         unit_price: Yup.number().required('Unit price is required'),
         cost_price: Yup.number().required('Cost price is required'),
+        incentive: Yup.number(),
         supplier: Yup.number().required('Supplier is required'),
         category: Yup.number().required('Category is required'),
         brand: Yup.number().required('Brand is required')
@@ -139,7 +142,6 @@ export default function AddItemModal({ visible, onClose, item }) {
                     onBlur={handleBlur}
                     onChange={handleChange}
                     placeholder="008555678"
-                    inputProps={{}}
                   />
                   {touched.code && errors.code && (
                     <FormHelperText error id="helper-text-code-signup">
@@ -161,7 +163,6 @@ export default function AddItemModal({ visible, onClose, item }) {
                     onBlur={handleBlur}
                     onChange={handleChange}
                     placeholder="60"
-                    inputProps={{}}
                   />
                   {touched.unit_price && errors.unit_price && (
                     <FormHelperText error id="helper-text-unit_price-signup">
@@ -181,14 +182,33 @@ export default function AddItemModal({ visible, onClose, item }) {
                     value={values.cost_price}
                     name="cost_price"
                     onBlur={handleBlur}
-                    onChange={(e) => {
-                      handleChange(e);
-                    }}
-                    placeholder="ABC Inc"
+                    onChange={handleChange}
+                    placeholder="50"
                   />
                   {touched.cost_price && errors.cost_price && (
                     <FormHelperText error id="helper-text-cost_price-signup">
                       {errors.cost_price}
+                    </FormHelperText>
+                  )}
+                </Stack>
+              </Grid>
+              <Grid item xs={6}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="incentive-signup">Incentive</InputLabel>
+                  <OutlinedInput
+                    fullWidth
+                    error={Boolean(touched.incentive && errors.incentive)}
+                    id="incentive-signup"
+                    type="number"
+                    value={values.incentive}
+                    name="incentive"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="10"
+                  />
+                  {touched.incentive && errors.incentive && (
+                    <FormHelperText error id="helper-text-incentive-signup">
+                      {errors.incentive}
                     </FormHelperText>
                   )}
                 </Stack>
@@ -235,7 +255,6 @@ export default function AddItemModal({ visible, onClose, item }) {
                       name="category"
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      inputProps={{}}
                       labelId="category-signup"
                     >
                       {categories.map(({ id, name }, index) => (
@@ -264,7 +283,6 @@ export default function AddItemModal({ visible, onClose, item }) {
                       name="brand"
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      inputProps={{}}
                       labelId="brand-signup"
                     >
                       {brands.map(({ id, name }, index) => (
@@ -293,7 +311,6 @@ export default function AddItemModal({ visible, onClose, item }) {
                       name="supplier"
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      inputProps={{}}
                       labelId="supplier-signup"
                     >
                       {suppliers.map(({ id, name }, index) => (

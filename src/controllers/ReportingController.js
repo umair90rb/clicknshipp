@@ -98,6 +98,23 @@ export default {
             reportChanel
           );
           break;
+        case 'Dispatch Report':
+          report = await reportingService.getDispatchReport(
+            startPeriod,
+            endPeriod,
+            reportBrand,
+            reportChanel
+          );
+          break;
+        case 'Booking Products Value Report':
+          report = await reportingService.getBookingProductsValueReport(
+            startPeriod,
+            endPeriod,
+            reportBrand,
+            reportChanel,
+            reportDeliveryServicesAccounts
+          );
+          break;
       }
 
       return sendSuccessResponse(

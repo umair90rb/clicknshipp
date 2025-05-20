@@ -947,6 +947,87 @@ class ReportingService {
       group: ['item_type', 'raw.id', 'item.id'],
     });
   }
+
+  getDispatchReport(startPeriod, endPeriod, reportBrand, reportChanel) {
+    return sequelize.query(
+      `select 
+      dsa.name as "courier", 
+      count(*) as "dispatched" 
+      from "Orders" o 
+      left join "DeliveryServiceAccounts" dsa on dsa.id = o.delivery_account_id 
+    where
+      o."assigned_at" >= :startPeriod
+      and o."assigned_at" <= :endPeriod
+      ${
+        reportChanel && reportChanel.length
+          ? 'and o.chanel_id in (:reportChanel)'
+          : ''
+      }
+      ${
+        reportBrand && reportBrand.length
+          ? 'and o.brand_id in (:reportBrand)'
+          : ''
+      }
+    group by o.delivery_account_id, dsa.name;`,
+      {
+        replacements: { startPeriod, endPeriod, reportChanel, reportBrand },
+        type: QueryTypes.SELECT,
+      }
+    );
+  }
+
+  getBookingProductsValueReport(
+    startPeriod,
+    endPeriod,
+    reportBrand,
+    reportChanel,
+    reportDeliveryServicesAccounts
+  ) {
+    return sequelize.query(
+      `select
+      oi.name,
+      oi.price,
+      sum(oi.quantity) as quantity,
+      oi.price *  sum(oi.quantity) as value
+      from
+        "OrderItems" oi
+      join "Orders" o on
+        oi.order_id = o.id
+          where
+      o.status = 'Booked'
+	    and oi.price != 0
+      and o."assigned_at" >= :startPeriod
+      and o."assigned_at" <= :endPeriod
+      ${
+        reportDeliveryServicesAccounts && reportDeliveryServicesAccounts.length
+          ? 'and o.delivery_account_id in (:reportDeliveryServicesAccounts)'
+          : ''
+      }
+      ${
+        reportChanel && reportChanel.length
+          ? 'and o.chanel_id in (:reportChanel)'
+          : ''
+      }
+      ${
+        reportBrand && reportBrand.length
+          ? 'and o.brand_id in (:reportBrand)'
+          : ''
+      }
+    group by
+  	oi.name,
+	  oi.price;`,
+      {
+        replacements: {
+          startPeriod,
+          endPeriod,
+          reportChanel,
+          reportBrand,
+          reportDeliveryServicesAccounts,
+        },
+        type: QueryTypes.SELECT,
+      }
+    );
+  }
 }
 
 export const _reportingService = new ReportingService();

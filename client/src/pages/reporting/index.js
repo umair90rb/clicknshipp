@@ -9,7 +9,6 @@ import {
   reportCitiesSelector,
   reportDeliveryServicesAccountsSelector,
   reportEndPeriodSelector,
-  reportIsLoadingSelector,
   reportStartPeriodSelector,
   reportTypeSelector
 } from 'store/slices/report/reportSelector';
@@ -46,13 +45,33 @@ import { formatDate } from 'utils/format-date';
 import { dateFormatForDateTimeField } from 'constants/index';
 import ChannelOrderReport from './ChannelOrderReport';
 import DamageStockReport from './DamageStockReport';
+import DispatchReport from './DispatchReport';
+import BookingProductsValueReport from './BookingProductsValueReport';
+
+const reportConfig = [
+  { permission: PERMISSIONS.PERMISSIONS_GET_AGENT_REPORT, label: 'Agent Order Report', value: 'Agent Report' },
+  { permission: PERMISSIONS.PERMISSIONS_GET_PRODUCT_REPORT, label: 'Product Unit Report', value: 'Unit Report' },
+  { permission: PERMISSIONS.PERMISSIONS_GET_BOOKING_REPORT, label: 'Booking Unit Report', value: 'Booking Unit Report' },
+  { permission: PERMISSIONS.PERMISSIONS_GET_FOC_REPORT, label: 'Courier FOC Unit Report', value: 'FOC Report' },
+  { permission: PERMISSIONS.PERMISSIONS_GET_CHANNEL_REPORT, label: 'Agent Channel Report', value: 'Channel Report' },
+  { permission: PERMISSIONS.PERMISSIONS_GET_CHANNEL_ORDER_REPORT, label: 'Channel Order Report', value: 'Channel Order Report' },
+  { permission: PERMISSIONS.PERMISSIONS_GET_INCENTIVE_REPORT, label: 'Agent Incentive Unit Report', value: 'Incentive Report' },
+  { permission: PERMISSIONS.PERMISSIONS_GET_COURIER_DELIVERY_REPORT, label: 'Courier Delivery Report', value: 'Delivery Report' },
+  { permission: PERMISSIONS.PERMISSIONS_GET_STOCK_REPORT, label: 'Stock Report', value: 'Stock Report' },
+  { permission: PERMISSIONS.PERMISSIONS_GET_STOCK_DAMAGE_REPORT, label: 'Damage Stock Report', value: 'Damage Stock Report' },
+  { permission: PERMISSIONS.PERMISSIONS_GET_DISPATCH_REPORT, label: 'Dispatch Report', value: 'Dispatch Report' },
+  {
+    permission: PERMISSIONS.PERMISSIONS_GET_BOOKING_PRODUCTS_VALUE_REPORT,
+    label: 'Booking Products Value Report',
+    value: 'Booking Products Value Report'
+  }
+];
 
 const Reporting = () => {
   const dispatch = useDispatch();
   const { hasPermission } = useAccess();
   const startPeriod = useSelector(reportStartPeriodSelector);
   const endPeriod = useSelector(reportEndPeriodSelector);
-  const reportIsLoading = useSelector(reportIsLoadingSelector);
   const reportType = useSelector(reportTypeSelector);
   const reportBrand = useSelector(reportBrandSelector);
   const reportChanel = useSelector(reportChanelSelector);
@@ -67,31 +86,7 @@ const Reporting = () => {
   const [filteredChanels, setFilteredChanels] = useState([]);
   const [withTime, setWithTime] = useState(false);
 
-  const REPORT_TYPES = useMemo(
-    () => [
-      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_AGENT_REPORT) ? [{ label: 'Agent Order Report', value: 'Agent Report' }] : []),
-      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_PRODUCT_REPORT) ? [{ label: 'Product Unit Report', value: 'Unit Report' }] : []),
-      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_BOOKING_REPORT)
-        ? [{ label: 'Booking Unit Report', value: 'Booking Unit Report' }]
-        : []),
-      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_FOC_REPORT) ? [{ label: 'Courier FOC Unit Report', value: 'FOC Report' }] : []),
-      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_CHANNEL_REPORT) ? [{ label: 'Agent Channel Report', value: 'Channel Report' }] : []),
-      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_CHANNEL_ORDER_REPORT)
-        ? [{ label: 'Channel Order Report', value: 'Channel Order Report' }]
-        : []),
-      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_INCENTIVE_REPORT)
-        ? [{ label: 'Agent Incentive Unit Report', value: 'Incentive Report' }]
-        : []),
-      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_COURIER_DELIVERY_REPORT)
-        ? [{ label: 'Courier Delivery Report', value: 'Delivery Report' }]
-        : []),
-      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_STOCK_REPORT) ? [{ label: 'Stock Report', value: 'Stock Report' }] : []),
-      ...(hasPermission(PERMISSIONS.PERMISSIONS_GET_STOCK_DAMAGE_REPORT)
-        ? [{ label: 'Damage Stock Report', value: 'Damage Stock Report' }]
-        : [])
-    ],
-    []
-  );
+  const REPORT_TYPES = useMemo(() => reportConfig.filter(({ permission }) => hasPermission(permission)), []);
 
   const handleFetchReport = () => {
     if (!reportType) {
@@ -138,6 +133,10 @@ const Reporting = () => {
         return <StockReport />;
       case 'Damage Stock Report':
         return <DamageStockReport />;
+      case 'Dispatch Report':
+        return <DispatchReport />;
+      case 'Booking Products Value Report':
+        return <BookingProductsValueReport />;
     }
   };
 
@@ -229,51 +228,47 @@ const Reporting = () => {
       <Grid container xs={12} gap={0.25} justifyContent="start" alignItems="center">
         <Grid xs={1} md={1} lg={1} />
         {reportType === 'Booking Unit Report' && (
-          <>
-            <Grid item xs={2.5} md={2.5} lg={2.5}>
-              <CustomAutocomplete
-                label="Select City"
-                options={cities}
-                value={reportCities}
-                onChange={(e, option) => {
-                  if (!option) {
-                    return dispatch(setReportCities(''));
-                  }
-                  dispatch(setReportCities(option));
-                }}
-              />
-            </Grid>
-            <Grid item xs={2.5} md={2.5} lg={2.5}>
-              <Box sx={{ marginTop: 3.5 }} />
-              <CustomSelect
-                multiple
-                options={deliveryServiceAccounts.map((dsa) => ({ value: dsa.id, label: dsa.name }))}
-                name="delivery_service_account"
-                label="Select Delivery Service Account"
-                value={reportDeliveryServicesAccounts}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  if (val.length === 1 && val[0] === 'all') {
-                    dispatch(setReportDeliveryServicesAccount(deliveryServiceAccounts.map((ac) => ac.id)));
-                  } else if (val.includes('none')) {
-                    dispatch(setReportDeliveryServicesAccount([]));
-                  } else {
-                    dispatch(setReportDeliveryServicesAccount(val));
-                  }
-                }}
-              />
-            </Grid>
-          </>
+          <Grid item xs={2.5} md={2.5} lg={2.5}>
+            <CustomAutocomplete
+              label="Select City"
+              options={cities}
+              value={reportCities}
+              onChange={(e, option) => {
+                if (!option) {
+                  return dispatch(setReportCities(''));
+                }
+                dispatch(setReportCities(option));
+              }}
+            />
+          </Grid>
+        )}
+        {(reportType === 'Booking Unit Report' || reportType === 'Booking Products Value Report') && (
+          <Grid item xs={2.5} md={2.5} lg={2.5}>
+            <Box sx={{ marginTop: 1 }} />
+            <CustomSelect
+              multiple
+              options={deliveryServiceAccounts.map((dsa) => ({ value: dsa.id, label: dsa.name }))}
+              name="delivery_service_account"
+              label="Select Delivery Service Account"
+              value={reportDeliveryServicesAccounts}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val.length === 1 && val[0] === 'all') {
+                  dispatch(setReportDeliveryServicesAccount(deliveryServiceAccounts.map((ac) => ac.id)));
+                } else if (val.includes('none')) {
+                  dispatch(setReportDeliveryServicesAccount([]));
+                } else {
+                  dispatch(setReportDeliveryServicesAccount(val));
+                }
+              }}
+            />
+          </Grid>
         )}
       </Grid>
 
-      {reportIsLoading ? (
-        'Loading...'
-      ) : (
-        <Grid item xs={12} md={12} lg={12}>
-          {renderReport()}
-        </Grid>
-      )}
+      <Grid item xs={12} md={12} lg={12}>
+        {renderReport()}
+      </Grid>
     </Grid>
   );
 };

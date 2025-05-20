@@ -10,6 +10,9 @@ export const PERMISSIONS = {
   PERMISSIONS_GET_STOCK_REPORT: 'get-stock-report',
   PERMISSIONS_GET_STOCK_DAMAGE_REPORT: 'get-stock-damage-report',
   PERMISSION_GET_ITEM_DAMAGE_REPORT: 'get-item-damage-report',
+  PERMISSIONS_GET_DISPATCH_REPORT: 'get-dispatch-report',
+  PERMISSIONS_GET_BOOKING_PRODUCTS_VALUE_REPORT:
+    'get-booking-products-value-report',
 
   PERMISSION_VIEW_ADMIN_DASHBOARD: 'view-admin-dashboard',
   PERMISSION_VIEW_REPORTING: 'view-reporting',

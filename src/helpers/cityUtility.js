@@ -106,7 +106,7 @@ mappedCities.forEach((list) => {
   });
 });
 const result = JSON.stringify(singleArr);
-const filePath = __dirname + '/output-digi-all.json';
+const filePath = __dirname + '/output-digi_19_05_25_all.json';
 fs.writeFile(filePath, result, 'utf8', (err) => {
   if (err) {
     console.error('Error writing JSON to file:', err);

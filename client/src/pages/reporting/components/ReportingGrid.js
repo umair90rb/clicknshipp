@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux';
 import { reportDataSelector, reportIsLoadingSelector } from 'store/slices/report/reportSelector';
 import GridToolbarWithHeading from 'components/GridToolbarWithHeading';
 import CustomNoRowsOverlay from 'components/GridNoRowCustomOverlay';
+import { Box } from '@mui/material';
+import { height } from '../../../../node_modules/@mui/system/index';
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   // '& .MuiDataGrid-row:nth-of-type(odd)': {
@@ -38,7 +40,35 @@ export default function ReportingGrid({ heading, description, ...rest }) {
   const reportData = useSelector(reportDataSelector);
 
   if (reportData && Array.isArray(reportData) && !reportData.length) {
-    return 'No data to show with selected period and filters!';
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          height: '50vh',
+          alignItems: 'center',
+          justifyContent: 'center',
+          border: '0px solid black'
+        }}
+      >
+        No data to show with selected period and filters!
+      </Box>
+    );
+  }
+
+  if (reportIsLoading) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          height: '50vh',
+          alignItems: 'center',
+          justifyContent: 'center',
+          border: '0px solid black'
+        }}
+      >
+        Loading...
+      </Box>
+    );
   }
 
   return (
@@ -49,7 +79,7 @@ export default function ReportingGrid({ heading, description, ...rest }) {
       hideFooterSelectedRowCount
       hideFooterRowCount
       checkboxSelection={false}
-      loading={reportIsLoading}
+      // loading={reportIsLoading}
       // slots={{ noRowsOverlay: CustomNoRowsOverlay }}
       // sx={{ '--DataGrid-overlayHeight': '300px' }}
       sx={{

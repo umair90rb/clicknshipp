@@ -56,6 +56,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: true,
       },
+      incentive: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
       unit_of_measure: {
         type: DataTypes.STRING,
         allowNull: true,

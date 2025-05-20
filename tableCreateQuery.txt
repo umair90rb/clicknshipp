@@ -98,3 +98,5 @@ npx sequelize-cli migration:generate --name add-unique-index-to-stocklevels
 npx sequelize-cli migration:generate --name create-notifications-table
 
 npx sequelize-cli migration:generate --name add-addresses-columns-delivery-service-accounts-table
+
+npx sequelize-cli migration:generate --name add-incentive-column-in-items-table

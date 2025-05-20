@@ -1,5 +1,24 @@
 export function addTotalRow(report, data) {
   switch (report) {
+    case 'Booking Products Value Report':
+      return [
+        ...data.map((row, i) => ({ ...row, id: i + 1 })),
+        {
+          id: 'TOTAL',
+          label: 'Total',
+          value: data.reduce((acc, row) => acc + (parseInt(row.value) || 0), 0),
+          quantity: data.reduce((acc, row) => acc + (parseInt(row.quantity) || 0), 0)
+        }
+      ];
+    case 'Dispatch Report':
+      return [
+        ...data.map((row, i) => ({ ...row, id: i + 1 })),
+        {
+          id: 'TOTAL',
+          label: 'Total',
+          totalDispatched: data.reduce((acc, row) => acc + (parseInt(row.dispatched) || 0), 0)
+        }
+      ];
     case 'Channel Report':
       return [
         ...data.map((row) => ({ ...row, id: `${row.agent}-${row.chanel}-${row.orders}-${row.units}` })),
