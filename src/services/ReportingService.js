@@ -956,7 +956,8 @@ class ReportingService {
       from "Orders" o 
       left join "DeliveryServiceAccounts" dsa on dsa.id = o.delivery_account_id 
     where
-      o."assigned_at" >= :startPeriod
+      o.status = 'Booked'
+      and o."assigned_at" >= :startPeriod
       and o."assigned_at" <= :endPeriod
       ${
         reportChanel && reportChanel.length
