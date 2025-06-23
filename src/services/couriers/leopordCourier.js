@@ -64,15 +64,11 @@ class LeapordCourier extends CourierInterface {
         // consignment_phone_two: "",
         // consignment_phone_three: "",
         consignment_address: `${order.address.address1} ${order.address.city}`,
-        special_instructions:
-          order.address.address2 ||
-          order.items.reduce(
-            (p, c, i) =>
-              i > 0
-                ? `${c.name}/${c.quantity}-${p}`
-                : `${c.name}/${c.quantity}`,
-            ''
-          ),
+        special_instructions: `${order.items.reduce(
+          (p, c, i) =>
+            i > 0 ? `${c.name}/${c.quantity}-${p}` : `${c.name}/${c.quantity}`,
+          ''
+        )}`,
         shipment_type: 'overnight',
         // custom_data: "",
         return_address:

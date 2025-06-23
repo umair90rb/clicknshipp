@@ -440,7 +440,7 @@ const CreateOrderForm = () => {
               </Grid>
               <Grid item xs={12}>
                 <Grid container spacing={1}>
-                  <Grid item xs={8}>
+                  <Grid item xs={4}>
                     <Stack spacing={1}>
                       <InputLabel htmlFor="address1">Address*</InputLabel>
                       <OutlinedInput
