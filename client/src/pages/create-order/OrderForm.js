@@ -461,7 +461,7 @@ const CreateOrderForm = () => {
                       )}
                     </Stack>
                   </Grid>
-                  {/* <Grid item xs={4}>
+                  <Grid item xs={4}>
                     <Stack spacing={1}>
                       <InputLabel htmlFor="address2">Special Instructions (Optional)</InputLabel>
                       <OutlinedInput
@@ -481,7 +481,7 @@ const CreateOrderForm = () => {
                         </FormHelperText>
                       )}
                     </Stack>
-                  </Grid> */}
+                  </Grid>
                   <Grid item xs={4}>
                     <Stack spacing={1}>
                       <InputLabel htmlFor="city">Select City {`${values.city !== '' ? '(' + values.city + ')' : ''}`}</InputLabel>
