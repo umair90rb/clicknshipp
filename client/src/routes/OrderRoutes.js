@@ -3,8 +3,9 @@ import { lazy } from 'react';
 // project import
 import Loadable from 'components/Loadable';
 import { PrivateRoute } from 'components/PrivateRoute';
-import MainLayout from 'layout/MainLayout/index';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
+import MainLayout from 'layout/MainLayout/index';
+import OrderLogs from 'pages/order-logs/index';
 
 // render - login
 const OrderManagement = Loadable(lazy(() => import('pages/order-management')));
@@ -67,7 +68,15 @@ const OrderRoutes = {
           <OrderView />
         </PrivateRoute>
       )
-    }
+    },
+    {
+      path: 'logs',
+      element: (
+        <PrivateRoute permission={PERMISSIONS.PERMISSION_VIEW_ORDERS_LOGS}>
+          <OrderLogs />
+        </PrivateRoute>
+      )
+    },
   ]
 };
 

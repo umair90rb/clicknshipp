@@ -1,35 +1,36 @@
 import express from 'express';
 import path from 'path';
-import auth from './auth';
 import admin from './admin';
-import user from './user';
-import item from './item';
-import stock from './stock';
+import allowance from './allowance';
+import auth from './auth';
 import batch from './batch';
-import supplier from './supplier';
-import category from './category';
+import bom from './billOfMaterial';
 import brand from './brand';
+import category from './category';
+import chanel from './chanel';
+import city from './city';
+import customer from './customer';
+import dashboard from './dashboard';
+import deliverServiceAccounts from './deliverServiceAccounts';
 import department from './department';
 import designation from './designation';
 import employee from './employee';
-import allowance from './allowance';
-import chanel from './chanel';
-import customer from './customer';
-import role from './role';
-import city from './city';
-import order from './order';
-import report from './report';
-import dashboard from './dashboard';
-import deliverServiceAccounts from './deliverServiceAccounts';
-import permission from './permission';
-import search from './search';
-import log from './log';
+import item from './item';
 import location from './location';
-import uom from './unitOfMeasure';
-import rawMaterial from './rawMaterial';
-import bom from './billOfMaterial';
-import salesOrder from './salesOrder';
+import log from './log';
 import notification from './notification';
+import order from './order';
+import permission from './permission';
+import rawMaterial from './rawMaterial';
+import report from './report';
+import role from './role';
+import salesOrder from './salesOrder';
+import search from './search';
+import stock from './stock';
+import supplier from './supplier';
+import uom from './unitOfMeasure';
+import user from './user';
+import webhook from './webhook';
 
 const rootDir = path.dirname(process.argv[1]);
 
@@ -65,6 +66,7 @@ export default (app) => {
   app.use('/api/v1/notification', notification);
   app.use('/api/v1/permission', permission);
   app.use('/api/v1/order', order);
+  app.use('/api/v1/webhook', webhook)
   //[baseURL]/api/v1/order/shopify
   app.use('/api/v1/report', report);
   app.use('/api/v1/dashboard', dashboard);

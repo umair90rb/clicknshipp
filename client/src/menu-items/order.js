@@ -1,15 +1,25 @@
-import { PERMISSIONS } from 'constants/permissions-and-roles';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
-import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 import AssignmentReturnOutlinedIcon from '@mui/icons-material/AssignmentReturnOutlined';
 import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
+import DescriptionIcon from '@mui/icons-material/Description';
+import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
 
 const order = {
   id: 'order-dashboard',
   title: 'Order Management',
   type: 'group',
   children: [
+    {
+      id: 'order/logs',
+      title: 'Order Logs',
+      type: 'item',
+      url: '/order/logs',
+      permission: PERMISSIONS.PERMISSION_VIEW_ORDERS_LOGS,
+      icon: DescriptionIcon,
+      breadcrumbs: false
+    },
     {
       id: 'order/all',
       title: 'Orders',

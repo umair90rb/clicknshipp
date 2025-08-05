@@ -17,6 +17,7 @@ export const PERMISSIONS = {
 
   PERMISSION_VIEW_ALL_ORDERS: 'view-all-orders',
   PERMISSION_VIEW_ORDERS: 'view-orders',
+  PERMISSION_VIEW_ORDERS_LOGS: 'view-orders-logs',
   PERMISSION_CREATE_ORDER: 'create-order',
   PERMISSION_CREATE_BULK_ORDER: 'create-bulk-order',
   PERMISSION_UPDATE_ORDER: 'update-order',
