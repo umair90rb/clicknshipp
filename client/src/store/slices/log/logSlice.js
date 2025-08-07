@@ -4,6 +4,7 @@ import { fetchOrderCreateLogs } from './fetchLogs';
 
 const initialState = {
   list: [],
+  total: 0,
   fetchStatus: fetchStatus.IDLE,
   error: null
 };
@@ -21,6 +22,7 @@ const logsSlice = createSlice({
       const { data } = action.payload;
       state.fetchStatus = fetchStatus.SUCCESS;
       state.list = data.logs;
+      state.total = data.total;
       state.error = null;
     });
     builder.addCase(fetchOrderCreateLogs.rejected, (state, action) => {

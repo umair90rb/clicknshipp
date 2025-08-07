@@ -155,7 +155,7 @@ export const address_data_keys = [
   'latitude',
   'longitude',
   'country_code',
-  'province_code',
+  'province_code', // in new saas product many of these keys not required to store in db
 ];
 
 export const customer_data_keys = [
@@ -166,6 +166,9 @@ export const customer_data_keys = [
   'note',
   'phone',
 ];
+
+export const address_data_keys_from_notes = ['city', 'address', 'country', 'phone'];
+export const customer_data_keys_from_notes = ['full_name', 'phone'];
 
 export const item_data_keys = [
   'name',

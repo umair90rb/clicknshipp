@@ -14,47 +14,51 @@ module.exports = (sequelize, DataTypes) => {
       id: {
         type: DataTypes.UUID,
         primaryKey: true,
-        defaultValue: DataTypes.UUIDV4
+        defaultValue: DataTypes.UUIDV4,
       },
       shop_id: {
         type: DataTypes.UUID,
-        allowNull: true
+        allowNull: true,
       },
       shop_domain: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+      },
+      order_id: {
+        type: DataTypes.STRING,
+        allowNull: true,
       },
       topic: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
       webhook_id: {
         type: DataTypes.BIGINT,
-        allowNull: false
+        allowNull: false,
       },
       received_at: {
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
+        defaultValue: DataTypes.NOW,
       },
       processed_at: {
         type: DataTypes.DATE,
-        allowNull: true
+        allowNull: true,
       },
       status: {
         type: DataTypes.STRING,
-        defaultValue: 'received'
+        defaultValue: 'received',
       },
       error_message: {
         type: DataTypes.TEXT,
-        allowNull: true
+        allowNull: true,
       },
       payload: {
         type: DataTypes.JSONB,
-        allowNull: false
+        allowNull: false,
       },
       retries: {
         type: DataTypes.INTEGER,
-        defaultValue: 0
+        defaultValue: 0,
       },
     },
     {
@@ -62,7 +66,7 @@ module.exports = (sequelize, DataTypes) => {
       modelName: 'ShopifyWebhookLog',
       tableName: 'ShopifyWebhookLogs',
       underscored: true,
-      timestamps: false
+      timestamps: false,
     }
   );
 

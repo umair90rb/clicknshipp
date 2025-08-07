@@ -25,8 +25,6 @@ export default {
       const shopDomain = req.get('X-Shopify-Shop-Domain');
       const payload = req.body;
 
-      console.log(payload);
-
       // Log webhook
       const log = await ShopifyWebhookLog.create({
         shop_domain: shopDomain,
@@ -36,13 +34,13 @@ export default {
       });
 
       // Add job to Bull queue
-      await addToOrderProcessingQueue({
+      await addToOrderProcessingQueue([{
         logId: log.id,
         shopDomain,
         topic,
         webhookId,
         payload,
-      })
+      }])
 
       return res.status(200).send('OK');
     } catch (err) {

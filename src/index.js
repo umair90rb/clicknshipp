@@ -10,6 +10,7 @@ import swaggerUi from 'swagger-ui-express';
 import './config/instrument.js';
 import swaggerConfig from './config/swagger.js';
 import './jobs/assignOrders';
+import './jobs/retryWebhookFailedOrder.js';
 import './jobs/trackOrders';
 import clientErrorHandler from './middleware/clientErrorHandler';
 import errorHandler from './middleware/errorHandler';

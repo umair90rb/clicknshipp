@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/', LogController.logs);
 router.get('/:file', LogController.log);
-router.get('/webhook/order/create', LogController.createOrderWebhook);
+router.get('/webhook/order/create', LogController.createOrderWebhookLogs);
 
 
 router.get('/debug-sentry', function mainHandler(req, res) {

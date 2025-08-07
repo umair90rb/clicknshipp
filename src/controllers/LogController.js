@@ -28,16 +28,37 @@ export default {
     }
   },
 
-  async createOrderWebhook(req, res) {
+  async createOrderWebhookLogs(req, res) {
     try {
-      const logs = await ShopifyWebhookLog.findAll({
+      const {limit, page, sort, status, from} = req.query;
+      
+      const query = {
         attributes: {
           exclude: ['payload'],
         },
         order: [['received_at', 'DESC']],
         limit: 100,
-      });
-      return sendSuccessResponse(res, 200, { logs });
+      };
+
+      if (limit > -1) {
+        query.limit = limit;
+        if (page > 0) {
+          query.offset = page * limit;
+        }
+      }
+      if (sort && sort.length) {
+        const order = sort.map((s) => [`${s.field}`, s.sort.toUpperCase()]);
+        query.order = order;
+      }
+      if(status) {
+        query.where = {status}
+      }
+      if(from) {
+        query.where = {shop_domain: from, ...query.where}
+      }
+      const total = await ShopifyWebhookLog.count(query);
+      const logs = await ShopifyWebhookLog.findAll(query);
+      return sendSuccessResponse(res, 200, { logs, total });
     } catch (error) {
       console.error('Error fetching logs:', error);
       return sendErrorResponse(res, 500, error.message, null);
