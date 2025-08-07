@@ -1,13 +1,14 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
-import { chanelChanelsSelector, chanelIsLoadingSelector } from 'store/slices/chanel/chanelSelector';
-import { fetchAllChanel, fetchDeleteChanel } from 'store/slices/chanel/fetchChanel';
-import { deleteChanel } from 'store/slices/chanel/chanelSlice';
-import useAccess from 'hooks/useAccess';
+import EditIcon from '@mui/icons-material/Edit';
+import { GridActionsCellItem } from '@mui/x-data-grid';
+import CustomGrid from 'components/CustomGrid';
 import { PERMISSIONS } from 'constants/permissions-and-roles';
+import useAccess from 'hooks/useAccess';
+import useChannelsFetch from 'hooks/useChannelsFetch';
+import { useDispatch, useSelector } from 'react-redux';
+import { chanelChanelsSelector, chanelIsLoadingSelector } from 'store/slices/chanel/chanelSelector';
+import { deleteChanel } from 'store/slices/chanel/chanelSlice';
+import { fetchDeleteChanel } from 'store/slices/chanel/fetchChanel';
 
 const columns = (handleEditAction, handleDeleteAction) => [
   {
@@ -73,10 +74,7 @@ export default function ChanelTable({ updateChanelHandler }) {
   const chanelsIsLoading = useSelector(chanelIsLoadingSelector);
   const chanels = useSelector(chanelChanelsSelector);
   const { hasPermission } = useAccess();
-
-  useEffect(() => {
-    dispatch(fetchAllChanel());
-  }, []);
+  const { refresh } = useChannelsFetch();
 
   const handleDelete = (id) => {
     dispatch(fetchDeleteChanel({ id })).then((action) => {
@@ -88,15 +86,9 @@ export default function ChanelTable({ updateChanelHandler }) {
 
   return (
     <div style={{ width: '100%' }}>
-      <DataGrid
-        slots={{ toolbar: GridToolbar }}
-        slotProps={{
-          toolbar: {
-            showQuickFilter: true
-          }
-        }}
+      <CustomGrid
+        withRefresh={refresh}
         loading={chanelsIsLoading}
-        pageSizeOptions={[25, 50, 75, 100]}
         rows={chanels}
         columns={columns(
           hasPermission(PERMISSIONS.PERMISSION_UPDATE_SALES_CHANEL) ? updateChanelHandler : undefined,

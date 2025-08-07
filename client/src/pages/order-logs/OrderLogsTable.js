@@ -1,4 +1,5 @@
 import CustomGrid from 'components/CustomGrid';
+import useChannelsFetch from 'hooks/useChannelsFetch';
 import { GridDropdownFilter } from 'pages/order-management/GridDropdownFilter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -75,6 +76,8 @@ export default function OrderLogsTable() {
   const logList = useSelector(logListSelector);
   const logIsLoading = useSelector(logIsLoadingSelector);
   const channelsList = useSelector(chanelChanelsSelector);
+
+  useChannelsFetch();
 
   const customActions = useMemo(
     () => [
