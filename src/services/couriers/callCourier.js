@@ -1,8 +1,8 @@
-import CourierInterface from '../../interfaces/courierInterface';
-import getAxiosInstance from '../AxiosService';
-import models from '../../models';
 import { Op } from 'sequelize';
+import CourierInterface from '../../interfaces/courierInterface';
 import logger from '../../middleware/logger';
+import models from '../../models';
+import getAxiosInstance from '../AxiosService';
 const { CityNameMaping } = models;
 
 class CallCourier extends CourierInterface {
@@ -78,9 +78,9 @@ class CallCourier extends CourierInterface {
       }&SpecialHandling=false&MyBoxId=1&Holiday=false&remarks=Rush Delivery&ShipperName=SWAP&ShipperCellNo=03005444103&ShipperArea=1&ShipperCity=1&ShipperAddress=Plot no. 61 Sajjad Industrial State Millat Road Faisalabad"
       &ShipperLandLineNo=03005444103&ShipperEmail=SWAPNEARN@GMAIL.COM`;
       response = await this.http.get(url);
-      logger.log('info', 'leopard book parcel api response', {
-        res: response.data,
-      });
+      // logger.log('info', 'leopard book parcel api response', {
+      //   res: response.data,
+      // });
       const { CNNO, Response, ...rest } = response.data;
       return {
         cn: CNNO,

@@ -1,8 +1,8 @@
-import logger from '../../middleware/logger';
-import CourierInterface from '../../interfaces/courierInterface';
-import getAxiosInstance from '../AxiosService';
-import models from '../../models';
 import { Op } from 'sequelize';
+import CourierInterface from '../../interfaces/courierInterface';
+import logger from '../../middleware/logger';
+import models from '../../models';
+import getAxiosInstance from '../AxiosService';
 const { CityNameMaping } = models;
 
 class PostexCourier extends CourierInterface {
@@ -153,10 +153,10 @@ class PostexCourier extends CourierInterface {
         }
       );
       console.log(response, 'postex cancel response');
-      logger.log('info', 'postex cancel booking parcel api response', {
-        body,
-        res: response?.data,
-      });
+      // logger.log('info', 'postex cancel booking parcel api response', {
+      //   body,
+      //   res: response?.data,
+      // });
       const { statusCode, statusMessage } = response?.data || {};
       return {
         isSuccess: statusCode == '200' ? true : false,

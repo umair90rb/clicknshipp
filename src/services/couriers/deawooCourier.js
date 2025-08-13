@@ -1,8 +1,8 @@
-import CourierInterface from '../../interfaces/courierInterface';
-import getAxiosInstance from '../AxiosService';
-import models from '../../models';
 import { Op } from 'sequelize';
+import CourierInterface from '../../interfaces/courierInterface';
 import logger from '../../middleware/logger';
+import models from '../../models';
+import getAxiosInstance from '../AxiosService';
 const { CityNameMaping } = models;
 
 class DeawooCourier extends CourierInterface {
@@ -81,10 +81,10 @@ class DeawooCourier extends CourierInterface {
         CashCollection,
         OrderId,
       } = response.data || {};
-      logger.log('info', 'deawoo book parcel api response', {
-        body,
-        res: response.data,
-      });
+      // logger.log('info', 'deawoo book parcel api response', {
+      //   body,
+      //   res: response.data,
+      // });
 
       return {
         cn: TrackNo,

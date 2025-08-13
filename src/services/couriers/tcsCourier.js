@@ -1,9 +1,9 @@
-import CourierInterface from '../../interfaces/courierInterface';
-import getAxiosInstance from '../AxiosService';
-import models from '../../models';
-import logger from '../../middleware/logger';
 import { Op } from 'sequelize';
 import { isDateToday } from '../../helpers/pgDateFormat';
+import CourierInterface from '../../interfaces/courierInterface';
+import logger from '../../middleware/logger';
+import models from '../../models';
+import getAxiosInstance from '../AxiosService';
 const { CityNameMaping } = models;
 
 class TCSCourier extends CourierInterface {
@@ -349,9 +349,9 @@ class TCSCourier extends CourierInterface {
         response: 'Current Booking status!',
       };
     } catch (error) {
-      logger.log('error', 'tcs booking status api response', {
-        res: response?.data,
-      });
+      // logger.log('error', 'tcs booking status api response', {
+      //   res: response?.data,
+      // });
       return {
         isSuccess: false,
         data: {},
@@ -377,10 +377,10 @@ class TCSCourier extends CourierInterface {
       response = await this.http.post('ecom/api/booking/cancel', body, {
         headers: { Authorization: `Bearer ${headerToken}` },
       });
-      logger.log('info', 'tcs cancel booking parcel api response', {
-        body,
-        res: response.data,
-      });
+      // logger.log('info', 'tcs cancel booking parcel api response', {
+      //   body,
+      //   res: response.data,
+      // });
       const { message, traceid } = response?.data;
       return {
         isSuccess: Boolean(message === 'SUCCESS'),

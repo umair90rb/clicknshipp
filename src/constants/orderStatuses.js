@@ -26,6 +26,7 @@ export const CONFIRMED_LIST = [
   'Confirmed',
   'Booked',
   'Booking Error',
+  'In Booking Queue',
   'Delivered',
   'Returned',
 ];

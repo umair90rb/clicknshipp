@@ -1,8 +1,8 @@
-import logger from '../../middleware/logger';
-import CourierInterface from '../../interfaces/courierInterface';
-import getAxiosInstance from '../AxiosService';
-import models from '../../models';
 import { Op } from 'sequelize';
+import CourierInterface from '../../interfaces/courierInterface';
+import logger from '../../middleware/logger';
+import models from '../../models';
+import getAxiosInstance from '../AxiosService';
 const { CityNameMaping } = models;
 
 class SonicCourier extends CourierInterface {
@@ -72,10 +72,10 @@ class SonicCourier extends CourierInterface {
       response = await this.http.post('book', body, {
         headers: { Authorization: deliveryAccount.key },
       });
-      logger.log('info', 'trax book parcel api response', {
-        res: response?.data,
-        body,
-      });
+      // logger.log('info', 'trax book parcel api response', {
+      //   res: response?.data,
+      //   body,
+      // });
       const { message, status, ...rest } = response?.data || {};
       const { tracking_number } = rest || {};
       return {

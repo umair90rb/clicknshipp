@@ -1,10 +1,9 @@
-import CourierInterface from '../../interfaces/courierInterface';
-import getAxiosInstance from '../AxiosService';
-import models from '../../models';
 import { Op } from 'sequelize';
+import { addDaysToCurrentDate, isExpired } from '../../helpers/pgDateFormat';
+import CourierInterface from '../../interfaces/courierInterface';
 import logger from '../../middleware/logger';
-import { addDaysToCurrentDate } from '../../helpers/pgDateFormat';
-import { isExpired } from '../../helpers/pgDateFormat';
+import models from '../../models';
+import getAxiosInstance from '../AxiosService';
 const { CityNameMaping, Tokens } = models;
 
 class DigiCourier extends CourierInterface {
@@ -133,7 +132,6 @@ class DigiCourier extends CourierInterface {
         },
         raw: true,
       });
-      console.log(destinationCity, 'destinationCity');
       if (!destinationCity) {
         return {
           cn: null,

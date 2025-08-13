@@ -1,19 +1,18 @@
-import { Op, QueryTypes, literal, fn, col } from 'sequelize';
-import { sequelize } from '../models';
-import model from '../models';
+import { Op, QueryTypes, col, fn, literal } from 'sequelize';
 import { PERMISSIONS } from '../constants/constants';
 import {
-  CONFIRMED_LIST,
-  CONFIRMED,
-  CANCELED,
-  GENERATED,
-  GENERATED_WITH_DUPLICATED,
   BOOKED,
   BOOKING_ERROR,
+  CANCELED,
+  CONFIRMED,
+  CONFIRMED_LIST,
   DELIVERED,
-  RETURNED,
   DUPLICATE,
+  GENERATED,
+  GENERATED_WITH_DUPLICATED,
+  RETURNED,
 } from '../constants/orderStatuses';
+import model, { sequelize } from '../models';
 const {
   Order,
   OrderItem,
@@ -838,7 +837,7 @@ class ReportingService {
           fn(
             'SUM',
             literal(
-              `CASE WHEN "Order"."status" IN ${GENERATED} THEN "items"."quantity" ELSE 0 END`
+              `CASE WHEN "Order"."status" IN ${GENERATED_WITH_DUPLICATED} THEN "items"."quantity" ELSE 0 END`
             )
           ),
           'unit_generated',

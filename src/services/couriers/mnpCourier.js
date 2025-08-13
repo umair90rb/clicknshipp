@@ -1,8 +1,8 @@
-import logger from '../../middleware/logger';
-import CourierInterface from '../../interfaces/courierInterface';
-import getAxiosInstance from '../AxiosService';
-import models from '../../models';
 import { Op } from 'sequelize';
+import CourierInterface from '../../interfaces/courierInterface';
+import logger from '../../middleware/logger';
+import models from '../../models';
+import getAxiosInstance from '../AxiosService';
 const { CityNameMaping } = models;
 
 class MnpCourier extends CourierInterface {
@@ -58,10 +58,10 @@ class MnpCourier extends CourierInterface {
       response = await this.http.post('Booking/InsertBookingData', body, {
         headers: { Authorization: deliveryAccount.key },
       });
-      logger.log('info', 'mnp book parcel api response', {
-        res: response?.data,
-        body,
-      });
+      // logger.log('info', 'mnp book parcel api response', {
+      //   res: response?.data,
+      //   body,
+      // });
       const {
         message,
         isSuccess,

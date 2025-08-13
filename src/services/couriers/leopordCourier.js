@@ -1,8 +1,8 @@
+import { Op } from 'sequelize';
 import CourierInterface from '../../interfaces/courierInterface';
-import getAxiosInstance from '../AxiosService';
 import logger from '../../middleware/logger';
 import models from '../../models';
-import { Op } from 'sequelize';
+import getAxiosInstance from '../AxiosService';
 const { CityNameMaping } = models;
 
 class LeapordCourier extends CourierInterface {
@@ -116,10 +116,10 @@ class LeapordCourier extends CourierInterface {
         track_numbers: trackingNumber,
       };
       response = await this.http.post('trackBookedPacket/format/json', body);
-      logger.log('info', 'leopard booking status,s api response', {
-        body,
-        res: response.data,
-      });
+      // logger.log('info', 'leopard booking status,s api response', {
+      //   body,
+      //   res: response.data,
+      // });
       const { status, error, packet_list } = response.data;
       const parcel = packet_list[0] || {};
       const { booked_packet_status, activity_date, status_remarks, reverseCN } =
