@@ -3,6 +3,7 @@ module.exports = {
   development: {
     use_env_variable: 'DATABASE_URL',
     dialect: 'postgres',
+    logging: false,
     seederStorage: 'sequelize',
     timezone: '+05:00',
     ...(process.env.NODE_ENV === 'production' && {
@@ -29,7 +30,7 @@ module.exports = {
   },
   production: {
     use_env_variable: 'DATABASE_URL',
-    logging: true,
+    logging: false,
     dialect: 'postgres',
     seederStorage: 'sequelize',
     timezone: '+05:00',

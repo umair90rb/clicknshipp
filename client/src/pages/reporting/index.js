@@ -1,8 +1,22 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Box, Grid, FormGroup, Checkbox, FormControlLabel, Typography, Button } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
+import { Box, Button, Checkbox, FormControlLabel, FormGroup, Grid, Typography } from '@mui/material';
+import CustomAutocomplete from 'components/CustomAutocomplete';
+import CustomSelect from 'components/CustomSelect';
 import DateRangePicker from 'components/DatePicker';
 import DateTimePicker from 'components/DateTimePicker';
+import { dateFormatForDateTimeField } from 'constants/index';
+import { PERMISSIONS } from 'constants/permissions-and-roles';
+import useAccess from 'hooks/useAccess';
+import useBrandsFetch from 'hooks/useBrandsFetch';
+import useChannelsFetch from 'hooks/useChannelsFetch';
+import useCitiesFetch from 'hooks/useCitiesFetch';
+import useDeliveryServicesAccountFetch from 'hooks/useDeliveryServicesAccountFetch';
+import { useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { brandBrandsSelector } from 'store/slices/brand/brandSelector';
+import { chanelChanelsSelector } from 'store/slices/chanel/chanelSelector';
+import { cityCitiesSelector } from 'store/slices/city/citySelector';
+import { deliveryServiceAccountsListSelector } from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSelector';
+import { fetchReport } from 'store/slices/report/fetchReport';
 import {
   reportBrandSelector,
   reportChanelSelector,
@@ -20,33 +34,20 @@ import {
   setReportPeriod,
   setReportType
 } from 'store/slices/report/reportSlice';
-import { fetchReport } from 'store/slices/report/fetchReport';
-import { brandBrandsSelector } from 'store/slices/brand/brandSelector';
-import UnitReport from './UnitReport';
-import ChannelReport from './ChannelReport';
-import AgentsReports from './AgentsReport';
-import IncentiveReport from './IncentiveReport';
-import { chanelChanelsSelector } from 'store/slices/chanel/chanelSelector';
-import BookingUnitReport from './BookingUnitReport';
-import FOCReport from './FOCReport';
-import DeliveryReport from './DeliveryReport';
-import StockReport from './StockReport';
-import useAccess from 'hooks/useAccess';
-import { PERMISSIONS } from 'constants/permissions-and-roles';
-import CustomAutocomplete from 'components/CustomAutocomplete';
-import { cityCitiesSelector } from 'store/slices/city/citySelector';
-import useCitiesFetch from 'hooks/useCitiesFetch';
-import useBrandsFetch from 'hooks/useBrandsFetch';
-import useChannelsFetch from 'hooks/useChannelsFetch';
-import CustomSelect from 'components/CustomSelect';
-import { deliveryServiceAccountsListSelector } from 'store/slices/deliveryServicesAccounts/deliveryServicesAccountsSelector';
-import useDeliveryServicesAccountFetch from 'hooks/useDeliveryServicesAccountFetch';
 import { formatDate } from 'utils/format-date';
-import { dateFormatForDateTimeField } from 'constants/index';
-import ChannelOrderReport from './ChannelOrderReport';
-import DamageStockReport from './DamageStockReport';
-import DispatchReport from './DispatchReport';
+import AgentsReports from './AgentsReport';
 import BookingProductsValueReport from './BookingProductsValueReport';
+import BookingUnitReport from './BookingUnitReport';
+import ChannelOrderReport from './ChannelOrderReport';
+import ChannelReport from './ChannelReport';
+import DamageStockReport from './DamageStockReport';
+import DeliveryReport from './DeliveryReport';
+import DispatchReport from './DispatchReport';
+import FOCReport from './FOCReport';
+import IncentiveReport from './IncentiveReport';
+import OrderGenerationReport from './OrderGenerationReport';
+import StockReport from './StockReport';
+import UnitReport from './UnitReport';
 
 const reportConfig = [
   { permission: PERMISSIONS.PERMISSIONS_GET_AGENT_REPORT, label: 'Agent Order Report', value: 'Agent Report' },
@@ -60,6 +61,7 @@ const reportConfig = [
   { permission: PERMISSIONS.PERMISSIONS_GET_STOCK_REPORT, label: 'Stock Report', value: 'Stock Report' },
   { permission: PERMISSIONS.PERMISSIONS_GET_STOCK_DAMAGE_REPORT, label: 'Damage Stock Report', value: 'Damage Stock Report' },
   { permission: PERMISSIONS.PERMISSIONS_GET_DISPATCH_REPORT, label: 'Dispatch Report', value: 'Dispatch Report' },
+  { permission: PERMISSIONS.PERMISSIONS_GET_DISPATCH_REPORT, label: 'Order Generation Report', value: 'Order Generation Report' },
   {
     permission: PERMISSIONS.PERMISSIONS_GET_BOOKING_PRODUCTS_VALUE_REPORT,
     label: 'Booking Products Value Report',
@@ -137,6 +139,8 @@ const Reporting = () => {
         return <DispatchReport />;
       case 'Booking Products Value Report':
         return <BookingProductsValueReport />;
+      case 'Order Generation Report':
+        return <OrderGenerationReport />;
     }
   };
 

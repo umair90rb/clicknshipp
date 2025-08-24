@@ -1,8 +1,7 @@
-import { Op, Sequelize } from "sequelize";
+import { Op } from "sequelize";
+import { getStartOfDay } from "../helpers/pgDateFormat";
 import model from "../models";
 import { sendErrorResponse, sendSuccessResponse } from "../utils/sendResponse";
-import _orderService from "../services/OrderService";
-import { getStartOfDay } from "../helpers/pgDateFormat";
 
 const { Order } = model;
 

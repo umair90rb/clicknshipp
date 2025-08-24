@@ -118,6 +118,7 @@ const orderFulfillWorker = new Worker(
           status: 'processed',
           processed_at: new Date(),
           order_id: `id:${order.id}-#${order_number}`,
+          item_quantity: order_items_data.reduce((total, item) => total + item?.quantity , 0) || 0,
           error: null
         },
         { where: { id: logId } }

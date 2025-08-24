@@ -1028,6 +1028,30 @@ class ReportingService {
       }
     );
   }
+
+  getOrderGenerationReport(startPeriod, endPeriod, reportBrand, reportChanel) {
+    return sequelize.query(
+      `select c."name", swl.shop_domain, count(swl.id) as orders, sum(swl.item_quantity) as total_items from "ShopifyWebhookLogs" swl 
+      left join "Chanels" c on c."source" = swl.shop_domain 
+      where swl.received_at >= :startPeriod and swl.received_at <= :endPeriod
+      ${
+        reportChanel && reportChanel.length
+          ? 'and c.id in (:reportChanel)'
+          : ''
+      }
+      ${
+        reportBrand && reportBrand.length
+          ? 'and c.brand_id in (:reportBrand)'
+          : ''
+      }
+      group by swl.shop_domain, c."name"
+      `,
+      {
+        replacements: { startPeriod, endPeriod, reportChanel, reportBrand },
+        type: QueryTypes.SELECT,
+      }
+    );
+  }
 }
 
 export const _reportingService = new ReportingService();

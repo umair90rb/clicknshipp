@@ -162,6 +162,16 @@ export function addTotalRow(report, data) {
           ...total
         }
       ];
+    case 'Order Generation Report':
+      return [
+        ...data.map((row) => ({ ...row, id: row.channel_domain })),
+        {
+          id: 'TOTAL',
+          label: 'Total',
+          totalOrders: data.reduce((acc, row) => acc + (parseInt(row.orders) || 0), 0),
+          totalItems: data.reduce((acc, row) => acc + (parseInt(row.total_items) || 0), 0)
+        }
+      ];
     default:
       return data;
   }

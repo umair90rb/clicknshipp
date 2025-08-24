@@ -1,6 +1,4 @@
 import Sequelize, { Op } from 'sequelize';
-import _chanelService from '../services/ChanelService';
-import { BOOKED_LIST } from '../constants/orderStatuses';
 import formatPhone from '../helpers/formatPhone';
 import {
   getCurrentTimeInTimezone,
@@ -10,6 +8,7 @@ import {
 } from '../helpers/pgDateFormat';
 import splitName from '../helpers/splitName';
 import model from '../models';
+import _chanelService from '../services/ChanelService';
 import ShopifyAdminService from './ShopifyAdminService';
 const {
   Order,
@@ -284,19 +283,20 @@ class OrderService {
           orderWithCustomer = await this.loadOrderWithCustomer(order.id);
           duplicates = await this.findDuplications(orderWithCustomer);
         }
-        if (duplicates && duplicates.length) {
-          await order.update({ tags: 'Duplicate' });
-          duplicates.map(async (duplicate) => {
-            const tags = (duplicate?.tags || '').split(',');
-            if (!tags.includes('Duplicate')) {
-              const tags =
-                duplicate.tags && duplicate.tags.length
-                  ? `Duplicate,${duplicate.tags}`
-                  : 'Duplicate';
-              await duplicate.update({ tags });
-            }
-          });
-        }
+        await order.update({ tags: 'Duplicate' });
+        // this is not required, it also add tag to found order which is not required.
+        // if (duplicates && duplicates.length) {
+        //   duplicates.map(async (duplicate) => {
+        //     const tags = (duplicate?.tags || '').split(',');
+        //     if (!tags.includes('Duplicate')) {
+        //       const tags =
+        //         duplicate.tags && duplicate.tags.length
+        //           ? `Duplicate,${duplicate.tags}`
+        //           : 'Duplicate';
+        //       await duplicate.update({ tags });
+        //     }
+        //   });
+        // }
       }
     } catch (error) {
       console.log(error);

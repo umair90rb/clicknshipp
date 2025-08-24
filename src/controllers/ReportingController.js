@@ -1,6 +1,5 @@
-import model from '../models';
-import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
 import { _reportingService as reportingService } from '../services/ReportingService';
+import { sendErrorResponse, sendSuccessResponse } from '../utils/sendResponse';
 
 export default {
   async getReport(req, res) {
@@ -113,6 +112,14 @@ export default {
             reportBrand,
             reportChanel,
             reportDeliveryServicesAccounts
+          );
+          break;
+        case 'Order Generation Report':
+          report = await reportingService.getOrderGenerationReport(
+            startPeriod,
+            endPeriod,
+            reportBrand,
+            reportChanel,
           );
           break;
       }
