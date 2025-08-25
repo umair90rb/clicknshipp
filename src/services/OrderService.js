@@ -283,20 +283,20 @@ class OrderService {
           orderWithCustomer = await this.loadOrderWithCustomer(order.id);
           duplicates = await this.findDuplications(orderWithCustomer);
         }
-        await order.update({ tags: 'Duplicate' });
         // this is not required, it also add tag to found order which is not required.
-        // if (duplicates && duplicates.length) {
-        //   duplicates.map(async (duplicate) => {
-        //     const tags = (duplicate?.tags || '').split(',');
-        //     if (!tags.includes('Duplicate')) {
-        //       const tags =
-        //         duplicate.tags && duplicate.tags.length
-        //           ? `Duplicate,${duplicate.tags}`
-        //           : 'Duplicate';
-        //       await duplicate.update({ tags });
-        //     }
-        //   });
-        // }
+        if (duplicates && duplicates.length) {
+          await order.update({ tags: 'Duplicate' });
+          // duplicates.map(async (duplicate) => {
+          //   const tags = (duplicate?.tags || '').split(',');
+          //   if (!tags.includes('Duplicate')) {
+          //     const tags =
+          //       duplicate.tags && duplicate.tags.length
+          //         ? `Duplicate,${duplicate.tags}`
+          //         : 'Duplicate';
+          //     await duplicate.update({ tags });
+          //   }
+          // });
+        }
       }
     } catch (error) {
       console.log(error);
