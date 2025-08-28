@@ -33,7 +33,7 @@ class SonicCourier extends CourierInterface {
       }
       body = {
         service_type_id: 1,
-        pickup_address_id: 229911,
+        pickup_address_id: deliveryAccount.cost_center,
         information_display: 1,
         consignee_city_id: destinationCity.assigned_id,
         consignee_name: `${order.customer.first_name} ${
