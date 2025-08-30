@@ -284,18 +284,45 @@ class OrderService {
           duplicates = await this.findDuplications(orderWithCustomer);
         }
         // this is not required, it also add tag to found order which is not required.
+        // if (duplicates && duplicates.length) {
+        //   await order.update({ tags: 'Duplicate' });
+        //   duplicates.map(async (duplicate) => {
+        //     const tags = (duplicate?.tags || '').split(',');
+        //     if (!tags.includes('Duplicate')) {
+        //       const tags =
+        //         duplicate.tags && duplicate.tags.length
+        //           ? `Duplicate,${duplicate.tags}`
+        //           : 'Duplicate';
+        //       await duplicate.update({ tags });
+        //     }
+        //   });
+        // }
         if (duplicates && duplicates.length) {
+          // Update the main order
           await order.update({ tags: 'Duplicate' });
-          // duplicates.map(async (duplicate) => {
-          //   const tags = (duplicate?.tags || '').split(',');
-          //   if (!tags.includes('Duplicate')) {
-          //     const tags =
-          //       duplicate.tags && duplicate.tags.length
-          //         ? `Duplicate,${duplicate.tags}`
-          //         : 'Duplicate';
-          //     await duplicate.update({ tags });
-          //   }
-          // });
+
+          // Build the list of IDs for the bulk update
+          const duplicateIdsToUpdate = duplicates
+            .filter((duplicate) => !duplicate?.tags?.includes('Duplicate'))
+            .map((duplicate) => duplicate.id);
+
+          // Perform a single bulk update for all duplicates
+          if (duplicateIdsToUpdate.length) {
+            await Order.update(
+              {
+                tags: Sequelize.fn(
+                  'CONCAT',
+                  'Duplicate,',
+                  Sequelize.col('tags')
+                ),
+              },
+              {
+                where: {
+                  id: { [Op.in]: duplicateIdsToUpdate },
+                },
+              }
+            );
+          }
         }
       }
     } catch (error) {
