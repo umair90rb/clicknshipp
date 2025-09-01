@@ -1,17 +1,16 @@
 import { Worker } from 'bullmq';
 import connection from '../config/redis';
-import _orderService from '../services/OrderService';
-import deliveryServiceAccountService from '../services/DeliveryServiceAccountService';
 import bookingService from '../services/BookingService';
-import logger from '../middleware/logger';
+import deliveryServiceAccountService from '../services/DeliveryServiceAccountService';
+import _orderService from '../services/OrderService';
 
 const bookingWorker = new Worker(
   'bookingQueue',
   async (job) => {
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('booking completed in development');
-      return;
-    }
+    // if (process.env.NODE_ENV !== 'production') {
+    //   console.log('booking completed in development');
+    //   return;
+    // }
     const { orderId, deliveryAccountId } = job.data;
     // if (await _orderService.isOrderBooked(orderId)) {
     //   logger.log(

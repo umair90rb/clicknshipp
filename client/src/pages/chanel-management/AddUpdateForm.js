@@ -1,26 +1,23 @@
-import { useEffect, useRef, useState } from 'react';
 import {
   Button,
   FormHelperText,
   Grid,
   InputLabel,
-  OutlinedInput,
-  Stack,
-  Box,
-  Chip,
-  MenuItem,
-  Checkbox,
   ListItemText,
-  Select
+  MenuItem,
+  OutlinedInput,
+  Select,
+  Stack
 } from '@mui/material';
-import * as Yup from 'yup';
-import { Formik } from 'formik';
 import AnimateButton from 'components/@extended/AnimateButton';
+import { Formik } from 'formik';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { fetchAllBrand } from 'store/slices/brand/fetchBrand';
 import { createChanel, updateChanel } from 'store/slices/chanel/chanelSlice';
 import { fetchCreateChanel, fetchUpdateChanel } from 'store/slices/chanel/fetchChanel';
 import { setMessage } from 'store/slices/util/utilSlice';
-import { fetchAllBrand } from 'store/slices/brand/fetchBrand';
+import * as Yup from 'yup';
 
 const AddUpdateForm = ({ chanelToUpdate }) => {
   const dispatch = useDispatch();
@@ -74,7 +71,7 @@ const AddUpdateForm = ({ chanelToUpdate }) => {
         validationSchema={Yup.object().shape({
           name: Yup.string().max(255).required('Chanel name is required'),
           source: Yup.string().max(255).required('Source is required'),
-          token: Yup.string(),
+          token: Yup.string().nullable(),
           brand_id: Yup.number().required('Brand is required')
         })}
         onSubmit={handleSubmit}
