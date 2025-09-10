@@ -4,7 +4,8 @@
 api.txt
 shopifyWebhookData.json
 compose.yml
-.env
+.env.production
+.env.local
 package-lock.json
 deliveryAccountData.sql
 shopifyWebhookData.json
